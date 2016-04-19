@@ -32,5 +32,43 @@ public class TTCPartition {
 	}
 
 	//----------------------------------------------------------------------
+
+	public String getTtsState() {
+		return ttsState;
+	}
+
+	public void setTtsState(String ttsState) {
+		this.ttsState = ttsState;
+	}
+
+	public float getPercentWarning() {
+		return percentWarning;
+	}
+
+	public void setPercentWarning(float percentWarning) {
+		this.percentWarning = percentWarning;
+	}
+
+	public float getPercentBusy() {
+		return percentBusy;
+	}
+
+	public void setPercentBusy(float percentBusy) {
+		this.percentBusy = percentBusy;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public boolean isMasked() {
+		return masked;
+	}
+
+	public FMM getFmm() {
+		return fmm;
+	}
+
+	//----------------------------------------------------------------------
 	
 }

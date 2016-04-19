@@ -32,6 +32,32 @@ public class FMMApplication {
 
 		// TODO: fill fmms
 	}
+
+	//----------------------------------------------------------------------
+
+	public boolean isCrashed() {
+		return crashed;
+	}
+
+	public void setCrashed(boolean crashed) {
+		this.crashed = crashed;
+	}
+
+	public DAQ getDaq() {
+		return daq;
+	}
+
+	public String getHostname() {
+		return hostname;
+	}
+
+	public String getUrl() {
+		return url;
+	}
+
+	public List<FMM> getFmms() {
+		return fmms;
+	}
     
 	//----------------------------------------------------------------------
 

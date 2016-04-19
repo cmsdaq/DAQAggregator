@@ -56,6 +56,96 @@ public class FED {
 
 		// TODO: fill mainFeds
 	}
+
+	//----------------------------------------------------------------------
+
+	public int getSrcIdReceived() {
+		return srcIdReceived;
+	}
+
+	public void setSrcIdReceived(int srcIdReceived) {
+		this.srcIdReceived = srcIdReceived;
+	}
+
+	public float getPercentBackpressure() {
+		return percentBackpressure;
+	}
+
+	public void setPercentBackpressure(float percentBackpressure) {
+		this.percentBackpressure = percentBackpressure;
+	}
+
+	public float getPercentWarning() {
+		return percentWarning;
+	}
+
+	public void setPercentWarning(float percentWarning) {
+		this.percentWarning = percentWarning;
+	}
+
+	public float getPercentBusy() {
+		return percentBusy;
+	}
+
+	public void setPercentBusy(float percentBusy) {
+		this.percentBusy = percentBusy;
+	}
+
+	public String getTtsState() {
+		return ttsState;
+	}
+
+	public void setTtsState(String ttsState) {
+		this.ttsState = ttsState;
+	}
+
+	public long getNumSCRCerrors() {
+		return numSCRCerrors;
+	}
+
+	public void setNumSCRCerrors(long numSCRCerrors) {
+		this.numSCRCerrors = numSCRCerrors;
+	}
+
+	public long getNumFRCerrors() {
+		return numFRCerrors;
+	}
+
+	public void setNumFRCerrors(long numFRCerrors) {
+		this.numFRCerrors = numFRCerrors;
+	}
+
+	public long getNumTriggers() {
+		return numTriggers;
+	}
+
+	public void setNumTriggers(long numTriggers) {
+		this.numTriggers = numTriggers;
+	}
+
+	public FRL getFrl() {
+		return frl;
+	}
+
+	public int getFrlIO() {
+		return frlIO;
+	}
+
+	public FMM getFmm() {
+		return fmm;
+	}
+
+	public int getFmmIO() {
+		return fmmIO;
+	}
+
+	public int getSrcIdExpected() {
+		return srcIdExpected;
+	}
+
+	public List<FED> getMainFeds() {
+		return mainFeds;
+	}
 	
 	//----------------------------------------------------------------------
 

@@ -43,6 +43,76 @@ public class FEDBuilderSummary {
 	public FEDBuilderSummary(DAQ daq) {
 		this.daq = daq;
 	}
+
+	//----------------------------------------------------------------------
+
+	public float getRate() {
+		return rate;
+	}
+
+	public void setRate(float rate) {
+		this.rate = rate;
+	}
+
+	public float getThroughput() {
+		return throughput;
+	}
+
+	public void setThroughput(float throughput) {
+		this.throughput = throughput;
+	}
+
+	public float getSuperFragmentSizeMean() {
+		return superFragmentSizeMean;
+	}
+
+	public void setSuperFragmentSizeMean(float superFragmentSizeMean) {
+		this.superFragmentSizeMean = superFragmentSizeMean;
+	}
+
+	public float getSuperFragmentSizeStddev() {
+		return superFragmentSizeStddev;
+	}
+
+	public void setSuperFragmentSizeStddev(float superFragmentSizeStddev) {
+		this.superFragmentSizeStddev = superFragmentSizeStddev;
+	}
+
+	public int getDeltaEvents() {
+		return deltaEvents;
+	}
+
+	public void setDeltaEvents(int deltaEvents) {
+		this.deltaEvents = deltaEvents;
+	}
+
+	public int getSumFragmentsInRU() {
+		return sumFragmentsInRU;
+	}
+
+	public void setSumFragmentsInRU(int sumFragmentsInRU) {
+		this.sumFragmentsInRU = sumFragmentsInRU;
+	}
+
+	public int getSumEventsInRU() {
+		return sumEventsInRU;
+	}
+
+	public void setSumEventsInRU(int sumEventsInRU) {
+		this.sumEventsInRU = sumEventsInRU;
+	}
+
+	public int getSumRequests() {
+		return sumRequests;
+	}
+
+	public void setSumRequests(int sumRequests) {
+		this.sumRequests = sumRequests;
+	}
+
+	public DAQ getDaq() {
+		return daq;
+	}
 	
 	//----------------------------------------------------------------------
 

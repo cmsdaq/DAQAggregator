@@ -25,7 +25,22 @@ public class FEDBuilder {
 
 		// TODO: fill subFedbuilders
 	}
+
+	//----------------------------------------------------------------------
+
+	public DAQ getDaq() {
+		return daq;
+	}
+
+	public List<SubFEDBuilder> getSubFedbuilders() {
+		return subFedbuilders;
+	}
+
+	public RU getRu() {
+		return ru;
+	}
 	
 	//----------------------------------------------------------------------
 
+	
 }

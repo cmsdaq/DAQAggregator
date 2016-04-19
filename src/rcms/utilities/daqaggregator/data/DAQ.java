@@ -49,6 +49,64 @@ public class DAQ {
 		// TODO: initialize fields ttcPartitions, frlPcs, bus, fmmApplications
 		//       from information in dp
 	}
+
+	//----------------------------------------------------------------------
+
+	public int getRunNumber() {
+		return runNumber;
+	}
+
+	public void setRunNumber(int runNumber) {
+		this.runNumber = runNumber;
+	}
+
+	public long getLastUpdate() {
+		return lastUpdate;
+	}
+
+	public void setLastUpdate(long lastUpdate) {
+		this.lastUpdate = lastUpdate;
+	}
+
+	public String getDaqState() {
+		return daqState;
+	}
+
+	public void setDaqState(String daqState) {
+		this.daqState = daqState;
+	}
+
+	public List<TTCPartition> getTtcPartitions() {
+		return ttcPartitions;
+	}
+
+	public List<FRLPc> getFrlPcs() {
+		return frlPcs;
+	}
+
+	public List<BU> getBus() {
+		return bus;
+	}
+
+	public List<FMMApplication> getFmmApplications() {
+		return fmmApplications;
+	}
+
+	public int getSessionId() {
+		return sessionId;
+	}
+
+	public String getDpsetPath() {
+		return dpsetPath;
+	}
+
+	public FEDBuilderSummary getFedBuilderSummary() {
+		return fedBuilderSummary;
+	}
+
+	public BUSummary getBuSummary() {
+		return buSummary;
+	}
 		
 	//----------------------------------------------------------------------
 

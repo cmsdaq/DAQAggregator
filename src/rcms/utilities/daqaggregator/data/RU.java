@@ -56,4 +56,102 @@ public class RU {
 
 	//----------------------------------------------------------------------
 
+	public String getErrorMsg() {
+		return errorMsg;
+	}
+
+	public void setErrorMsg(String errorMsg) {
+		this.errorMsg = errorMsg;
+	}
+
+	public String getWarnMsg() {
+		return warnMsg;
+	}
+
+	public void setWarnMsg(String warnMsg) {
+		this.warnMsg = warnMsg;
+	}
+
+	public String getInfoMsg() {
+		return infoMsg;
+	}
+
+	public void setInfoMsg(String infoMsg) {
+		this.infoMsg = infoMsg;
+	}
+
+	public float getRate() {
+		return rate;
+	}
+
+	public void setRate(float rate) {
+		this.rate = rate;
+	}
+
+	public float getThroughput() {
+		return throughput;
+	}
+
+	public void setThroughput(float throughput) {
+		this.throughput = throughput;
+	}
+
+	public float getSuperFragmentSizeMean() {
+		return superFragmentSizeMean;
+	}
+
+	public void setSuperFragmentSizeMean(float superFragmentSizeMean) {
+		this.superFragmentSizeMean = superFragmentSizeMean;
+	}
+
+	public float getSuperFragmentSizeStddev() {
+		return superFragmentSizeStddev;
+	}
+
+	public void setSuperFragmentSizeStddev(float superFragmentSizeStddev) {
+		this.superFragmentSizeStddev = superFragmentSizeStddev;
+	}
+
+	public int getFragmentsInRU() {
+		return fragmentsInRU;
+	}
+
+	public void setFragmentsInRU(int fragmentsInRU) {
+		this.fragmentsInRU = fragmentsInRU;
+	}
+
+	public int getEventsInRU() {
+		return eventsInRU;
+	}
+
+	public void setEventsInRU(int eventsInRU) {
+		this.eventsInRU = eventsInRU;
+	}
+
+	public int getRequests() {
+		return requests;
+	}
+
+	public void setRequests(int requests) {
+		this.requests = requests;
+	}
+
+	public FEDBuilder getFedBuilder() {
+		return fedBuilder;
+	}
+
+	public String getHostname() {
+		return hostname;
+	}
+
+	public boolean isEVM() {
+		return isEVM;
+	}
+
+	public boolean isMasked() {
+		return masked;
+	}
+
+	//----------------------------------------------------------------------
+
 }

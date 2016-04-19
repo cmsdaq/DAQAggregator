@@ -28,4 +28,26 @@ public class FRLPc {
 
 	//----------------------------------------------------------------------
 
+	public boolean isCrashed() {
+		return crashed;
+	}
+
+	public void setCrashed(boolean crashed) {
+		this.crashed = crashed;
+	}
+
+	public String getHostname() {
+		return hostname;
+	}
+
+	public String getUrl() {
+		return url;
+	}
+
+	public boolean isMasked() {
+		return masked;
+	}
+
+	//----------------------------------------------------------------------
+
 }

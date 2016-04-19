@@ -38,6 +38,40 @@ public class SubFEDBuilder {
 
 		// TODO: fill frls
 	}
+
+	//----------------------------------------------------------------------
+
+	public long getMinTrig() {
+		return minTrig;
+	}
+
+	public void setMinTrig(long minTrig) {
+		this.minTrig = minTrig;
+	}
+
+	public long getMaxTrig() {
+		return maxTrig;
+	}
+
+	public void setMaxTrig(long maxTrig) {
+		this.maxTrig = maxTrig;
+	}
+
+	public FEDBuilder getFedBuilder() {
+		return fedBuilder;
+	}
+
+	public TTCPartition getTtcPartition() {
+		return ttcPartition;
+	}
+
+	public FRLPc getFrlPc() {
+		return frlPc;
+	}
+
+	public List<FRL> getFrls() {
+		return frls;
+	}
 	
 	//----------------------------------------------------------------------
 

@@ -37,6 +37,33 @@ public class FRL {
 
 		// TODO: fill feds
 	}
+	
+	//----------------------------------------------------------------------
+
+	public String getState() {
+		return state;
+	}
+
+	public void setState(String state) {
+		this.state = state;
+	}
+
+	public SubFEDBuilder getSubFedbuilder() {
+		return subFedbuilder;
+	}
+
+	public int getGeoSlot() {
+		return geoSlot;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public Map<Integer, FED> getFeds() {
+		return feds;
+	}
+
 	//----------------------------------------------------------------------
 
 }

@@ -31,6 +31,28 @@ public class FMM {
 
 		// TODO: fill feds
 	}
+
+	//----------------------------------------------------------------------
+
+	public TTCPartition getTtcPartition() {
+		return ttcPartition;
+	}
+
+	public FMMApplication getFmmApplication() {
+		return fmmApplication;
+	}
+
+	public int getGeoslot() {
+		return geoslot;
+	}
+
+	public String getUrl() {
+		return url;
+	}
+
+	public List<FED> getFeds() {
+		return feds;
+	}
 	
 	//----------------------------------------------------------------------
 	
