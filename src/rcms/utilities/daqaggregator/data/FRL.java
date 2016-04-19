@@ -10,22 +10,33 @@ public class FRL {
 	//----------------------------------------
 
 	/** the parent SubFEDBuilder this FRL belongs to */
-	private SubFEDBuilder subFedbuilder;
+	private final SubFEDBuilder subFedbuilder;
 
-	private int geoSlot;
+	private final int geoSlot;
   
 	/** what type it is: SLINK, SLINKEXPRESS, SLINKEXPRESS10G 
 	 *  TODO: should we make this an enum instead ? */
-	private String type;
+	private final String type;
 	
 	/** maps from 0, 1 to FED. Note that some FRLs have only FED 1 connected
 	 *  but not FED 0
 	 */
-	private Map<Integer, FED> feds = new HashMap<>();
+	private final Map<Integer, FED> feds = new HashMap<>();
 
 	//----------------------------------------
 	// fields updated periodically
 	//----------------------------------------
 	private String state;
+
+	//----------------------------------------------------------------------
+
+	public FRL(SubFEDBuilder subFedbuilder, int geoSlot, String type) {
+		this.subFedbuilder = subFedbuilder;
+		this.geoSlot = geoSlot;
+		this.type = type;
+
+		// TODO: fill feds
+	}
+	//----------------------------------------------------------------------
 
 }

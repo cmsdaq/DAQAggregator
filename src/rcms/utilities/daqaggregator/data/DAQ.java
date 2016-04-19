@@ -3,26 +3,28 @@ package rcms.utilities.daqaggregator.data;
 import java.util.ArrayList;
 import java.util.List;
 
+import rcms.utilities.hwcfg.dp.DAQPartition;
+
 public class DAQ {
 	
 	//----------------------------------------
 	// fields set at beginning of session
 	//----------------------------------------
-	private List<TTCPartition> ttcPartitions = new ArrayList<>();
+	private final List<TTCPartition> ttcPartitions = new ArrayList<>();
   
-	private List<FRLPc> frlPc = new ArrayList<>();
+	private final List<FRLPc> frlPcs = new ArrayList<>();
   
-	private List<BU> bus = new ArrayList<>();
+	private final List<BU> bus = new ArrayList<>();
 
-	private List<FMMApplication> fmmApplications = new ArrayList<>();
+	private final List<FMMApplication> fmmApplications = new ArrayList<>();
 
-	private int sessionId;
+	private final int sessionId;
 	
-	private String dpsetPath;
+	private final String dpsetPath;
 
-	private FEDBuilderSummary fedBuilderSummary;
+	private final FEDBuilderSummary fedBuilderSummary;
 	  
-	private BUSummary BUSummary;
+	private final BUSummary buSummary;
 	  
 	//----------------------------------------
 	// fields updated periodically
@@ -34,5 +36,21 @@ public class DAQ {
 	private long lastUpdate;
   
 	private String daqState;
+
+	//----------------------------------------------------------------------
+
+	public DAQ(DAQPartition dp, String dpsetPath, int sessionId) {
+		this.sessionId = sessionId;
+		this.dpsetPath = dpsetPath;
+		
+		this.fedBuilderSummary = new FEDBuilderSummary(this);
+		this.buSummary = new BUSummary(this);
+	
+		// TODO: initialize fields ttcPartitions, frlPcs, bus, fmmApplications
+		//       from information in dp
+	}
+		
+	//----------------------------------------------------------------------
+
   
 }

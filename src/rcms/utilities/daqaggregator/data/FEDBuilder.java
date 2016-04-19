@@ -9,11 +9,23 @@ public class FEDBuilder {
 	// fields set at beginning of session
 	//----------------------------------------
 	
-	private DAQ daq;
+	/** parent */
+	private final DAQ daq;
   
-	private List<SubFEDBuilder> subFedbuilders = new ArrayList<SubFEDBuilder>();
+	private final List<SubFEDBuilder> subFedbuilders = new ArrayList<SubFEDBuilder>();
   
 	/** the RU in this FEDBuilder */
-	private RU ru;
+	private final RU ru;
+	
+	//----------------------------------------------------------------------
+		
+	public FEDBuilder(DAQ daq, RU ru) {
+		this.daq = daq;
+		this.ru = ru;
+
+		// TODO: fill subFedbuilders
+	}
+	
+	//----------------------------------------------------------------------
 
 }

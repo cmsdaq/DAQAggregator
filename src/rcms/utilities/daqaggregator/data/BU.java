@@ -5,9 +5,11 @@ public class BU {
 	//----------------------------------------
 	// fields set at beginning of session
 	//----------------------------------------
-	private DAQ daq;
+	
+	/** parent */
+	private final DAQ daq;
   
-	private String hostname;  
+	private final String hostname;  
   
 	//----------------------------------------
 	// fields updated periodically
@@ -60,5 +62,14 @@ public class BU {
 	private int numLumisectionsForHLT;
   
 	private int numLumisectionsOutHLT;
-  
+
+	//----------------------------------------------------------------------
+	
+	public BU(DAQ daq, String hostname) {
+		this.daq = daq;
+		this.hostname = hostname;
+	}	
+	
+	//----------------------------------------------------------------------
+	
 }

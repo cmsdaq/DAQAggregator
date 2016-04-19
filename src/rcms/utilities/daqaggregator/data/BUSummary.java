@@ -7,7 +7,8 @@ public class BUSummary {
 	// fields set at beginning of session
 	//----------------------------------------
 
-	private DAQ daq;
+	/** parent */
+	private final DAQ daq;
 
 	//----------------------------------------
 	// fields updated periodically
@@ -60,5 +61,14 @@ public class BUSummary {
 	private int numLumisectionsForHLT;
   
 	private int numLumisectionsOutHLT;
+
+	//----------------------------------------------------------------------
+
+	public BUSummary(DAQ daq) {
+		this.daq = daq;
+	}
+	
+	//----------------------------------------------------------------------
+
 
 }

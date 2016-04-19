@@ -10,14 +10,28 @@ public class FMM {
 	//----------------------------------------
 
 	/** parent TTCPartition */
-	private TTCPartition ttcPartition;
+	private final TTCPartition ttcPartition;
   
-	private FMMApplication fmmApplication;
+	private final FMMApplication fmmApplication;
   
-	private int geoslot;
+	private final int geoslot;
   
-	private String url;
+	private final String url;
   
-	private List<FED> feds = new ArrayList<FED>();
-  
+	private final List<FED> feds = new ArrayList<FED>();
+
+	//----------------------------------------------------------------------
+
+	public FMM(TTCPartition ttcPartition, FMMApplication fmmApplication,
+			int geoslot, String url) {
+		this.ttcPartition = ttcPartition;
+		this.fmmApplication = fmmApplication;
+		this.geoslot = geoslot;
+		this.url = url;
+
+		// TODO: fill feds
+	}
+	
+	//----------------------------------------------------------------------
+	
 }

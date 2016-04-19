@@ -9,18 +9,30 @@ public class FMMApplication {
 	// fields set at beginning of session
 	//----------------------------------------
 
-	private DAQ daq;
+	private final DAQ daq;
   
-	private String hostname;
+	private final String hostname;
   
-	private String url;
+	private final String url;
 
-	private List<FMM> fmms = new ArrayList<FMM>();
+	private final List<FMM> fmms = new ArrayList<FMM>();
 
 	//----------------------------------------
 	// fields updated periodically
 	//----------------------------------------
 	
 	private boolean crashed;
+
+	//----------------------------------------------------------------------
+
+	public FMMApplication(DAQ daq, String hostname, String url) {
+		this.daq = daq;
+		this.hostname = hostname;
+		this.url = url;
+
+		// TODO: fill fmms
+	}
     
+	//----------------------------------------------------------------------
+
 }

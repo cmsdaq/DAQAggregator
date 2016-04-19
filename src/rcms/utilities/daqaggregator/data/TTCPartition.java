@@ -6,12 +6,12 @@ public class TTCPartition {
 	// fields set at beginning of session
 	//----------------------------------------
 	
-	private String name;
+	private final String name;
 	
-	private boolean masked;
+	private final boolean masked;
 
 	/** can be null */
-	private FMM fmm;
+	private final FMM fmm;
 		  
 	//----------------------------------------
 	// fields updated periodically
@@ -23,4 +23,14 @@ public class TTCPartition {
   
 	private float percentBusy;
 
+	//----------------------------------------------------------------------
+
+	public TTCPartition(String name, boolean masked, FMM fmm) {
+		this.name = name;
+		this.masked = masked;
+		this.fmm = fmm;
+	}
+
+	//----------------------------------------------------------------------
+	
 }

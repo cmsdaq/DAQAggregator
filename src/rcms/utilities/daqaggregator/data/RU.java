@@ -7,13 +7,13 @@ public class RU {
 	//----------------------------------------
 
 	/** the FEDbuilder this RU corresponds to */
-	private FEDBuilder fedBuilder;
+	private final FEDBuilder fedBuilder;
   
-	private String hostname;
+	private final String hostname;
   
-	private boolean isEVM;
+	private final boolean isEVM;
   
-	private boolean masked;
+	private final boolean masked;
 	
 	//----------------------------------------
 	// fields updated periodically
@@ -43,5 +43,17 @@ public class RU {
   
 	/** requests from BUs ? */
 	private int requests;
-  
+
+	//----------------------------------------------------------------------
+
+	public RU(FEDBuilder fedBuilder, String hostname, boolean isEVM,
+			boolean masked) {
+		this.fedBuilder = fedBuilder;
+		this.hostname = hostname;
+		this.isEVM = isEVM;
+		this.masked = masked;
+	}
+
+	//----------------------------------------------------------------------
+
 }

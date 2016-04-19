@@ -6,7 +6,9 @@ public class FEDBuilderSummary {
 	//----------------------------------------
 	// fields set at beginning of session
 	//----------------------------------------
-	private DAQ daq;
+
+	/** parent */
+	private final DAQ daq;
   
 	//----------------------------------------
 	// fields updated periodically
@@ -35,4 +37,13 @@ public class FEDBuilderSummary {
   
 	/** requests from BUs ? */
 	private int sumRequests;
+	
+	//----------------------------------------------------------------------
+
+	public FEDBuilderSummary(DAQ daq) {
+		this.daq = daq;
+	}
+	
+	//----------------------------------------------------------------------
+
 }

@@ -13,19 +13,32 @@ public class SubFEDBuilder {
 	//----------------------------------------
 
 	/** the 'parent' FEDBuilder */
-	private FEDBuilder fedBuilder;
+	private final FEDBuilder fedBuilder;
   
-	private TTCPartition ttcPartition;
+	private final TTCPartition ttcPartition;
   
 	/** can be null */
-	private FRLPc frlPc; 
+	private final FRLPc frlPc; 
 	
-	private List<FRL> frls = new ArrayList<FRL>();
+	private final List<FRL> frls = new ArrayList<FRL>();
 	  
 	//----------------------------------------
 	// fields updated periodically
 	//----------------------------------------
 
 	private long minTrig, maxTrig;
+
+	//----------------------------------------------------------------------
+
+	public SubFEDBuilder(FEDBuilder fedBuilder, TTCPartition ttcPartition,
+			FRLPc frlPc) {
+		this.fedBuilder = fedBuilder;
+		this.ttcPartition = ttcPartition;
+		this.frlPc = frlPc;
+
+		// TODO: fill frls
+	}
 	
+	//----------------------------------------------------------------------
+
 }

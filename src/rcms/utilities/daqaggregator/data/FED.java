@@ -10,20 +10,20 @@ public class FED {
 	//----------------------------------------
 
 	/** the parent FRL */
-	private FRL frl;
+	private final FRL frl;
   
 	/** which FRL input: 0 or 1 */ 
-	private int frlIO; 
+	private final int frlIO; 
   
 	/** can be null */
-	private FMM fmm;
+	private final FMM fmm;
           
-	private int fmmIO;
+	private final int fmmIO;
   
-	private int srcIdExpected;
+	private final int srcIdExpected;
 
 	/** important for pseudofeds */
-	private List<FED> mainFeds = new ArrayList<FED>();
+	private final List<FED> mainFeds = new ArrayList<FED>();
 	  
 	//----------------------------------------
 	// fields updated periodically
@@ -44,5 +44,20 @@ public class FED {
 	private long numFRCerrors;
   
 	private long numTriggers;
+
+	//----------------------------------------------------------------------
+
+	public FED(FRL frl, int frlIO, FMM fmm, int fmmIO, int srcIdExpected) {
+		this.frl = frl;
+		this.frlIO = frlIO;
+		this.fmm = fmm;
+		this.fmmIO = fmmIO;
+		this.srcIdExpected = srcIdExpected;
+
+		// TODO: fill mainFeds
+	}
+	
+	//----------------------------------------------------------------------
+
   
 }
