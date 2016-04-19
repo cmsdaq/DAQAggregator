@@ -1,18 +1,26 @@
 package rcms.utilities.daqaggregator.data;
 
-public class TTCPartition
-{
-  private String name;
+public class TTCPartition {
+
+	//----------------------------------------
+	// fields set at beginning of session
+	//----------------------------------------
+	
+	private String name;
+	
+	private boolean masked;
+
+	/** can be null */
+	private FMM fmm;
+		  
+	//----------------------------------------
+	// fields updated periodically
+	//----------------------------------------
+
+	private String ttsState;
   
-  private String ttsState;
+	private float percentWarning;
   
-  private float percentWarning;
-  
-  private float percentBusy;
-  
-  private boolean masked;
-  
-  /** can be null */
-  private FMM fmm;
-  
+	private float percentBusy;
+
 }

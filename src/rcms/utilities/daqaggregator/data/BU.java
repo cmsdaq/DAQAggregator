@@ -1,57 +1,64 @@
 package rcms.utilities.daqaggregator.data;
 
-public class BU
-{
-  private DAQ daq;
-  
-  private String hostname;  
-  
-  /** event rate in kHz ? */
-  private float rate;
-  
-  /** throughput in MByte/s ? */
-  private float throughput;
-  
-  /** in MByte/s ? */
-  private float eventSizeMean;
-  private float eventSizeStddev;
+public class BU {
 
-  /** is this processed or requested ? */
-  private int numEvents;
+	//----------------------------------------
+	// fields set at beginning of session
+	//----------------------------------------
+	private DAQ daq;
   
-  private int numEventsInBU;
+	private String hostname;  
   
-  private int priority;
+	//----------------------------------------
+	// fields updated periodically
+	//----------------------------------------
+
+	/** event rate in kHz ? */
+	private float rate;
   
-  private int numRequestsSent;
+	/** throughput in MByte/s ? */
+	private float throughput;
   
-  private int numRequestsUsed;
+	/** in MByte/s ? */
+	private float eventSizeMean;
+	private float eventSizeStddev;
+
+	/** is this processed or requested ? */
+	private int numEvents;
   
-  private int numRequestsBlocked;
+	private int numEventsInBU;
   
-  private int numFUsHlt;
+	private int priority;
   
-  private int numFUsCrashed;
+	private int numRequestsSent;
   
-  private int numFUsStale;
+	private int numRequestsUsed;
   
-  private int numFUsCloud;
+	private int numRequestsBlocked;
   
-  /** in percent ? */
-  private float ramDiskUsage;
+	private int numFUsHlt;
   
-  /** total amount of ramdisk */
-  private float ramDiskTotal;
+	private int numFUsCrashed;
   
-  /** processed ? to be processed ? on ramdisk ? */
-  private int numFiles;
+	private int numFUsStale;
   
-  private int numLumisectionsWithFiles;
+	private int numFUsCloud;
   
-  private int currentLumisection;
+	/** in percent ? */
+	private float ramDiskUsage;
   
-  private int numLumisectionsForHLT;
+	/** total amount of ramdisk */
+	private float ramDiskTotal;
   
-  private int numLumisectionsOutHLT;
+	/** processed ? to be processed ? on ramdisk ? */
+	private int numFiles;
+  
+	private int numLumisectionsWithFiles;
+  
+	private int currentLumisection;
+  
+	private int numLumisectionsForHLT;
+  
+	private int numLumisectionsOutHLT;
   
 }

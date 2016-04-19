@@ -6,18 +6,26 @@ import java.util.List;
 /**
  * Class representing one line in DAQView
  */
-public class SubFEDBuilder
-{
-  /** the 'parent' FEDBuilder */
-  private FEDBuilder fedBuilder;
+public class SubFEDBuilder {
+	
+	//----------------------------------------
+	// fields set at beginning of session
+	//----------------------------------------
+
+	/** the 'parent' FEDBuilder */
+	private FEDBuilder fedBuilder;
   
-  private TTCPartition ttcPartition;
+	private TTCPartition ttcPartition;
   
-  /** can be null */
-  private FRLPc frlPc; 
-  
-  private long minTrig, maxTrig;
-  
-  private List<FRL> frls = new ArrayList<FRL>();
-  
+	/** can be null */
+	private FRLPc frlPc; 
+	
+	private List<FRL> frls = new ArrayList<FRL>();
+	  
+	//----------------------------------------
+	// fields updated periodically
+	//----------------------------------------
+
+	private long minTrig, maxTrig;
+	
 }

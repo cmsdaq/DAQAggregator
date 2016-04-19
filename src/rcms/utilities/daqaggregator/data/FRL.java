@@ -3,21 +3,29 @@ package rcms.utilities.daqaggregator.data;
 import java.util.HashMap;
 import java.util.Map;
 
-public class FRL
-{
-  /** the parent SubFEDBuilder this FRL belongs to */
-  private SubFEDBuilder subFedbuilder;
+public class FRL {
 
-  private int geoSlot;
-  
-  private String state;
+	//----------------------------------------
+	// fields set at beginning of session
+	//----------------------------------------
 
-  /** what type it is: SLINK, SLINKEXPRESS, SLINKEXPRESS10G */
-  private String type;
+	/** the parent SubFEDBuilder this FRL belongs to */
+	private SubFEDBuilder subFedbuilder;
+
+	private int geoSlot;
   
-  /** maps from 0, 1 to FED. Note that some FRLs have only FED 1 connected
-   *  but not FED 0
-   */
-  private Map<Integer, FED> feds = new HashMap<>();
-  
+	/** what type it is: SLINK, SLINKEXPRESS, SLINKEXPRESS10G 
+	 *  TODO: should we make this an enum instead ? */
+	private String type;
+	
+	/** maps from 0, 1 to FED. Note that some FRLs have only FED 1 connected
+	 *  but not FED 0
+	 */
+	private Map<Integer, FED> feds = new HashMap<>();
+
+	//----------------------------------------
+	// fields updated periodically
+	//----------------------------------------
+	private String state;
+
 }

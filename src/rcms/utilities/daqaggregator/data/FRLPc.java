@@ -1,12 +1,21 @@
 package rcms.utilities.daqaggregator.data;
 
-public class FRLPc
-{
-  private String hostname;
+public class FRLPc {
+	
+	//----------------------------------------
+	// fields set at beginning of session
+	//----------------------------------------
+
+	private String hostname;
   
-  /** xdaq application url */
-  private String url; 
+	/** xdaq application url */
+	private String url; 
   
-  private boolean masked;
-  private boolean crashed;
+	private boolean masked;
+	
+	//----------------------------------------
+	// fields updated periodically
+	//----------------------------------------
+	private boolean crashed;
+	
 }

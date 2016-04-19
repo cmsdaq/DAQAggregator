@@ -1,31 +1,38 @@
 package rcms.utilities.daqaggregator.data;
 
 /** summary statistics of FED builders */
-public class FEDBuilderSummary
-{
-  private DAQ daq;
+public class FEDBuilderSummary {
+
+	//----------------------------------------
+	// fields set at beginning of session
+	//----------------------------------------
+	private DAQ daq;
   
-  /** event building rate in kHz */
-  private float rate;
+	//----------------------------------------
+	// fields updated periodically
+	//----------------------------------------
+
+	/** event building rate in kHz */
+	private float rate;
   
-  /** throughput in MByte/s ? */
-  private float throughput;
+	/** throughput in MByte/s ? */
+	private float throughput;
   
-  /** mean superfragment size in kByte ? */
-  private float superFragmentSizeMean;
+	/** mean superfragment size in kByte ? */
+	private float superFragmentSizeMean;
   
-  /** spread of superfragment size in kByte ? */
-  private float superFragmentSizeStddev;
+	/** spread of superfragment size in kByte ? */
+	private float superFragmentSizeStddev;
   
-  /** difference of number of events in RU between highest and lowest
-   *  fedbuilder ???
-   */
-  private int deltaEvents;
+	/** difference of number of events in RU between highest and lowest
+	 *  fedbuilder ???
+	 */
+	private int deltaEvents;
   
-  private int sumFragmentsInRU;
+	private int sumFragmentsInRU;
   
-  private int sumEventsInRU;
+	private int sumEventsInRU;
   
-  /** requests from BUs ? */
-  private int sumRequests;
+	/** requests from BUs ? */
+	private int sumRequests;
 }
