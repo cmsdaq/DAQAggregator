@@ -1,9 +1,11 @@
 package rcms.utilities.daqaggregator.data;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import rcms.utilities.hwcfg.dp.DAQPartition;
+import rcms.utilities.hwcfg.dp.DPGenericHost;
 
 public class DAQ {
 	
@@ -46,8 +48,23 @@ public class DAQ {
 		this.fedBuilderSummary = new FEDBuilderSummary(this);
 		this.buSummary = new BUSummary(this);
 	
-		// TODO: initialize fields ttcPartitions, frlPcs, bus, fmmApplications
+		// TODO: initialize fields ttcPartitions, frlPcs, fmmApplications
 		//       from information in dp
+		
+		//----------
+		// initialize the list of BUs
+		//----------
+		for (DPGenericHost host : dp.getGenericHosts()) {
+        	if ( host.getRole().equals("BU") ) {
+        		bus.add(new BU(this, host.getHostName()));
+        	}
+        }
+		
+		// sort BUs by name
+        Collections.sort(bus, new BU.HostNameComparator());
+
+		//----------
+
 	}
 
 	//----------------------------------------------------------------------

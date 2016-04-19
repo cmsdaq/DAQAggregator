@@ -1,5 +1,7 @@
 package rcms.utilities.daqaggregator.data;
 
+import java.util.Comparator;
+
 public class BU {
 
 	//----------------------------------------
@@ -247,6 +249,17 @@ public class BU {
 	public String getHostname() {
 		return hostname;
 	}	
+	
+	//----------------------------------------------------------------------
+	
+	static class HostNameComparator implements Comparator<BU>
+	{
+		@Override
+		public int compare(BU bu1, BU bu2) {
+			// assume both are non-null
+			return bu1.getHostname().compareTo(bu2.getHostname());
+		}
+	}
 	
 	//----------------------------------------------------------------------
 	
