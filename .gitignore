@@ -2,3 +2,4 @@
 
 # ignore properties file (credentials)
 DAQAggregator.properties
+/target/
