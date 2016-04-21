@@ -104,6 +104,12 @@ public class DAQAggregator {
 						HWCfgDescriptor dp_node = _hwconn.getNode( _dpsetPath );
 						DAQPartitionSet dpset = _hwconn.retrieveDPSet( dp_node );
 						dp = dpset.getDPs().values().iterator().next();
+						
+						StructureMapper structureMapper = new StructureMapper();
+						structureMapper.map(dp);
+
+						StructurePersistor structurePersistor = new StructurePersistor();
+						structurePersistor.persist(structureMapper.getDaq());
 						System.out.println("done.");
 					}
 

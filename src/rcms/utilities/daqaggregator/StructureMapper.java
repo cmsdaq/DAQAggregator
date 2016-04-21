@@ -21,7 +21,6 @@ import rcms.utilities.daqaggregator.data.TTCPartition;
 import rcms.utilities.hwcfg.dp.DAQPartition;
 import rcms.utilities.hwcfg.dp.DAQPartitionSet;
 import rcms.utilities.hwcfg.dp.DPGenericHost;
-import rcms.utilities.hwcfg.eq.Host;
 
 /**
  * This class is responsible for mapping data from hardware database to daq
@@ -97,8 +96,6 @@ public class StructureMapper {
 		for (DPGenericHost host : dp.getGenericHosts()) {
 			if (host.getRole().equals("BU")) {
 				result.add(new BU(daq, host.getHostName()));
-			} else {
-				System.out.println("Host role: " + host.getRole());
 			}
 		}
 
@@ -158,15 +155,6 @@ public class StructureMapper {
 		Map<Long, rcms.utilities.hwcfg.eq.FED> feds = daqPartition.getDAQPartitionSet().getEquipmentSet().getFEDs();
 
 		for (rcms.utilities.hwcfg.eq.FED hwfed : feds.values()) {
-
-			Host a = hwfed.getFEDHost();
-			String name = "-";
-			if (a != null) {
-				name = a.getName();
-			}
-
-			logger.info("fed host '" + a + "', fed host name '" + name + "'");
-			logger.debug("debug");
 
 			// TODO: frl frlIO fmm fmmIO srcIdExpected;
 			FED fed = new FED();
