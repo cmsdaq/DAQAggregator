@@ -1,37 +1,31 @@
 package rcms.utilities.daqaggregator.data;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
+@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
 public class TTCPartition {
 
-	//----------------------------------------
+	// ----------------------------------------
 	// fields set at beginning of session
-	//----------------------------------------
-	
-	private final String name;
-	
-	private final boolean masked;
+	// ----------------------------------------
+
+	private String name;
+
+	private boolean masked;
 
 	/** can be null */
-	private final FMM fmm;
-		  
-	//----------------------------------------
+	private FMM fmm;
+
+	// ----------------------------------------
 	// fields updated periodically
-	//----------------------------------------
+	// ----------------------------------------
 
 	private String ttsState;
-  
+
 	private float percentWarning;
-  
+
 	private float percentBusy;
-
-	//----------------------------------------------------------------------
-
-	public TTCPartition(String name, boolean masked, FMM fmm) {
-		this.name = name;
-		this.masked = masked;
-		this.fmm = fmm;
-	}
-
-	//----------------------------------------------------------------------
 
 	public String getTtsState() {
 		return ttsState;
@@ -69,6 +63,6 @@ public class TTCPartition {
 		return fmm;
 	}
 
-	//----------------------------------------------------------------------
-	
+	// ----------------------------------------------------------------------
+
 }

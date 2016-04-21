@@ -3,6 +3,10 @@ package rcms.utilities.daqaggregator.data;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
+@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
 public class FED {
 	
 	//----------------------------------------
@@ -10,20 +14,20 @@ public class FED {
 	//----------------------------------------
 
 	/** the parent FRL */
-	private final FRL frl;
+	private FRL frl;
   
 	/** which FRL input: 0 or 1 */ 
-	private final int frlIO; 
+	private int frlIO; 
   
 	/** can be null */
-	private final FMM fmm;
+	private FMM fmm;
           
-	private final int fmmIO;
+	private int fmmIO;
   
-	private final int srcIdExpected;
+	private int srcIdExpected;
 
 	/** important for pseudofeds */
-	private final List<FED> mainFeds = new ArrayList<FED>();
+	private List<FED> mainFeds = new ArrayList<FED>();
 	  
 	//----------------------------------------
 	// fields updated periodically
@@ -45,19 +49,6 @@ public class FED {
   
 	private long numTriggers;
 
-	//----------------------------------------------------------------------
-
-	public FED(FRL frl, int frlIO, FMM fmm, int fmmIO, int srcIdExpected) {
-		this.frl = frl;
-		this.frlIO = frlIO;
-		this.fmm = fmm;
-		this.fmmIO = fmmIO;
-		this.srcIdExpected = srcIdExpected;
-
-		// TODO: fill mainFeds
-	}
-
-	//----------------------------------------------------------------------
 
 	public int getSrcIdReceived() {
 		return srcIdReceived;
@@ -145,6 +136,30 @@ public class FED {
 
 	public List<FED> getMainFeds() {
 		return mainFeds;
+	}
+
+	public void setFrl(FRL frl) {
+		this.frl = frl;
+	}
+
+	public void setFrlIO(int frlIO) {
+		this.frlIO = frlIO;
+	}
+
+	public void setFmm(FMM fmm) {
+		this.fmm = fmm;
+	}
+
+	public void setFmmIO(int fmmIO) {
+		this.fmmIO = fmmIO;
+	}
+
+	public void setSrcIdExpected(int srcIdExpected) {
+		this.srcIdExpected = srcIdExpected;
+	}
+
+	public void setMainFeds(List<FED> mainFeds) {
+		this.mainFeds = mainFeds;
 	}
 	
 	//----------------------------------------------------------------------

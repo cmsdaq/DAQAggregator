@@ -3,6 +3,10 @@ package rcms.utilities.daqaggregator.data;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
+@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
 public class FRL {
 
 	//----------------------------------------
@@ -10,13 +14,13 @@ public class FRL {
 	//----------------------------------------
 
 	/** the parent SubFEDBuilder this FRL belongs to */
-	private final SubFEDBuilder subFedbuilder;
+	private SubFEDBuilder subFedbuilder;
 
-	private final int geoSlot;
+	private int geoSlot;
   
 	/** what type it is: SLINK, SLINKEXPRESS, SLINKEXPRESS10G 
 	 *  TODO: should we make this an enum instead ? */
-	private final String type;
+	private String type;
 	
 	/** maps from 0, 1 to FED. Note that some FRLs have only FED 1 connected
 	 *  but not FED 0
@@ -28,17 +32,6 @@ public class FRL {
 	//----------------------------------------
 	private String state;
 
-	//----------------------------------------------------------------------
-
-	public FRL(SubFEDBuilder subFedbuilder, int geoSlot, String type) {
-		this.subFedbuilder = subFedbuilder;
-		this.geoSlot = geoSlot;
-		this.type = type;
-
-		// TODO: fill feds
-	}
-	
-	//----------------------------------------------------------------------
 
 	public String getState() {
 		return state;
@@ -62,6 +55,18 @@ public class FRL {
 
 	public Map<Integer, FED> getFeds() {
 		return feds;
+	}
+
+	public void setSubFedbuilder(SubFEDBuilder subFedbuilder) {
+		this.subFedbuilder = subFedbuilder;
+	}
+
+	public void setGeoSlot(int geoSlot) {
+		this.geoSlot = geoSlot;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 
 	//----------------------------------------------------------------------

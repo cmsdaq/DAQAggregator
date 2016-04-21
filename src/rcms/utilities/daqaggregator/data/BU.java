@@ -2,6 +2,10 @@ package rcms.utilities.daqaggregator.data;
 
 import java.util.Comparator;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
+@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
 public class BU {
 
 	//----------------------------------------
@@ -252,7 +256,7 @@ public class BU {
 	
 	//----------------------------------------------------------------------
 	
-	static class HostNameComparator implements Comparator<BU>
+	public static class HostNameComparator implements Comparator<BU>
 	{
 		@Override
 		public int compare(BU bu1, BU bu2) {
