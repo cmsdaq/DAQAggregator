@@ -3,8 +3,15 @@ package rcms.utilities.daqaggregator.data;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
+/**
+ * Timing Trigger and Control Partition
+ * 
+ * @author Andre Georg Holzner (andre.georg.holzner@cern.ch)
+ * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
+ */
+
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
-public class TTCPartition {
+public class TTCPartition implements java.io.Serializable {
 
 	// ----------------------------------------
 	// fields set at beginning of session
@@ -63,6 +70,16 @@ public class TTCPartition {
 		return fmm;
 	}
 
-	// ----------------------------------------------------------------------
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public void setMasked(boolean masked) {
+		this.masked = masked;
+	}
+
+	public void setFmm(FMM fmm) {
+		this.fmm = fmm;
+	}
 
 }

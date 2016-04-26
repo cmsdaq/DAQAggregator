@@ -6,32 +6,37 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
+/**
+ * Front-end Readout Link
+ * 
+ * @author Andre Georg Holzner (andre.georg.holzner@cern.ch)
+ * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
+ */
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
-public class FRL {
+public class FRL implements java.io.Serializable {
 
-	//----------------------------------------
+	// ----------------------------------------
 	// fields set at beginning of session
-	//----------------------------------------
+	// ----------------------------------------
 
 	/** the parent SubFEDBuilder this FRL belongs to */
 	private SubFEDBuilder subFedbuilder;
 
 	private int geoSlot;
-  
-	/** what type it is: SLINK, SLINKEXPRESS, SLINKEXPRESS10G 
-	 *  TODO: should we make this an enum instead ? */
-	private String type;
-	
-	/** maps from 0, 1 to FED. Note that some FRLs have only FED 1 connected
-	 *  but not FED 0
+
+	/** what type it is, values enumerated in enum */
+	private FRLType type;
+
+	/**
+	 * maps from 0, 1 to FED. Note that some FRLs have only FED 1 connected but
+	 * not FED 0
 	 */
 	private final Map<Integer, FED> feds = new HashMap<>();
 
-	//----------------------------------------
+	// ----------------------------------------
 	// fields updated periodically
-	//----------------------------------------
+	// ----------------------------------------
 	private String state;
-
 
 	public String getState() {
 		return state;
@@ -49,7 +54,7 @@ public class FRL {
 		return geoSlot;
 	}
 
-	public String getType() {
+	public FRLType getType() {
 		return type;
 	}
 
@@ -65,10 +70,10 @@ public class FRL {
 		this.geoSlot = geoSlot;
 	}
 
-	public void setType(String type) {
+	public void setType(FRLType type) {
 		this.type = type;
 	}
 
-	//----------------------------------------------------------------------
+	// ----------------------------------------------------------------------
 
 }

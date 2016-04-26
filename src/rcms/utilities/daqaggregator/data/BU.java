@@ -5,78 +5,86 @@ import java.util.Comparator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
+/**
+ * Builder Unit
+ * 
+ * @author Andre Georg Holzner (andre.georg.holzner@cern.ch)
+ * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
+ *
+ */
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
-public class BU {
+public class BU implements java.io.Serializable {
 
-	//----------------------------------------
+	// ----------------------------------------
 	// fields set at beginning of session
-	//----------------------------------------
-	
+	// ----------------------------------------
+
 	/** parent */
-	private final DAQ daq;
-  
-	private final String hostname;  
-  
-	//----------------------------------------
+	private DAQ daq;
+
+	private String hostname;
+
+	// ----------------------------------------
 	// fields updated periodically
-	//----------------------------------------
+	// ----------------------------------------
 
 	/** event rate in kHz ? */
 	private float rate;
-  
+
 	/** throughput in MByte/s ? */
 	private float throughput;
-  
+
+	public void setDaq(DAQ daq) {
+		this.daq = daq;
+	}
+
+	public void setHostname(String hostname) {
+		this.hostname = hostname;
+	}
+
 	/** in MByte/s ? */
 	private float eventSizeMean;
 	private float eventSizeStddev;
 
 	/** is this processed or requested ? */
 	private int numEvents;
-  
+
 	private int numEventsInBU;
-  
+
 	private int priority;
-  
+
 	private int numRequestsSent;
-  
+
 	private int numRequestsUsed;
-  
+
 	private int numRequestsBlocked;
-  
+
 	private int numFUsHlt;
-  
+
 	private int numFUsCrashed;
-  
+
 	private int numFUsStale;
-  
+
 	private int numFUsCloud;
-  
+
 	/** in percent ? */
 	private float ramDiskUsage;
-  
+
 	/** total amount of ramdisk */
 	private float ramDiskTotal;
-  
+
 	/** processed ? to be processed ? on ramdisk ? */
 	private int numFiles;
-  
+
 	private int numLumisectionsWithFiles;
-  
+
 	private int currentLumisection;
-  
+
 	private int numLumisectionsForHLT;
-  
+
 	private int numLumisectionsOutHLT;
 
-	//----------------------------------------------------------------------
-	
-	public BU(DAQ daq, String hostname) {
-		this.daq = daq;
-		this.hostname = hostname;
-	}
-
-	//----------------------------------------------------------------------
+	// ----------------------------------------------------------------------
 
 	public float getRate() {
 		return rate;
@@ -252,19 +260,18 @@ public class BU {
 
 	public String getHostname() {
 		return hostname;
-	}	
-	
-	//----------------------------------------------------------------------
-	
-	public static class HostNameComparator implements Comparator<BU>
-	{
+	}
+
+	// ----------------------------------------------------------------------
+
+	public static class HostNameComparator implements Comparator<BU> {
 		@Override
 		public int compare(BU bu1, BU bu2) {
 			// assume both are non-null
 			return bu1.getHostname().compareTo(bu2.getHostname());
 		}
 	}
-	
-	//----------------------------------------------------------------------
-	
+
+	// ----------------------------------------------------------------------
+
 }

@@ -6,8 +6,14 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
+/**
+ * Fast Merging Module
+ * 
+ * @author Andre Georg Holzner (andre.georg.holzner@cern.ch)
+ * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
+ */
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
-public class FMM {
+public class FMM implements java.io.Serializable {
 
 	// ----------------------------------------
 	// fields set at beginning of session
@@ -17,8 +23,6 @@ public class FMM {
 	private TTCPartition ttcPartition;
 
 	private FMMApplication fmmApplication;
-
-	
 
 	private int geoslot;
 
@@ -45,6 +49,7 @@ public class FMM {
 	public List<FED> getFeds() {
 		return feds;
 	}
+
 	public void setTtcPartition(TTCPartition ttcPartition) {
 		this.ttcPartition = ttcPartition;
 	}

@@ -1,12 +1,20 @@
 package rcms.utilities.daqaggregator.data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
+/**
+ * Root class of DAQ structure
+ * 
+ * @author Andre Georg Holzner (andre.georg.holzner@cern.ch)
+ * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
+ *
+ */
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
-public class DAQ {
+public class DAQ implements java.io.Serializable {
 
 	public String toString() {
 		return "BUs number in DAQ: " + bus.toString();
@@ -31,9 +39,16 @@ public class DAQ {
 
 	private BUSummary buSummary;
 
+	// TODO: fed builders not in the structure, but addes tmprlly?
+	private final List<FEDBuilder> fedBuilders = new ArrayList<>();
+
 	// ----------------------------------------
 	// fields updated periodically
 	// ----------------------------------------
+
+	public List<FEDBuilder> getFedBuilders() {
+		return fedBuilders;
+	}
 
 	private int runNumber;
 

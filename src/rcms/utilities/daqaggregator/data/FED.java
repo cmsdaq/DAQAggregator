@@ -6,49 +6,54 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
+/**
+ * Front End Driver
+ *
+ * @author Andre Georg Holzner (andre.georg.holzner@cern.ch)
+ * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
+ */
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
-public class FED {
-	
-	//----------------------------------------
+public class FED implements java.io.Serializable {
+
+	// ----------------------------------------
 	// fields set at beginning of session
-	//----------------------------------------
+	// ----------------------------------------
 
 	/** the parent FRL */
 	private FRL frl;
-  
-	/** which FRL input: 0 or 1 */ 
-	private int frlIO; 
-  
+
 	/** can be null */
 	private FMM fmm;
-          
+
+	/** which FRL input: 0 or 1 */
+	private int frlIO;
+
 	private int fmmIO;
-  
+
 	private int srcIdExpected;
 
 	/** important for pseudofeds */
 	private List<FED> mainFeds = new ArrayList<FED>();
-	  
-	//----------------------------------------
+
+	// ----------------------------------------
 	// fields updated periodically
-	//----------------------------------------
+	// ----------------------------------------
 
 	private int srcIdReceived;
-  
-	private float percentBackpressure;
-	
-	private float percentWarning;
-  
-	private float percentBusy;
-  
-	private String ttsState;
-  
-	private long numSCRCerrors;
-  
-	private long numFRCerrors;
-  
-	private long numTriggers;
 
+	private float percentBackpressure;
+
+	private float percentWarning;
+
+	private float percentBusy;
+
+	private String ttsState;
+
+	private long numSCRCerrors;
+
+	private long numFRCerrors;
+
+	private long numTriggers;
 
 	public int getSrcIdReceived() {
 		return srcIdReceived;
@@ -161,8 +166,7 @@ public class FED {
 	public void setMainFeds(List<FED> mainFeds) {
 		this.mainFeds = mainFeds;
 	}
-	
-	//----------------------------------------------------------------------
 
-  
+	// ----------------------------------------------------------------------
+
 }

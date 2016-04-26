@@ -3,62 +3,59 @@ package rcms.utilities.daqaggregator.data;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
+/**
+ * Readout Unit
+ * 
+ * @author Andre Georg Holzner (andre.georg.holzner@cern.ch)
+ * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
+ */
+
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
 public class RU {
-	
-	//----------------------------------------
+
+	// ----------------------------------------
 	// fields set at beginning of session
-	//----------------------------------------
+	// ----------------------------------------
 
 	/** the FEDbuilder this RU corresponds to */
-	private final FEDBuilder fedBuilder;
-  
-	private final String hostname;
-  
-	private final boolean isEVM;
-  
-	private final boolean masked;
-	
-	//----------------------------------------
+	private FEDBuilder fedBuilder;
+
+	private String hostname;
+
+	private boolean isEVM;
+
+	private boolean masked;
+
+	// ----------------------------------------
 	// fields updated periodically
-	//----------------------------------------
+	// ----------------------------------------
 
 	private String errorMsg;
-  
+
 	private String warnMsg;
-  
+
 	private String infoMsg;
-  
+
 	/** events rate in kHz ? */
 	private float rate;
-  
+
 	/** MByte per second ? */
 	private float throughput;
-  
+
 	/** mean superfragment size in kByte ? */
 	private float superFragmentSizeMean;
-  
+
 	/** spread of superfragment size in kByte ? */
 	private float superFragmentSizeStddev;
-  
+
 	private int fragmentsInRU;
-  
+
 	private int eventsInRU;
-  
+
 	/** requests from BUs ? */
 	private int requests;
 
-	//----------------------------------------------------------------------
-
-	public RU(FEDBuilder fedBuilder, String hostname, boolean isEVM,
-			boolean masked) {
-		this.fedBuilder = fedBuilder;
-		this.hostname = hostname;
-		this.isEVM = isEVM;
-		this.masked = masked;
-	}
-
-	//----------------------------------------------------------------------
+	// ----------------------------------------------------------------------
 
 	public String getErrorMsg() {
 		return errorMsg;
@@ -156,6 +153,22 @@ public class RU {
 		return masked;
 	}
 
-	//----------------------------------------------------------------------
+	public void setFedBuilder(FEDBuilder fedBuilder) {
+		this.fedBuilder = fedBuilder;
+	}
+
+	public void setHostname(String hostname) {
+		this.hostname = hostname;
+	}
+
+	public void setEVM(boolean isEVM) {
+		this.isEVM = isEVM;
+	}
+
+	public void setMasked(boolean masked) {
+		this.masked = masked;
+	}
+
+	// ----------------------------------------------------------------------
 
 }

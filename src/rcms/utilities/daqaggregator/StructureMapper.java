@@ -1,26 +1,19 @@
 package rcms.utilities.daqaggregator;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.io.Serializable;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import rcms.utilities.daqaggregator.data.BU;
 import rcms.utilities.daqaggregator.data.DAQ;
-import rcms.utilities.daqaggregator.data.FED;
-import rcms.utilities.daqaggregator.data.FMM;
-import rcms.utilities.daqaggregator.data.FRL;
-import rcms.utilities.daqaggregator.data.FRLPc;
-import rcms.utilities.daqaggregator.data.TTCPartition;
+import rcms.utilities.daqaggregator.data.SubFEDBuilder;
+import rcms.utilities.hwcfg.HardwareConfigurationException;
 import rcms.utilities.hwcfg.dp.DAQPartition;
-import rcms.utilities.hwcfg.dp.DAQPartitionSet;
-import rcms.utilities.hwcfg.dp.DPGenericHost;
+import rcms.utilities.hwcfg.fb.FBI;
 
 /**
  * This class is responsible for mapping data from hardware database to daq
@@ -28,228 +21,148 @@ import rcms.utilities.hwcfg.dp.DPGenericHost;
  * performed in 2 stages:
  * 
  * <ul>
- * <li>Map hardware objects to DAQ structure objects</li>
- * <li>Map objects' relations</li>
+ * <li>Map hardware objects to DAQ structure objects - performed by
+ * {@link ObjectMapper}</li>
+ * <li>Map objects' relations - performed by {@link RelationMapper}</li>
  * </ul>
  * 
  * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
  *
  */
-public class StructureMapper {
+public class StructureMapper implements Serializable {
 
 	private static final Logger logger = Logger.getLogger(StructureMapper.class);
 
-	/** DAQ structure root object */
-	private DAQ daq;
+	private final ObjectMapper objectMapper;
+
+	private final RelationMapper relationMapper;
+
+	private final transient DAQPartition daqPartition;
 
 	/**
-	 * Maps the structure of monitored data to DAQ structure (DAQ)
-	 * 
-	 * @see DAQ
 	 * 
 	 * @param daqPartition
 	 *            object representing hardware configuration
 	 */
-	public void map(DAQPartition daqPartition) {
+	public StructureMapper(DAQPartition daqPartition) {
+		objectMapper = new ObjectMapper();
+		relationMapper = new RelationMapper(objectMapper);
+		this.daqPartition = daqPartition;
+	}
 
-		daq = new DAQ();
+	/**
+	 * Maps the structure of monitored data retrieved from hardware database to
+	 * {@link DAQ} structure
+	 * 
+	 * @return DAQ structure
+	 */
+	public DAQ map() {
 
-		/* Building objects */
-		List<BU> bus = mapBUs(daqPartition, daq);
-		List<TTCPartition> ttcPartitions = mapTTCPartitions(daqPartition);
-		HashMap<Integer, FMM> fmms = mapFMMs(daqPartition);
-		HashMap<Integer, FED> feds = mapFEDs(daqPartition);
-		HashMap<Integer, FRL> frls = mapFRLs(daqPartition);
+		// this needs to be refactored
+		relationMapper.fedBuilderToSubFedBuilder = new HashMap<>();
+		relationMapper.subFedBuilderToFrl = new HashMap<>();
+		relationMapper.subFedBuilderToFrlPc = new HashMap<>();
+		relationMapper.subFedBuilderToTTCP = new HashMap<>();
 
-		/* Building relations */
-		Map<Integer, Set<Integer>> fmmToFed = mapRelationsFmmToFed(daqPartition);
-		Map<Integer, Set<Integer>> frlToFed = mapRelationsFrlToFed(daqPartition);
+		objectMapper.subFedBuilders = mapSubFEDBuilders(daqPartition, relationMapper.fedBuilderToSubFedBuilder,
+				relationMapper.subFedBuilderToFrl, relationMapper.subFedBuilderToFrlPc,
+				relationMapper.subFedBuilderToTTCP);
 
-		daq.setBus(bus);
-		daq.setTtcPartitions(ttcPartitions);
+		objectMapper.mapAllObjects(daqPartition);
+		relationMapper.mapAllRelations(daqPartition);
 
-		/* building FMM-FED */
-		for (Entry<Integer, Set<Integer>> relation : fmmToFed.entrySet()) {
-			FMM fmm = fmms.get(relation.getKey());
-			for (int fedId : relation.getValue()) {
-				FED fed = feds.get(fedId);
-				fmm.getFeds().add(fed);
+		return objectMapper.daq;
+	}
+
+	/**
+	 * This function maps subFedBuilders and all realations to subFedBuilders.
+	 * Needs refactoring (ObjectMapper & RelationMapper).
+	 * 
+	 * @return
+	 */
+	private Map<Integer, SubFEDBuilder> mapSubFEDBuilders(DAQPartition daqPartition,
+			Map<Integer, Set<Integer>> fedBuilderToSubFedBuilder, Map<Integer, Set<Integer>> subFedBuilderToFrl,
+			Map<Integer, Integer> subFedBuilderToFrlPc, Map<Integer, Integer> subFedBuilderToTTCP) {
+
+		Map<Integer, SubFEDBuilder> subFedBuilders = new HashMap<>();
+		Collection<rcms.utilities.hwcfg.fb.FEDBuilder> fbList = daqPartition.getDAQPartitionSet().getFEDBuilderSet()
+				.getFBs().values();
+
+		/* loop over fed builders */
+		for (rcms.utilities.hwcfg.fb.FEDBuilder fb : fbList) {
+
+			Map<String, Set<String>> ttcPartitionToFrlPCs = new HashMap<String, Set<String>>();
+
+			// loop over fedbuilder inputs of given fedbuilder
+			for (FBI fbi : fb.getFBIs().values()) {
+
+				rcms.utilities.hwcfg.eq.FRL frl;
+
+				try {
+
+					frl = daqPartition.getDAQPartitionSet().getEquipmentSet().getFRL(fbi.getFRLId());
+
+					// loop over feds of given fbi
+					for (rcms.utilities.hwcfg.eq.FED fed : frl.getFEDs().values()) {
+
+						String ttcpName = fed.getTTCPartition().getName();
+						String frlPc = frl.getFRLCrate().getHostName();
+
+						/* a new TTC partition in this fedbuilder */
+						if (!ttcPartitionToFrlPCs.containsKey(ttcpName)) {
+							ttcPartitionToFrlPCs.put(ttcpName, new HashSet<String>());
+						}
+
+						/*
+						 * this TTC partition does not have this frlpc in this
+						 * fedbuilder yet, create a new subfedbuilder for this
+						 */
+						if (!ttcPartitionToFrlPCs.get(ttcpName).contains(frlPc)) {
+							ttcPartitionToFrlPCs.get(ttcpName).add(frlPc);
+							SubFEDBuilder subFedBuilder = new SubFEDBuilder();
+							subFedBuilders.put(subFedBuilder.hashCode(), subFedBuilder);
+
+							/* FEDBuilder - SubFEDBuilder */
+							if (!fedBuilderToSubFedBuilder.containsKey(fb.hashCode())) {
+								fedBuilderToSubFedBuilder.put(fb.hashCode(), new HashSet<Integer>());
+							}
+							fedBuilderToSubFedBuilder.get(fb.hashCode()).add(subFedBuilder.hashCode());
+
+							/* SubFEDBuilder - FRL */
+							if (!subFedBuilderToFrl.containsKey(fb.hashCode())) {
+								subFedBuilderToFrl.put(subFedBuilder.hashCode(), new HashSet<Integer>());
+							}
+							subFedBuilderToFrl.get(subFedBuilder.hashCode()).add(frl.hashCode());
+
+							/* SubFedBuilder - TTCPartition */
+							subFedBuilderToTTCP.put(subFedBuilder.hashCode(), fed.getTTCPartition().hashCode());
+
+							/* SubFedBuilder - FRLPc */
+							subFedBuilderToFrlPc.put(subFedBuilder.hashCode(), frlPc.hashCode());
+
+						}
+					}
+
+				} catch (HardwareConfigurationException e) {
+					e.printStackTrace();
+				}
 			}
 		}
+		logger.info("Sub FED builders retrieved: " + subFedBuilders.size());
 
-		/* building FRL-FED */
-		for (Entry<Integer, Set<Integer>> relation : frlToFed.entrySet()) {
-			FRL frl = frls.get(relation.getKey());
-			for (int fedId : relation.getValue()) {
-				FED fed = feds.get(fedId);
-				// frl.getFeds().put(key, value) FIXME: what for this id?
-			}
-		}
-
+		return subFedBuilders;
 	}
 
-	/**
-	 * Maps all BU objects
-	 */
-	private List<BU> mapBUs(DAQPartition dp, DAQ daq) {
-		List<BU> result = new ArrayList<>();
-		for (DPGenericHost host : dp.getGenericHosts()) {
-			if (host.getRole().equals("BU")) {
-				result.add(new BU(daq, host.getHostName()));
-			}
-		}
-
-		// TODO: what is the reason to sort the list?
-		Collections.sort(result, new BU.HostNameComparator());
-		return result;
+	public DAQPartition getDaqPartition() {
+		return daqPartition;
 	}
 
-	/**
-	 * Maps all TTCPartition objects
-	 */
-	private List<TTCPartition> mapTTCPartitions(DAQPartition daqPartition) {
-
-		List<TTCPartition> result = new ArrayList<>();
-		DAQPartitionSet daqPartitionSet = daqPartition.getDAQPartitionSet();
-		for (rcms.utilities.hwcfg.eq.TTCPartition ttcPartition : daqPartitionSet.getEquipmentSet().getTTCPartitions()
-				.values()) {
-			String name = ttcPartition.getName();
-			Boolean masked = false;// TODO: get masked info
-			FMM fmm = null;// TODO: get FMM
-			result.add(new TTCPartition());
-		}
-		return result;
+	public ObjectMapper getObjectMapper() {
+		return objectMapper;
 	}
 
-	/**
-	 * Map all FMM objects. Note that objects are retrieved with identity
-	 * information for further processing
-	 * 
-	 * @return map of all FMM identified by hardware object's hashCode
-	 */
-	private HashMap<Integer, FMM> mapFMMs(DAQPartition daqPartition) {
-
-		HashMap<Integer, FMM> result = new HashMap<>();
-		Map<Long, rcms.utilities.hwcfg.eq.FMM> fmms = daqPartition.getDAQPartitionSet().getEquipmentSet().getFMMs();
-		for (rcms.utilities.hwcfg.eq.FMM hwfmm : fmms.values()) {
-
-			// TODO: ttcPartition; fmmApplication;geoslot; url;
-			FMM fmm = new FMM();
-			result.put(hwfmm.hashCode(), fmm);
-		}
-
-		logger.info("Fmms retrieved: " + result.size());
-
-		return result;
-	}
-
-	/**
-	 * Map all FED objects. Note that objects are retrieved with identity
-	 * information for further processing
-	 * 
-	 * @return map of all FED identified by hardware object's hashCode
-	 */
-	private HashMap<Integer, FED> mapFEDs(DAQPartition daqPartition) {
-
-		HashMap<Integer, FED> result = new HashMap<>();
-		Map<Long, rcms.utilities.hwcfg.eq.FED> feds = daqPartition.getDAQPartitionSet().getEquipmentSet().getFEDs();
-
-		for (rcms.utilities.hwcfg.eq.FED hwfed : feds.values()) {
-
-			// TODO: frl frlIO fmm fmmIO srcIdExpected;
-			FED fed = new FED();
-			result.put(hwfed.hashCode(), fed);
-
-		}
-
-		logger.info("Feds retrieved: " + result.size());
-
-		return result;
-	}
-
-	/**
-	 * Map all FRL objects. Note that objects are retrieved with identity
-	 * information for further processing
-	 * 
-	 * @return map of all FRL identified by hardware object's hashCode
-	 */
-	private HashMap<Integer, FRL> mapFRLs(DAQPartition daqPartition) {
-
-		HashMap<Integer, FRL> result = new HashMap<>();
-		Map<Long, rcms.utilities.hwcfg.eq.FRL> frls = daqPartition.getDAQPartitionSet().getEquipmentSet().getFRLs();
-		for (rcms.utilities.hwcfg.eq.FRL hwfrl : frls.values()) {
-
-			// TODO: SubFEDBuilder subFedbuilder, int geoSlot, String type
-			FRL frl = new FRL();
-			result.put(hwfrl.hashCode(), frl);
-		}
-		logger.info("FRLs retrieved: " + result.size());
-
-		return result;
-	}
-
-	/**
-	 * Map all FRLPc objects. Note that objects are retrieved with identity
-	 * information for further processing
-	 * 
-	 * @return map of all FRLPc identified by hardware object's hashCode
-	 */
-	private HashMap<Integer, FRLPc> mapFrlPc(DAQPartition daqPartition) {
-
-		HashMap<Integer, FRLPc> result = new HashMap<>();
-		Map<Long, rcms.utilities.hwcfg.eq.FED> fmms = daqPartition.getDAQPartitionSet().getEquipmentSet().getFEDs();
-
-		// TODO: retrieve FRLPc
-		return result;
-	}
-
-	/**
-	 * Retrieve FMM-FED relations
-	 * 
-	 * @return map representing FMM-FED one to many relation
-	 */
-	private Map<Integer, Set<Integer>> mapRelationsFmmToFed(DAQPartition daqPartition) {
-
-		Map<Integer, Set<Integer>> result = new HashMap<>();
-		Map<Long, rcms.utilities.hwcfg.eq.FMM> fmms = daqPartition.getDAQPartitionSet().getEquipmentSet().getFMMs();
-
-		for (rcms.utilities.hwcfg.eq.FMM hwfmm : fmms.values()) {
-
-			HashSet<Integer> children = new HashSet<>();
-			result.put(hwfmm.hashCode(), children);
-
-			for (rcms.utilities.hwcfg.eq.FED hwfed : hwfmm.getFEDs().values()) {
-				children.add(hwfed.hashCode());
-			}
-		}
-		return result;
-	}
-
-	/**
-	 * Retrieve FRL-FED relations
-	 * 
-	 * @return map representing FRL-FED one to many relation
-	 */
-	private Map<Integer, Set<Integer>> mapRelationsFrlToFed(DAQPartition daqPartition) {
-
-		Map<Integer, Set<Integer>> result = new HashMap<>();
-		Map<Long, rcms.utilities.hwcfg.eq.FRL> frls = daqPartition.getDAQPartitionSet().getEquipmentSet().getFRLs();
-
-		for (rcms.utilities.hwcfg.eq.FRL hwfrl : frls.values()) {
-
-			HashSet<Integer> children = new HashSet<>();
-			result.put(hwfrl.hashCode(), children);
-
-			for (rcms.utilities.hwcfg.eq.FED hwfed : hwfrl.getFEDs().values()) {
-				children.add(hwfed.hashCode());
-			}
-		}
-		return result;
-	}
-
-	/** Get DAQ structure root object */
-	public DAQ getDaq() {
-		return daq;
+	public RelationMapper getRelationMapper() {
+		return relationMapper;
 	}
 
 }
