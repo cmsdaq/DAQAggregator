@@ -1,11 +1,9 @@
 package rcms.utilities.daqaggregator;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -20,6 +18,7 @@ import rcms.utilities.daqaggregator.data.FMMApplication;
 import rcms.utilities.daqaggregator.data.FRL;
 import rcms.utilities.daqaggregator.data.FRLPc;
 import rcms.utilities.daqaggregator.data.FRLType;
+import rcms.utilities.daqaggregator.data.RU;
 import rcms.utilities.daqaggregator.data.SubFEDBuilder;
 import rcms.utilities.daqaggregator.data.TTCPartition;
 import rcms.utilities.hwcfg.dp.DAQPartition;
@@ -44,7 +43,8 @@ public class ObjectMapper implements Serializable {
 	public Map<Integer, FRL> frls;
 	public Map<Integer, TTCPartition> ttcPartitions;
 	public Map<Integer, FRLPc> frlPcs;
-	public List<BU> bus;
+	public Map<Integer, BU> bus;
+	public Map<Integer, RU> rus;
 	public Map<Integer, FMM> fmms;
 	public Map<Integer, FED> feds;
 	public Map<Integer, FMMApplication> fmmApplications;
@@ -54,6 +54,7 @@ public class ObjectMapper implements Serializable {
 		daq = new DAQ();
 		/* Building objects */
 		bus = mapBUs(daqPartition);
+		rus = mapRUs(daqPartition);
 		frlPcs = mapFrlPcs(daqPartition);
 		ttcPartitions = mapTTCPartitions(daqPartition);
 		fmms = mapFMMs(daqPartition);
@@ -61,19 +62,44 @@ public class ObjectMapper implements Serializable {
 		frls = mapFRLs(daqPartition);
 		fmmApplications = mapFMMApplications(daqPartition);
 		fedBuilders = mapFEDBuilders(daqPartition);
+
+		logger.info("Retrieval summary " + this.toString());
+
+	}
+
+	@Override
+	public String toString() {
+		return "ObjectMapper [subFedBuilders=" + subFedBuilders.size() + ", fedBuilders=" + fedBuilders.size()
+				+ ", frls=" + frls.size() + ", ttcPartitions=" + ttcPartitions.size() + ", frlPcs=" + frlPcs.size()
+				+ ", bus=" + bus.size() + ", rus=" + rus.size() + ", fmms=" + fmms.size() + ", feds=" + feds.size()
+				+ ", fmmApplications=" + fmmApplications.size() + "]";
 	}
 
 	/**
 	 * Maps all BU objects
 	 */
-	public List<BU> mapBUs(DAQPartition dp) {
-		List<BU> result = new ArrayList<>();
+	public Map<Integer, BU> mapBUs(DAQPartition dp) {
+		Map<Integer, BU> result = new HashMap<>();
 		for (DPGenericHost host : dp.getGenericHosts()) {
 			if (host.getRole().equals("BU")) {
 				BU bu = new BU();
 				bu.setHostname(host.getHostName());
-				result.add(bu);
+				result.put(host.hashCode(), bu);
 			}
+		}
+		return result;
+	}
+
+	/**
+	 * Maps all RU objects
+	 */
+	public Map<Integer, RU> mapRUs(DAQPartition dp) {
+		Map<Integer, RU> result = new HashMap<>();
+		for (rcms.utilities.hwcfg.dp.RU hwru : dp.getRUs().values()) {
+			RU ru = new RU();
+			ru.setEVM(hwru.isEVM());
+			ru.setHostname(hwru.getHostName());
+			result.put(hwru.hashCode(), ru);
 		}
 		return result;
 	}
@@ -92,7 +118,9 @@ public class ObjectMapper implements Serializable {
 			// TODO: get masked info
 
 			result.put(hwttcPartition.hashCode(), ttcPartition);
+
 		}
+
 		return result;
 	}
 
@@ -114,8 +142,6 @@ public class ObjectMapper implements Serializable {
 			result.put(hwfmm.hashCode(), fmm);
 		}
 
-		logger.info("Fmms retrieved: " + result.size());
-
 		return result;
 	}
 
@@ -132,15 +158,14 @@ public class ObjectMapper implements Serializable {
 
 		for (rcms.utilities.hwcfg.eq.FED hwfed : feds.values()) {
 
-			// TODO: frl frlIO fmm fmmIO srcIdExpected;
 			FED fed = new FED();
+			fed.setId((int) hwfed.getId());
 			fed.setFmmIO(hwfed.getFMMIO());
 			fed.setFrlIO(hwfed.getFRLIO());
+			fed.setSrcIdExpected(hwfed.getSrcId());
 			result.put(hwfed.hashCode(), fed);
 
 		}
-
-		logger.info("FEDs retrieved: " + result.size());
 
 		return result;
 	}
@@ -159,12 +184,11 @@ public class ObjectMapper implements Serializable {
 
 		for (rcms.utilities.hwcfg.fb.FEDBuilder hwfedBuilder : fedbuilders) {
 
+			System.out.println("FB id: " + hwfedBuilder.getId());
 			FEDBuilder fedbuilder = new FEDBuilder();
 			fedbuilder.setName(hwfedBuilder.getName());
 			result.put(hwfedBuilder.hashCode(), fedbuilder);
 		}
-
-		logger.info("FEDBuilders retrieved: " + result.size());
 
 		return result;
 	}
@@ -186,7 +210,6 @@ public class ObjectMapper implements Serializable {
 			frl.setType(FRLType.getByName(hwfrl.getFRLMode()));
 			result.put(hwfrl.hashCode(), frl);
 		}
-		logger.info("FRLs retrieved: " + result.size());
 
 		return result;
 	}
@@ -215,8 +238,6 @@ public class ObjectMapper implements Serializable {
 			result.put(hwfrlPc.hashCode(), frlPc);
 		}
 
-		logger.info("FRLPcs retrieved: " + result.size());
-
 		return result;
 	}
 
@@ -235,8 +256,6 @@ public class ObjectMapper implements Serializable {
 			fmmApplication.setHostname(fmmPc);
 			result.put(fmmPc.hashCode(), fmmApplication);
 		}
-
-		logger.info("fmmApplications retrieved " + result.size());
 
 		return result;
 	}

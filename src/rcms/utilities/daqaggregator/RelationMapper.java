@@ -15,6 +15,7 @@ import rcms.utilities.daqaggregator.data.FMM;
 import rcms.utilities.daqaggregator.data.FMMApplication;
 import rcms.utilities.daqaggregator.data.FRL;
 import rcms.utilities.daqaggregator.data.FRLPc;
+import rcms.utilities.daqaggregator.data.RU;
 import rcms.utilities.daqaggregator.data.SubFEDBuilder;
 import rcms.utilities.daqaggregator.data.TTCPartition;
 import rcms.utilities.hwcfg.dp.DAQPartition;
@@ -33,6 +34,7 @@ public class RelationMapper implements Serializable {
 	public Map<Integer, Integer> subFedBuilderToFrlPc;
 	public Map<Integer, Integer> subFedBuilderToTTCP;
 	public Map<Integer, Integer> subFMMToTTCP;
+	public Map<Integer, Integer> ruToFedBuilder;
 	public Map<Integer, Set<Integer>> fedBuilderToSubFedBuilder;
 	public Map<Integer, Set<Integer>> subFedBuilderToFrl;
 	public Map<Integer, Set<Integer>> fmmToFed;
@@ -48,10 +50,11 @@ public class RelationMapper implements Serializable {
 		frlToFed = mapRelationsFrlToFed(daqPartition);
 		fmmApplicationToFmm = mapRelationsFmmApplicationToFmm(daqPartition);
 		subFMMToTTCP = mapRelationsFmmToTTCP(daqPartition);
+		ruToFedBuilder = mapRelationsRuToFedBuilder(daqPartition);
 	}
 
 	private void buildRelations() {
-		objectMapper.daq.setBus(objectMapper.bus);
+		objectMapper.daq.setBus(new ArrayList<>(objectMapper.bus.values()));
 		objectMapper.daq.setTtcPartitions(new ArrayList<TTCPartition>(objectMapper.ttcPartitions.values()));
 		objectMapper.daq.setFrlPcs(new ArrayList<FRLPc>(objectMapper.frlPcs.values()));
 		objectMapper.daq.setFmmApplications(new ArrayList<FMMApplication>(objectMapper.fmmApplications.values()));
@@ -128,6 +131,14 @@ public class RelationMapper implements Serializable {
 			TTCPartition ttcPartition = objectMapper.ttcPartitions.get(relation.getValue());
 			fmm.setTtcPartition(ttcPartition);
 			ttcPartition.setFmm(fmm);
+		}
+
+		/* building RU - FEDBuilder */
+		for (Entry<Integer, Integer> relation : ruToFedBuilder.entrySet()) {
+			RU ru = objectMapper.rus.get(relation.getKey());
+			FEDBuilder fedBuilder = objectMapper.fedBuilders.get(relation.getValue());
+			ru.setFedBuilder(fedBuilder);
+			fedBuilder.setRu(ru);
 		}
 
 	}
@@ -223,6 +234,19 @@ public class RelationMapper implements Serializable {
 			}
 		}
 
+		return result;
+	}
+
+	/**
+	 * Retrieve RU-FEDBuilder relations
+	 */
+	private Map<Integer, Integer> mapRelationsRuToFedBuilder(DAQPartition daqPartition) {
+		Map<Integer, Integer> result = new HashMap<>();
+		for (rcms.utilities.hwcfg.dp.RU hwru : daqPartition.getRUs().values()) {
+			rcms.utilities.hwcfg.fb.FEDBuilder hwFedBuilder = daqPartition.getDAQPartitionSet().getFEDBuilderSet()
+					.getFBs().get(hwru.getFBId());
+			result.put(hwru.hashCode(), hwFedBuilder.hashCode());
+		}
 		return result;
 	}
 

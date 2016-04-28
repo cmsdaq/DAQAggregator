@@ -19,6 +19,9 @@ public class FED implements java.io.Serializable {
 	// fields set at beginning of session
 	// ----------------------------------------
 
+	/** id of the fed */
+	private int id;
+
 	/** the parent FRL */
 	private FRL frl;
 
@@ -165,6 +168,19 @@ public class FED implements java.io.Serializable {
 
 	public void setMainFeds(List<FED> mainFeds) {
 		this.mainFeds = mainFeds;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	@Override
+	public String toString() {
+		return "FED [id=" + id + ", frlIO=" + frlIO + ", fmmIO=" + fmmIO + ", srcIdExpected=" + srcIdExpected + "]";
 	}
 
 	// ----------------------------------------------------------------------
