@@ -5,6 +5,10 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.databind.JsonNode;
+
+import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
+import rcms.utilities.daqaggregator.mappers.FlashlistType;
 
 /**
  * Front End Driver
@@ -13,7 +17,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
  * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
-public class FED implements java.io.Serializable {
+public class FED implements java.io.Serializable, FlashlistUpdatable {
 
 	// ----------------------------------------
 	// fields set at beginning of session
@@ -57,6 +61,93 @@ public class FED implements java.io.Serializable {
 	private long numFRCerrors;
 
 	private long numTriggers;
+
+	/**
+	 * Available columns in flashlist FMM_INPUT:
+	 * 
+	 * <pre>
+	 * {@code[
+	[{"key":"class","type":"string"},
+	{"key":"context","type":"string"},
+	{"key":"fractionBusy","type":"double"},
+	{"key":"fractionError","type":"double"},
+	{"key":"fractionOOS","type":"double"},
+	{"key":"fractionReady","type":"double"},
+	{"key":"fractionWarning","type":"double"},
+	{"key":"geoslot","type":"unsigned short"},
+	{"key":"hostname","type":"string"},
+	{"key":"inputState","type":"string"},
+	{"key":"instance","type":"string"},
+	{"key":"integralTimeBusy","type":"unsigned int 64"},
+	{"key":"integralTimeError","type":"unsigned int 64"},
+	{"key":"integralTimeOOS","type":"unsigned int 64"},
+	{"key":"integralTimeReady","type":"unsigned int 64"},
+	{"key":"integralTimeWarning","type":"unsigned int 64"},
+	{"key":"io","type":"unsigned short"},
+	{"key":"isActive","type":"bool"},
+	{"key":"lid","type":"string"},
+	{"key":"readTimestamp","type":"time"},
+	{"key":"runNumber","type":"unsigned int 32"},
+	{"key":"sessionid","type":"string"},
+	{"key":"timestamp","type":"time"},
+	{"key":"timeTag","type":"unsigned int 64"}] 
+	
+	 * }
+	 * </pre>
+	 * 
+	 * Available columns in flashlist FEROL_INPUT_STREAM:
+	 * 
+	 * <pre>
+	 * {@code[
+	[{"key":"AccBackpressureSecond","type":"double"},
+	{"key":"BackpressureCounter","type":"unsigned int 64"},
+	{"key":"BX","type":"unsigned int 32"},
+	{"key":"context","type":"string"},
+	{"key":"CurrentFragSizeReceived","type":"unsigned int 32"},
+	{"key":"EventCounter","type":"unsigned int 64"},
+	{"key":"expectedFedId","type":"unsigned int 32"},
+	{"key":"ExpectedTriggerNumber","type":"unsigned int 32"},
+	{"key":"FEDCRCError","type":"unsigned int 64"},
+	{"key":"FEDFrequency","type":"unsigned int 32"},
+	{"key":"instance","type":"string"},
+	{"key":"lid","type":"string"},
+	{"key":"LinkCRCError","type":"unsigned int 64"},
+	{"key":"MaxFragSizeReceived","type":"unsigned int 32"},
+	{"key":"NoOfFragmentsCut","type":"unsigned int 32"},
+	{"key":"ReceivedTriggerNumber","type":"unsigned int 32"},
+	{"key":"SenderFwVersion","type":"unsigned int 32"},
+	{"key":"sessionid","type":"string"},
+	{"key":"slotNumber","type":"unsigned int 32"},
+	{"key":"streamNumber","type":"unsigned int 32"},
+	{"key":"SyncLostDraining","type":"unsigned int 32"},
+	{"key":"timestamp","type":"time"},
+	{"key":"TriggerNumber","type":"unsigned int 32"},
+	{"key":"WrongFEDId","type":"unsigned int 32"},
+	{"key":"WrongFEDIdDetected","type":"unsigned int 32"}] 
+	
+	 * }
+	 * </pre>
+	 * 
+	 */
+	@Override
+	public void updateFromFlashlist(FlashlistType flashlistType, JsonNode flashlistRow) {
+
+		if (flashlistType == FlashlistType.FMM_INPUT) {
+
+			this.percentWarning = (float) (flashlistRow.get("fractionWarning").asDouble() * 100);
+			this.percentBusy = (float) (flashlistRow.get("fractionBusy").asDouble() * 100);
+			this.ttsState = flashlistRow.get("inputState").asText();
+
+		} else if (flashlistType == FlashlistType.FEROL_INPUT_STREAM) {
+			// TODO or WrongFEDIdDetected
+			this.srcIdReceived = flashlistRow.get("WrongFEDId").asInt();
+			this.percentBackpressure = (float) flashlistRow.get("AccBackpressureSecond").asDouble();
+			this.numSCRCerrors = flashlistRow.get("LinkCRCError").asInt();
+			this.numFRCerrors = flashlistRow.get("FEDCRCError").asInt();
+			this.numTriggers = flashlistRow.get("TriggerNumber").asInt();
+		}
+
+	}
 
 	public int getSrcIdReceived() {
 		return srcIdReceived;

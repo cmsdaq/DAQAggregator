@@ -1,4 +1,4 @@
-package rcms.utilities.daqaggregator;
+package rcms.utilities.daqaggregator.mappers;
 
 import java.io.Serializable;
 import java.util.ArrayList;

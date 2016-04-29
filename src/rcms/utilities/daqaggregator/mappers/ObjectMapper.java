@@ -1,4 +1,4 @@
-package rcms.utilities.daqaggregator;
+package rcms.utilities.daqaggregator.mappers;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -49,9 +49,23 @@ public class ObjectMapper implements Serializable {
 	public Map<Integer, FED> feds;
 	public Map<Integer, FMMApplication> fmmApplications;
 
+	public Map<Integer, RU> rusById;
+	public Map<Integer, BU> busById;
+	public Map<Integer, FED> fedsById;
+	public Map<Integer, FED> ttcpById;
+	public Map<Integer, TTCPartition> ttcpartitionsById;
+
 	public void mapAllObjects(DAQPartition daqPartition) {
 
 		daq = new DAQ();
+
+		// TODO: this is for flashlist mapping, refactor me
+		rusById = new HashMap<>();
+		busById = new HashMap<>();
+		fedsById = new HashMap<>();
+		ttcpById = new HashMap<>();
+		ttcpartitionsById = new HashMap<>();
+
 		/* Building objects */
 		bus = mapBUs(daqPartition);
 		rus = mapRUs(daqPartition);
@@ -83,6 +97,7 @@ public class ObjectMapper implements Serializable {
 		for (DPGenericHost host : dp.getGenericHosts()) {
 			if (host.getRole().equals("BU")) {
 				BU bu = new BU();
+				busById.put((int) host.getId(), bu);
 				bu.setHostname(host.getHostName());
 				result.put(host.hashCode(), bu);
 			}
@@ -98,7 +113,9 @@ public class ObjectMapper implements Serializable {
 		for (rcms.utilities.hwcfg.dp.RU hwru : dp.getRUs().values()) {
 			RU ru = new RU();
 			ru.setEVM(hwru.isEVM());
+			ru.setInstance((int) hwru.getId());
 			ru.setHostname(hwru.getHostName());
+			rusById.put(ru.getInstance(), ru);
 			result.put(hwru.hashCode(), ru);
 		}
 		return result;
@@ -115,6 +132,8 @@ public class ObjectMapper implements Serializable {
 				.values()) {
 			TTCPartition ttcPartition = new TTCPartition();
 			ttcPartition.setName(hwttcPartition.getName());
+			ttcpartitionsById.put((int) hwttcPartition.getId(), ttcPartition);
+			// ttcpById.put(hwttcPartition.getId(), value)
 			// TODO: get masked info
 
 			result.put(hwttcPartition.hashCode(), ttcPartition);
@@ -160,6 +179,7 @@ public class ObjectMapper implements Serializable {
 
 			FED fed = new FED();
 			fed.setId((int) hwfed.getId());
+			fedsById.put(fed.getId(), fed);
 			fed.setFmmIO(hwfed.getFMMIO());
 			fed.setFrlIO(hwfed.getFRLIO());
 			fed.setSrcIdExpected(hwfed.getSrcId());
@@ -183,8 +203,6 @@ public class ObjectMapper implements Serializable {
 				.getFEDBuilderSet().getFBs().values();
 
 		for (rcms.utilities.hwcfg.fb.FEDBuilder hwfedBuilder : fedbuilders) {
-
-			System.out.println("FB id: " + hwfedBuilder.getId());
 			FEDBuilder fedbuilder = new FEDBuilder();
 			fedbuilder.setName(hwfedBuilder.getName());
 			result.put(hwfedBuilder.hashCode(), fedbuilder);

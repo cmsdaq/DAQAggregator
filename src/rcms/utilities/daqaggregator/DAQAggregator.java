@@ -5,17 +5,21 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Properties;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 
 import rcms.common.db.DBConnectorIF;
 import rcms.common.db.DBConnectorMySQL;
 import rcms.common.db.DBConnectorOracle;
 import rcms.utilities.daqaggregator.data.DAQ;
+import rcms.utilities.daqaggregator.mappers.FlashlistManager;
+import rcms.utilities.daqaggregator.mappers.StructureMapper;
 import rcms.utilities.daqaggregator.vis.VisualizerManager;
 import rcms.utilities.hwcfg.HWCfgConnector;
 import rcms.utilities.hwcfg.HWCfgDescriptor;
@@ -54,6 +58,10 @@ public class DAQAggregator {
 
 	private static boolean _dpsetPathChanged = false;
 	private static boolean _sidChanged = false;
+	
+
+	private static final Logger logger = Logger.getLogger(DAQAggregator.class);
+
 
 	public static void main(String[] args) {
 
@@ -72,6 +80,8 @@ public class DAQAggregator {
 			String[] lasURLs = daqAggregatorProperties.getProperty(PROPERTYNAME_MONITOR_URLS).split(" +");
 			for (String lasUrl : lasURLs)
 				System.out.println("   '" + lasUrl + "'");
+			
+
 
 			Thread monitorThread = null;
 			DAQPartition dp = null;
@@ -105,6 +115,7 @@ public class DAQAggregator {
 
 						StructureMapper structureMapper = new StructureMapper(dp);
 						DAQ daq = structureMapper.map();
+						daq.setSessionId(_sid);
 						
 						
 
@@ -114,6 +125,13 @@ public class DAQAggregator {
 						// serialization test
 						structurePersistor.serialize(daq);
 						structurePersistor.serialize(structureMapper);
+						
+						FlashlistManager flashlistManager = new FlashlistManager( new HashSet<String>(Arrays.asList(lasURLs)));
+						flashlistManager.structureMapper = structureMapper;
+						flashlistManager.sessionId = _sid;
+						flashlistManager.retrieveAvailableFlashlists();
+						flashlistManager.readFlashlists();
+						System.exit(0);
 						
 						
 						// DAQ daq2 = structurePersistor.deserialize();
@@ -126,8 +144,8 @@ public class DAQAggregator {
 						VisualizerManager visualizerManager = new VisualizerManager(daq, structureMapper);
 						visualizerManager.persistVisualizations();
 
-						System.out.println("done.");
 						System.exit(0);
+						System.out.println("done.");
 					}
 
 					if (dp != null && monitorThread == null) {

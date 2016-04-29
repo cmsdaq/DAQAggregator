@@ -4,6 +4,10 @@ import java.io.Serializable;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.databind.JsonNode;
+
+import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
+import rcms.utilities.daqaggregator.mappers.FlashlistType;
 
 /**
  * Readout Unit
@@ -13,7 +17,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
  */
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
-public class RU implements Serializable {
+public class RU implements Serializable, FlashlistUpdatable {
 
 	// ----------------------------------------
 	// fields set at beginning of session
@@ -27,6 +31,8 @@ public class RU implements Serializable {
 	private boolean isEVM;
 
 	private boolean masked;
+
+	private int instance;
 
 	// ----------------------------------------
 	// fields updated periodically
@@ -44,7 +50,9 @@ public class RU implements Serializable {
 	/** MByte per second ? */
 	private float throughput;
 
-	/** mean superfragment size in kByte ? */
+	/**
+	 * TODO: mean superfragment size in kByte?, TODO: mean over what period ?
+	 */
 	private float superFragmentSizeMean;
 
 	/** spread of superfragment size in kByte ? */
@@ -56,6 +64,30 @@ public class RU implements Serializable {
 
 	/** requests from BUs ? */
 	private int requests;
+
+	/**
+	 * Update object based on given flashlist fragment
+	 * 
+	 * @param flashlistRow
+	 *            JsonNode representing one row from flashlist
+	 */
+	@Override
+	public void updateFromFlashlist(FlashlistType flashlistType, JsonNode flashlistRow) {
+
+		if (flashlistType == FlashlistType.RU) {
+			// direct values
+			this.requests = flashlistRow.get("eventCount").asInt();
+			this.rate = flashlistRow.get("eventRate").asInt();
+			this.eventsInRU = flashlistRow.get("eventsInRU").asInt();
+			this.fragmentsInRU = flashlistRow.get("fragmentCount").asInt();
+			this.superFragmentSizeMean = flashlistRow.get("superFragmentSize").asInt();
+			this.superFragmentSizeStddev = flashlistRow.get("superFragmentSizeStdDev").asInt();
+
+			// derived values
+			this.throughput = rate * superFragmentSizeMean;
+
+		}
+	}
 
 	// ----------------------------------------------------------------------
 
@@ -169,6 +201,21 @@ public class RU implements Serializable {
 
 	public void setMasked(boolean masked) {
 		this.masked = masked;
+	}
+
+	public int getInstance() {
+		return instance;
+	}
+
+	public void setInstance(int instance) {
+		this.instance = instance;
+	}
+
+	@Override
+	public String toString() {
+		return "RU [rate=" + rate + ", throughput=" + throughput + ", superFragmentSizeMean=" + superFragmentSizeMean
+				+ ", superFragmentSizeStddev=" + superFragmentSizeStddev + ", fragmentsInRU=" + fragmentsInRU
+				+ ", eventsInRU=" + eventsInRU + "]";
 	}
 
 	// ----------------------------------------------------------------------

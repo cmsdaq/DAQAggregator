@@ -1,9 +1,14 @@
 package rcms.utilities.daqaggregator.data;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.databind.JsonNode;
+
+import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
+import rcms.utilities.daqaggregator.mappers.FlashlistType;
 
 /**
  * Builder Unit
@@ -13,7 +18,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
  *
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
-public class BU implements java.io.Serializable {
+public class BU implements Serializable, FlashlistUpdatable {
 
 	// ----------------------------------------
 	// fields set at beginning of session
@@ -85,6 +90,44 @@ public class BU implements java.io.Serializable {
 	private int numLumisectionsOutHLT;
 
 	// ----------------------------------------------------------------------
+
+	/**
+	 * Update object based on given flashlist fragment
+	 * 
+	 * @param flashlistRow
+	 *            JsonNode representing one row from flashlist
+	 */
+	@Override
+	public void updateFromFlashlist(FlashlistType flashlistType, JsonNode flashlistRow) {
+
+		if (flashlistType == FlashlistType.BU) {
+
+			// direct values
+			this.rate = flashlistRow.get("eventRate").asInt();
+			this.throughput = flashlistRow.get("bandwidth").asInt();
+			this.eventSizeMean = flashlistRow.get("eventSize").asInt();
+			this.eventSizeStddev = flashlistRow.get("eventSizeStdDev").asInt();
+			this.numEvents = flashlistRow.get("nbEventsBuilt").asInt();
+			this.numEventsInBU = flashlistRow.get("nbEventsInBU").asInt();
+			this.priority = flashlistRow.get("priority").asInt();
+			this.numRequestsSent = flashlistRow.get("requestCount").asInt();
+			// TODO: this.numRequestsUsed = flashlistRow.get("").asInt();
+			this.numRequestsBlocked = flashlistRow.get("nbBlockedResources").asInt();
+			this.numFUsHlt = flashlistRow.get("fuSlotsHLT").asInt();
+			// TODO: this.numFUsCrashed = flashlistRow.get("").asInt();
+			this.numFUsStale = flashlistRow.get("fuSlotsStale").asInt();
+			this.numFUsCloud = flashlistRow.get("fuSlotsCloud").asInt();
+			this.ramDiskUsage = flashlistRow.get("ramDiskUsed").asInt();
+			this.ramDiskTotal = flashlistRow.get("ramDiskSizeInGB").asInt();
+			this.numFiles = flashlistRow.get("nbFilesWritten").asInt();
+			// TODO this.numLumisectionsWithFiles =
+			// flashlistRow.get("").asInt();
+			this.currentLumisection = flashlistRow.get("currentLumiSection").asInt();
+			// TODO this.numLumisectionsForHLT = flashlistRow.get("aa").asInt();
+			// TODO this.numLumisectionsOutHLT = flashlistRow.get("aa").asInt();
+
+		}
+	}
 
 	public float getRate() {
 		return rate;

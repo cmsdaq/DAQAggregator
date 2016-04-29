@@ -2,6 +2,10 @@ package rcms.utilities.daqaggregator.data;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.databind.JsonNode;
+
+import rcms.utilities.daqaggregator.mappers.FlashlistType;
+import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
 
 /**
  * Timing Trigger and Control Partition
@@ -11,7 +15,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
  */
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
-public class TTCPartition implements java.io.Serializable {
+public class TTCPartition implements java.io.Serializable, FlashlistUpdatable {
 
 	// ----------------------------------------
 	// fields set at beginning of session
@@ -33,6 +37,18 @@ public class TTCPartition implements java.io.Serializable {
 	private float percentWarning;
 
 	private float percentBusy;
+
+	@Override
+	public void updateFromFlashlist(FlashlistType flashlistType, JsonNode flashlistRow) {
+
+		if (flashlistType == FlashlistType.FMM_STATUS) {
+			// TODO what about B?
+			this.percentBusy = (float) flashlistRow.get("outputFractionBusyA").asDouble();
+			this.percentWarning = (float) flashlistRow.get("outputFractionWarningA").asDouble();
+			this.ttsState = flashlistRow.get("outputStateA").asText();
+		}
+
+	}
 
 	public String getTtsState() {
 		return ttsState;
