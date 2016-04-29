@@ -31,11 +31,7 @@ public class StructurePersistor {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.writerWithDefaultPrettyPrinter().writeValue(new File(filename), daq);
 
-		StringBuilder sb = new StringBuilder();
-		sb.append("Persistor summary");
-		sb.append("[bu size: " + daq.getBus().size() + "], ");
-		sb.append("[ttcp size: " + daq.getTtcPartitions().size() + "]");
-		logger.info(sb.toString());
+		logger.debug("Persisted structure in " + filename);
 	}
 
 	public void persist(DAQ daq) throws JsonGenerationException, JsonMappingException, IOException {
@@ -50,7 +46,7 @@ public class StructurePersistor {
 			out.writeObject(object);
 			out.close();
 			fileOut.close();
-			logger.info("Serialized object in " + fileName);
+			logger.debug("Serialized object in " + fileName);
 		} catch (IOException i) {
 			i.printStackTrace();
 		}
