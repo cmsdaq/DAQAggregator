@@ -23,12 +23,12 @@ public class FedVisualizer extends TreeVisualizer {
 
 			// create FMM
 			for (FMM fmm : fmmApplication.getFmms()) {
-				Element fmmElement = new Element("FMM " + fmm.getUrl());
+				Element fmmElement = new Element("FMM " + fmm.getGeoslot());
 				fmmApplicationElement.getChildren().add(fmmElement);
 
 				// create FED
 				for (FED fed : fmm.getFeds()) {
-					Element fedElement = new Element("FED ");
+					Element fedElement = new Element("FED:" + fed.getId());
 					fmmElement.getChildren().add(fedElement);
 
 				}

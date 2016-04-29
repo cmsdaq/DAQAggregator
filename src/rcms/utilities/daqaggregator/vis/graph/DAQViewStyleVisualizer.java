@@ -9,13 +9,13 @@ import java.util.Map.Entry;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import rcms.utilities.daqaggregator.StructureMapper;
 import rcms.utilities.daqaggregator.data.DAQ;
 import rcms.utilities.daqaggregator.data.FEDBuilder;
 import rcms.utilities.daqaggregator.data.FRL;
 import rcms.utilities.daqaggregator.data.FRLPc;
 import rcms.utilities.daqaggregator.data.SubFEDBuilder;
 import rcms.utilities.daqaggregator.data.TTCPartition;
+import rcms.utilities.daqaggregator.mappers.StructureMapper;
 import rcms.utilities.daqaggregator.vis.Visualizer;
 
 public class DAQViewStyleVisualizer extends GraphVisualizer {
@@ -105,7 +105,7 @@ public class DAQViewStyleVisualizer extends GraphVisualizer {
 				Node target = sfbMap.get(targetId);
 				link.setSource(source.intId);
 				link.setTarget(target.intId);
-				link.setValue(1);
+				link.setValue(2);
 				data.getLinks().add(link);
 			}
 		}

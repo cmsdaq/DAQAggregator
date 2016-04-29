@@ -9,8 +9,8 @@ import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import rcms.utilities.daqaggregator.StructureMapper;
 import rcms.utilities.daqaggregator.data.DAQ;
+import rcms.utilities.daqaggregator.mappers.StructureMapper;
 import rcms.utilities.daqaggregator.vis.graph.BuilderVisualizer;
 import rcms.utilities.daqaggregator.vis.graph.DAQViewStyleVisualizer;
 import rcms.utilities.daqaggregator.vis.tree.DaqVisualizer;

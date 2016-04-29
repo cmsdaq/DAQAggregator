@@ -1,18 +1,15 @@
 package rcms.utilities.daqaggregator.vis.graph;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import rcms.utilities.daqaggregator.StructureMapper;
 import rcms.utilities.daqaggregator.data.FEDBuilder;
 import rcms.utilities.daqaggregator.data.FRL;
+import rcms.utilities.daqaggregator.data.RU;
 import rcms.utilities.daqaggregator.data.SubFEDBuilder;
+import rcms.utilities.daqaggregator.mappers.StructureMapper;
 
 public class BuilderVisualizer extends GraphVisualizer {
 
@@ -32,11 +29,12 @@ public class BuilderVisualizer extends GraphVisualizer {
 		Map<Integer, Node> fbMap = new HashMap<>();
 		Map<Integer, Node> sfbMap = new HashMap<>();
 		Map<Integer, Node> frlMap = new HashMap<>();
+		Map<Integer, Node> ruMap = new HashMap<>();
 		Data data = new Data();
 		int i = 0;
 		// create FBs
 		for (Entry<Integer, FEDBuilder> fb : structureMapper.getObjectMapper().fedBuilders.entrySet()) {
-			Node fbNode = new Node(fb.getValue().getName(), "fb");
+			Node fbNode = new Node("FB: " + fb.getValue().getName(), "fb");
 			data.getNodes().add(fbNode);
 			fbMap.put(fb.getKey(), fbNode);
 			i++;
@@ -50,19 +48,25 @@ public class BuilderVisualizer extends GraphVisualizer {
 			sfbMap.put(sfb.getKey(), subFedBuilderNode);
 			i++;
 		}
-		System.out.println("Nodes: " + i);
-		System.out.println("Nodes in static: " + Node.global_id);
-		System.out.println("Nodes in maps: " + fbMap.size() + ", " + sfbMap.size());
 
 		int frlMax = 5000;
 		int frlAdded = 0;
+
+		// create RUs
+		for (Entry<Integer, RU> ru : structureMapper.getObjectMapper().rus.entrySet()) {
+
+			Node ruNode = new Node("RU " + ru.getValue().getHostname(), "RUs");
+			data.getNodes().add(ruNode);
+			ruMap.put(ru.getKey(), ruNode);
+
+		}
 
 		// create FRLs
 		for (Entry<Integer, FRL> frl : structureMapper.getObjectMapper().frls.entrySet()) {
 			if (frlAdded < frlMax && isFrlConnected(frl, structureMapper)) {
 
 				Node frlNode = new Node(
-						"GeoSlot: " + frl.getValue().getGeoSlot() + ", type: " + frl.getValue().getType(), "frls");
+						"FRL: GeoSlot: " + frl.getValue().getGeoSlot() + ", type: " + frl.getValue().getType(), "frls");
 				data.getNodes().add(frlNode);
 				frlMap.put(frl.getKey(), frlNode);
 				frlAdded++;
@@ -98,6 +102,18 @@ public class BuilderVisualizer extends GraphVisualizer {
 				link.setValue(1);
 				data.getLinks().add(link);
 			}
+		}
+
+		// create links RU - FB
+		for (Entry<Integer, Integer> relation : structureMapper.getRelationMapper().ruToFedBuilder.entrySet()) {
+
+			Link link = new Link();
+			Node source = ruMap.get(relation.getKey());
+			Node target = fbMap.get(relation.getValue());
+			link.setSource(source.intId);
+			link.setTarget(target.intId);
+			link.setValue(1);
+			data.getLinks().add(link);
 		}
 
 		return data;
