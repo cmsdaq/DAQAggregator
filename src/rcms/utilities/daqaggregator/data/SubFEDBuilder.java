@@ -81,4 +81,19 @@ public class SubFEDBuilder implements java.io.Serializable {
 		this.frlPc = frlPc;
 	}
 
+	public void calculateDerived() {
+
+		// just derived from feds
+		for (FRL frl : getFrls()) {
+			for (FED fed : frl.getFeds().values()) {
+				if (fed.getEventCounter() > maxTrig) {
+					maxTrig = fed.getEventCounter();
+				}
+				if (fed.getEventCounter() < minTrig) {
+					minTrig = fed.getEventCounter();
+				}
+			}
+		}
+	}
+
 }

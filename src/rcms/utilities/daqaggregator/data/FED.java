@@ -61,6 +61,8 @@ public class FED implements java.io.Serializable, FlashlistUpdatable {
 	private long numFRCerrors;
 
 	private long numTriggers;
+	
+	private long eventCounter;
 
 	/**
 	 * Available columns in flashlist FMM_INPUT:
@@ -145,6 +147,7 @@ public class FED implements java.io.Serializable, FlashlistUpdatable {
 			this.numSCRCerrors = flashlistRow.get("LinkCRCError").asInt();
 			this.numFRCerrors = flashlistRow.get("FEDCRCError").asInt();
 			this.numTriggers = flashlistRow.get("TriggerNumber").asInt();
+			this.eventCounter = flashlistRow.get("EventCounter").asInt();
 		}
 
 	}
@@ -272,6 +275,14 @@ public class FED implements java.io.Serializable, FlashlistUpdatable {
 	@Override
 	public String toString() {
 		return "FED [id=" + id + ", frlIO=" + frlIO + ", fmmIO=" + fmmIO + ", srcIdExpected=" + srcIdExpected + "]";
+	}
+
+	public long getEventCounter() {
+		return eventCounter;
+	}
+
+	public void setEventCounter(long eventCounter) {
+		this.eventCounter = eventCounter;
 	}
 
 	// ----------------------------------------------------------------------
