@@ -58,10 +58,8 @@ public class DAQAggregator {
 
 	private static boolean _dpsetPathChanged = false;
 	private static boolean _sidChanged = false;
-	
 
 	private static final Logger logger = Logger.getLogger(DAQAggregator.class);
-
 
 	public static void main(String[] args) {
 
@@ -80,8 +78,6 @@ public class DAQAggregator {
 			String[] lasURLs = daqAggregatorProperties.getProperty(PROPERTYNAME_MONITOR_URLS).split(" +");
 			for (String lasUrl : lasURLs)
 				System.out.println("   '" + lasUrl + "'");
-			
-
 
 			Thread monitorThread = null;
 			DAQPartition dp = null;
@@ -116,7 +112,20 @@ public class DAQAggregator {
 						StructureMapper structureMapper = new StructureMapper(dp);
 						DAQ daq = structureMapper.map();
 						daq.setSessionId(_sid);
+
+
+						FlashlistManager flashlistManager = new FlashlistManager(
+								new HashSet<String>(Arrays.asList(lasURLs)));
+						flashlistManager.structureMapper = structureMapper;
+						flashlistManager.sessionId = _sid;
+						flashlistManager.retrieveAvailableFlashlists();
+						flashlistManager.readFlashlists();
 						
+						PostProcessor postProcessor = new PostProcessor(daq, structureMapper);
+						postProcessor.postProcess();
+						// DAQ daq2 = structurePersistor.deserialize();
+						// structurePersistor.persist(daq2,"persistance/data/daq-serial-deserial.json");
+
 						
 
 						StructurePersistor structurePersistor = new StructurePersistor();
@@ -126,23 +135,11 @@ public class DAQAggregator {
 						structurePersistor.serialize(daq);
 						structurePersistor.serialize(structureMapper);
 						
-						FlashlistManager flashlistManager = new FlashlistManager( new HashSet<String>(Arrays.asList(lasURLs)));
-						flashlistManager.structureMapper = structureMapper;
-						flashlistManager.sessionId = _sid;
-						flashlistManager.retrieveAvailableFlashlists();
-						flashlistManager.readFlashlists();
-						System.exit(0);
 						
-						
-						// DAQ daq2 = structurePersistor.deserialize();
-						// structurePersistor.persist(daq2,"persistance/data/daq-serial-deserial.json");
-
-						// StructureVisualizer structureVisualizer = new
-						// StructureVisualizer();
-						// structureVisualizer.visualize(structureMapper);
 
 						VisualizerManager visualizerManager = new VisualizerManager(daq, structureMapper);
 						visualizerManager.persistVisualizations();
+
 
 						System.exit(0);
 						System.out.println("done.");
