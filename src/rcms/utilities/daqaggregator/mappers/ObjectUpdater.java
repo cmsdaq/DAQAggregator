@@ -16,18 +16,20 @@ public class ObjectUpdater {
 		FlashlistType type = flashlist.getFlashlistType();
 		switch (type) {
 		case RU:
-			updateObjects(flashlist, structureMapper.getObjectMapper().rusById);
+			updateObjectFromRow(flashlist, structureMapper.getObjectMapper().rusById);
 			break;
 		case BU:
-			updateObjects(flashlist, structureMapper.getObjectMapper().busById);
+			updateObjectFromRow(flashlist, structureMapper.getObjectMapper().busById);
 			break;
 		case FEROL_INPUT_STREAM:
+			updateObjectFromRow(flashlist, structureMapper.getObjectMapper().fedsById);
+			break;
 		case FMM_INPUT:
-			updateObjects(flashlist, structureMapper.getObjectMapper().fedsById);
+			updateObjectFromRow(flashlist, structureMapper.getObjectMapper().fedsById);
 			break;
 
 		case FEROL_STATUS:
-			updateObjects(flashlist, structureMapper.getObjectMapper().ttcpartitionsById);
+			updateObjectFromRow(flashlist, structureMapper.getObjectMapper().ttcpartitionsById);
 			break;
 		default:
 			break;
@@ -44,7 +46,7 @@ public class ObjectUpdater {
 	 * @param objectsById
 	 *            objects to update
 	 */
-	public <T extends FlashlistUpdatable> void updateObjects(Flashlist flashlist, Map<Integer, T> objectsById) {
+	public <T extends FlashlistUpdatable> void updateObjectFromRow(Flashlist flashlist, Map<Integer, T> objectsById) {
 
 		logger.info("Updating " + flashlist.getRowsNode().size() + " of " + flashlist.getFlashlistType() + " objects ("
 				+ objectsById.size() + " in the structure)");
@@ -60,13 +62,14 @@ public class ObjectUpdater {
 					logger.debug("Updated ru: " + flashlistUpdatableObject);
 
 				} else {
-					logger.warn("No object " + flashlist.getFlashlistType() + " with id " + objectId);
+					logger.warn("No DAQ object " + flashlist.getFlashlistType() + " with flashlist id " + objectId + ", ignoring..");
 				}
 			} catch (NumberFormatException e) {
 				logger.warn("Instance number can not be parsed " + rowNode.get(INSTANCE));
 			}
 		}
 	}
+	
 
 	// TODO: verify data
 	private void verifyRUFlashlist() {

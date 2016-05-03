@@ -10,6 +10,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import rcms.utilities.daqaggregator.data.DAQ;
+import rcms.utilities.daqaggregator.data.FEDBuilder;
 import rcms.utilities.daqaggregator.data.SubFEDBuilder;
 import rcms.utilities.hwcfg.HardwareConfigurationException;
 import rcms.utilities.hwcfg.dp.DAQPartition;
@@ -85,11 +86,9 @@ public class StructureMapper implements Serializable {
 			Map<Integer, Integer> subFedBuilderToFrlPc, Map<Integer, Integer> subFedBuilderToTTCP) {
 
 		Map<Integer, SubFEDBuilder> subFedBuilders = new HashMap<>();
-		Collection<rcms.utilities.hwcfg.fb.FEDBuilder> fbList = daqPartition.getDAQPartitionSet().getFEDBuilderSet()
-				.getFBs().values();
 
 		/* loop over fed builders */
-		for (rcms.utilities.hwcfg.fb.FEDBuilder fb : fbList) {
+		for (rcms.utilities.hwcfg.fb.FEDBuilder fb : objectMapper.getHardwareFedBuilders(daqPartition)) {
 
 			Map<String, Set<String>> ttcPartitionToFrlPCs = new HashMap<String, Set<String>>();
 

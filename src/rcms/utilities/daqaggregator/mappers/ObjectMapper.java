@@ -21,9 +21,11 @@ import rcms.utilities.daqaggregator.data.FRLType;
 import rcms.utilities.daqaggregator.data.RU;
 import rcms.utilities.daqaggregator.data.SubFEDBuilder;
 import rcms.utilities.daqaggregator.data.TTCPartition;
+import rcms.utilities.hwcfg.HardwareConfigurationException;
 import rcms.utilities.hwcfg.dp.DAQPartition;
 import rcms.utilities.hwcfg.dp.DAQPartitionSet;
 import rcms.utilities.hwcfg.dp.DPGenericHost;
+import rcms.utilities.hwcfg.fb.FBI;
 
 /**
  * This class performs mapping of hardware objects into {@link DAQ} objects
@@ -71,11 +73,58 @@ public class ObjectMapper implements Serializable {
 		rus = mapRUs(daqPartition);
 		frlPcs = mapFrlPcs(daqPartition);
 		ttcPartitions = mapTTCPartitions(daqPartition);
-		fmms = mapFMMs(daqPartition);
-		feds = mapFEDs(daqPartition);
-		frls = mapFRLs(daqPartition);
-		fmmApplications = mapFMMApplications(daqPartition);
-		fedBuilders = mapFEDBuilders(daqPartition);
+
+		/* map FEDBuilders from hardware structure */
+		fedBuilders = new HashMap<>();
+		for (rcms.utilities.hwcfg.fb.FEDBuilder hwfedBuilder : getHardwareFedBuilders(daqPartition)) {
+			FEDBuilder fedbuilder = new FEDBuilder();
+			fedbuilder.setName(hwfedBuilder.getName());
+			fedBuilders.put(hwfedBuilder.hashCode(), fedbuilder);
+		}
+
+		/* map FRL from hw */
+		frls = new HashMap<>();
+		for (rcms.utilities.hwcfg.eq.FRL hwfrl : getHardwareFrls(daqPartition)) {
+			FRL frl = new FRL();
+			frl.setGeoSlot(hwfrl.getGeoSlot());
+			frl.setType(FRLType.getByName(hwfrl.getFRLMode()));
+			frls.put(hwfrl.hashCode(), frl);
+		}
+
+		/* map FEDs */
+		feds = new HashMap<>();
+		for (rcms.utilities.hwcfg.eq.FED hwfed : getHardwareFeds(daqPartition)) {
+			FED fed = new FED();
+			fed.setId((int) hwfed.getId());
+			fedsById.put(fed.getId(), fed);
+			fed.setFmmIO(hwfed.getFMMIO());
+			fed.setFrlIO(hwfed.getFRLIO());
+			fed.setSrcIdExpected(hwfed.getSrcId());
+			feds.put(hwfed.hashCode(), fed);
+		}
+
+		/* map FMMs */
+		fmms = new HashMap<>();
+		for (rcms.utilities.hwcfg.eq.FMM hwfmm : getHardwareFmms(daqPartition)) {
+			FMM fmm = new FMM();
+			fmm.setGeoslot(hwfmm.getGeoSlot());
+			// fmm.setUrl(hwfmm.); TODO: where is url?
+			fmms.put(hwfmm.hashCode(), fmm);
+		}
+
+		/* map FMMApplications */
+		fmmApplications = new HashMap<>();
+		Set<String> fmmPcs = new HashSet<>();
+		for (rcms.utilities.hwcfg.eq.FMM hwfmm : getHardwareFmms(daqPartition)) {
+			String fmmPc = hwfmm.getFMMCrate().getHostName();
+			if (!fmmPcs.contains(fmmPc))
+				fmmPcs.add(fmmPc);
+		}
+		for (String fmmPc : fmmPcs) {
+			FMMApplication fmmApplication = new FMMApplication();
+			fmmApplication.setHostname(fmmPc);
+			fmmApplications.put(fmmPc.hashCode(), fmmApplication);
+		}
 
 		logger.info("Retrieval summary " + this.toString());
 
@@ -122,111 +171,107 @@ public class ObjectMapper implements Serializable {
 	}
 
 	/**
-	 * Maps all TTCPartition objects
+	 * Get FMM objects. Note that result may be subset of EquipmentSet.
+	 * 
+	 * @return set of hardware FMM objects.
 	 */
-	public Map<Integer, TTCPartition> mapTTCPartitions(DAQPartition daqPartition) {
+	public Set<rcms.utilities.hwcfg.eq.FMM> getHardwareFmms(DAQPartition daqPartition) {
 
-		Map<Integer, TTCPartition> result = new HashMap<>();
-		DAQPartitionSet daqPartitionSet = daqPartition.getDAQPartitionSet();
-		for (rcms.utilities.hwcfg.eq.TTCPartition hwttcPartition : daqPartitionSet.getEquipmentSet().getTTCPartitions()
-				.values()) {
-			TTCPartition ttcPartition = new TTCPartition();
-			ttcPartition.setName(hwttcPartition.getName());
-			ttcpartitionsById.put((int) hwttcPartition.getId(), ttcPartition);
-			// ttcpById.put(hwttcPartition.getId(), value)
-			// TODO: get masked info
+		Set<rcms.utilities.hwcfg.eq.FMM> result = new HashSet<>();
 
-			result.put(hwttcPartition.hashCode(), ttcPartition);
-
+		for (rcms.utilities.hwcfg.eq.FED hwfed : getHardwareFeds(daqPartition)) {
+			if (hwfed.getFMM() != null) {
+				result.add(hwfed.getFMM());
+			}
 		}
 
 		return result;
 	}
 
 	/**
-	 * Map all FMM objects. Note that objects are retrieved with identity
-	 * information for further processing
+	 * Get FED objects. Note that result may be subset of EquipmentSet.
 	 * 
-	 * @return map of all FMM identified by hardware object's hashCode
+	 * @return set of hardware FED objects.
 	 */
-	public HashMap<Integer, FMM> mapFMMs(DAQPartition daqPartition) {
+	public Set<rcms.utilities.hwcfg.eq.FED> getHardwareFeds(DAQPartition daqPartition) {
 
-		HashMap<Integer, FMM> result = new HashMap<>();
-		Map<Long, rcms.utilities.hwcfg.eq.FMM> fmms = daqPartition.getDAQPartitionSet().getEquipmentSet().getFMMs();
-		for (rcms.utilities.hwcfg.eq.FMM hwfmm : fmms.values()) {
+		Set<rcms.utilities.hwcfg.eq.FED> result = new HashSet<>();
+		for (rcms.utilities.hwcfg.eq.FRL hwfrl : getHardwareFrls(daqPartition)) {
+			for (rcms.utilities.hwcfg.eq.FED hwfed : hwfrl.getFEDs().values())
+				//
+				if (hwfed != null) {
+					result.add(hwfed);
+					Set<rcms.utilities.hwcfg.eq.FED> dependants = getDependantFeds(hwfed);
+					result.addAll(dependants);
+				}
+		}
+		return result;
+	}
 
-			FMM fmm = new FMM();
-			fmm.setGeoslot(hwfmm.getGeoSlot());
-			// fmm.setUrl(hwfmm.); TODO: where is url?
-			result.put(hwfmm.hashCode(), fmm);
+	public Set<rcms.utilities.hwcfg.eq.FED> getDependantFeds(rcms.utilities.hwcfg.eq.FED fed) {
+		Set<rcms.utilities.hwcfg.eq.FED> result = new HashSet<>();
+
+		if (fed.getDependentFEDs() == null || fed.getDependentFEDs().size() == 0)
+			return result;
+		else {
+			for (rcms.utilities.hwcfg.eq.FED dependent : fed.getDependentFEDs()) {
+				result.add(dependent);
+				result.addAll(getDependantFeds(dependent));
+			}
+
+			logger.debug("Found " + result.size() + " dependent feds");
+			return result;
+		}
+	}
+
+	/**
+	 * Get FEDBuilder objects. Note that result may be subset of EquipmentSet.
+	 * 
+	 * @return set of hardware FEDBuilders objects.
+	 */
+	public Set<rcms.utilities.hwcfg.fb.FEDBuilder> getHardwareFedBuilders(DAQPartition daqPartition) {
+
+		Set<rcms.utilities.hwcfg.fb.FEDBuilder> result = new HashSet<>();
+
+		/* start with a rus */
+		Collection<rcms.utilities.hwcfg.dp.RU> hwrus = daqPartition.getRUs().values();
+
+		/* get all fedbuilders map */
+		Map<Long, rcms.utilities.hwcfg.fb.FEDBuilder> allFedbuilders = daqPartition.getDAQPartitionSet()
+				.getFEDBuilderSet().getFBs();
+
+		/* get only rus corresponding fedBuidlers */
+		for (rcms.utilities.hwcfg.dp.RU hwru : hwrus) {
+			Long fedBuilderId = hwru.getFBId();
+			rcms.utilities.hwcfg.fb.FEDBuilder hwfedBuilder = allFedbuilders.get(fedBuilderId);
+			result.add(hwfedBuilder);
 		}
 
 		return result;
 	}
 
 	/**
-	 * Map all FED objects. Note that objects are retrieved with identity
-	 * information for further processing
+	 * Get FRL objects. Note that result may be subset of EquipmentSet.
 	 * 
-	 * @return map of all FED identified by hardware object's hashCode
+	 * @return set of hardware FRL objects.
 	 */
-	public HashMap<Integer, FED> mapFEDs(DAQPartition daqPartition) {
+	public Set<rcms.utilities.hwcfg.eq.FRL> getHardwareFrls(DAQPartition daqPartition) {
 
-		HashMap<Integer, FED> result = new HashMap<>();
-		Map<Long, rcms.utilities.hwcfg.eq.FED> feds = daqPartition.getDAQPartitionSet().getEquipmentSet().getFEDs();
+		Set<rcms.utilities.hwcfg.eq.FRL> result = new HashSet<>();
 
-		for (rcms.utilities.hwcfg.eq.FED hwfed : feds.values()) {
+		/* loop over fed builders */
+		for (rcms.utilities.hwcfg.fb.FEDBuilder fb : getHardwareFedBuilders(daqPartition)) {
 
-			FED fed = new FED();
-			fed.setId((int) hwfed.getId());
-			fedsById.put(fed.getId(), fed);
-			fed.setFmmIO(hwfed.getFMMIO());
-			fed.setFrlIO(hwfed.getFRLIO());
-			fed.setSrcIdExpected(hwfed.getSrcId());
-			result.put(hwfed.hashCode(), fed);
-
-		}
-
-		return result;
-	}
-
-	/**
-	 * Map all FEDBuilder objects. Note that objects are retrieved with identity
-	 * information for further processing
-	 * 
-	 * @return map of all FEDBuilder identified by hardware object's hashCode
-	 */
-	public HashMap<Integer, FEDBuilder> mapFEDBuilders(DAQPartition daqPartition) {
-
-		HashMap<Integer, FEDBuilder> result = new HashMap<>();
-		Collection<rcms.utilities.hwcfg.fb.FEDBuilder> fedbuilders = daqPartition.getDAQPartitionSet()
-				.getFEDBuilderSet().getFBs().values();
-
-		for (rcms.utilities.hwcfg.fb.FEDBuilder hwfedBuilder : fedbuilders) {
-			FEDBuilder fedbuilder = new FEDBuilder();
-			fedbuilder.setName(hwfedBuilder.getName());
-			result.put(hwfedBuilder.hashCode(), fedbuilder);
-		}
-
-		return result;
-	}
-
-	/**
-	 * Map all FRL objects. Note that objects are retrieved with identity
-	 * information for further processing
-	 * 
-	 * @return map of all FRLPcs identified by hardware object's hashCode
-	 */
-	public HashMap<Integer, FRL> mapFRLs(DAQPartition daqPartition) {
-
-		HashMap<Integer, FRL> result = new HashMap<>();
-		Map<Long, rcms.utilities.hwcfg.eq.FRL> frls = daqPartition.getDAQPartitionSet().getEquipmentSet().getFRLs();
-		for (rcms.utilities.hwcfg.eq.FRL hwfrl : frls.values()) {
-
-			FRL frl = new FRL();
-			frl.setGeoSlot(hwfrl.getGeoSlot());
-			frl.setType(FRLType.getByName(hwfrl.getFRLMode()));
-			result.put(hwfrl.hashCode(), frl);
+			// loop over fedbuilder inputs of given fedbuilder
+			for (FBI fbi : fb.getFBIs().values()) {
+				try {
+					rcms.utilities.hwcfg.eq.FRL frl;
+					frl = daqPartition.getDAQPartitionSet().getEquipmentSet().getFRL(fbi.getFRLId());
+					result.add(frl);
+				} catch (HardwareConfigurationException e) {
+					logger.warn("cannot get FRL by id, source error: " + e.getMessage());
+				}
+			}
 		}
 
 		return result;
@@ -259,20 +304,23 @@ public class ObjectMapper implements Serializable {
 		return result;
 	}
 
-	public Map<Integer, FMMApplication> mapFMMApplications(DAQPartition daqPartition) {
+	/**
+	 * Maps all TTCPartition objects
+	 */
+	public Map<Integer, TTCPartition> mapTTCPartitions(DAQPartition daqPartition) {
 
-		Map<Integer, FMMApplication> result = new HashMap<>();
-		Set<String> fmmPcs = new HashSet<String>();
-		Map<Long, rcms.utilities.hwcfg.eq.FMM> fmms = daqPartition.getDAQPartitionSet().getEquipmentSet().getFMMs();
-		for (rcms.utilities.hwcfg.eq.FMM hwfmm : fmms.values()) {
-			fmmPcs.add(hwfmm.getFMMCrate().getHostName());
-		}
+		Map<Integer, TTCPartition> result = new HashMap<>();
+		DAQPartitionSet daqPartitionSet = daqPartition.getDAQPartitionSet();
+		for (rcms.utilities.hwcfg.eq.TTCPartition hwttcPartition : daqPartitionSet.getEquipmentSet().getTTCPartitions()
+				.values()) {
+			TTCPartition ttcPartition = new TTCPartition();
+			ttcPartition.setName(hwttcPartition.getName());
+			ttcpartitionsById.put((int) hwttcPartition.getId(), ttcPartition);
+			// ttcpById.put(hwttcPartition.getId(), value)
+			// TODO: get masked info
 
-		for (String fmmPc : fmmPcs) {
-			// TODO: url how to get URL
-			FMMApplication fmmApplication = new FMMApplication();
-			fmmApplication.setHostname(fmmPc);
-			result.put(fmmPc.hashCode(), fmmApplication);
+			result.put(hwttcPartition.hashCode(), ttcPartition);
+
 		}
 
 		return result;

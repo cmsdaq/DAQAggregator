@@ -6,6 +6,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import org.apache.log4j.Logger;
+
 import java.util.Set;
 
 import rcms.utilities.daqaggregator.data.DAQ;
@@ -29,6 +32,7 @@ import rcms.utilities.hwcfg.dp.DAQPartition;
  */
 public class RelationMapper implements Serializable {
 
+	private final static Logger logger = Logger.getLogger(RelationMapper.class);
 	private final ObjectMapper objectMapper;
 
 	public Map<Integer, Integer> subFedBuilderToFrlPc;
@@ -64,9 +68,12 @@ public class RelationMapper implements Serializable {
 		for (Entry<Integer, Set<Integer>> relation : fmmToFed.entrySet()) {
 			FMM fmm = objectMapper.fmms.get(relation.getKey());
 			for (int fedId : relation.getValue()) {
-				FED fed = objectMapper.feds.get(fedId);
-				fmm.getFeds().add(fed);
-				fed.setFmm(fmm);
+				if (objectMapper.feds.containsKey(fedId)) {
+					FED fed = objectMapper.feds.get(fedId);
+					fmm.getFeds().add(fed);
+				} else {
+					logger.warn("FMM has relation with FED that does not have FRL, ignoring this FED");
+				}
 			}
 		}
 
@@ -158,9 +165,8 @@ public class RelationMapper implements Serializable {
 	private Map<Integer, Set<Integer>> mapRelationsFmmToFed(DAQPartition daqPartition) {
 
 		Map<Integer, Set<Integer>> result = new HashMap<>();
-		Map<Long, rcms.utilities.hwcfg.eq.FMM> fmms = daqPartition.getDAQPartitionSet().getEquipmentSet().getFMMs();
 
-		for (rcms.utilities.hwcfg.eq.FMM hwfmm : fmms.values()) {
+		for (rcms.utilities.hwcfg.eq.FMM hwfmm : objectMapper.getHardwareFmms(daqPartition)) {
 
 			HashSet<Integer> children = new HashSet<>();
 			result.put(hwfmm.hashCode(), children);
@@ -180,9 +186,10 @@ public class RelationMapper implements Serializable {
 	private Map<Integer, Integer> mapRelationsFmmToTTCP(DAQPartition daqPartition) {
 
 		Map<Integer, Integer> result = new HashMap<>();
-		Map<Long, rcms.utilities.hwcfg.eq.FMM> fmms = daqPartition.getDAQPartitionSet().getEquipmentSet().getFMMs();
 
-		for (rcms.utilities.hwcfg.eq.FMM hwfmm : fmms.values()) {
+		Set<rcms.utilities.hwcfg.eq.FMM> fmms = objectMapper.getHardwareFmms(daqPartition);
+
+		for (rcms.utilities.hwcfg.eq.FMM hwfmm : fmms) {
 
 			for (rcms.utilities.hwcfg.eq.FED hwfed : hwfmm.getFEDs().values()) {
 				rcms.utilities.hwcfg.eq.TTCPartition hwttcPartition = hwfed.getTTCPartition();
@@ -200,9 +207,8 @@ public class RelationMapper implements Serializable {
 	private Map<Integer, Set<Integer>> mapRelationsFrlToFed(DAQPartition daqPartition) {
 
 		Map<Integer, Set<Integer>> result = new HashMap<>();
-		Map<Long, rcms.utilities.hwcfg.eq.FRL> frls = daqPartition.getDAQPartitionSet().getEquipmentSet().getFRLs();
-
-		for (rcms.utilities.hwcfg.eq.FRL hwfrl : frls.values()) {
+		Set<rcms.utilities.hwcfg.eq.FRL> frls = objectMapper.getHardwareFrls(daqPartition);
+		for (rcms.utilities.hwcfg.eq.FRL hwfrl : frls) {
 
 			HashSet<Integer> children = new HashSet<>();
 			result.put(hwfrl.hashCode(), children);
@@ -223,8 +229,8 @@ public class RelationMapper implements Serializable {
 
 		Map<Integer, Set<Integer>> result = new HashMap<>();
 
-		Map<Long, rcms.utilities.hwcfg.eq.FMM> fmms = daqPartition.getDAQPartitionSet().getEquipmentSet().getFMMs();
-		for (rcms.utilities.hwcfg.eq.FMM hwfmm : fmms.values()) {
+		Set<rcms.utilities.hwcfg.eq.FMM> fmms = objectMapper.getHardwareFmms(daqPartition);
+		for (rcms.utilities.hwcfg.eq.FMM hwfmm : fmms) {
 			String fmmPc = hwfmm.getFMMCrate().getHostName();
 
 			if (result.containsKey(fmmPc.hashCode())) {

@@ -8,6 +8,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import rcms.utilities.daqaggregator.Connector;
+import rcms.utilities.daqaggregator.data.SubFEDBuilder;
 
 public class FlashlistManager {
 
@@ -75,7 +76,7 @@ public class FlashlistManager {
 				try {
 
 					flashlist.initialize();
-					logger.info("Flashlist definition:" + flashlist.getDefinitionNode());
+					logger.debug("Flashlist definition:" + flashlist.getDefinitionNode());
 					ObjectUpdater updater = new ObjectUpdater();
 					updater.update(flashlist, structureMapper);
 
@@ -90,5 +91,7 @@ public class FlashlistManager {
 		logger.info("Reading all flashlists finished in " + timeResult + "ms");
 
 	}
+
+
 
 }
