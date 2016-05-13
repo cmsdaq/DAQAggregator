@@ -45,7 +45,7 @@ public class ReasonsAPI extends HttpServlet {
 			Entry object = new Entry();
 
 			Random generator = new Random();
-			int randDuration = generator.nextInt(maxDuration/100) + 1;
+			int randDuration = generator.nextInt(maxDuration / 100) + 1;
 			int randStart = generator.nextInt(maxDuration) + 1;
 
 			c.setTime(new Date());
@@ -80,47 +80,58 @@ public class ReasonsAPI extends HttpServlet {
 
 		List<Entry> result = new ArrayList<>();
 		long diff = endDate.getTime() - startDate.getTime();
-		
+
 		Entry gruped = new Entry();
 		gruped.setContent("Gruped");
 		gruped.setEnd(startDate);
 		gruped.setStart(endDate);
 		int elementsInRow = 100;
-		
 
 		int filtered = 0;
 		for (Entry entry : EventProducer.get().getResult()) {
-			if(entry.getStart().before(endDate) && entry.getEnd().after(startDate) && entry.isShow()){
-				if(entry.getDuration() > diff/elementsInRow ){
-					result.add(entry);
-				} else {
-					filtered++;
-					if(entry.getStart().before(gruped.getStart())){
-						gruped.setStart(entry.getStart());
-					} else if(entry.getEnd().after(gruped.getEnd())){
-						gruped.setEnd(entry.getEnd());
+			try {
+				if (entry.getStart().before(endDate) && entry.getEnd().after(startDate) && entry.isShow()) {
+					if (entry.getDuration() > diff / elementsInRow) {
+						result.add(entry);
+					} else {
+						filtered++;
+						if (entry.getStart().before(gruped.getStart())) {
+							gruped.setStart(entry.getStart());
+						} else if (entry.getEnd().after(gruped.getEnd())) {
+							gruped.setEnd(entry.getEnd());
+						}
 					}
 				}
+			} catch (NullPointerException e) {
+				logger.error("Problem with walking through Reasons stream:");
+				logger.error("Entry: " + entry);
+				if (entry != null) {
+					logger.error("Entry start: " + entry.getStart());
+					logger.error("Entry end: " + entry.getEnd());
+				}
+
+				logger.error("Requested start: " + startDate);
+				logger.error("Requested end: " + endDate);
 			}
 
 		}
 		gruped.setContent("Gruped: " + filtered);
 		gruped.setGroup("filtered");
 		gruped.calculateDuration();
-		int k  = 10;
-		if(gruped.getDuration() < diff/10){
+		int k = 10;
+		if (gruped.getDuration() < diff / 10) {
 			Calendar c = Calendar.getInstance();
 			c.setTime(gruped.getStart());
-			if(diff < Integer.MAX_VALUE)
-				c.add(Calendar.MILLISECOND, (int) (diff/k));
-			else 
-				c.add(Calendar.SECOND, (int) ((diff/1000)/k));
+			if (diff < Integer.MAX_VALUE)
+				c.add(Calendar.MILLISECOND, (int) (diff / k));
+			else
+				c.add(Calendar.SECOND, (int) ((diff / 1000) / k));
 			gruped.setEnd(c.getTime());
 		}
 		logger.info("Grouped " + filtered + " entries");
-		
-		if(filtered > 0)
-		result.add(gruped);
+
+		if (filtered > 0)
+			result.add(gruped);
 
 		String json = objectMapper.writeValueAsString(result);
 		// TODO: externalize the Allow-Origin

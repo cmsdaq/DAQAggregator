@@ -10,6 +10,7 @@ import javax.servlet.ServletContextListener;
 import org.apache.log4j.Logger;
 
 import rcms.utilities.daqaggregator.DAQAggregator;
+import rcms.utilities.daqaggregator.DataResolutionManager;
 import rcms.utilities.daqaggregator.PersistorManager;
 import rcms.utilities.daqaggregator.TaskManager;
 import rcms.utilities.daqaggregator.data.DAQ;
@@ -21,6 +22,32 @@ public class ServletListener implements ServletContextListener {
 	private static final Logger logger = Logger.getLogger(ServletListener.class);
 
 	public void contextInitialized(ServletContextEvent e) {
+		test2();
+
+	}
+
+	public void contextDestroyed(ServletContextEvent e) {
+
+	}
+
+	private void test2() {
+		PersistorManager persistorManager = new PersistorManager();
+		try {
+			logger.info("Walking through all data..");
+			persistorManager.walkAll();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+
+		// prepare data
+		DataResolutionManager dataSegmentator = new DataResolutionManager();
+		dataSegmentator.prepareMultipleResolutionData();
+	}
+
+	/**
+	 * Load recent data to memory Process data from memory
+	 */
+	private void test() {
 		PersistorManager persistorManager = new PersistorManager();
 		try {
 			logger.info("Loading historic data");
@@ -45,13 +72,8 @@ public class ServletListener implements ServletContextListener {
 			daq = iter.next();
 			checkManager.runCheckers(daq);
 		}
-		EventProducer.get().finish( new Date(daq.getLastUpdate()));
+		EventProducer.get().finish(new Date(daq.getLastUpdate()));
 		logger.info(EventProducer.get().toString());
-
-	}
-
-	public void contextDestroyed(ServletContextEvent e) {
-
 	}
 
 }

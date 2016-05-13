@@ -15,8 +15,8 @@ import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import rcms.utilities.daqaggregator.DummyDAQ;
 import rcms.utilities.daqaggregator.TaskManager;
-import rcms.utilities.daqaggregator.data.DAQ;
 
 /**
  * Event occurrences servlet API, used for async requests in autoupdate mode.
@@ -48,46 +48,40 @@ public class RawAPI extends HttpServlet {
 
 		List<HashMap<String, Long>> data = new ArrayList<>();
 
-		/* iterate over objects in given range */
-		for (DAQ daq : TaskManager.get().buf) {
+		RangeResolver rangeResolver = new RangeResolver();
+		DataResolution range = rangeResolver.resolve(startDate, endDate);
+		
+
+		logger.info("Using " + range + " data");
+
+		List<DummyDAQ> rawData = null;
+		switch (range) {
+		case Full:
+			rawData = TaskManager.get().rawData;
+			break;
+		case Minute:
+			rawData = TaskManager.get().rawDataMinute;
+			break;
+		case Hour:
+			rawData = TaskManager.get().rawDataHour;
+			break;
+		case Day:
+			rawData = TaskManager.get().rawDataHour;// TODO: change to DAY
+			break;
+		default:
+			rawData = TaskManager.get().rawDataHour; // TODO: change to MONTH
+			break;
+		}
+
+
+		for (DummyDAQ daq : rawData) {
 			if (daq.getLastUpdate() >= startDate.getTime() && daq.getLastUpdate() <= endDate.getTime()) {
 				HashMap<String, Long> object = new HashMap<>();
-				object.put("y", (long) daq.getFedBuilderSummary().getRate());
+				object.put("y", (long) daq.getValue());
 				object.put("x", daq.getLastUpdate());
 				data.add(object);
 			}
 		}
-		
-		if(data.size() > 100){
-			int factor = data.size() / 100;
-			List<HashMap<String,Long>> newdata = new ArrayList<>();
-			int curr = 0;
-			HashMap<String,Long> candidate = null;
-			for(HashMap<String,Long> object : data){
-				curr ++;
-				if( candidate == null){
-					candidate = object;
-				} else{
-						candidate.put("y", candidate.get("y") + object.get("y"));
-					
-				}
-				
-				if(curr == factor){
-
-					candidate.put("y", candidate.get("y") /factor);
-					newdata.add(candidate);
-					curr = 0;
-					candidate = null;
-				}
-				
-			}
-			
-			logger.info("Reduced from " + data.size() + " to " + newdata.size());
-			data = newdata;
-			
-		}
-
-
 
 		ObjectMapper objectMapper = new ObjectMapper();
 
@@ -107,7 +101,7 @@ public class RawAPI extends HttpServlet {
 		response.setCharacterEncoding("UTF-8");
 
 		logger.info("Number of elements returned: " + data.size());
-		
+
 		response.getWriter().write(json);
 
 	}
