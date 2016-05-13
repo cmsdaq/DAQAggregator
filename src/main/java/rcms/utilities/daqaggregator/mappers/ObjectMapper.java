@@ -10,9 +10,11 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import rcms.utilities.daqaggregator.data.BU;
+import rcms.utilities.daqaggregator.data.BUSummary;
 import rcms.utilities.daqaggregator.data.DAQ;
 import rcms.utilities.daqaggregator.data.FED;
 import rcms.utilities.daqaggregator.data.FEDBuilder;
+import rcms.utilities.daqaggregator.data.FEDBuilderSummary;
 import rcms.utilities.daqaggregator.data.FMM;
 import rcms.utilities.daqaggregator.data.FMMApplication;
 import rcms.utilities.daqaggregator.data.FRL;
@@ -60,6 +62,7 @@ public class ObjectMapper implements Serializable {
 	public void mapAllObjects(DAQPartition daqPartition) {
 
 		daq = new DAQ();
+
 
 		// TODO: this is for flashlist mapping, refactor me
 		rusById = new HashMap<>();
@@ -126,6 +129,16 @@ public class ObjectMapper implements Serializable {
 			fmmApplications.put(fmmPc.hashCode(), fmmApplication);
 		}
 
+		/* create summary */
+		BUSummary buSummary = new BUSummary();
+		daq.setBuSummary(buSummary);
+		buSummary.setDaq(daq);
+
+		/* create summary */
+		FEDBuilderSummary fedBuilderSummary = new FEDBuilderSummary();
+		daq.setFedBuilderSummary(fedBuilderSummary);
+		fedBuilderSummary.setDaq(daq);
+		
 		logger.info("Retrieval summary " + this.toString());
 
 	}

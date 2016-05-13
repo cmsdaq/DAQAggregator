@@ -68,11 +68,15 @@ public class FlashlistManager {
 		long startTime = System.currentTimeMillis();
 
 		for (Flashlist flashlist : flashlists) {
+			
+			
+			/* read only this flashlists */
 			if (flashlist.getFlashlistType() == FlashlistType.RU
 					|| flashlist.getFlashlistType() == FlashlistType.FEROL_INPUT_STREAM
 					|| flashlist.getFlashlistType() == FlashlistType.BU
 					|| flashlist.getFlashlistType() == FlashlistType.FMM_INPUT
-					|| flashlist.getFlashlistType() == FlashlistType.FMM_STATUS)
+					|| flashlist.getFlashlistType() == FlashlistType.FMM_STATUS
+					|| flashlist.getFlashlistType() == FlashlistType.EVM)
 				try {
 
 					flashlist.initialize();

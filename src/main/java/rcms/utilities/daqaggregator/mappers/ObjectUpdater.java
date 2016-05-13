@@ -31,6 +31,15 @@ public class ObjectUpdater {
 		case FEROL_STATUS:
 			updateObjectFromRow(flashlist, structureMapper.getObjectMapper().ttcpartitionsById);
 			break;
+		case EVM:
+			if (flashlist.getRowsNode().isArray()) {
+				int runNumber = flashlist.getRowsNode().get(0).get("runNumber").asInt();
+				structureMapper.getObjectMapper().daq.setRunNumber(runNumber);
+				logger.info("Successfully got runnumber: " + runNumber);
+			} else {
+				logger.error("runnumber problem " + flashlist.getRowsNode());
+			}
+			break;
 		default:
 			break;
 		}
@@ -62,14 +71,14 @@ public class ObjectUpdater {
 					logger.debug("Updated ru: " + flashlistUpdatableObject);
 
 				} else {
-					logger.warn("No DAQ object " + flashlist.getFlashlistType() + " with flashlist id " + objectId + ", ignoring..");
+					logger.warn("No DAQ object " + flashlist.getFlashlistType() + " with flashlist id " + objectId
+							+ ", ignoring..");
 				}
 			} catch (NumberFormatException e) {
 				logger.warn("Instance number can not be parsed " + rowNode.get(INSTANCE));
 			}
 		}
 	}
-	
 
 	// TODO: verify data
 	private void verifyRUFlashlist() {
