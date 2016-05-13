@@ -12,18 +12,15 @@ public class RateOutOfRange implements SimpleProblem {
 	@Override
 	public Boolean isProblem(DAQ daq) {
 		float a = daq.getFedBuilderSummary().getRate();
-		boolean result = true;
-		if (50000 < a)
-			result = false;
+		
+		boolean result = false;
+		if (50000 > a)
+			result = true;
 
-		if (!result) {
-			logger.debug("Check ok, rate higher");
-		} else {
-			logger.debug("Check failed, range is below 50k: " + a);
-		}
 		return result;
 	}
-	
+
+	@Override
 	public Level getLevel(){
 		return Level.Info;
 	}

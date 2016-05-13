@@ -6,19 +6,19 @@ import rcms.utilities.daqaggregator.data.DAQ;
 import rcms.utilities.daqaggregator.reasoning.base.Comparator;
 import rcms.utilities.daqaggregator.reasoning.base.Level;
 
-public class RunComparator extends Comparator {
+public class SessionComparator extends Comparator {
 
-	private static Logger logger = Logger.getLogger(RunComparator.class);
+	private static Logger logger = Logger.getLogger(SessionComparator.class);
 
-	private String runId;
+	private String sessionId;
 
 
 	public boolean compare(DAQ previous, DAQ current) {
 		boolean result = false;
 
-		if (current.getRunNumber() != previous.getRunNumber()) {
-			logger.info("New run identified " + current.getRunNumber());
-			runId = "run id: " + current.getRunNumber();
+		if (current.getSessionId() != previous.getSessionId()) {
+			logger.info("New session identified");
+			sessionId = "session id: " + current.getSessionId();
 			result = true;
 		}
 		return result;
@@ -27,7 +27,7 @@ public class RunComparator extends Comparator {
 
 	@Override
 	public String getText() {
-		return runId;
+		return sessionId;
 	}
 	@Override
 	public Level getLevel() {

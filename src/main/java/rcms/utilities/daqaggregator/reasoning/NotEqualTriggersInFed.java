@@ -1,0 +1,46 @@
+package rcms.utilities.daqaggregator.reasoning;
+
+import org.apache.log4j.Logger;
+
+import rcms.utilities.daqaggregator.data.DAQ;
+import rcms.utilities.daqaggregator.data.FED;
+import rcms.utilities.daqaggregator.data.FMM;
+import rcms.utilities.daqaggregator.data.FMMApplication;
+import rcms.utilities.daqaggregator.reasoning.base.Level;
+import rcms.utilities.daqaggregator.reasoning.base.SimpleProblem;
+
+public class NotEqualTriggersInFed implements SimpleProblem {
+	private final static Logger logger = Logger.getLogger(NotEqualTriggersInFed.class);
+
+	@Override
+	public Boolean isProblem(DAQ daq) {
+		boolean result = false;
+
+		Long fedTriggers = null;
+		for (FMMApplication fmmApplication : daq.getFmmApplications()) {
+			for (FMM fmm : fmmApplication.getFmms()) {
+				for (FED fed : fmm.getFeds()) {
+
+					if (fedTriggers == null)
+						fedTriggers = fed.getNumTriggers();
+					if (fed.getNumTriggers() != fedTriggers) {
+						result = true;
+					}
+				}
+			}
+		}
+
+		return result;
+	}
+
+	@Override
+	public Level getLevel() {
+		return Level.Error;
+	}
+
+	@Override
+	public String getText() {
+		return NotEqualTriggersInFed.class.getSimpleName();
+	}
+
+}

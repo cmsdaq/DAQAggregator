@@ -8,9 +8,10 @@ import org.apache.log4j.Logger;
 
 import rcms.utilities.daqaggregator.data.DAQ;
 import rcms.utilities.daqaggregator.reasoning.NoRate;
-import rcms.utilities.daqaggregator.reasoning.NotEqualFEDEvents;
+import rcms.utilities.daqaggregator.reasoning.NotEqualTriggersInFed;
 import rcms.utilities.daqaggregator.reasoning.RateOutOfRange;
 import rcms.utilities.daqaggregator.reasoning.RunComparator;
+import rcms.utilities.daqaggregator.reasoning.SessionComparator;
 
 /**
  * Manager of checking process
@@ -33,7 +34,8 @@ public class CheckManager {
 	public CheckManager() {
 		checkers.add(new RateOutOfRange());
 		checkers.add(new NoRate());
-		//checkers.add(new NotEqualFEDEvents());
+		checkers.add(new NotEqualTriggersInFed());
+		comparators.add(new SessionComparator());
 		comparators.add(new RunComparator());
 	}
 
