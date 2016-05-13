@@ -43,8 +43,8 @@ public class TTCPartition implements java.io.Serializable, FlashlistUpdatable {
 
 		if (flashlistType == FlashlistType.FMM_STATUS) {
 			// TODO what about B?
-			this.percentBusy = (float) flashlistRow.get("outputFractionBusyA").asDouble();
-			this.percentWarning = (float) flashlistRow.get("outputFractionWarningA").asDouble();
+			this.percentBusy = (float) flashlistRow.get("outputFractionBusyA").asDouble() * 100;
+			this.percentWarning = (float) flashlistRow.get("outputFractionWarningA").asDouble() * 100;
 			this.ttsState = flashlistRow.get("outputStateA").asText();
 		}
 

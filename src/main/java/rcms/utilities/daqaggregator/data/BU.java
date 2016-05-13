@@ -111,20 +111,19 @@ public class BU implements Serializable, FlashlistUpdatable {
 			this.numEventsInBU = flashlistRow.get("nbEventsInBU").asInt();
 			this.priority = flashlistRow.get("priority").asInt();
 			this.numRequestsSent = flashlistRow.get("requestCount").asInt();
-			// TODO: this.numRequestsUsed = flashlistRow.get("").asInt();
+			this.numRequestsUsed = flashlistRow.get("outstandingRequests").asInt();
 			this.numRequestsBlocked = flashlistRow.get("nbBlockedResources").asInt();
 			this.numFUsHlt = flashlistRow.get("fuSlotsHLT").asInt();
-			// TODO: this.numFUsCrashed = flashlistRow.get("").asInt();
+			this.numFUsCrashed = flashlistRow.get("fuSlotsQuarantined").asInt();
 			this.numFUsStale = flashlistRow.get("fuSlotsStale").asInt();
 			this.numFUsCloud = flashlistRow.get("fuSlotsCloud").asInt();
 			this.ramDiskUsage = flashlistRow.get("ramDiskUsed").asInt();
 			this.ramDiskTotal = flashlistRow.get("ramDiskSizeInGB").asInt();
 			this.numFiles = flashlistRow.get("nbFilesWritten").asInt();
-			// TODO this.numLumisectionsWithFiles =
-			// flashlistRow.get("").asInt();
+			this.numLumisectionsWithFiles = flashlistRow.get("nbLumiSections").asInt();
 			this.currentLumisection = flashlistRow.get("currentLumiSection").asInt();
-			// TODO this.numLumisectionsForHLT = flashlistRow.get("aa").asInt();
-			// TODO this.numLumisectionsOutHLT = flashlistRow.get("aa").asInt();
+			this.numLumisectionsForHLT = flashlistRow.get("queuedLumiSections").asInt();
+			this.numLumisectionsOutHLT = flashlistRow.get("queuedLumiSectionsOnFUs").asInt();
 
 		}
 	}

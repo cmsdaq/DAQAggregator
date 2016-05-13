@@ -20,7 +20,7 @@ public class FEDBuilderSummary implements Serializable {
 	// ----------------------------------------
 
 	/** parent */
-	private final DAQ daq;
+	private DAQ daq;
 
 	// ----------------------------------------
 	// fields updated periodically
@@ -49,13 +49,9 @@ public class FEDBuilderSummary implements Serializable {
 	private int sumEventsInRU;
 
 	/** requests from BUs ? */
-	private int sumRequests;
+	private long sumRequests;
 
 	// ----------------------------------------------------------------------
-
-	public FEDBuilderSummary(DAQ daq) {
-		this.daq = daq;
-	}
 
 	// ----------------------------------------------------------------------
 
@@ -115,11 +111,11 @@ public class FEDBuilderSummary implements Serializable {
 		this.sumEventsInRU = sumEventsInRU;
 	}
 
-	public int getSumRequests() {
+	public long getSumRequests() {
 		return sumRequests;
 	}
 
-	public void setSumRequests(int sumRequests) {
+	public void setSumRequests(long sumRequests) {
 		this.sumRequests = sumRequests;
 	}
 
@@ -127,6 +123,66 @@ public class FEDBuilderSummary implements Serializable {
 		return daq;
 	}
 
+	public void setDaq(DAQ daq) {
+		this.daq = daq;
+	}
+
 	// ----------------------------------------------------------------------
 
+	public void summarize() {
+		this.setDaq(daq);
+		int numberOfRus = daq.getFedBuilders().size();
+
+		/* delta between min and max (min not 0) */
+		int deltaEvents = 0;
+		int maxEvents = Integer.MIN_VALUE;
+		int minEvents = Integer.MAX_VALUE;
+
+		/* Averages */
+		float superFragmentSizeMean = 0;
+		float superFragmentSizeStddev = 0;
+		float rate = 0;
+
+		/* Sums */
+		float throughput = 0;
+		int sumEventsInRU = 0;
+		int sumFragmentsInRU = 0;
+		long sumRequests = 0;
+
+		for (FEDBuilder fb : daq.getFedBuilders()) {
+			RU ru = fb.getRu();
+			rate += ru.getRate();
+			sumEventsInRU += ru.getEventsInRU();
+			sumFragmentsInRU += ru.getFragmentsInRU();
+			sumRequests += ru.getRequests();
+			superFragmentSizeMean += ru.getSuperFragmentSizeMean();
+			superFragmentSizeStddev += ru.getSuperFragmentSizeStddev();
+			throughput += ru.getThroughput();
+
+			if (maxEvents < ru.getEventsInRU())
+				maxEvents = ru.getEventsInRU();
+			if (minEvents > ru.getEventsInRU() && ru.getEventsInRU() != 0) {
+				minEvents = ru.getEventsInRU();
+			}
+
+		}
+
+		/* avarage values */
+		superFragmentSizeMean = superFragmentSizeMean / (float) numberOfRus;
+		superFragmentSizeStddev = superFragmentSizeStddev / (float) numberOfRus;
+		rate = rate / (float) numberOfRus;
+
+		/* deltas */
+		this.setDeltaEvents(maxEvents - minEvents);
+
+		this.setDeltaEvents(deltaEvents);
+		this.setRate(rate);
+		this.setSumEventsInRU(sumEventsInRU);
+		this.setSumFragmentsInRU(sumFragmentsInRU);
+		this.setSumRequests(sumRequests);
+		this.setSuperFragmentSizeMean(superFragmentSizeMean);
+		this.setSuperFragmentSizeStddev(superFragmentSizeStddev);
+		this.setThroughput(throughput);
+
+	}
 }

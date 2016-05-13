@@ -82,6 +82,9 @@ public class SubFEDBuilder implements java.io.Serializable {
 	}
 
 	public void calculateDerived() {
+		
+		maxTrig = Long.MIN_VALUE;
+		minTrig = Long.MAX_VALUE;
 
 		// just derived from feds
 		for (FRL frl : getFrls()) {
