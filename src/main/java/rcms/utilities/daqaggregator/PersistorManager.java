@@ -122,7 +122,7 @@ public class PersistorManager {
 	/**
 	 * Converts files from one format to another
 	 */
-	public void convertSnapshots() throws IOException {
+	public void convertSnapshots(String targetDirectory) throws IOException {
 
 		List<File> fileList = getFiles();
 		Collections.sort(fileList, FileComparator);
@@ -135,7 +135,7 @@ public class PersistorManager {
 
 			daq = structurePersistor.deserializeFromJava(path.getAbsolutePath().toString());
 			if (daq != null)
-				structurePersistor.serializeToJSON(daq, path.getName().toString(), "/tmp/mgladki/daq-24h-json/");
+				structurePersistor.serializeToJSON(daq, path.getName().toString(), targetDirectory);
 		}
 	}
 

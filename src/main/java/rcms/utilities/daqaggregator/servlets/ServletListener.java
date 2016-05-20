@@ -21,6 +21,8 @@ public class ServletListener implements ServletContextListener {
 
 	private static final Logger logger = Logger.getLogger(ServletListener.class);
 
+	PersistorManager persistorManager = new PersistorManager("/tmp/mgladki/snapshots");
+
 	public void contextInitialized(ServletContextEvent e) {
 		test2();
 
@@ -31,7 +33,6 @@ public class ServletListener implements ServletContextListener {
 	}
 
 	private void test2() {
-		PersistorManager persistorManager = new PersistorManager();
 		try {
 			logger.info("Walking through all data..");
 			persistorManager.walkAll();
@@ -48,7 +49,6 @@ public class ServletListener implements ServletContextListener {
 	 * Load recent data to memory Process data from memory
 	 */
 	private void test() {
-		PersistorManager persistorManager = new PersistorManager();
 		try {
 			logger.info("Loading historic data");
 			persistorManager.loadRecent();
