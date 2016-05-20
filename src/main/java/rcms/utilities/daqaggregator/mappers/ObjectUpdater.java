@@ -16,34 +16,71 @@ public class ObjectUpdater {
 		FlashlistType type = flashlist.getFlashlistType();
 		switch (type) {
 		case RU:
-			updateObjectFromRow(flashlist, structureMapper.getObjectMapper().rusById);
+			updateObjectFromRowByInstanceId(flashlist, structureMapper.getObjectMapper().rusById);
 			break;
 		case BU:
-			updateObjectFromRow(flashlist, structureMapper.getObjectMapper().busById);
+			updateObjectFromRowByInstanceId(flashlist, structureMapper.getObjectMapper().busById);
 			break;
 		case FEROL_INPUT_STREAM:
-			updateObjectFromRow(flashlist, structureMapper.getObjectMapper().fedsById);
+			updateObjectFromRowByInstanceId(flashlist, structureMapper.getObjectMapper().fedsById);
 			break;
 		case FMM_INPUT:
-			updateObjectFromRow(flashlist, structureMapper.getObjectMapper().fedsById);
+			updateObjectFromRowByInstanceId(flashlist, structureMapper.getObjectMapper().fedsById);
 			break;
-
 		case FEROL_STATUS:
-			updateObjectFromRow(flashlist, structureMapper.getObjectMapper().ttcpartitionsById);
+			updateObjectFromRowByInstanceId(flashlist, structureMapper.getObjectMapper().ttcpartitionsById);
 			break;
 		case EVM:
 			if (flashlist.getRowsNode().isArray()) {
 				int runNumber = flashlist.getRowsNode().get(0).get("runNumber").asInt();
 				structureMapper.getObjectMapper().daq.setRunNumber(runNumber);
-				logger.info("Successfully got runnumber: " + runNumber);
+				logger.debug("Successfully got runnumber: " + runNumber);
 			} else {
 				logger.error("runnumber problem " + flashlist.getRowsNode());
+			}
+			break;
+
+		case JOB_CONTROL:
+			updateObjectFromRowByHostname(flashlist, structureMapper.getObjectMapper().frlPcByHostname);
+			updateObjectFromRowByHostname(flashlist, structureMapper.getObjectMapper().fmmApplicationByHostname);
+			break;
+
+		case LEVEL_ZERO_FM_SUBSYS:
+			for (JsonNode rowNode : flashlist.getRowsNode()) {
+				if (rowNode.get("SUBSYS").asText().equals("DAQ") && rowNode.get("FMURL").asText().contains("toppro")) {
+					logger.debug("Found DAQ status: " + rowNode.get("STATE") + ", url: " + rowNode.get("FMURL"));
+					structureMapper.getObjectMapper().daq.setDaqState(rowNode.get("STATE").asText());
+				}
 			}
 			break;
 		default:
 			break;
 		}
 
+	}
+
+	public <T extends FlashlistUpdatable> void updateObjectFromRowByHostname(Flashlist flashlist,
+			Map<String, T> objectsByHostname) {
+
+		logger.debug("Updating " + flashlist.getRowsNode().size() + " of " + flashlist.getFlashlistType() + " objects ("
+				+ objectsByHostname.size() + " in the structure)");
+
+		int found = 0;
+		int failed = 0;
+
+		for (JsonNode rowNode : flashlist.getRowsNode()) {
+			String hostname = rowNode.get("hostname").asText() + ".cms";
+			if (objectsByHostname.containsKey(hostname)) {
+				T flashlistUpdatableObject = objectsByHostname.get(hostname);
+				flashlistUpdatableObject.updateFromFlashlist(flashlist.getFlashlistType(), rowNode);
+				found++;
+			} else {
+				logger.debug("Cannot find object " + hostname + " by name in " + objectsByHostname.keySet());
+				failed++;
+			}
+		}
+
+		logger.warn("Flash matching report for " + flashlist.getName() + ", found " + found + ", not found " + failed);
 	}
 
 	/**
@@ -55,29 +92,39 @@ public class ObjectUpdater {
 	 * @param objectsById
 	 *            objects to update
 	 */
-	public <T extends FlashlistUpdatable> void updateObjectFromRow(Flashlist flashlist, Map<Integer, T> objectsById) {
+	public <T extends FlashlistUpdatable> void updateObjectFromRowByInstanceId(Flashlist flashlist,
+			Map<Integer, T> objectsById) {
 
-		logger.info("Updating " + flashlist.getRowsNode().size() + " of " + flashlist.getFlashlistType() + " objects ("
+		logger.debug("Updating " + flashlist.getRowsNode().size() + " of " + flashlist.getFlashlistType() + " objects ("
 				+ objectsById.size() + " in the structure)");
+		int found = 0;
+		int failed = 0;
 
 		for (JsonNode rowNode : flashlist.getRowsNode()) {
 			try {
 				int objectId = Integer.parseInt(rowNode.get(INSTANCE).asText());
+
 				if (objectsById.containsKey(objectId)) {
 
 					T flashlistUpdatableObject = objectsById.get(objectId);
 					flashlistUpdatableObject.updateFromFlashlist(flashlist.getFlashlistType(), rowNode);
 
 					logger.debug("Updated ru: " + flashlistUpdatableObject);
+					found ++;
 
 				} else {
-					logger.warn("No DAQ object " + flashlist.getFlashlistType() + " with flashlist id " + objectId
-							+ ", ignoring..");
+					logger.debug("No DAQ object " + flashlist.getFlashlistType() + " with flashlist id " + objectId
+							+ ", ignoring "); // TODO: print class name of
+												// object being ignored
+					failed++;
 				}
 			} catch (NumberFormatException e) {
 				logger.warn("Instance number can not be parsed " + rowNode.get(INSTANCE));
 			}
 		}
+		
+
+		logger.warn("Flash matching report for " + flashlist.getName() + ", found " + found + ", not found " + failed);
 	}
 
 	// TODO: verify data

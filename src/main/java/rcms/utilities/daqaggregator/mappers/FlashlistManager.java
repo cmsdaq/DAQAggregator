@@ -68,15 +68,16 @@ public class FlashlistManager {
 		long startTime = System.currentTimeMillis();
 
 		for (Flashlist flashlist : flashlists) {
-			
-			
+
 			/* read only this flashlists */
 			if (flashlist.getFlashlistType() == FlashlistType.RU
 					|| flashlist.getFlashlistType() == FlashlistType.FEROL_INPUT_STREAM
 					|| flashlist.getFlashlistType() == FlashlistType.BU
 					|| flashlist.getFlashlistType() == FlashlistType.FMM_INPUT
 					|| flashlist.getFlashlistType() == FlashlistType.FMM_STATUS
-					|| flashlist.getFlashlistType() == FlashlistType.EVM)
+					|| flashlist.getFlashlistType() == FlashlistType.EVM
+					|| flashlist.getFlashlistType() == FlashlistType.JOB_CONTROL
+					|| flashlist.getFlashlistType() == FlashlistType.LEVEL_ZERO_FM_SUBSYS)
 				try {
 
 					flashlist.initialize();
@@ -95,7 +96,5 @@ public class FlashlistManager {
 		logger.info("Reading all flashlists finished in " + timeResult + "ms");
 
 	}
-
-
 
 }

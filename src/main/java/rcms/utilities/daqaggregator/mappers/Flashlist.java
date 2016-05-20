@@ -33,10 +33,6 @@ public class Flashlist {
 		this.flashlistType = FlashlistType.inferTypeByName(name);
 	}
 
-	public String getAddress() {
-		return address;
-	}
-
 	public String getName() {
 		return name;
 	}
@@ -60,10 +56,16 @@ public class Flashlist {
 	public void initialize() throws IOException {
 
 		int timeResult;
+		String requestAddress = address + "/retrieveCollection?flash=" + name + "&fmt=json";
+		
+		if(flashlistType.isSessionContext()){
+			requestAddress = requestAddress + "&sessionid=" + sessionId;
+		}
+		
 		long startTime = System.currentTimeMillis();
 
 		List<String> result = Connector.get()
-				.retrieveLines(address + "/retrieveCollection?flash=" + name + "&fmt=json&sessionid=" + sessionId);
+				.retrieveLines(requestAddress);
 
 		com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
 		JsonNode rootNode = mapper.readValue(result.get(0), JsonNode.class);

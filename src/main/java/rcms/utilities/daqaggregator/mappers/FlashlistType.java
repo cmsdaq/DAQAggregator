@@ -4,33 +4,36 @@ import org.apache.log4j.Logger;
 
 public enum FlashlistType {
 
-	BU("BU"),
-	EVM("EVM"),
-	FMM_INPUT("FMMInput"),
-	FMM_INPUT_DETAIL("FMMInputDetail"),
-	FMM_STATUS("FMMStatus"),
-	RU("RU"),
-	FEROL_CONFIGURATION("ferolConfiguration"),
-	FEROL_INPUT_STREAM("ferolInputStream"),
-	FEROL_MONITORING("ferolMonitoring"),
-	FEROL_STATUS("ferolStatus"),
-	FEROL_TCP_STREAM("ferolTcpStream"),
-	FRL_MONITORING("frlMonitoring"),
-	HOST_INFO("hostInfo"),
-	LEVEL_ZERO_FM_DYNAMIC("levelZeroFM_dynamic"),
-	LEVEL_ZERO_FM_STATIC("levelZeroFM_static"),
-	LEVEL_ZERO_FM_SUBSYS("levelZeroFM_subsys"),
-	A(""),
-	B(""),
-	C(""),
-	D("");
+	BU("BU",true),
+	EVM("EVM",true),
+	FMM_INPUT("FMMInput",true),
+	FMM_INPUT_DETAIL("FMMInputDetail",true),
+	FMM_STATUS("FMMStatus",true),
+	RU("RU",true),
+	FEROL_CONFIGURATION("ferolConfiguration",true),
+	FEROL_INPUT_STREAM("ferolInputStream",true),
+	FEROL_MONITORING("ferolMonitoring",true),
+	FEROL_STATUS("ferolStatus",true),
+	FEROL_TCP_STREAM("ferolTcpStream",true),
+	FRL_MONITORING("frlMonitoring",true),
+	HOST_INFO("hostInfo",true),
+	LEVEL_ZERO_FM_DYNAMIC("levelZeroFM_dynamic",true),
+	LEVEL_ZERO_FM_STATIC("levelZeroFM_static",true),
+	LEVEL_ZERO_FM_SUBSYS("levelZeroFM_subsys",false),
+	JOB_CONTROL("jobcontrol",false),
+	DISK_INFO("diskInfo",true),
+	FMM_PARTITION_DEAD_TIME("FMMPartitionDeadTime",true),
+	FMM_FED_DEAD_TIME("FMMFEDDeadTime",true);
 
 	private static Logger logger = Logger.getLogger(FlashlistType.class);
 
 	private final String name;
+	
+	private final boolean sessionContext;
 
-	private FlashlistType(String name) {
+	private FlashlistType(String name, boolean sessionContext) {
 		this.name = name;
+		this.sessionContext = sessionContext;
 	}
 
 	private static String message = " flashlist type infered from name ";
@@ -99,21 +102,21 @@ public enum FlashlistType {
 			logger.debug(LEVEL_ZERO_FM_SUBSYS.name + message + name);
 			return LEVEL_ZERO_FM_SUBSYS;
 
-		} else if (name.toLowerCase().contains(A.name.toLowerCase())) {
-			logger.debug(A.name + message + name);
-			return A;
+		} else if (name.toLowerCase().contains(JOB_CONTROL.name.toLowerCase())) {
+			logger.debug(JOB_CONTROL.name + message + name);
+			return JOB_CONTROL;
 
-		} else if (name.toLowerCase().contains(B.name.toLowerCase())) {
-			logger.debug(B.name + message + name);
-			return B;
+		} else if (name.toLowerCase().contains(DISK_INFO.name.toLowerCase())) {
+			logger.debug(DISK_INFO.name + message + name);
+			return DISK_INFO;
 
-		} else if (name.toLowerCase().contains(C.name.toLowerCase())) {
-			logger.debug(C.name + message + name);
-			return C;
+		} else if (name.toLowerCase().contains(FMM_PARTITION_DEAD_TIME.name.toLowerCase())) {
+			logger.debug(FMM_PARTITION_DEAD_TIME.name + message + name);
+			return FMM_PARTITION_DEAD_TIME;
 
-		} else if (name.toLowerCase().contains(D.name.toLowerCase())) {
-			logger.debug(D.name + message + name);
-			return D;
+		} else if (name.toLowerCase().contains(FMM_FED_DEAD_TIME.name.toLowerCase())) {
+			logger.debug(FMM_FED_DEAD_TIME.name + message + name);
+			return FMM_FED_DEAD_TIME;
 
 		} else {
 
@@ -121,6 +124,10 @@ public enum FlashlistType {
 			return null;
 		}
 
+	}
+
+	public boolean isSessionContext() {
+		return sessionContext;
 	}
 
 }
