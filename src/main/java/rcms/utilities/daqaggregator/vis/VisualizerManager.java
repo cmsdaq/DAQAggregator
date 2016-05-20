@@ -14,6 +14,7 @@ import rcms.utilities.daqaggregator.mappers.StructureMapper;
 import rcms.utilities.daqaggregator.vis.graph.BuilderVisualizer;
 import rcms.utilities.daqaggregator.vis.graph.DAQViewStyleVisualizer;
 import rcms.utilities.daqaggregator.vis.tree.DaqVisualizer;
+import rcms.utilities.daqaggregator.vis.tree.FlowVisualizer;
 import rcms.utilities.daqaggregator.vis.tree.FedVisualizer;
 
 public class VisualizerManager {
@@ -35,6 +36,7 @@ public class VisualizerManager {
 	public void persistVisualizations() {
 		visualizers.add(new FedVisualizer(daq));
 		visualizers.add(new DaqVisualizer(daq));
+		visualizers.add(new FlowVisualizer(daq));
 		visualizers.add(new DAQViewStyleVisualizer(structureMapper));
 		visualizers.add(new BuilderVisualizer(structureMapper));
 

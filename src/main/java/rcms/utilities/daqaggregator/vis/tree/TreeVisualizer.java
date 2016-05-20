@@ -11,7 +11,7 @@ public abstract class TreeVisualizer implements Visualizer {
 		this.daq = daq;
 	}
 
-	public abstract Element visualize();
+	public abstract TreeElement visualize();
 
 	public String getType() {
 		return "tree";
