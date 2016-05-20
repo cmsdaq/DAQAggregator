@@ -1,22 +1,17 @@
 package rcms.utilities.daqaggregator.reasoning;
 
-import org.apache.log4j.Logger;
-
 import rcms.utilities.daqaggregator.data.DAQ;
 import rcms.utilities.daqaggregator.reasoning.base.Level;
-import rcms.utilities.daqaggregator.reasoning.base.SimpleProblem;
+import rcms.utilities.daqaggregator.reasoning.base.Condition;
 
-public class NoRate implements SimpleProblem {
-	private final static Logger logger = Logger.getLogger(NoRate.class);
+public class NoRate implements Condition {
 
 	@Override
-	public Boolean isProblem(DAQ daq) {
-		float a = daq.getFedBuilderSummary().getRate();
-		boolean result = false;
-		if (a == 0)
-			result = true;
-
-		return result;
+	public Boolean satisfied(DAQ daq) {
+		float rate = daq.getFedBuilderSummary().getRate();
+		if (rate == 0)
+			return true;
+		return false;
 	}
 
 	@Override
@@ -26,7 +21,7 @@ public class NoRate implements SimpleProblem {
 
 	@Override
 	public String getText() {
-		return NoRate.class.getSimpleName();
+		return "No rate";
 	}
 
 }

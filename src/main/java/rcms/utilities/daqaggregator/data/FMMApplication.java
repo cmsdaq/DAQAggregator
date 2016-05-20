@@ -5,6 +5,10 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.databind.JsonNode;
+
+import rcms.utilities.daqaggregator.mappers.FlashlistType;
+import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
 
 /**
  * Fast Merging Module Application
@@ -13,7 +17,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
  * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
-public class FMMApplication implements java.io.Serializable {
+public class FMMApplication implements java.io.Serializable , FlashlistUpdatable{
 
 	// ----------------------------------------
 	// fields set at beginning of session
@@ -69,6 +73,13 @@ public class FMMApplication implements java.io.Serializable {
 
 	public void setUrl(String url) {
 		this.url = url;
+	}
+	
+	@Override
+	public void updateFromFlashlist(FlashlistType flashlistType, JsonNode flashlistRow) {
+		if(flashlistType == FlashlistType.JOB_CONTROL){
+			System.out.println(flashlistRow); //TODO: use job control for crashed
+		}
 	}
 
 	// ----------------------------------------------------------------------

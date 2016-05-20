@@ -8,13 +8,13 @@ import rcms.utilities.daqaggregator.data.DAQ;
 import rcms.utilities.daqaggregator.data.FEDBuilder;
 import rcms.utilities.daqaggregator.data.RU;
 import rcms.utilities.daqaggregator.reasoning.base.Level;
-import rcms.utilities.daqaggregator.reasoning.base.SimpleProblem;
+import rcms.utilities.daqaggregator.reasoning.base.Condition;
 
-public class EvmEnabled implements SimpleProblem {
+public class EvmEnabled implements Condition {
 	private final static Logger logger = Logger.getLogger(EvmEnabled.class);
 
 	@Override
-	public Boolean isProblem(DAQ daq) {
+	public Boolean satisfied(DAQ daq) {
 		List<FEDBuilder> a = daq.getFedBuilders();
 		for(FEDBuilder b : a){
 			RU ru = b.getRu();

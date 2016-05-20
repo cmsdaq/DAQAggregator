@@ -2,6 +2,10 @@ package rcms.utilities.daqaggregator.data;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.databind.JsonNode;
+
+import rcms.utilities.daqaggregator.mappers.FlashlistType;
+import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
 
 
 /**
@@ -12,7 +16,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
  */
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
-public class FRLPc implements java.io.Serializable{
+public class FRLPc implements java.io.Serializable, FlashlistUpdatable{
 
 	// ----------------------------------------
 	// fields set at beginning of session
@@ -64,6 +68,11 @@ public class FRLPc implements java.io.Serializable{
 		this.masked = masked;
 	}
 
+	@Override
+	public void updateFromFlashlist(FlashlistType flashlistType, JsonNode flashlistRow) {
+		// TODO Auto-generated method stub
+		
+	}
 	// ----------------------------------------------------------------------
 
 }

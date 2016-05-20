@@ -4,13 +4,13 @@ import org.apache.log4j.Logger;
 
 import rcms.utilities.daqaggregator.data.DAQ;
 import rcms.utilities.daqaggregator.reasoning.base.Level;
-import rcms.utilities.daqaggregator.reasoning.base.SimpleProblem;
+import rcms.utilities.daqaggregator.reasoning.base.Condition;
 
-public class RateOutOfRange implements SimpleProblem {
+public class RateOutOfRange implements Condition {
 	private final static Logger logger = Logger.getLogger(RateOutOfRange.class);
 
 	@Override
-	public Boolean isProblem(DAQ daq) {
+	public Boolean satisfied(DAQ daq) {
 		float a = daq.getFedBuilderSummary().getRate();
 		
 		boolean result = false;

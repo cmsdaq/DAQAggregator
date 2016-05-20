@@ -50,7 +50,7 @@ public class EventProducer {
 	 * Produces events for value 111000111000 will produce 2 events
 	 * corresponding to 1 start and end time
 	 */
-	public void produce(SimpleProblem checker, boolean value, Date date) {
+	public void produce(Condition checker, boolean value, Date date) {
 		produce(checker, value, date, checker.getLevel());
 	}
 
@@ -61,7 +61,7 @@ public class EventProducer {
 	public void produce(Comparator comparator, boolean value, Date last, Date current) {
 
 		if (value) {
-			logger.info("New lazy event " + current);
+			logger.debug("New lazy event " + current);
 			produce(comparator, !value, last, comparator.getLevel());
 			produce(comparator, value, current, comparator.getLevel());
 		}

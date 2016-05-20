@@ -1,5 +1,7 @@
 package rcms.utilities.daqaggregator.reasoning;
 
+import java.util.Date;
+
 import org.apache.log4j.Logger;
 
 import rcms.utilities.daqaggregator.data.DAQ;
@@ -15,9 +17,10 @@ public class SessionComparator extends Comparator {
 
 	public boolean compare(DAQ previous, DAQ current) {
 		boolean result = false;
+		
 
 		if (current.getSessionId() != previous.getSessionId()) {
-			logger.info("New session identified");
+			logger.info("New session identified " + new Date(current.getLastUpdate()));
 			sessionId = "session id: " + current.getSessionId();
 			result = true;
 		}

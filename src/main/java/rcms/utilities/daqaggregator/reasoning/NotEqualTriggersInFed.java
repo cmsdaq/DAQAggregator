@@ -7,13 +7,13 @@ import rcms.utilities.daqaggregator.data.FED;
 import rcms.utilities.daqaggregator.data.FMM;
 import rcms.utilities.daqaggregator.data.FMMApplication;
 import rcms.utilities.daqaggregator.reasoning.base.Level;
-import rcms.utilities.daqaggregator.reasoning.base.SimpleProblem;
+import rcms.utilities.daqaggregator.reasoning.base.Condition;
 
-public class NotEqualTriggersInFed implements SimpleProblem {
+public class NotEqualTriggersInFed implements Condition {
 	private final static Logger logger = Logger.getLogger(NotEqualTriggersInFed.class);
 
 	@Override
-	public Boolean isProblem(DAQ daq) {
+	public Boolean satisfied(DAQ daq) {
 		boolean result = false;
 
 		Long fedTriggers = null;
