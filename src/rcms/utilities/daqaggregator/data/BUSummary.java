@@ -1,74 +1,86 @@
 package rcms.utilities.daqaggregator.data;
 
-/** summary statistics of BUs */
-public class BUSummary {
-	
-	//----------------------------------------
+import java.io.Serializable;
+
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
+/**
+ * Summary statistics of BUs
+ * 
+ * @author Andre Georg Holzner (andre.georg.holzner@cern.ch)
+ * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
+ */
+
+@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
+public class BUSummary implements Serializable{
+
+	// ----------------------------------------
 	// fields set at beginning of session
-	//----------------------------------------
+	// ----------------------------------------
 
 	/** parent */
 	private final DAQ daq;
 
-	//----------------------------------------
+	// ----------------------------------------
 	// fields updated periodically
-	//----------------------------------------
-  
+	// ----------------------------------------
+
 	/** event rate in kHz ? */
 	private float rate;
-  
+
 	/** throughput in MByte/s ? */
 	private float throughput;
-  
+
 	/** in MByte/s ? */
 	private float eventSizeMean;
 	private float eventSizeStddev;
 
 	/** is this processed or requested ? */
 	private int numEvents;
-  
+
 	private int numEventsInBU;
-  
+
 	private int priority;
-  
+
 	private int numRequestsSent;
-  
+
 	private int numRequestsUsed;
-  
+
 	private int numRequestsBlocked;
-  
+
 	private int numFUsHlt;
-  
+
 	private int numFUsCrashed;
-  
+
 	private int numFUsStale;
-  
+
 	private int numFUsCloud;
-  
+
 	/** in percent ? */
 	private float ramDiskUsage;
-  
+
 	/** total amount of ramdisk */
 	private float ramDiskTotal;
-  
+
 	/** processed ? to be processed ? on ramdisk ? */
 	private int numFiles;
-  
+
 	private int numLumisectionsWithFiles;
-  
+
 	private int currentLumisection;
-  
+
 	private int numLumisectionsForHLT;
-  
+
 	private int numLumisectionsOutHLT;
 
-	//----------------------------------------------------------------------
+	// ----------------------------------------------------------------------
 
 	public BUSummary(DAQ daq) {
 		this.daq = daq;
 	}
 
-	//----------------------------------------------------------------------
+	// ----------------------------------------------------------------------
 
 	public float getRate() {
 		return rate;
@@ -241,8 +253,7 @@ public class BUSummary {
 	public DAQ getDaq() {
 		return daq;
 	}
-	
-	//----------------------------------------------------------------------
 
+	// ----------------------------------------------------------------------
 
 }

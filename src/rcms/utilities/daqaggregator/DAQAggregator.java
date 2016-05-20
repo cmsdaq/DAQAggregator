@@ -5,45 +5,50 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Properties;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 
 import rcms.common.db.DBConnectorIF;
 import rcms.common.db.DBConnectorMySQL;
 import rcms.common.db.DBConnectorOracle;
+import rcms.utilities.daqaggregator.data.DAQ;
+import rcms.utilities.daqaggregator.mappers.FlashlistManager;
+import rcms.utilities.daqaggregator.mappers.StructureMapper;
+import rcms.utilities.daqaggregator.vis.VisualizerManager;
 import rcms.utilities.hwcfg.HWCfgConnector;
 import rcms.utilities.hwcfg.HWCfgDescriptor;
 import rcms.utilities.hwcfg.dp.DAQPartition;
 import rcms.utilities.hwcfg.dp.DAQPartitionSet;
 
-
 public class DAQAggregator {
 
 	// settings concerning session definition
-	private static String PROPERTYNAME_SESSION_LASURL_GE         = "session.lasURLgeneral";
-	private static String PROPERTYNAME_SESSION_L0FILTER1         = "session.l0filter1";
-	private static String PROPERTYNAME_SESSION_L0FILTER2         = "session.l0filter2";
+	private static String PROPERTYNAME_SESSION_LASURL_GE = "session.lasURLgeneral";
+	private static String PROPERTYNAME_SESSION_L0FILTER1 = "session.l0filter1";
+	private static String PROPERTYNAME_SESSION_L0FILTER2 = "session.l0filter2";
 
 	// settings for monitoring
-	private static String PROPERTYNAME_MONITOR_SETUPNAME         = "monitor.setupName";
-	private static String PROPERTYNAME_MONITOR_URLS              = "monitor.lasURLs";
+	private static String PROPERTYNAME_MONITOR_SETUPNAME = "monitor.setupName";
+	private static String PROPERTYNAME_MONITOR_URLS = "monitor.lasURLs";
 
 	// settings concerning HWCFG DB
-	private static String PROPERTYNAME_HWCFGDB_DBURL             = "hwcfgdb.dburl";
-	private static String PROPERTYNAME_HWCFGDB_HOST              = "hwcfgdb.host";
-	private static String PROPERTYNAME_HWCFGDB_PORT              = "hwcfgdb.port";
-	private static String PROPERTYNAME_HWCFGDB_SID               = "hwcfgdb.sid";
-	private static String PROPERTYNAME_HWCFGDB_LOGIN             = "hwcfgdb.login";
-	private static String PROPERTYNAME_HWCFGDB_PWD               = "hwcfgdb.pwd";
+	private static String PROPERTYNAME_HWCFGDB_DBURL = "hwcfgdb.dburl";
+	private static String PROPERTYNAME_HWCFGDB_HOST = "hwcfgdb.host";
+	private static String PROPERTYNAME_HWCFGDB_PORT = "hwcfgdb.port";
+	private static String PROPERTYNAME_HWCFGDB_SID = "hwcfgdb.sid";
+	private static String PROPERTYNAME_HWCFGDB_LOGIN = "hwcfgdb.login";
+	private static String PROPERTYNAME_HWCFGDB_PWD = "hwcfgdb.pwd";
 
 	// settings concerning SOCKS proxy
-	private static String PROPERTYNAME_PROXY_ENABLE              = "socksproxy.enableproxy"; // optional
-	private static String PROPERTYNAME_PROXY_HOST                = "socksproy.host";
-	private static String PROPERTYNAME_PROXY_PORT                = "socksproxy.port";
+	private static String PROPERTYNAME_PROXY_ENABLE = "socksproxy.enableproxy"; // optional
+	private static String PROPERTYNAME_PROXY_HOST = "socksproy.host";
+	private static String PROPERTYNAME_PROXY_PORT = "socksproxy.port";
 
 	private static DBConnectorIF _dbconn = null;
 	private static HWCfgConnector _hwconn = null;
@@ -54,14 +59,13 @@ public class DAQAggregator {
 	private static boolean _dpsetPathChanged = false;
 	private static boolean _sidChanged = false;
 
-
-
+	private static final Logger logger = Logger.getLogger(DAQAggregator.class);
 
 	public static void main(String[] args) {
 
 		try {
 			String propertiesFile = "DAQAggregator.properties";
-			if (args.length>0)
+			if (args.length > 0)
 				propertiesFile = args[0];
 
 			System.out.println("DAQAggregator started with properties file '" + propertiesFile + "'");
@@ -78,7 +82,7 @@ public class DAQAggregator {
 			Thread monitorThread = null;
 			DAQPartition dp = null;
 
-			while(true) {
+			while (true) {
 
 				try {
 					_dpsetPathChanged = false;
@@ -87,7 +91,7 @@ public class DAQAggregator {
 							daqAggregatorProperties.getProperty(PROPERTYNAME_SESSION_L0FILTER1),
 							daqAggregatorProperties.getProperty(PROPERTYNAME_SESSION_L0FILTER2));
 
-					if ( _dpsetPathChanged || _sidChanged ) {
+					if (_dpsetPathChanged || _sidChanged) {
 						if (monitorThread != null) {
 							System.out.println("Session has changed. Stopping monitor thread ...");
 							monitorThread.interrupt();
@@ -99,17 +103,51 @@ public class DAQAggregator {
 					//
 					// load DPSet if it changed or was not yet loaded
 					//
-					if ( _dpsetPathChanged || _sidChanged ) {
+					if (_dpsetPathChanged || _sidChanged) {
 						System.out.println("Loading DPSet '" + _dpsetPath + "' ...");
-						HWCfgDescriptor dp_node = _hwconn.getNode( _dpsetPath );
-						DAQPartitionSet dpset = _hwconn.retrieveDPSet( dp_node );
+						HWCfgDescriptor dp_node = _hwconn.getNode(_dpsetPath);
+						DAQPartitionSet dpset = _hwconn.retrieveDPSet(dp_node);
 						dp = dpset.getDPs().values().iterator().next();
+
+						StructureMapper structureMapper = new StructureMapper(dp);
+						DAQ daq = structureMapper.map();
+						daq.setSessionId(_sid);
+
+
+						FlashlistManager flashlistManager = new FlashlistManager(
+								new HashSet<String>(Arrays.asList(lasURLs)));
+						flashlistManager.structureMapper = structureMapper;
+						flashlistManager.sessionId = _sid;
+						flashlistManager.retrieveAvailableFlashlists();
+						flashlistManager.readFlashlists();
+						
+						PostProcessor postProcessor = new PostProcessor(daq, structureMapper);
+						postProcessor.postProcess();
+						// DAQ daq2 = structurePersistor.deserialize();
+						// structurePersistor.persist(daq2,"persistance/data/daq-serial-deserial.json");
+
+						
+
+						StructurePersistor structurePersistor = new StructurePersistor();
+						structurePersistor.persist(daq);
+
+						// serialization test
+						structurePersistor.serialize(daq);
+						structurePersistor.serialize(structureMapper);
+						
+						
+
+						VisualizerManager visualizerManager = new VisualizerManager(daq, structureMapper);
+						visualizerManager.persistVisualizations();
+
+
+						System.exit(0);
 						System.out.println("done.");
 					}
 
-					if ( dp != null && monitorThread == null ) {
+					if (dp != null && monitorThread == null) {
 						System.out.println("Starting monitor thread.");
-						monitorThread =  new MonitorThread(Arrays.asList(lasURLs) , dp, _dpsetPath, _sid,
+						monitorThread = new MonitorThread(Arrays.asList(lasURLs), dp, _dpsetPath, _sid,
 								daqAggregatorProperties.getProperty(PROPERTYNAME_MONITOR_SETUPNAME));
 						monitorThread.start();
 					}
@@ -129,18 +167,19 @@ public class DAQAggregator {
 		}
 	}
 
-	private static void autoDetectSession(String lasBaseURLge, String l0_filter1, String l0_filter2) throws IOException {
+	private static void autoDetectSession(String lasBaseURLge, String l0_filter1, String l0_filter2)
+			throws IOException {
 
 		System.out.println("Auto-detecting session ...");
 		String php = "";
 		if (lasBaseURLge.contains("escaped"))
 			php = ".php";
-		Level0DataRetriever l0r = new Level0DataRetriever(lasBaseURLge + "/retrieveCollection"+php+"?flash=urn:xdaq-flashlist:", l0_filter1, l0_filter2);
+		Level0DataRetriever l0r = new Level0DataRetriever(
+				lasBaseURLge + "/retrieveCollection" + php + "?flash=urn:xdaq-flashlist:", l0_filter1, l0_filter2);
 		final String newDpsetPath = l0r.getDPsetPath();
-		if ( newDpsetPath == null ) {
-			System.out.println("  No active session found for "+l0_filter1+" and "+l0_filter2);
-		}
-		else if ( _dpsetPath == null || !_dpsetPath.equals(newDpsetPath) ) {
+		if (newDpsetPath == null) {
+			System.out.println("  No active session found for " + l0_filter1 + " and " + l0_filter2);
+		} else if (_dpsetPath == null || !_dpsetPath.equals(newDpsetPath)) {
 			System.out.println("  Detected new HWCFG_KEY: old: " + _dpsetPath + "; new: " + newDpsetPath);
 			_dpsetPath = newDpsetPath;
 			_sid = l0r.getSID();
@@ -148,14 +187,12 @@ public class DAQAggregator {
 
 			_dpsetPathChanged = true;
 			_sidChanged = true;
-		}
-		else if ( _sid != l0r.getSID() ) {
+		} else if (_sid != l0r.getSID()) {
 			System.out.println("  Detected new SID: old: " + _sid + "; new: " + l0r.getSID());
 			_sid = l0r.getSID();
 			_sidChanged = true;
 		}
 	}
-
 
 	private static Properties loadPropertiesFile(String propertiesFile) {
 		InputStream propertiesInputStream = DAQAggregator.class.getResourceAsStream(propertiesFile);
@@ -164,9 +201,8 @@ public class DAQAggregator {
 
 			// No resource found, try local
 			try {
-				propertiesInputStream= new FileInputStream(propertiesFile);
-			}
-			catch (FileNotFoundException e) {
+				propertiesInputStream = new FileInputStream(propertiesFile);
+			} catch (FileNotFoundException e) {
 				System.err.println("Can not load the connection properties file : " + propertiesFile);
 				e.printStackTrace();
 				System.exit(-1);
@@ -179,20 +215,20 @@ public class DAQAggregator {
 		} catch (IOException e) {
 			System.err.println("Can not load the connection properties file : " + propertiesFile);
 			e.printStackTrace();
-			System.exit(-1);		}
+			System.exit(-1);
+		}
 
 		return jdaqMonitorProperties;
 	}
-
 
 	static void setUpDBConnection(Properties jdaqMonitorProperties) throws Exception {
 
 		String _dbType = "ORACLE";
 		String _dbURL = jdaqMonitorProperties.getProperty(PROPERTYNAME_HWCFGDB_DBURL);
 		if (_dbURL == null || _dbURL.isEmpty()) {
-			_dbURL = "jdbc:oracle:thin:@" + jdaqMonitorProperties.getProperty(PROPERTYNAME_HWCFGDB_HOST)
-					+ ":" + jdaqMonitorProperties.getProperty(PROPERTYNAME_HWCFGDB_PORT)
-					+ "/" + jdaqMonitorProperties.getProperty(PROPERTYNAME_HWCFGDB_SID);
+			_dbURL = "jdbc:oracle:thin:@" + jdaqMonitorProperties.getProperty(PROPERTYNAME_HWCFGDB_HOST) + ":"
+					+ jdaqMonitorProperties.getProperty(PROPERTYNAME_HWCFGDB_PORT) + "/"
+					+ jdaqMonitorProperties.getProperty(PROPERTYNAME_HWCFGDB_SID);
 		}
 		String _dbUser = jdaqMonitorProperties.getProperty(PROPERTYNAME_HWCFGDB_LOGIN);
 		String _dbPasswd = jdaqMonitorProperties.getProperty(PROPERTYNAME_HWCFGDB_PWD);
@@ -207,14 +243,14 @@ public class DAQAggregator {
 		else
 			_dbconn = new DBConnectorMySQL(_dbURL, _dbUser, _dbPasswd);
 
-		_hwconn = new HWCfgConnector( _dbconn );
+		_hwconn = new HWCfgConnector(_dbconn);
 
 	}
 
 	static void setUpSOCKSProxy(Properties jdaqMonitorProperties) throws Exception {
 
-		if (jdaqMonitorProperties.containsKey(PROPERTYNAME_PROXY_ENABLE) &&
-				jdaqMonitorProperties.get(PROPERTYNAME_PROXY_ENABLE).toString().toLowerCase().equals("true")) {
+		if (jdaqMonitorProperties.containsKey(PROPERTYNAME_PROXY_ENABLE)
+				&& jdaqMonitorProperties.get(PROPERTYNAME_PROXY_ENABLE).toString().toLowerCase().equals("true")) {
 			System.out.println("Setting up SOCKS proxy ...");
 
 			Properties sysProperties = System.getProperties();
@@ -222,7 +258,7 @@ public class DAQAggregator {
 			// Specify proxy settings
 			sysProperties.put("socksProxyHost", jdaqMonitorProperties.get(PROPERTYNAME_PROXY_HOST));
 			sysProperties.put("socksProxyPort", jdaqMonitorProperties.get(PROPERTYNAME_PROXY_PORT));
-			sysProperties.put("proxySet",  "true");
+			sysProperties.put("proxySet", "true");
 		}
 	}
 

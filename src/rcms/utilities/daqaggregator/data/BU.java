@@ -1,78 +1,133 @@
 package rcms.utilities.daqaggregator.data;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
-public class BU {
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.databind.JsonNode;
 
-	//----------------------------------------
+import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
+import rcms.utilities.daqaggregator.mappers.FlashlistType;
+
+/**
+ * Builder Unit
+ * 
+ * @author Andre Georg Holzner (andre.georg.holzner@cern.ch)
+ * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
+ *
+ */
+@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
+public class BU implements Serializable, FlashlistUpdatable {
+
+	// ----------------------------------------
 	// fields set at beginning of session
-	//----------------------------------------
-	
+	// ----------------------------------------
+
 	/** parent */
-	private final DAQ daq;
-  
-	private final String hostname;  
-  
-	//----------------------------------------
+	private DAQ daq;
+
+	private String hostname;
+
+	// ----------------------------------------
 	// fields updated periodically
-	//----------------------------------------
+	// ----------------------------------------
 
 	/** event rate in kHz ? */
 	private float rate;
-  
+
 	/** throughput in MByte/s ? */
 	private float throughput;
-  
+
+	public void setDaq(DAQ daq) {
+		this.daq = daq;
+	}
+
+	public void setHostname(String hostname) {
+		this.hostname = hostname;
+	}
+
 	/** in MByte/s ? */
 	private float eventSizeMean;
 	private float eventSizeStddev;
 
 	/** is this processed or requested ? */
 	private int numEvents;
-  
+
 	private int numEventsInBU;
-  
+
 	private int priority;
-  
+
 	private int numRequestsSent;
-  
+
 	private int numRequestsUsed;
-  
+
 	private int numRequestsBlocked;
-  
+
 	private int numFUsHlt;
-  
+
 	private int numFUsCrashed;
-  
+
 	private int numFUsStale;
-  
+
 	private int numFUsCloud;
-  
+
 	/** in percent ? */
 	private float ramDiskUsage;
-  
+
 	/** total amount of ramdisk */
 	private float ramDiskTotal;
-  
+
 	/** processed ? to be processed ? on ramdisk ? */
 	private int numFiles;
-  
+
 	private int numLumisectionsWithFiles;
-  
+
 	private int currentLumisection;
-  
+
 	private int numLumisectionsForHLT;
-  
+
 	private int numLumisectionsOutHLT;
 
-	//----------------------------------------------------------------------
-	
-	public BU(DAQ daq, String hostname) {
-		this.daq = daq;
-		this.hostname = hostname;
-	}
+	// ----------------------------------------------------------------------
 
-	//----------------------------------------------------------------------
+	/**
+	 * Update object based on given flashlist fragment
+	 * 
+	 * @param flashlistRow
+	 *            JsonNode representing one row from flashlist
+	 */
+	@Override
+	public void updateFromFlashlist(FlashlistType flashlistType, JsonNode flashlistRow) {
+
+		if (flashlistType == FlashlistType.BU) {
+
+			// direct values
+			this.rate = flashlistRow.get("eventRate").asInt();
+			this.throughput = flashlistRow.get("bandwidth").asInt();
+			this.eventSizeMean = flashlistRow.get("eventSize").asInt();
+			this.eventSizeStddev = flashlistRow.get("eventSizeStdDev").asInt();
+			this.numEvents = flashlistRow.get("nbEventsBuilt").asInt();
+			this.numEventsInBU = flashlistRow.get("nbEventsInBU").asInt();
+			this.priority = flashlistRow.get("priority").asInt();
+			this.numRequestsSent = flashlistRow.get("requestCount").asInt();
+			// TODO: this.numRequestsUsed = flashlistRow.get("").asInt();
+			this.numRequestsBlocked = flashlistRow.get("nbBlockedResources").asInt();
+			this.numFUsHlt = flashlistRow.get("fuSlotsHLT").asInt();
+			// TODO: this.numFUsCrashed = flashlistRow.get("").asInt();
+			this.numFUsStale = flashlistRow.get("fuSlotsStale").asInt();
+			this.numFUsCloud = flashlistRow.get("fuSlotsCloud").asInt();
+			this.ramDiskUsage = flashlistRow.get("ramDiskUsed").asInt();
+			this.ramDiskTotal = flashlistRow.get("ramDiskSizeInGB").asInt();
+			this.numFiles = flashlistRow.get("nbFilesWritten").asInt();
+			// TODO this.numLumisectionsWithFiles =
+			// flashlistRow.get("").asInt();
+			this.currentLumisection = flashlistRow.get("currentLumiSection").asInt();
+			// TODO this.numLumisectionsForHLT = flashlistRow.get("aa").asInt();
+			// TODO this.numLumisectionsOutHLT = flashlistRow.get("aa").asInt();
+
+		}
+	}
 
 	public float getRate() {
 		return rate;
@@ -248,19 +303,18 @@ public class BU {
 
 	public String getHostname() {
 		return hostname;
-	}	
-	
-	//----------------------------------------------------------------------
-	
-	static class HostNameComparator implements Comparator<BU>
-	{
+	}
+
+	// ----------------------------------------------------------------------
+
+	public static class HostNameComparator implements Comparator<BU> {
 		@Override
 		public int compare(BU bu1, BU bu2) {
 			// assume both are non-null
 			return bu1.getHostname().compareTo(bu2.getHostname());
 		}
 	}
-	
-	//----------------------------------------------------------------------
-	
+
+	// ----------------------------------------------------------------------
+
 }

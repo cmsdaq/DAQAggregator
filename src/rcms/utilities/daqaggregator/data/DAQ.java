@@ -1,73 +1,61 @@
 package rcms.utilities.daqaggregator.data;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-import rcms.utilities.hwcfg.dp.DAQPartition;
-import rcms.utilities.hwcfg.dp.DPGenericHost;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
-public class DAQ {
-	
-	//----------------------------------------
-	// fields set at beginning of session
-	//----------------------------------------
-	private final List<TTCPartition> ttcPartitions = new ArrayList<>();
-  
-	private final List<FRLPc> frlPcs = new ArrayList<>();
-  
-	private final List<BU> bus = new ArrayList<>();
+/**
+ * Root class of DAQ structure
+ * 
+ * @author Andre Georg Holzner (andre.georg.holzner@cern.ch)
+ * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
+ *
+ */
+@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
+public class DAQ implements java.io.Serializable {
 
-	private final List<FMMApplication> fmmApplications = new ArrayList<>();
-
-	private final int sessionId;
-	
-	private final String dpsetPath;
-
-	private final FEDBuilderSummary fedBuilderSummary;
-	  
-	private final BUSummary buSummary;
-	  
-	//----------------------------------------
-	// fields updated periodically
-	//----------------------------------------
-
-	private int runNumber;
-    
-	/** timestamp */
-	private long lastUpdate;
-  
-	private String daqState;
-
-	//----------------------------------------------------------------------
-
-	public DAQ(DAQPartition dp, String dpsetPath, int sessionId) {
-		this.sessionId = sessionId;
-		this.dpsetPath = dpsetPath;
-		
-		this.fedBuilderSummary = new FEDBuilderSummary(this);
-		this.buSummary = new BUSummary(this);
-	
-		// TODO: initialize fields ttcPartitions, frlPcs, fmmApplications
-		//       from information in dp
-		
-		//----------
-		// initialize the list of BUs
-		//----------
-		for (DPGenericHost host : dp.getGenericHosts()) {
-        	if ( host.getRole().equals("BU") ) {
-        		bus.add(new BU(this, host.getHostName()));
-        	}
-        }
-		
-		// sort BUs by name
-        Collections.sort(bus, new BU.HostNameComparator());
-
-		//----------
-
+	public String toString() {
+		return "BUs number in DAQ: " + bus.toString();
 	}
 
-	//----------------------------------------------------------------------
+	// ----------------------------------------
+	// fields set at beginning of session
+	// ----------------------------------------
+	private List<TTCPartition> ttcPartitions;
+
+	private List<FRLPc> frlPcs;
+
+	private List<BU> bus;
+
+	private List<FMMApplication> fmmApplications;
+
+	private int sessionId;
+
+	private String dpsetPath;
+
+	private FEDBuilderSummary fedBuilderSummary;
+
+	private BUSummary buSummary;
+
+	// TODO: fed builders not in the structure, but addes tmprlly?
+	private final List<FEDBuilder> fedBuilders = new ArrayList<>();
+
+	// ----------------------------------------
+	// fields updated periodically
+	// ----------------------------------------
+
+	public List<FEDBuilder> getFedBuilders() {
+		return fedBuilders;
+	}
+
+	private int runNumber;
+
+	/** timestamp */
+	private long lastUpdate;
+
+	private String daqState;
 
 	public int getRunNumber() {
 		return runNumber;
@@ -124,8 +112,37 @@ public class DAQ {
 	public BUSummary getBuSummary() {
 		return buSummary;
 	}
-		
-	//----------------------------------------------------------------------
 
-  
+	public void setTtcPartitions(List<TTCPartition> ttcPartitions) {
+		this.ttcPartitions = ttcPartitions;
+	}
+
+	public void setFrlPcs(List<FRLPc> frlPcs) {
+		this.frlPcs = frlPcs;
+	}
+
+	public void setBus(List<BU> bus) {
+		this.bus = bus;
+	}
+
+	public void setFmmApplications(List<FMMApplication> fmmApplications) {
+		this.fmmApplications = fmmApplications;
+	}
+
+	public void setSessionId(int sessionId) {
+		this.sessionId = sessionId;
+	}
+
+	public void setDpsetPath(String dpsetPath) {
+		this.dpsetPath = dpsetPath;
+	}
+
+	public void setFedBuilderSummary(FEDBuilderSummary fedBuilderSummary) {
+		this.fedBuilderSummary = fedBuilderSummary;
+	}
+
+	public void setBuSummary(BUSummary buSummary) {
+		this.buSummary = buSummary;
+	}
+
 }

@@ -1,60 +1,95 @@
 package rcms.utilities.daqaggregator.data;
 
-public class RU {
-	
-	//----------------------------------------
+import java.io.Serializable;
+
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.databind.JsonNode;
+
+import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
+import rcms.utilities.daqaggregator.mappers.FlashlistType;
+
+/**
+ * Readout Unit
+ * 
+ * @author Andre Georg Holzner (andre.georg.holzner@cern.ch)
+ * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
+ */
+
+@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
+public class RU implements Serializable, FlashlistUpdatable {
+
+	// ----------------------------------------
 	// fields set at beginning of session
-	//----------------------------------------
+	// ----------------------------------------
 
 	/** the FEDbuilder this RU corresponds to */
-	private final FEDBuilder fedBuilder;
-  
-	private final String hostname;
-  
-	private final boolean isEVM;
-  
-	private final boolean masked;
-	
-	//----------------------------------------
+	private FEDBuilder fedBuilder;
+
+	private String hostname;
+
+	private boolean isEVM;
+
+	private boolean masked;
+
+	private int instance;
+
+	// ----------------------------------------
 	// fields updated periodically
-	//----------------------------------------
+	// ----------------------------------------
 
 	private String errorMsg;
-  
+
 	private String warnMsg;
-  
+
 	private String infoMsg;
-  
+
 	/** events rate in kHz ? */
 	private float rate;
-  
+
 	/** MByte per second ? */
 	private float throughput;
-  
-	/** mean superfragment size in kByte ? */
+
+	/**
+	 * TODO: mean superfragment size in kByte?, TODO: mean over what period ?
+	 */
 	private float superFragmentSizeMean;
-  
+
 	/** spread of superfragment size in kByte ? */
 	private float superFragmentSizeStddev;
-  
+
 	private int fragmentsInRU;
-  
+
 	private int eventsInRU;
-  
+
 	/** requests from BUs ? */
 	private int requests;
 
-	//----------------------------------------------------------------------
+	/**
+	 * Update object based on given flashlist fragment
+	 * 
+	 * @param flashlistRow
+	 *            JsonNode representing one row from flashlist
+	 */
+	@Override
+	public void updateFromFlashlist(FlashlistType flashlistType, JsonNode flashlistRow) {
 
-	public RU(FEDBuilder fedBuilder, String hostname, boolean isEVM,
-			boolean masked) {
-		this.fedBuilder = fedBuilder;
-		this.hostname = hostname;
-		this.isEVM = isEVM;
-		this.masked = masked;
+		if (flashlistType == FlashlistType.RU) {
+			// direct values
+			this.requests = flashlistRow.get("eventCount").asInt();
+			this.rate = flashlistRow.get("eventRate").asInt();
+			this.eventsInRU = flashlistRow.get("eventsInRU").asInt();
+			this.fragmentsInRU = flashlistRow.get("fragmentCount").asInt();
+			this.superFragmentSizeMean = flashlistRow.get("superFragmentSize").asInt();
+			this.superFragmentSizeStddev = flashlistRow.get("superFragmentSizeStdDev").asInt();
+
+			// derived values
+			this.throughput = rate * superFragmentSizeMean;
+
+		}
 	}
 
-	//----------------------------------------------------------------------
+	// ----------------------------------------------------------------------
 
 	public String getErrorMsg() {
 		return errorMsg;
@@ -152,6 +187,37 @@ public class RU {
 		return masked;
 	}
 
-	//----------------------------------------------------------------------
+	public void setFedBuilder(FEDBuilder fedBuilder) {
+		this.fedBuilder = fedBuilder;
+	}
+
+	public void setHostname(String hostname) {
+		this.hostname = hostname;
+	}
+
+	public void setEVM(boolean isEVM) {
+		this.isEVM = isEVM;
+	}
+
+	public void setMasked(boolean masked) {
+		this.masked = masked;
+	}
+
+	public int getInstance() {
+		return instance;
+	}
+
+	public void setInstance(int instance) {
+		this.instance = instance;
+	}
+
+	@Override
+	public String toString() {
+		return "RU [rate=" + rate + ", throughput=" + throughput + ", superFragmentSizeMean=" + superFragmentSizeMean
+				+ ", superFragmentSizeStddev=" + superFragmentSizeStddev + ", fragmentsInRU=" + fragmentsInRU
+				+ ", eventsInRU=" + eventsInRU + "]";
+	}
+
+	// ----------------------------------------------------------------------
 
 }

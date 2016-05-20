@@ -1,0 +1,5 @@
+/bin/
+
+# ignore properties file (credentials)
+DAQAggregator.properties
+/target/

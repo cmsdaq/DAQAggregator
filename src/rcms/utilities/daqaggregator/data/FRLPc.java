@@ -1,32 +1,36 @@
 package rcms.utilities.daqaggregator.data;
 
-public class FRLPc {
-	
-	//----------------------------------------
-	// fields set at beginning of session
-	//----------------------------------------
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
-	private final String hostname;
-  
+
+/**
+ * Front-end Readout Link PC
+ * 
+ * @author Andre Georg Holzner (andre.georg.holzner@cern.ch)
+ * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
+ */
+
+@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
+public class FRLPc implements java.io.Serializable{
+
+	// ----------------------------------------
+	// fields set at beginning of session
+	// ----------------------------------------
+
+	private String hostname;
+
 	/** xdaq application url */
-	private final String url; 
-  
-	private final boolean masked;
-	
-	//----------------------------------------
+	private String url;
+
+	private boolean masked;
+
+	// ----------------------------------------
 	// fields updated periodically
-	//----------------------------------------
+	// ----------------------------------------
 	private boolean crashed;
 
-	//----------------------------------------------------------------------
-
-	public FRLPc(String hostname, String url, boolean masked) {
-		this.hostname = hostname;
-		this.url = url;
-		this.masked = masked;
-	}
-
-	//----------------------------------------------------------------------
+	// ----------------------------------------------------------------------
 
 	public boolean isCrashed() {
 		return crashed;
@@ -48,6 +52,18 @@ public class FRLPc {
 		return masked;
 	}
 
-	//----------------------------------------------------------------------
+	public void setHostname(String hostname) {
+		this.hostname = hostname;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
+	}
+
+	public void setMasked(boolean masked) {
+		this.masked = masked;
+	}
+
+	// ----------------------------------------------------------------------
 
 }

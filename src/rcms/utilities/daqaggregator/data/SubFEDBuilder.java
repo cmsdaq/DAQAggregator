@@ -3,43 +3,39 @@ package rcms.utilities.daqaggregator.data;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 /**
+ * 
  * Class representing one line in DAQView
+ * 
+ * @author Andre Georg Holzner (andre.georg.holzner@cern.ch)
+ * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
+ * 
  */
-public class SubFEDBuilder {
-	
-	//----------------------------------------
+@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
+public class SubFEDBuilder implements java.io.Serializable {
+
+	// ----------------------------------------
 	// fields set at beginning of session
-	//----------------------------------------
+	// ----------------------------------------
 
 	/** the 'parent' FEDBuilder */
-	private final FEDBuilder fedBuilder;
-  
-	private final TTCPartition ttcPartition;
-  
+	private FEDBuilder fedBuilder;
+
+	private TTCPartition ttcPartition;
+
 	/** can be null */
-	private final FRLPc frlPc; 
-	
+	private FRLPc frlPc;
+
 	private final List<FRL> frls = new ArrayList<FRL>();
-	  
-	//----------------------------------------
+
+	// ----------------------------------------
 	// fields updated periodically
-	//----------------------------------------
+	// ----------------------------------------
 
 	private long minTrig, maxTrig;
-
-	//----------------------------------------------------------------------
-
-	public SubFEDBuilder(FEDBuilder fedBuilder, TTCPartition ttcPartition,
-			FRLPc frlPc) {
-		this.fedBuilder = fedBuilder;
-		this.ttcPartition = ttcPartition;
-		this.frlPc = frlPc;
-
-		// TODO: fill frls
-	}
-
-	//----------------------------------------------------------------------
 
 	public long getMinTrig() {
 		return minTrig;
@@ -72,7 +68,32 @@ public class SubFEDBuilder {
 	public List<FRL> getFrls() {
 		return frls;
 	}
-	
-	//----------------------------------------------------------------------
+
+	public void setFedBuilder(FEDBuilder fedBuilder) {
+		this.fedBuilder = fedBuilder;
+	}
+
+	public void setTtcPartition(TTCPartition ttcPartition) {
+		this.ttcPartition = ttcPartition;
+	}
+
+	public void setFrlPc(FRLPc frlPc) {
+		this.frlPc = frlPc;
+	}
+
+	public void calculateDerived() {
+
+		// just derived from feds
+		for (FRL frl : getFrls()) {
+			for (FED fed : frl.getFeds().values()) {
+				if (fed.getEventCounter() > maxTrig) {
+					maxTrig = fed.getEventCounter();
+				}
+				if (fed.getEventCounter() < minTrig) {
+					minTrig = fed.getEventCounter();
+				}
+			}
+		}
+	}
 
 }
