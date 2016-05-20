@@ -7,12 +7,9 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Properties;
+import java.util.Set;
 
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
 
 import rcms.common.db.DBConnectorIF;
 import rcms.common.db.DBConnectorMySQL;
@@ -20,7 +17,6 @@ import rcms.common.db.DBConnectorOracle;
 import rcms.utilities.daqaggregator.data.DAQ;
 import rcms.utilities.daqaggregator.mappers.FlashlistManager;
 import rcms.utilities.daqaggregator.mappers.StructureMapper;
-import rcms.utilities.daqaggregator.vis.VisualizerManager;
 import rcms.utilities.hwcfg.HWCfgConnector;
 import rcms.utilities.hwcfg.HWCfgDescriptor;
 import rcms.utilities.hwcfg.dp.DAQPartition;
@@ -62,15 +58,19 @@ public class DAQAggregator {
 	private static final Logger logger = Logger.getLogger(DAQAggregator.class);
 
 	public static void main(String[] args) {
+		String propertiesFile = "DAQAggregator.properties";
+		if (args.length > 0)
+			propertiesFile = args[0];
+		System.out.println("DAQAggregator started with properties file '" + propertiesFile + "'");
+		Properties daqAggregatorProperties = loadPropertiesFile(propertiesFile);
+		work(daqAggregatorProperties);
+
+	}
+
+	public static void work(Properties daqAggregatorProperties) {
 
 		try {
-			String propertiesFile = "DAQAggregator.properties";
-			if (args.length > 0)
-				propertiesFile = args[0];
 
-			System.out.println("DAQAggregator started with properties file '" + propertiesFile + "'");
-
-			Properties daqAggregatorProperties = loadPropertiesFile(propertiesFile);
 			setUpDBConnection(daqAggregatorProperties);
 			setUpSOCKSProxy(daqAggregatorProperties);
 
@@ -81,6 +81,13 @@ public class DAQAggregator {
 
 			Thread monitorThread = null;
 			DAQPartition dp = null;
+
+			StructureMapper structureMapper = null;
+			DAQ daq = null;
+			Set<String> flashlistUrls = new HashSet<String>(Arrays.asList(lasURLs));
+			// TODO: move directory conf to configuration file
+			PersistorManager persistorManager = new PersistorManager("/tmp/mgladki/snapshots/");
+			FlashlistManager flashlistManager = null;
 
 			while (true) {
 
@@ -103,57 +110,39 @@ public class DAQAggregator {
 					//
 					// load DPSet if it changed or was not yet loaded
 					//
+
 					if (_dpsetPathChanged || _sidChanged) {
 						System.out.println("Loading DPSet '" + _dpsetPath + "' ...");
 						HWCfgDescriptor dp_node = _hwconn.getNode(_dpsetPath);
 						DAQPartitionSet dpset = _hwconn.retrieveDPSet(dp_node);
 						dp = dpset.getDPs().values().iterator().next();
 
-						StructureMapper structureMapper = new StructureMapper(dp);
-						DAQ daq = structureMapper.map();
+						// map the structure to new DAQ
+						structureMapper = new StructureMapper(dp);
+						daq = structureMapper.map();
 						daq.setSessionId(_sid);
+						daq.setDpsetPath(_dpsetPath);
+						daq.setLastUpdate(System.currentTimeMillis());
+						flashlistManager = new FlashlistManager(flashlistUrls, structureMapper, _sid);
 
-
-						FlashlistManager flashlistManager = new FlashlistManager(
-								new HashSet<String>(Arrays.asList(lasURLs)));
-						flashlistManager.structureMapper = structureMapper;
-						flashlistManager.sessionId = _sid;
-						flashlistManager.retrieveAvailableFlashlists();
-						flashlistManager.readFlashlists();
-						
-						PostProcessor postProcessor = new PostProcessor(daq, structureMapper);
-						postProcessor.postProcess();
-						// DAQ daq2 = structurePersistor.deserialize();
-						// structurePersistor.persist(daq2,"persistance/data/daq-serial-deserial.json");
-
-						
-
-						StructurePersistor structurePersistor = new StructurePersistor();
-						structurePersistor.persist(daq);
-
-						// serialization test
-						structurePersistor.serialize(daq);
-						structurePersistor.serialize(structureMapper);
-						
-						
-
-						VisualizerManager visualizerManager = new VisualizerManager(daq, structureMapper);
-						visualizerManager.persistVisualizations();
-
-
-						System.exit(0);
-						System.out.println("done.");
+						System.out.println("Done for session " + daq.getSessionId());
 					}
 
-					if (dp != null && monitorThread == null) {
-						System.out.println("Starting monitor thread.");
-						monitorThread = new MonitorThread(Arrays.asList(lasURLs), dp, _dpsetPath, _sid,
-								daqAggregatorProperties.getProperty(PROPERTYNAME_MONITOR_SETUPNAME));
-						monitorThread.start();
-					}
+					// update the structure from flashlists
+					flashlistManager.retrieveAvailableFlashlists();
+					flashlistManager.readFlashlists();
 
+					// postprocess daq (derived values, summary classes)
+					PostProcessor postProcessor = new PostProcessor(daq);
+					postProcessor.postProcess();
+
+					// serialize snapshot
+					persistorManager.persistSnapshot(daq);
+
+					// FIXME: the timer should be used here as sleep time !=
+					// period time
 					System.out.println("sleeping for 10 seconds ....\n");
-					Thread.sleep(10000);
+					Thread.sleep(5000);
 				} catch (Exception e) {
 					System.out.println("Error in main loop:\n" + e);
 					e.printStackTrace();
@@ -233,11 +222,6 @@ public class DAQAggregator {
 		String _dbUser = jdaqMonitorProperties.getProperty(PROPERTYNAME_HWCFGDB_LOGIN);
 		String _dbPasswd = jdaqMonitorProperties.getProperty(PROPERTYNAME_HWCFGDB_PWD);
 
-		// Default log4j appender , can be changed later.
-		ConsoleAppender simple = new ConsoleAppender(new PatternLayout("%d %-5p: %m %n"));
-		simple.setThreshold(Level.INFO);
-		BasicConfigurator.configure(simple);
-
 		if (_dbType.equals("ORACLE"))
 			_dbconn = new DBConnectorOracle(_dbURL, _dbUser, _dbPasswd);
 		else
@@ -264,5 +248,38 @@ public class DAQAggregator {
 
 	static void tearDown() throws Exception {
 		_dbconn.closeConnection();
+	}
+
+	/**
+	 * TODO: this is tmp method for running daqaggregator as server with raw and
+	 * reason streams on timeline, this will be separate projects in future.
+	 */
+	public void run() {
+		String propFileName = "DAQAggregator.properties";
+		System.out.println("DAQAggregator started with properties file '" + propFileName + "'");
+
+		Properties prop = new Properties();
+		InputStream inputStream = null;
+
+		try {
+			inputStream = getClass().getClassLoader().getResourceAsStream(propFileName);
+			if (inputStream != null) {
+				prop.load(inputStream);
+			} else {
+				throw new FileNotFoundException("property file '" + propFileName + "' not found in the classpath");
+			}
+		} catch (FileNotFoundException e) {
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				inputStream.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
+		work(prop);
 	}
 }
