@@ -23,16 +23,18 @@ public class FlashlistManager {
 	private final Set<String> lasUrls;
 
 	// TODO: refactor this field
-	public StructureMapper structureMapper;
+	private final StructureMapper structureMapper;
 
 	// TODO: refactor this field
-	public int sessionId;
+	private final int sessionId;
 
 	private static final Logger logger = Logger.getLogger(FlashlistManager.class);
 
-	public FlashlistManager(Set<String> lasUrls) {
+	public FlashlistManager(Set<String> lasUrls, StructureMapper structureMapper, int sessionId) {
 		this.flashlists = new HashSet<Flashlist>();
 		this.lasUrls = lasUrls;
+		this.structureMapper = structureMapper;
+		this.sessionId = sessionId;
 	}
 
 	/**

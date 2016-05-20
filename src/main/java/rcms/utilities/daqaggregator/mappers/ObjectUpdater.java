@@ -26,6 +26,7 @@ public class ObjectUpdater {
 			break;
 		case FMM_INPUT:
 			updateObjectFromRowByInstanceId(flashlist, structureMapper.getObjectMapper().fedsById);
+			//updateObjectByGeoKey();
 			break;
 		case FEROL_STATUS:
 			updateObjectFromRowByInstanceId(flashlist, structureMapper.getObjectMapper().ttcpartitionsById);
