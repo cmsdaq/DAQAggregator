@@ -17,7 +17,7 @@ import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
  * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
-public class FMMApplication implements java.io.Serializable , FlashlistUpdatable{
+public class FMMApplication implements java.io.Serializable, FlashlistUpdatable {
 
 	// ----------------------------------------
 	// fields set at beginning of session
@@ -74,11 +74,26 @@ public class FMMApplication implements java.io.Serializable , FlashlistUpdatable
 	public void setUrl(String url) {
 		this.url = url;
 	}
-	
+
 	@Override
 	public void updateFromFlashlist(FlashlistType flashlistType, JsonNode flashlistRow) {
-		if(flashlistType == FlashlistType.JOB_CONTROL){
-			System.out.println(flashlistRow); //TODO: use job control for crashed
+		if (flashlistType == FlashlistType.JOB_CONTROL) {
+			// TODO: use job control for crashed
+			JsonNode jobTable = flashlistRow.get("jobTable");
+
+			JsonNode rows = jobTable.get("rows");
+
+			for (JsonNode row : rows) {
+
+				String status = row.get("status").asText();
+
+				// if not alive than crashed, if no data than default value witch
+				// is not crashed
+				if (!status.equalsIgnoreCase("alive"))
+					this.crashed = true;
+
+			}
+
 		}
 	}
 
