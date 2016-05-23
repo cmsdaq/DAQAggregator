@@ -61,7 +61,7 @@ public class DAQAggregator {
 		String propertiesFile = "DAQAggregator.properties";
 		if (args.length > 0)
 			propertiesFile = args[0];
-		System.out.println("DAQAggregator started with properties file '" + propertiesFile + "'");
+		logger.info("DAQAggregator started with properties file '" + propertiesFile + "'");
 		Properties daqAggregatorProperties = loadPropertiesFile(propertiesFile);
 		work(daqAggregatorProperties);
 
@@ -74,10 +74,10 @@ public class DAQAggregator {
 			setUpDBConnection(daqAggregatorProperties);
 			setUpSOCKSProxy(daqAggregatorProperties);
 
-			System.out.println("Read the following LAS URLs:");
+			logger.debug("Read the following LAS URLs:");
 			String[] lasURLs = daqAggregatorProperties.getProperty(PROPERTYNAME_MONITOR_URLS).split(" +");
 			for (String lasUrl : lasURLs)
-				System.out.println("   '" + lasUrl + "'");
+				logger.debug("   '" + lasUrl + "'");
 
 			Thread monitorThread = null;
 			DAQPartition dp = null;
@@ -100,10 +100,10 @@ public class DAQAggregator {
 
 					if (_dpsetPathChanged || _sidChanged) {
 						if (monitorThread != null) {
-							System.out.println("Session has changed. Stopping monitor thread ...");
+							logger.info("Session has changed. Stopping monitor thread ...");
 							monitorThread.interrupt();
 							monitorThread = null;
-							System.out.println("done.");
+							logger.info("done.");
 						}
 					}
 
@@ -112,7 +112,7 @@ public class DAQAggregator {
 					//
 
 					if (_dpsetPathChanged || _sidChanged) {
-						System.out.println("Loading DPSet '" + _dpsetPath + "' ...");
+						logger.info("Loading DPSet '" + _dpsetPath + "' ...");
 						HWCfgDescriptor dp_node = _hwconn.getNode(_dpsetPath);
 						DAQPartitionSet dpset = _hwconn.retrieveDPSet(dp_node);
 						dp = dpset.getDPs().values().iterator().next();
@@ -122,14 +122,14 @@ public class DAQAggregator {
 						daq = structureMapper.map();
 						daq.setSessionId(_sid);
 						daq.setDpsetPath(_dpsetPath);
-						daq.setLastUpdate(System.currentTimeMillis());
 						flashlistManager = new FlashlistManager(flashlistUrls, structureMapper, _sid);
 						flashlistManager.retrieveAvailableFlashlists();
 
-						System.out.println("Done for session " + daq.getSessionId());
+						logger.info("Done for session " + daq.getSessionId());
 					}
 
 					flashlistManager.readFlashlists();
+					daq.setLastUpdate(System.currentTimeMillis());
 
 					// postprocess daq (derived values, summary classes)
 					PostProcessor postProcessor = new PostProcessor(daq);
@@ -140,12 +140,12 @@ public class DAQAggregator {
 
 					// FIXME: the timer should be used here as sleep time !=
 					// period time
-					System.out.println("sleeping for 10 seconds ....\n");
+					logger.info("sleeping for 10 seconds ....\n");
 					Thread.sleep(5000);
 				} catch (Exception e) {
-					System.out.println("Error in main loop:\n" + e);
+					logger.error("Error in main loop:\n" + e);
 					e.printStackTrace();
-					System.out.println("Going to sleep for 10 seconds before trying again...\n");
+					logger.info("Going to sleep for 10 seconds before trying again...\n");
 					Thread.sleep(10000);
 				}
 
@@ -158,7 +158,7 @@ public class DAQAggregator {
 	private static void autoDetectSession(String lasBaseURLge, String l0_filter1, String l0_filter2)
 			throws IOException {
 
-		System.out.println("Auto-detecting session ...");
+		logger.debug("Auto-detecting session ...");
 		String php = "";
 		if (lasBaseURLge.contains("escaped"))
 			php = ".php";
@@ -166,17 +166,17 @@ public class DAQAggregator {
 				lasBaseURLge + "/retrieveCollection" + php + "?flash=urn:xdaq-flashlist:", l0_filter1, l0_filter2);
 		final String newDpsetPath = l0r.getDPsetPath();
 		if (newDpsetPath == null) {
-			System.out.println("  No active session found for " + l0_filter1 + " and " + l0_filter2);
+			logger.info("  No active session found for " + l0_filter1 + " and " + l0_filter2);
 		} else if (_dpsetPath == null || !_dpsetPath.equals(newDpsetPath)) {
-			System.out.println("  Detected new HWCFG_KEY: old: " + _dpsetPath + "; new: " + newDpsetPath);
+			logger.info("  Detected new HWCFG_KEY: old: " + _dpsetPath + "; new: " + newDpsetPath);
 			_dpsetPath = newDpsetPath;
 			_sid = l0r.getSID();
-			System.out.println("  SID_STRING='" + _sid + "'");
+			logger.info("  SID_STRING='" + _sid + "'");
 
 			_dpsetPathChanged = true;
 			_sidChanged = true;
 		} else if (_sid != l0r.getSID()) {
-			System.out.println("  Detected new SID: old: " + _sid + "; new: " + l0r.getSID());
+			logger.info("  Detected new SID: old: " + _sid + "; new: " + l0r.getSID());
 			_sid = l0r.getSID();
 			_sidChanged = true;
 		}
@@ -191,7 +191,7 @@ public class DAQAggregator {
 			try {
 				propertiesInputStream = new FileInputStream(propertiesFile);
 			} catch (FileNotFoundException e) {
-				System.err.println("Can not load the connection properties file : " + propertiesFile);
+				logger.error("Can not load the connection properties file : " + propertiesFile);
 				e.printStackTrace();
 				System.exit(-1);
 			}
@@ -201,7 +201,7 @@ public class DAQAggregator {
 		try {
 			jdaqMonitorProperties.load(propertiesInputStream);
 		} catch (IOException e) {
-			System.err.println("Can not load the connection properties file : " + propertiesFile);
+			logger.error("Can not load the connection properties file : " + propertiesFile);
 			e.printStackTrace();
 			System.exit(-1);
 		}
@@ -234,7 +234,7 @@ public class DAQAggregator {
 
 		if (jdaqMonitorProperties.containsKey(PROPERTYNAME_PROXY_ENABLE)
 				&& jdaqMonitorProperties.get(PROPERTYNAME_PROXY_ENABLE).toString().toLowerCase().equals("true")) {
-			System.out.println("Setting up SOCKS proxy ...");
+			logger.info("Setting up SOCKS proxy ...");
 
 			Properties sysProperties = System.getProperties();
 
@@ -255,7 +255,7 @@ public class DAQAggregator {
 	 */
 	public void run() {
 		String propFileName = "DAQAggregator.properties";
-		System.out.println("DAQAggregator started with properties file '" + propFileName + "'");
+		logger.info("DAQAggregator started with properties file '" + propFileName + "'");
 
 		Properties prop = new Properties();
 		InputStream inputStream = null;
