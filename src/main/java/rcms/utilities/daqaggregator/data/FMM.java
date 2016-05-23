@@ -38,6 +38,11 @@ public class FMM implements java.io.Serializable {
 		return fmmApplication;
 	}
 
+	@Override
+	public String toString() {
+		return "FMM [fmmApplication=" + fmmApplication + ", geoslot=" + geoslot + "]";
+	}
+
 	public int getGeoslot() {
 		return geoslot;
 	}

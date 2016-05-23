@@ -68,6 +68,8 @@ public class FlashlistManager {
 
 		int timeResult;
 		long startTime = System.currentTimeMillis();
+		
+		MappingReporter.get().clear();
 
 		for (Flashlist flashlist : flashlists) {
 
@@ -95,7 +97,10 @@ public class FlashlistManager {
 
 		long stopTime = System.currentTimeMillis();
 		timeResult = (int) (stopTime - startTime);
-		logger.info("Reading all flashlists finished in " + timeResult + "ms");
+		logger.info("Reading and mapping all flashlists finished in " + timeResult + "ms");
+		
+
+		MappingReporter.get().summarize();
 
 	}
 

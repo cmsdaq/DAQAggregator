@@ -70,6 +70,7 @@ public class FRLPc implements java.io.Serializable, FlashlistUpdatable{
 
 	@Override
 	public void updateFromFlashlist(FlashlistType flashlistType, JsonNode flashlistRow) {
+		
 		// TODO Auto-generated method stub
 		
 	}

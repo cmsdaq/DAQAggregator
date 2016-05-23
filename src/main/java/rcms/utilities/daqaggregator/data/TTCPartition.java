@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.databind.JsonNode;
 
+import rcms.utilities.daqaggregator.mappers.Derivable;
 import rcms.utilities.daqaggregator.mappers.FlashlistType;
 import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
 
@@ -15,7 +16,7 @@ import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
  */
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
-public class TTCPartition implements java.io.Serializable, FlashlistUpdatable {
+public class TTCPartition implements java.io.Serializable, FlashlistUpdatable, Derivable {
 
 	// ----------------------------------------
 	// fields set at beginning of session
@@ -50,10 +51,6 @@ public class TTCPartition implements java.io.Serializable, FlashlistUpdatable {
 			this.percentBusy = (float) flashlistRow.get("outputFractionBusyA").asDouble() * 100;
 			this.percentWarning = (float) flashlistRow.get("outputFractionWarningA").asDouble() * 100;
 			this.ttsState = flashlistRow.get("outputStateA").asText();
-		}
-
-		else if (flashlistType == FlashlistType.FMM_INPUT) {
-			System.out.println("TTCPartition masked (isActive) " + flashlistRow.get("isActive").asText());
 		}
 
 	}
@@ -104,6 +101,23 @@ public class TTCPartition implements java.io.Serializable, FlashlistUpdatable {
 
 	public void setFmm(FMM fmm) {
 		this.fmm = fmm;
+	}
+
+	@Override
+	public void calculateDerivedValues() {
+		masked = false;
+		int maskedFeds = 0;
+		for (FED fed : fmm.getFeds()) {
+			if (fed.isFmmMasked()) {
+				maskedFeds++;
+			}
+		}
+
+		/* TTCPartition is mask if any of FED is masked */
+		if (maskedFeds > 0) {
+			masked = true;
+		}
+
 	}
 
 }

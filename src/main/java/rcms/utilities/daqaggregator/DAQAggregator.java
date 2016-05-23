@@ -124,12 +124,11 @@ public class DAQAggregator {
 						daq.setDpsetPath(_dpsetPath);
 						daq.setLastUpdate(System.currentTimeMillis());
 						flashlistManager = new FlashlistManager(flashlistUrls, structureMapper, _sid);
+						flashlistManager.retrieveAvailableFlashlists();
 
 						System.out.println("Done for session " + daq.getSessionId());
 					}
 
-					// update the structure from flashlists
-					flashlistManager.retrieveAvailableFlashlists();
 					flashlistManager.readFlashlists();
 
 					// postprocess daq (derived values, summary classes)

@@ -73,6 +73,8 @@ public class RU implements Serializable, FlashlistUpdatable {
 	 */
 	@Override
 	public void updateFromFlashlist(FlashlistType flashlistType, JsonNode flashlistRow) {
+		
+
 
 		if (flashlistType == FlashlistType.RU) {
 			// direct values

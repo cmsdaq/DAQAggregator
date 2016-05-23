@@ -71,6 +71,7 @@ public class RelationMapper implements Serializable {
 				if (objectMapper.feds.containsKey(fedId)) {
 					FED fed = objectMapper.feds.get(fedId);
 					fmm.getFeds().add(fed);
+					fed.setFmm(fmm);
 				} else {
 					logger.warn("FMM has relation with FED that does not have FRL, ignoring this FED");
 				}

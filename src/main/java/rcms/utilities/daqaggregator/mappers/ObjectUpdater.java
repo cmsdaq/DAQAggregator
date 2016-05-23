@@ -1,10 +1,16 @@
 package rcms.utilities.daqaggregator.mappers;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.databind.JsonNode;
+
+import rcms.utilities.daqaggregator.data.FED;
 
 public class ObjectUpdater {
 
@@ -25,8 +31,9 @@ public class ObjectUpdater {
 			updateObjectFromRowByInstanceId(flashlist, structureMapper.getObjectMapper().fedsById);
 			break;
 		case FMM_INPUT:
-			updateObjectFromRowByInstanceId(flashlist, structureMapper.getObjectMapper().fedsById);
-			//updateObjectByGeoKey();
+			// updateObjectFromRowByInstanceId(flashlist,
+			// structureMapper.getObjectMapper().fedsById);
+			updateObjectFromRowByGeo(flashlist, structureMapper.getObjectMapper().fedsById.values());
 			break;
 		case FEROL_STATUS:
 			updateObjectFromRowByInstanceId(flashlist, structureMapper.getObjectMapper().ttcpartitionsById);
@@ -60,6 +67,71 @@ public class ObjectUpdater {
 
 	}
 
+	public void updateObjectFromRowByGeo(Flashlist flashlist, Collection<FED> objects) {
+
+		int failed = 0;
+		int total = 0;
+
+		/*
+		 * There may be FED without FMM or FMMApplication - either way we cannot
+		 * map them by hostname (comes from FMMApplication) and geoslot (comes
+		 * from FMM), we will process only these ones:
+		 */
+		Set<FED> fedsToProcess = new HashSet<FED>();
+
+		Map<String, Map<Integer, Map<Integer, JsonNode>>> hostnameGeoslotMap = new HashMap<>();
+		for (FED t : objects) {
+			total++;
+			if (t.getFmm() == null || t.getFmm().getFmmApplication() == null) {
+				failed++;
+				continue;
+			}
+			fedsToProcess.add(t);
+
+			Integer geoslot = t.getFmm().getGeoslot();
+			String hostname = t.getFmm().getFmmApplication().getHostname();
+
+			// prepare HOSTNAME
+			if (!hostnameGeoslotMap.containsKey(hostname)) {
+				hostnameGeoslotMap.put(hostname, new HashMap<Integer, Map<Integer, JsonNode>>());
+			}
+
+			// prepare GEOSLOT
+			if (!hostnameGeoslotMap.get(hostname).containsKey(geoslot)) {
+				hostnameGeoslotMap.get(hostname).put(geoslot, new HashMap<Integer, JsonNode>());
+			}
+
+		}
+
+		/* prepare data from flashlist */
+		for (JsonNode row : flashlist.getRowsNode()) {
+			String hostname = row.get("hostname").asText();
+			Integer geoslot = row.get("geoslot").asInt();
+			Integer io = row.get("io").asInt();
+			if (hostnameGeoslotMap.containsKey(hostname) && hostnameGeoslotMap.get(hostname).containsKey(geoslot)) {
+				hostnameGeoslotMap.get(hostname).get(geoslot).put(io, row);
+			}
+		}
+
+		/* pass right flashlist rows to corresponding FEDs */
+		for (FED t : fedsToProcess) {
+			String hostname = t.getFmm().getFmmApplication().getHostname();
+			Integer geoslot = t.getFmm().getGeoslot();
+			Integer io = t.getFmmIO();
+			JsonNode row = hostnameGeoslotMap.get(hostname).get(geoslot).get(io);
+			total++;
+			if (row != null)
+				t.updateFromFlashlist(flashlist.getFlashlistType(), row);
+			else {
+				failed++;
+			}
+		}
+
+		MappingReporter.get().increaseMissing(flashlist.getName(), failed);
+		MappingReporter.get().increaseTotal(flashlist.getName(), total);
+
+	}
+
 	public <T extends FlashlistUpdatable> void updateObjectFromRowByHostname(Flashlist flashlist,
 			Map<String, T> objectsByHostname) {
 
@@ -81,7 +153,9 @@ public class ObjectUpdater {
 			}
 		}
 
-		logger.warn("Flash matching report for " + flashlist.getName() + ", found " + found + ", not found " + failed);
+		// TODO: better report this warnings
+		//MappingReporter.get().increaseMissing(flashlist.getName(), failed);
+		//MappingReporter.get().increaseTotal(flashlist.getName(), failed + found);
 	}
 
 	/**
@@ -111,7 +185,7 @@ public class ObjectUpdater {
 					flashlistUpdatableObject.updateFromFlashlist(flashlist.getFlashlistType(), rowNode);
 
 					logger.debug("Updated ru: " + flashlistUpdatableObject);
-					found ++;
+					found++;
 
 				} else {
 					logger.debug("No DAQ object " + flashlist.getFlashlistType() + " with flashlist id " + objectId
@@ -123,9 +197,9 @@ public class ObjectUpdater {
 				logger.warn("Instance number can not be parsed " + rowNode.get(INSTANCE));
 			}
 		}
-		
 
-		logger.warn("Flash matching report for " + flashlist.getName() + ", found " + found + ", not found " + failed);
+		MappingReporter.get().increaseMissing(flashlist.getName(), failed);
+		MappingReporter.get().increaseTotal(flashlist.getName(), failed + found);
 	}
 
 	// TODO: verify data

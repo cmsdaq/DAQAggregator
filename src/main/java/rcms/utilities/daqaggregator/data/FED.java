@@ -61,8 +61,10 @@ public class FED implements java.io.Serializable, FlashlistUpdatable {
 	private long numFRCerrors;
 
 	private long numTriggers;
-	
+
 	private long eventCounter;
+
+	private boolean fmmMasked;
 
 	/**
 	 * Available columns in flashlist FMM_INPUT:
@@ -135,10 +137,11 @@ public class FED implements java.io.Serializable, FlashlistUpdatable {
 	public void updateFromFlashlist(FlashlistType flashlistType, JsonNode flashlistRow) {
 
 		if (flashlistType == FlashlistType.FMM_INPUT) {
-
+			
 			this.percentWarning = (float) (flashlistRow.get("fractionWarning").asDouble() * 100);
 			this.percentBusy = (float) (flashlistRow.get("fractionBusy").asDouble() * 100);
 			this.ttsState = flashlistRow.get("inputState").asText();
+			this.fmmMasked = !flashlistRow.get("isActive").asBoolean();
 
 		} else if (flashlistType == FlashlistType.FEROL_INPUT_STREAM) {
 			// TODO or WrongFEDIdDetected
@@ -272,9 +275,10 @@ public class FED implements java.io.Serializable, FlashlistUpdatable {
 		this.id = id;
 	}
 
+
 	@Override
 	public String toString() {
-		return "FED [id=" + id + ", frlIO=" + frlIO + ", fmmIO=" + fmmIO + ", srcIdExpected=" + srcIdExpected + "]";
+		return "FED [fmm=" + fmm + ", fmmIO=" + fmmIO + "]";
 	}
 
 	public long getEventCounter() {
@@ -283,6 +287,14 @@ public class FED implements java.io.Serializable, FlashlistUpdatable {
 
 	public void setEventCounter(long eventCounter) {
 		this.eventCounter = eventCounter;
+	}
+
+	public boolean isFmmMasked() {
+		return fmmMasked;
+	}
+
+	public void setFmmMasked(boolean fmmMasked) {
+		this.fmmMasked = fmmMasked;
 	}
 
 	// ----------------------------------------------------------------------

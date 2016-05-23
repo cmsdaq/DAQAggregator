@@ -76,7 +76,13 @@ public class FMMApplication implements java.io.Serializable, FlashlistUpdatable 
 	}
 
 	@Override
+	public String toString() {
+		return "FMMApplication [hostname=" + hostname + "]";
+	}
+
+	@Override
 	public void updateFromFlashlist(FlashlistType flashlistType, JsonNode flashlistRow) {
+
 		if (flashlistType == FlashlistType.JOB_CONTROL) {
 			// TODO: use job control for crashed
 			JsonNode jobTable = flashlistRow.get("jobTable");
@@ -87,7 +93,8 @@ public class FMMApplication implements java.io.Serializable, FlashlistUpdatable 
 
 				String status = row.get("status").asText();
 
-				// if not alive than crashed, if no data than default value witch
+				// if not alive than crashed, if no data than default value
+				// witch
 				// is not crashed
 				if (!status.equalsIgnoreCase("alive"))
 					this.crashed = true;
