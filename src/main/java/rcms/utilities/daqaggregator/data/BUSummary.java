@@ -160,12 +160,12 @@ public class BUSummary implements Serializable {
 		this.numRequestsBlocked = numRequestsBlocked;
 	}
 
-	public int getNumFUsHlt() {
+	public int getNumFUsHLT() {
 		return numFUsHLT;
 	}
 
-	public void setNumFUsHLT(int numFUsHlt) {
-		this.numFUsHLT = numFUsHlt;
+	public void setNumFUsHLT(int numFUsHLT) {
+		this.numFUsHLT = numFUsHLT;
 	}
 
 	public int getNumFUsCrashed() {
