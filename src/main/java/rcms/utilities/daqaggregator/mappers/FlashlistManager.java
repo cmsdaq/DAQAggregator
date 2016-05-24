@@ -78,6 +78,7 @@ public class FlashlistManager {
 			if (flashlist.getFlashlistType() == FlashlistType.RU
 					|| flashlist.getFlashlistType() == FlashlistType.FEROL_INPUT_STREAM
 					|| flashlist.getFlashlistType() == FlashlistType.FEROL_CONFIGURATION
+					|| flashlist.getFlashlistType() == FlashlistType.FEROL_STATUS
 					|| flashlist.getFlashlistType() == FlashlistType.BU
 					|| flashlist.getFlashlistType() == FlashlistType.FMM_INPUT
 					|| flashlist.getFlashlistType() == FlashlistType.FMM_STATUS
@@ -101,7 +102,6 @@ public class FlashlistManager {
 		long stopTime = System.currentTimeMillis();
 		timeResult = (int) (stopTime - startTime);
 		logger.info("Reading and mapping all flashlists finished in " + timeResult + "ms");
-
 
 	}
 

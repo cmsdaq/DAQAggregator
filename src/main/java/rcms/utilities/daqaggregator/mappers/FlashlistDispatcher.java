@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import rcms.utilities.daqaggregator.data.FED;
+import rcms.utilities.daqaggregator.data.FRL;
 import rcms.utilities.daqaggregator.mappers.helper.ContextHelper;
 import rcms.utilities.daqaggregator.mappers.helper.FedGeoFinder;
 import rcms.utilities.daqaggregator.mappers.helper.FedInFmmGeoFinder;
@@ -43,10 +44,11 @@ public class FlashlistDispatcher {
 			dispatchRowsByInstanceId(flashlist, structureMapper.getObjectMapper().fedsById);
 			break;
 		case FMM_INPUT:
-			dispatchRowsByGeo(flashlist, structureMapper.getObjectMapper().fedsById.values(), new FedInFmmGeoFinder());
+			dispatchRowsByThreeElementGeo(flashlist, structureMapper.getObjectMapper().fedsById.values(),
+					new FedInFmmGeoFinder());
 			break;
 		case FEROL_STATUS:
-			dispatchRowsByInstanceId(flashlist, structureMapper.getObjectMapper().ttcpartitionsById);
+			dispatchRowsByTwoElementGeo(flashlist, structureMapper.getObjectMapper().frls.values());
 			break;
 		case EVM:
 			if (flashlist.getRowsNode().isArray()) {
@@ -77,11 +79,66 @@ public class FlashlistDispatcher {
 			break;
 		case FEROL_CONFIGURATION:
 			dispatchRowsByHostname(flashlist, structureMapper.getObjectMapper().frlPcByHostname, "context");
-			dispatchRowsByGeo(flashlist, structureMapper.getObjectMapper().fedsById.values(), new FedInFrlGeoFinder());
+			dispatchRowsByThreeElementGeo(flashlist, structureMapper.getObjectMapper().fedsById.values(),
+					new FedInFrlGeoFinder());
+			break;
+		case FMM_STATUS:
+			// dispatch to TTCPartitions
+			// dual FMMs
+			// FMMTrigerLinks
 			break;
 		default:
 			break;
 		}
+
+	}
+
+	public void dispatchRowsByTwoElementGeo(Flashlist flashlist, Collection<FRL> collection) {
+
+		int failed = 0;
+		int total = 0;
+		Map<String, Map<Integer, JsonNode>> hostnameGeoslotMap = new HashMap<>();
+		Set<FRL> frlsToProcess = new HashSet<>();
+		for (FRL frl : collection) {
+			if (frl.getSubFedbuilder() == null || frl.getSubFedbuilder().getFrlPc() == null) {
+				continue;
+			}
+			frlsToProcess.add(frl);
+			String hostname = frl.getSubFedbuilder().getFrlPc().getHostname();
+			// prepare HOSTNAME
+			if (!hostnameGeoslotMap.containsKey(hostname)) {
+				hostnameGeoslotMap.put(hostname, new HashMap<Integer, JsonNode>());
+			}
+		}
+
+		/* prepare data from flashlist */
+		for (JsonNode row : flashlist.getRowsNode()) {
+
+			String hostname = row.get("context").asText();
+
+			hostname = ContextHelper.getHostnameFromContext(hostname);
+			Integer geoslot = row.get("slotNumber").asInt();
+			if (hostnameGeoslotMap.containsKey(hostname)) {
+				hostnameGeoslotMap.get(hostname).put(geoslot, row);
+			}
+		}
+
+		/* dispatch right flashlist rows to corresponding FRLs */
+		for (FRL frl : frlsToProcess) {
+
+			String hostname = frl.getSubFedbuilder().getFrlPc().getHostname();
+			Integer geoslot = frl.getGeoSlot();
+			JsonNode row = hostnameGeoslotMap.get(hostname).get(geoslot);
+			total++;
+			if (row != null)
+				frl.updateFromFlashlist(flashlist.getFlashlistType(), row);
+			else {
+				failed++;
+			}
+		}
+
+		MappingReporter.get().increaseMissing(flashlist.getFlashlistType().name(), failed);
+		MappingReporter.get().increaseTotal(flashlist.getFlashlistType().name(), total);
 
 	}
 
@@ -91,23 +148,23 @@ public class FlashlistDispatcher {
 	 * @param flashlist
 	 * @param objects
 	 */
-	public void dispatchRowsByGeo(Flashlist flashlist, Collection<FED> objects, FedGeoFinder finder) {
+	public void dispatchRowsByThreeElementGeo(Flashlist flashlist, Collection<FED> objects, FedGeoFinder finder) {
 
 		int failed = 0;
 		int total = 0;
 
 		/*
-		 * There may be FED without FMM/FRL or FMMApplication/FRLPc - either way we cannot
-		 * map them by hostname (comes from FMMApplication) and geoslot (comes
-		 * from FMM), we will process only these ones:
+		 * There may be FED without FMM/FRL or FMMApplication/FRLPc - either way
+		 * we cannot map them by hostname (comes from FMMApplication) and
+		 * geoslot (comes from FMM), we will process only these ones:
 		 */
-		Set<FED> fedsToProcess = new HashSet<FED>();
+		Set<FED> fedsToProcess = new HashSet<>();
 
 		Map<String, Map<Integer, Map<Integer, JsonNode>>> hostnameGeoslotMap = new HashMap<>();
 		for (FED t : objects) {
-			//total++;
+			// total++;
 			if (finder.getHostname(t) == null || finder.getGeoslot(t) == null) {
-				//failed++;
+				// failed++;
 				continue;
 			}
 			fedsToProcess.add(t);
@@ -155,7 +212,7 @@ public class FlashlistDispatcher {
 			}
 		}
 
-		/* pass right flashlist rows to corresponding FEDs */
+		/* dispatch right flashlist rows to corresponding FEDs */
 		for (FED fed : fedsToProcess) {
 
 			String hostname = finder.getHostname(fed);

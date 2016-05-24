@@ -5,6 +5,10 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.databind.JsonNode;
+
+import rcms.utilities.daqaggregator.mappers.FlashlistType;
+import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
 
 /**
  * Front-end Readout Link
@@ -13,7 +17,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
  * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
-public class FRL implements java.io.Serializable {
+public class FRL implements java.io.Serializable, FlashlistUpdatable {
 
 	// ----------------------------------------
 	// fields set at beginning of session
@@ -37,7 +41,7 @@ public class FRL implements java.io.Serializable {
 	// fields updated periodically
 	// ----------------------------------------
 	private String state;
-	
+
 	private String substate;
 
 	/** xdaq application url */
@@ -93,6 +97,16 @@ public class FRL implements java.io.Serializable {
 
 	public void setSubstate(String substate) {
 		this.substate = substate;
+	}
+
+	@Override
+	public void updateFromFlashlist(FlashlistType flashlistType, JsonNode flashlistRow) {
+
+		if (flashlistType == FlashlistType.FEROL_STATUS) {
+			state = flashlistRow.get("stateName").asText();
+			substate = flashlistRow.get("subState").asText();
+		}
+
 	}
 
 	// ----------------------------------------------------------------------
