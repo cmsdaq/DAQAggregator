@@ -65,6 +65,12 @@ public class FED implements java.io.Serializable, FlashlistUpdatable {
 	private long eventCounter;
 
 	private boolean fmmMasked;
+	
+	private boolean frlMasked;
+	
+	private boolean hasSLINK;
+	
+	private boolean hasTTS;
 
 	/**
 	 * Available columns in flashlist FMM_INPUT:
@@ -295,6 +301,30 @@ public class FED implements java.io.Serializable, FlashlistUpdatable {
 
 	public void setFmmMasked(boolean fmmMasked) {
 		this.fmmMasked = fmmMasked;
+	}
+
+	public boolean isFrlMasked() {
+		return frlMasked;
+	}
+
+	public void setFrlMasked(boolean frlMasked) {
+		this.frlMasked = frlMasked;
+	}
+
+	public boolean isHasSLINK() {
+		return hasSLINK;
+	}
+
+	public void setHasSLINK(boolean hasSLINK) {
+		this.hasSLINK = hasSLINK;
+	}
+
+	public boolean isHasTTS() {
+		return hasTTS;
+	}
+
+	public void setHasTTS(boolean hasTTS) {
+		this.hasTTS = hasTTS;
 	}
 
 	// ----------------------------------------------------------------------

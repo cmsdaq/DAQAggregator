@@ -37,6 +37,8 @@ public class FRL implements java.io.Serializable {
 	// fields updated periodically
 	// ----------------------------------------
 	private String state;
+	
+	private String substate;
 
 	/** xdaq application url */
 	private String url;
@@ -83,6 +85,14 @@ public class FRL implements java.io.Serializable {
 
 	public void setType(FRLType type) {
 		this.type = type;
+	}
+
+	public String getSubstate() {
+		return substate;
+	}
+
+	public void setSubstate(String substate) {
+		this.substate = substate;
 	}
 
 	// ----------------------------------------------------------------------
