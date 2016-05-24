@@ -10,6 +10,8 @@ import rcms.utilities.daqaggregator.data.FED;
 import rcms.utilities.daqaggregator.data.FEDBuilder;
 import rcms.utilities.daqaggregator.data.FMM;
 import rcms.utilities.daqaggregator.data.FMMApplication;
+import rcms.utilities.daqaggregator.data.FRLPc;
+import rcms.utilities.daqaggregator.data.RU;
 import rcms.utilities.daqaggregator.data.SubFEDBuilder;
 import rcms.utilities.daqaggregator.data.TTCPartition;
 
@@ -32,6 +34,41 @@ public class PostProcessor {
 		daq.getFedBuilderSummary().calculateDerivedValues();
 
 		summarizeFeds();
+		summarizeCrashed();
+		summarizeRus();
+	}
+
+	private void summarizeRus() {
+		int enabledRus = 0, rus = 0, evms = 0;
+
+		for (FEDBuilder fedBuilder : daq.getFedBuilders()) {
+			RU ru = fedBuilder.getRu();
+			rus++;
+			if (ru.getStatus().equalsIgnoreCase("enabled"))
+				enabledRus++;
+			if (ru.isEVM())
+				evms++;
+
+		}
+		logger.info("RU raport: [" + enabledRus + "|" + evms + "]/" + rus + " [enabled|evms]/all");
+
+	}
+
+	private void summarizeCrashed() {
+		int frlPcsCrashed = 0;
+		for (FRLPc frlPc : daq.getFrlPcs()) {
+			if (frlPc.isCrashed())
+				frlPcsCrashed++;
+		}
+
+		int fmmappCrashed = 0;
+		for (FMMApplication fmma : daq.getFmmApplications()) {
+			if (fmma.isCrashed())
+				fmmappCrashed++;
+		}
+
+		logger.info("Crashed: FRLPc " + frlPcsCrashed + "/" + daq.getFrlPcs().size() + ", FMMApplications "
+				+ fmmappCrashed + "/" + daq.getFmmApplications().size());
 	}
 
 	private void calculateDerivedValuesForTTCPs() {
@@ -50,7 +87,7 @@ public class PostProcessor {
 		}
 
 		logger.info("TTCP derived values report: [" + masked + "|" + withoutFMM + "]/" + daq.getTtcPartitions().size()
-				+ " [masked|missing FMM] TTCPs");
+				+ " [masked|missing FMM]/all TTCPs");
 
 	}
 

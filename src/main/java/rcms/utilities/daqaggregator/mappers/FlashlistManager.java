@@ -68,7 +68,7 @@ public class FlashlistManager {
 
 		int timeResult;
 		long startTime = System.currentTimeMillis();
-		
+
 		MappingReporter.get().clear();
 
 		for (Flashlist flashlist : flashlists) {
@@ -76,6 +76,7 @@ public class FlashlistManager {
 			/* read only this flashlists */
 			if (flashlist.getFlashlistType() == FlashlistType.RU
 					|| flashlist.getFlashlistType() == FlashlistType.FEROL_INPUT_STREAM
+					|| flashlist.getFlashlistType() == FlashlistType.FEROL_CONFIGURATION
 					|| flashlist.getFlashlistType() == FlashlistType.BU
 					|| flashlist.getFlashlistType() == FlashlistType.FMM_INPUT
 					|| flashlist.getFlashlistType() == FlashlistType.FMM_STATUS
@@ -98,7 +99,6 @@ public class FlashlistManager {
 		long stopTime = System.currentTimeMillis();
 		timeResult = (int) (stopTime - startTime);
 		logger.info("Reading and mapping all flashlists finished in " + timeResult + "ms");
-		
 
 		MappingReporter.get().summarize();
 

@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import rcms.utilities.daqaggregator.mappers.FlashlistType;
 import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
 
-
 /**
  * Front-end Readout Link PC
  * 
@@ -16,7 +15,7 @@ import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
  */
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
-public class FRLPc implements java.io.Serializable, FlashlistUpdatable{
+public class FRLPc implements java.io.Serializable, FlashlistUpdatable {
 
 	// ----------------------------------------
 	// fields set at beginning of session
@@ -70,9 +69,24 @@ public class FRLPc implements java.io.Serializable, FlashlistUpdatable{
 
 	@Override
 	public void updateFromFlashlist(FlashlistType flashlistType, JsonNode flashlistRow) {
-		
-		// TODO Auto-generated method stub
-		
+
+		if (flashlistType == FlashlistType.JOB_CONTROL) {
+			JsonNode jobTable = flashlistRow.get("jobTable");
+			JsonNode rows = jobTable.get("rows");
+
+			for (JsonNode row : rows) {
+
+				String status = row.get("status").asText();
+
+				// if not alive than crashed, if no data than default value
+				// witch is not crashed
+				if (!status.equalsIgnoreCase("alive"))
+					this.crashed = true;
+
+			}
+
+		}
+
 	}
 	// ----------------------------------------------------------------------
 

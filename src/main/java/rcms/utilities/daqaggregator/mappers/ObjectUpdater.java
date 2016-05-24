@@ -31,8 +31,6 @@ public class ObjectUpdater {
 			updateObjectFromRowByInstanceId(flashlist, structureMapper.getObjectMapper().fedsById);
 			break;
 		case FMM_INPUT:
-			// updateObjectFromRowByInstanceId(flashlist,
-			// structureMapper.getObjectMapper().fedsById);
 			updateObjectFromRowByGeo(flashlist, structureMapper.getObjectMapper().fedsById.values());
 			break;
 		case FEROL_STATUS:
@@ -49,8 +47,8 @@ public class ObjectUpdater {
 			break;
 
 		case JOB_CONTROL:
-			updateObjectFromRowByHostname(flashlist, structureMapper.getObjectMapper().frlPcByHostname);
-			updateObjectFromRowByHostname(flashlist, structureMapper.getObjectMapper().fmmApplicationByHostname);
+			updateObjectFromRowByHostname(flashlist, structureMapper.getObjectMapper().frlPcByHostname,"hostname");
+			updateObjectFromRowByHostname(flashlist, structureMapper.getObjectMapper().fmmApplicationByHostname,"hostname");
 			break;
 
 		case LEVEL_ZERO_FM_SUBSYS:
@@ -60,6 +58,9 @@ public class ObjectUpdater {
 					structureMapper.getObjectMapper().daq.setDaqState(rowNode.get("STATE").asText());
 				}
 			}
+			break;
+		case FEROL_CONFIGURATION:
+			updateObjectFromRowByHostname(flashlist, structureMapper.getObjectMapper().frlPcByHostname,"context");
 			break;
 		default:
 			break;
@@ -133,7 +134,7 @@ public class ObjectUpdater {
 	}
 
 	public <T extends FlashlistUpdatable> void updateObjectFromRowByHostname(Flashlist flashlist,
-			Map<String, T> objectsByHostname) {
+			Map<String, T> objectsByHostname, String flashlistKey) {
 
 		logger.debug("Updating " + flashlist.getRowsNode().size() + " of " + flashlist.getFlashlistType() + " objects ("
 				+ objectsByHostname.size() + " in the structure)");
@@ -142,7 +143,18 @@ public class ObjectUpdater {
 		int failed = 0;
 
 		for (JsonNode rowNode : flashlist.getRowsNode()) {
-			String hostname = rowNode.get("hostname").asText() + ".cms";
+			String hostname = rowNode.get(flashlistKey).asText() ;
+			// remove protocol
+			if(hostname.startsWith("http://")){
+				hostname = hostname.substring(7);
+			}
+			// remove port
+			if(hostname.contains(":")){
+				hostname = hostname.substring(0, hostname.indexOf(":"));
+			}
+			if(!hostname.endsWith(".cms")){
+				hostname = hostname + ".cms";
+			}
 			if (objectsByHostname.containsKey(hostname)) {
 				T flashlistUpdatableObject = objectsByHostname.get(hostname);
 				flashlistUpdatableObject.updateFromFlashlist(flashlist.getFlashlistType(), rowNode);
@@ -153,9 +165,9 @@ public class ObjectUpdater {
 			}
 		}
 
-		// TODO: better report this warnings
-		//MappingReporter.get().increaseMissing(flashlist.getName(), failed);
-		//MappingReporter.get().increaseTotal(flashlist.getName(), failed + found);
+		//TODO: better report this warnings
+		MappingReporter.get().increaseMissing(flashlist.getName(), failed);
+		MappingReporter.get().increaseTotal(flashlist.getName(), failed + found);
 	}
 
 	/**

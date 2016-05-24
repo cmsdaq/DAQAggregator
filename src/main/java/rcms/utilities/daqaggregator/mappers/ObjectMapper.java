@@ -183,6 +183,7 @@ public class ObjectMapper implements Serializable {
 			ru.setEVM(hwru.isEVM());
 			ru.setInstance((int) hwru.getId());
 			ru.setHostname(hwru.getHostName());
+			ru.setStatus("unknown");
 			rusById.put(ru.getInstance(), ru);
 			result.put(hwru.hashCode(), ru);
 		}

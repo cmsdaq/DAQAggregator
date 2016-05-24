@@ -65,6 +65,8 @@ public class RU implements Serializable, FlashlistUpdatable {
 	/** requests from BUs ? */
 	private int requests;
 
+	private String status;
+
 	/**
 	 * Update object based on given flashlist fragment
 	 * 
@@ -73,8 +75,6 @@ public class RU implements Serializable, FlashlistUpdatable {
 	 */
 	@Override
 	public void updateFromFlashlist(FlashlistType flashlistType, JsonNode flashlistRow) {
-		
-
 
 		if (flashlistType == FlashlistType.RU) {
 			// direct values
@@ -84,6 +84,7 @@ public class RU implements Serializable, FlashlistUpdatable {
 			this.fragmentsInRU = flashlistRow.get("fragmentCount").asInt();
 			this.superFragmentSizeMean = flashlistRow.get("superFragmentSize").asInt();
 			this.superFragmentSizeStddev = flashlistRow.get("superFragmentSizeStdDev").asInt();
+			this.status = flashlistRow.get("stateName").asText();
 
 			// derived values
 			this.throughput = rate * superFragmentSizeMean;
@@ -218,6 +219,14 @@ public class RU implements Serializable, FlashlistUpdatable {
 		return "RU [rate=" + rate + ", throughput=" + throughput + ", superFragmentSizeMean=" + superFragmentSizeMean
 				+ ", superFragmentSizeStddev=" + superFragmentSizeStddev + ", fragmentsInRU=" + fragmentsInRU
 				+ ", eventsInRU=" + eventsInRU + "]";
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
 	}
 
 	// ----------------------------------------------------------------------
