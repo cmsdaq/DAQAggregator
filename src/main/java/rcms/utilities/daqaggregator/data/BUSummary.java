@@ -26,15 +26,15 @@ public class BUSummary implements Serializable {
 	// fields updated periodically
 	// ----------------------------------------
 
-	/** event rate in kHz ? */
-	private float rate;
+	/** event rate in Hz */
+	private int rate;
 
-	/** throughput in MByte/s ? */
-	private float throughput;
+	/** throughput in Byte/s */
+	private long throughput;
 
-	/** in MByte/s ? */
-	private float eventSizeMean;
-	private float eventSizeStddev;
+	/** in Bytes */
+	private double eventSizeMean;
+	private double eventSizeStddev;
 
 	/** is this processed or requested ? */
 	private int numEvents;
@@ -49,7 +49,7 @@ public class BUSummary implements Serializable {
 
 	private int numRequestsBlocked;
 
-	private int numFUsHlt;
+	private int numFUsHLT;
 
 	private int numFUsCrashed;
 
@@ -60,10 +60,10 @@ public class BUSummary implements Serializable {
 	/** in percent ? */
 	private float ramDiskUsage;
 
-	/** total amount of ramdisk */
+	/** total amount of ramdisk in GB */
 	private float ramDiskTotal;
 
-	/** processed ? to be processed ? on ramdisk ? */
+	/** total number of files written */
 	private int numFiles;
 
 	private int numLumisectionsWithFiles;
@@ -74,39 +74,41 @@ public class BUSummary implements Serializable {
 
 	private int numLumisectionsOutHLT;
 
+	private double fuOutputBandwidthInMB;
+	
 	// ----------------------------------------------------------------------
 
 	// ----------------------------------------------------------------------
 
-	public float getRate() {
+	public int getRate() {
 		return rate;
 	}
 
-	public void setRate(float rate) {
+	public void setRate(int rate) {
 		this.rate = rate;
 	}
 
-	public float getThroughput() {
+	public long getThroughput() {
 		return throughput;
 	}
 
-	public void setThroughput(float throughput) {
+	public void setThroughput(long throughput) {
 		this.throughput = throughput;
 	}
 
-	public float getEventSizeMean() {
+	public double getEventSizeMean() {
 		return eventSizeMean;
 	}
 
-	public void setEventSizeMean(float eventSizeMean) {
+	public void setEventSizeMean(double eventSizeMean) {
 		this.eventSizeMean = eventSizeMean;
 	}
 
-	public float getEventSizeStddev() {
+	public double getEventSizeStddev() {
 		return eventSizeStddev;
 	}
 
-	public void setEventSizeStddev(float eventSizeStddev) {
+	public void setEventSizeStddev(double eventSizeStddev) {
 		this.eventSizeStddev = eventSizeStddev;
 	}
 
@@ -159,11 +161,11 @@ public class BUSummary implements Serializable {
 	}
 
 	public int getNumFUsHlt() {
-		return numFUsHlt;
+		return numFUsHLT;
 	}
 
-	public void setNumFUsHlt(int numFUsHlt) {
-		this.numFUsHlt = numFUsHlt;
+	public void setNumFUsHLT(int numFUsHlt) {
+		this.numFUsHLT = numFUsHlt;
 	}
 
 	public int getNumFUsCrashed() {
@@ -246,6 +248,14 @@ public class BUSummary implements Serializable {
 		this.numLumisectionsOutHLT = numLumisectionsOutHLT;
 	}
 
+	public double getFuOutputBandwidthInMB() {
+		return fuOutputBandwidthInMB;
+	}
+
+	public void setFuOutputBandwidthInMB(double fuOutputBandwidthInMB) {
+		this.fuOutputBandwidthInMB = fuOutputBandwidthInMB;
+	}
+
 	public DAQ getDaq() {
 		return daq;
 	}
@@ -265,20 +275,20 @@ public class BUSummary implements Serializable {
 		int priority = 0;
 
 		/* Averages */
-		float rate = 0;
-		float eventSizeMean = 0;
-		float eventSizeStddev = 0;
+		int rate = 0;
+		double eventSizeMean = 0;
+		double eventSizeStddev = 0;
 
 		/* sums */
 		float ramDiskTotal = 0;
 		float ramDiskUsage = 0;
-		float throughput = 0;
+		long throughput = 0;
 		int numEvents = 0;
 		int numEventsInBU = 0;
 		int numFiles = 0;
 		int numFUsCloud = 0;
 		int numFUsCrashed = 0;
-		int numFUsHlt = 0;
+		int numFUsHLT = 0;
 		int numFUsStale = 0;
 		int numLumisectionsForHLT = 0;
 		int numLumisectionsOutHLT = 0;
@@ -287,38 +297,51 @@ public class BUSummary implements Serializable {
 		int numRequestsSent = 0;
 		int numRequestsUsed = 0;
 
-		int numberOfBus = daq.getBus().size();
+		int numberOfBus = 0;
 
 		this.setDaq(daq);
 		for (BU bu : daq.getBus()) {
 			numEvents += bu.getNumEvents();
 			numEventsInBU += bu.getNumEventsInBU();
-			currentLumisection += bu.getCurrentLumisection();
-			eventSizeMean += bu.getEventSizeMean();
-			eventSizeStddev += bu.getEventSizeStddev();
 			numFiles += bu.getNumFiles();
 			numFUsCloud += bu.getNumFUsCloud();
 			numFUsCrashed += bu.getNumFUsCrashed();
-			numFUsHlt += bu.getNumFUsHlt();
+			numFUsHLT += bu.getNumFUsHLT();
 			numFUsStale += bu.getNumFUsStale();
-			numLumisectionsForHLT += bu.getNumLumisectionsForHLT();
-			numLumisectionsOutHLT += bu.getNumLumisectionsOutHLT();
-			numLumisectionsWithFiles += bu.getNumLumisectionsWithFiles();
 			numRequestsBlocked += bu.getNumRequestsBlocked();
 			numRequestsSent += bu.getNumRequestsSent();
 			numRequestsUsed += bu.getNumRequestsUsed();
-			priority += bu.getPriority();
 			ramDiskTotal += bu.getRamDiskTotal();
-			ramDiskUsage += bu.getRamDiskUsage();
-
-			rate += bu.getRate();
-			throughput += bu.getThroughput();
+			ramDiskUsage += bu.getRamDiskUsage() * bu.getRamDiskTotal();
+			fuOutputBandwidthInMB += bu.getFuOutputBandwidthInMB();
+			
+			if ( bu.getRate() > 0) {
+				++numberOfBus;
+				rate += bu.getRate();
+				throughput += bu.getThroughput();
+				eventSizeMean += bu.getEventSizeMean();
+				eventSizeStddev += Math.pow(bu.getEventSizeStddev(),2);
+				numLumisectionsWithFiles += bu.getNumLumisectionsWithFiles();				
+			}
+			
+			if ( bu.getCurrentLumisection() > currentLumisection )
+				currentLumisection = bu.getCurrentLumisection();
+			if ( bu.getNumLumisectionsForHLT() > numLumisectionsForHLT )
+				numLumisectionsForHLT = bu.getNumLumisectionsForHLT();
+			if ( bu.getNumLumisectionsOutHLT() > numLumisectionsOutHLT )
+				numLumisectionsOutHLT = bu.getNumLumisectionsOutHLT();
+			if ( bu.getPriority() > priority )
+				priority = bu.getPriority();
+			
 		}
 
 		/* avarage values */
-		rate = rate / (float) numberOfBus;
-		eventSizeMean = eventSizeMean / (float) numberOfBus;
-		eventSizeStddev = eventSizeStddev / (float) numberOfBus;
+		if ( numberOfBus > 0 ) {
+			rate = rate / numberOfBus;
+			eventSizeMean = eventSizeMean / numberOfBus;
+			eventSizeStddev = Math.sqrt(eventSizeStddev);
+		}
+		ramDiskUsage = ramDiskTotal>0 ? ramDiskUsage/ramDiskTotal*100 : 0;
 
 		this.setNumEvents(numEvents);
 		this.setNumEventsInBU(numEventsInBU);
@@ -328,7 +351,7 @@ public class BUSummary implements Serializable {
 		this.setNumFiles(numFiles);
 		this.setNumFUsCloud(numFUsCloud);
 		this.setNumFUsCrashed(numFUsCrashed);
-		this.setNumFUsHlt(numFUsHlt);
+		this.setNumFUsHLT(numFUsHLT);
 		this.setNumFUsStale(numFUsStale);
 		this.setNumLumisectionsForHLT(numLumisectionsForHLT);
 		this.setNumLumisectionsOutHLT(numLumisectionsOutHLT);
