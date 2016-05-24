@@ -13,9 +13,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 import rcms.utilities.daqaggregator.data.FED;
 import rcms.utilities.daqaggregator.data.FRL;
 import rcms.utilities.daqaggregator.mappers.helper.ContextHelper;
+import rcms.utilities.daqaggregator.mappers.helper.FMMGeoFinder;
+import rcms.utilities.daqaggregator.mappers.helper.FRLGeoFinder;
 import rcms.utilities.daqaggregator.mappers.helper.FedGeoFinder;
 import rcms.utilities.daqaggregator.mappers.helper.FedInFmmGeoFinder;
 import rcms.utilities.daqaggregator.mappers.helper.FedInFrlGeoFinder;
+import rcms.utilities.daqaggregator.mappers.helper.HostnameGeoslotFinder;
 
 public class FlashlistDispatcher {
 
@@ -48,7 +51,7 @@ public class FlashlistDispatcher {
 					new FedInFmmGeoFinder());
 			break;
 		case FEROL_STATUS:
-			dispatchRowsByTwoElementGeo(flashlist, structureMapper.getObjectMapper().frls.values());
+			dispatchRowsByTwoElementGeo(flashlist, structureMapper.getObjectMapper().frls.values(), new FRLGeoFinder());
 			break;
 		case EVM:
 			if (flashlist.getRowsNode().isArray()) {
@@ -83,6 +86,8 @@ public class FlashlistDispatcher {
 					new FedInFrlGeoFinder());
 			break;
 		case FMM_STATUS:
+			dispatchRowsByTwoElementGeo(flashlist, structureMapper.getObjectMapper().fmms.values(), new FMMGeoFinder());
+
 			// dispatch to TTCPartitions
 			// dual FMMs
 			// FMMTrigerLinks
@@ -93,18 +98,19 @@ public class FlashlistDispatcher {
 
 	}
 
-	public void dispatchRowsByTwoElementGeo(Flashlist flashlist, Collection<FRL> collection) {
+	public <T extends FlashlistUpdatable> void dispatchRowsByTwoElementGeo(Flashlist flashlist,
+			Collection<T> collection, HostnameGeoslotFinder<T> finder) {
 
 		int failed = 0;
 		int total = 0;
 		Map<String, Map<Integer, JsonNode>> hostnameGeoslotMap = new HashMap<>();
-		Set<FRL> frlsToProcess = new HashSet<>();
-		for (FRL frl : collection) {
-			if (frl.getSubFedbuilder() == null || frl.getSubFedbuilder().getFrlPc() == null) {
+		Set<T> findablesToProcess = new HashSet<>();
+		for (T findable : collection) {
+			if (finder.getHostname(findable) == null || finder.getGeoslot(findable) == null) {
 				continue;
 			}
-			frlsToProcess.add(frl);
-			String hostname = frl.getSubFedbuilder().getFrlPc().getHostname();
+			findablesToProcess.add(findable);
+			String hostname = finder.getHostname(findable);
 			// prepare HOSTNAME
 			if (!hostnameGeoslotMap.containsKey(hostname)) {
 				hostnameGeoslotMap.put(hostname, new HashMap<Integer, JsonNode>());
@@ -114,24 +120,24 @@ public class FlashlistDispatcher {
 		/* prepare data from flashlist */
 		for (JsonNode row : flashlist.getRowsNode()) {
 
-			String hostname = row.get("context").asText();
+			String hostname = row.get(finder.getFlashlistHostnameKey()).asText();
 
 			hostname = ContextHelper.getHostnameFromContext(hostname);
-			Integer geoslot = row.get("slotNumber").asInt();
+			Integer geoslot = row.get(finder.getFlashlistGeoslotKey()).asInt();
 			if (hostnameGeoslotMap.containsKey(hostname)) {
 				hostnameGeoslotMap.get(hostname).put(geoslot, row);
 			}
 		}
 
 		/* dispatch right flashlist rows to corresponding FRLs */
-		for (FRL frl : frlsToProcess) {
+		for (T findable : findablesToProcess) {
 
-			String hostname = frl.getSubFedbuilder().getFrlPc().getHostname();
-			Integer geoslot = frl.getGeoSlot();
+			String hostname = finder.getHostname(findable);
+			Integer geoslot = finder.getGeoslot(findable);
 			JsonNode row = hostnameGeoslotMap.get(hostname).get(geoslot);
 			total++;
 			if (row != null)
-				frl.updateFromFlashlist(flashlist.getFlashlistType(), row);
+				findable.updateFromFlashlist(flashlist.getFlashlistType(), row);
 			else {
 				failed++;
 			}

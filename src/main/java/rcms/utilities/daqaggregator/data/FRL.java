@@ -105,8 +105,9 @@ public class FRL implements java.io.Serializable, FlashlistUpdatable {
 		if (flashlistType == FlashlistType.FEROL_STATUS) {
 			state = flashlistRow.get("stateName").asText();
 			substate = flashlistRow.get("subState").asText();
+			url = flashlistRow.get("context").asText();
 		}
-
+		
 	}
 
 	// ----------------------------------------------------------------------
