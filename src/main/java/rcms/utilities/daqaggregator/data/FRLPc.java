@@ -23,8 +23,6 @@ public class FRLPc implements java.io.Serializable, FlashlistUpdatable {
 
 	private String hostname;
 
-	/** xdaq application url */
-	private String url;
 
 	private boolean masked;
 
@@ -47,9 +45,7 @@ public class FRLPc implements java.io.Serializable, FlashlistUpdatable {
 		return hostname;
 	}
 
-	public String getUrl() {
-		return url;
-	}
+
 
 	public boolean isMasked() {
 		return masked;
@@ -59,9 +55,6 @@ public class FRLPc implements java.io.Serializable, FlashlistUpdatable {
 		this.hostname = hostname;
 	}
 
-	public void setUrl(String url) {
-		this.url = url;
-	}
 
 	public void setMasked(boolean masked) {
 		this.masked = masked;

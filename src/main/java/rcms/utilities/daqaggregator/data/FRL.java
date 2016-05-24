@@ -38,6 +38,17 @@ public class FRL implements java.io.Serializable {
 	// ----------------------------------------
 	private String state;
 
+	/** xdaq application url */
+	private String url;
+
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
+	}
+
 	public String getState() {
 		return state;
 	}

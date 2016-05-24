@@ -27,7 +27,6 @@ public class FMMApplication implements java.io.Serializable, FlashlistUpdatable 
 
 	private String hostname;
 
-	private String url;
 
 	private final List<FMM> fmms = new ArrayList<FMM>();
 
@@ -55,9 +54,6 @@ public class FMMApplication implements java.io.Serializable, FlashlistUpdatable 
 		return hostname;
 	}
 
-	public String getUrl() {
-		return url;
-	}
 
 	public List<FMM> getFmms() {
 		return fmms;
@@ -71,9 +67,6 @@ public class FMMApplication implements java.io.Serializable, FlashlistUpdatable 
 		this.hostname = hostname;
 	}
 
-	public void setUrl(String url) {
-		this.url = url;
-	}
 
 	@Override
 	public String toString() {
