@@ -12,29 +12,37 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import rcms.utilities.daqaggregator.data.FED;
 
-public class ObjectUpdater {
+public class FlashlistDispatcher {
 
 	final String INSTANCE = "instance";
 
 	private static final Logger logger = Logger.getLogger(Flashlist.class);
 
-	public void update(Flashlist flashlist, StructureMapper structureMapper) {
+	/**
+	 * Dispatch flashlist rows to appropriate objects from DAQ structure. Note
+	 * that a flashlist must be already initialized, for initialization see
+	 * {@link FlashlistManager}
+	 * 
+	 * @param flashlist
+	 * @param structureMapper
+	 */
+	public void dispatch(Flashlist flashlist, StructureMapper structureMapper) {
 		FlashlistType type = flashlist.getFlashlistType();
 		switch (type) {
 		case RU:
-			updateObjectFromRowByInstanceId(flashlist, structureMapper.getObjectMapper().rusById);
+			dispatchRowsByInstanceId(flashlist, structureMapper.getObjectMapper().rusById);
 			break;
 		case BU:
-			updateObjectFromRowByInstanceId(flashlist, structureMapper.getObjectMapper().busById);
+			dispatchRowsByInstanceId(flashlist, structureMapper.getObjectMapper().busById);
 			break;
 		case FEROL_INPUT_STREAM:
-			updateObjectFromRowByInstanceId(flashlist, structureMapper.getObjectMapper().fedsById);
+			dispatchRowsByInstanceId(flashlist, structureMapper.getObjectMapper().fedsById);
 			break;
 		case FMM_INPUT:
-			updateObjectFromRowByGeo(flashlist, structureMapper.getObjectMapper().fedsById.values());
+			dispatchRowsByGeo(flashlist, structureMapper.getObjectMapper().fedsById.values());
 			break;
 		case FEROL_STATUS:
-			updateObjectFromRowByInstanceId(flashlist, structureMapper.getObjectMapper().ttcpartitionsById);
+			dispatchRowsByInstanceId(flashlist, structureMapper.getObjectMapper().ttcpartitionsById);
 			break;
 		case EVM:
 			if (flashlist.getRowsNode().isArray()) {
@@ -47,20 +55,24 @@ public class ObjectUpdater {
 			break;
 
 		case JOB_CONTROL:
-			updateObjectFromRowByHostname(flashlist, structureMapper.getObjectMapper().frlPcByHostname,"hostname");
-			updateObjectFromRowByHostname(flashlist, structureMapper.getObjectMapper().fmmApplicationByHostname,"hostname");
+			dispatchRowsByHostname(flashlist, structureMapper.getObjectMapper().frlPcByHostname, "hostname");
+			dispatchRowsByHostname(flashlist, structureMapper.getObjectMapper().fmmApplicationByHostname, "hostname");
 			break;
 
 		case LEVEL_ZERO_FM_SUBSYS:
 			for (JsonNode rowNode : flashlist.getRowsNode()) {
 				if (rowNode.get("SUBSYS").asText().equals("DAQ") && rowNode.get("FMURL").asText().contains("toppro")) {
-					logger.debug("Found DAQ status: " + rowNode.get("STATE") + ", url: " + rowNode.get("FMURL"));
-					structureMapper.getObjectMapper().daq.setDaqState(rowNode.get("STATE").asText());
+					structureMapper.getObjectMapper().daq.updateFromFlashlist(flashlist.getFlashlistType(), rowNode);
 				}
 			}
 			break;
+		case LEVEL_ZERO_FM_DYNAMIC:
+			for (JsonNode rowNode : flashlist.getRowsNode()) {
+				structureMapper.getObjectMapper().daq.updateFromFlashlist(flashlist.getFlashlistType(), rowNode);
+			}
+			break;
 		case FEROL_CONFIGURATION:
-			updateObjectFromRowByHostname(flashlist, structureMapper.getObjectMapper().frlPcByHostname,"context");
+			dispatchRowsByHostname(flashlist, structureMapper.getObjectMapper().frlPcByHostname, "context");
 			break;
 		default:
 			break;
@@ -68,7 +80,13 @@ public class ObjectUpdater {
 
 	}
 
-	public void updateObjectFromRowByGeo(Flashlist flashlist, Collection<FED> objects) {
+	/**
+	 * Dispatch rows of a flashlist to appropriate objects by geolocation
+	 * 
+	 * @param flashlist
+	 * @param objects
+	 */
+	public void dispatchRowsByGeo(Flashlist flashlist, Collection<FED> objects) {
 
 		int failed = 0;
 		int total = 0;
@@ -133,7 +151,14 @@ public class ObjectUpdater {
 
 	}
 
-	public <T extends FlashlistUpdatable> void updateObjectFromRowByHostname(Flashlist flashlist,
+	/**
+	 * Dispatch rows of a flashlist to appropriate objects by hostname
+	 * 
+	 * @param flashlist
+	 * @param objectsByHostname
+	 * @param flashlistKey
+	 */
+	public <T extends FlashlistUpdatable> void dispatchRowsByHostname(Flashlist flashlist,
 			Map<String, T> objectsByHostname, String flashlistKey) {
 
 		logger.debug("Updating " + flashlist.getRowsNode().size() + " of " + flashlist.getFlashlistType() + " objects ("
@@ -143,16 +168,16 @@ public class ObjectUpdater {
 		int failed = 0;
 
 		for (JsonNode rowNode : flashlist.getRowsNode()) {
-			String hostname = rowNode.get(flashlistKey).asText() ;
+			String hostname = rowNode.get(flashlistKey).asText();
 			// remove protocol
-			if(hostname.startsWith("http://")){
+			if (hostname.startsWith("http://")) {
 				hostname = hostname.substring(7);
 			}
 			// remove port
-			if(hostname.contains(":")){
+			if (hostname.contains(":")) {
 				hostname = hostname.substring(0, hostname.indexOf(":"));
 			}
-			if(!hostname.endsWith(".cms")){
+			if (!hostname.endsWith(".cms")) {
 				hostname = hostname + ".cms";
 			}
 			if (objectsByHostname.containsKey(hostname)) {
@@ -165,21 +190,21 @@ public class ObjectUpdater {
 			}
 		}
 
-		//TODO: better report this warnings
+		// TODO: better report this warnings
 		MappingReporter.get().increaseMissing(flashlist.getName(), failed);
 		MappingReporter.get().increaseTotal(flashlist.getName(), failed + found);
 	}
 
 	/**
 	 * 
-	 * Update objects with data from given flashlist
+	 * Dispatch rows of a flashlist to appropriate objects by instance id
 	 * 
 	 * @param flashlist
 	 *            Flashlist object with data retrieved from LAS
 	 * @param objectsById
 	 *            objects to update
 	 */
-	public <T extends FlashlistUpdatable> void updateObjectFromRowByInstanceId(Flashlist flashlist,
+	public <T extends FlashlistUpdatable> void dispatchRowsByInstanceId(Flashlist flashlist,
 			Map<Integer, T> objectsById) {
 
 		logger.debug("Updating " + flashlist.getRowsNode().size() + " of " + flashlist.getFlashlistType() + " objects ("

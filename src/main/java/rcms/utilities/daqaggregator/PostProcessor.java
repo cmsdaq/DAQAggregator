@@ -36,6 +36,18 @@ public class PostProcessor {
 		summarizeFeds();
 		summarizeCrashed();
 		summarizeRus();
+		summarizeDAQ();
+	}
+
+	private void summarizeDAQ() {
+		String daqStatus = daq.getDaqState();
+		String lhcBeamMode = daq.getLhcBeamMode();
+		String lhcMachineMode = daq.getLhcMachineMode();
+		String levelZeroState = daq.getLevelZeroState();
+
+		logger.info("DAQ state: " + daqStatus + ", LHC beam mode: " + lhcBeamMode + ", LHC machine mode: "
+				+ lhcMachineMode + ", L0 state: " + levelZeroState);
+
 	}
 
 	private void summarizeRus() {

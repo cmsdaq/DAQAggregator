@@ -62,7 +62,8 @@ public class FlashlistManager {
 	}
 
 	/**
-	 * Read flashlists
+	 * This method retrieves data only from necessary flashlists. After
+	 * retrieving it passes flashlist to dispatcher {@link FlashlistDispatcher}
 	 */
 	public void readFlashlists() {
 
@@ -82,13 +83,14 @@ public class FlashlistManager {
 					|| flashlist.getFlashlistType() == FlashlistType.FMM_STATUS
 					|| flashlist.getFlashlistType() == FlashlistType.EVM
 					|| flashlist.getFlashlistType() == FlashlistType.JOB_CONTROL
+					|| flashlist.getFlashlistType() == FlashlistType.LEVEL_ZERO_FM_DYNAMIC
 					|| flashlist.getFlashlistType() == FlashlistType.LEVEL_ZERO_FM_SUBSYS)
 				try {
 
 					flashlist.initialize();
 					logger.debug("Flashlist definition:" + flashlist.getDefinitionNode());
-					ObjectUpdater updater = new ObjectUpdater();
-					updater.update(flashlist, structureMapper);
+					FlashlistDispatcher dispatcher = new FlashlistDispatcher();
+					dispatcher.dispatch(flashlist, structureMapper);
 
 				} catch (IOException e) {
 					logger.error("Error reading flashlist " + flashlist);

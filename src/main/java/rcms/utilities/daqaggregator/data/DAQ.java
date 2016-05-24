@@ -5,6 +5,10 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.databind.JsonNode;
+
+import rcms.utilities.daqaggregator.mappers.FlashlistType;
+import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
 
 /**
  * Root class of DAQ structure
@@ -14,7 +18,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
  *
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
-public class DAQ implements java.io.Serializable {
+public class DAQ implements java.io.Serializable , FlashlistUpdatable{
 
 	public String toString() {
 		return "BUs number in DAQ: " + bus.toString();
@@ -57,6 +61,10 @@ public class DAQ implements java.io.Serializable {
 
 	private String daqState;
 
+	private String levelZeroState;
+	private String lhcMachineMode;
+	private String lhcBeamMode;
+	
 	public int getRunNumber() {
 		return runNumber;
 	}
@@ -143,6 +151,43 @@ public class DAQ implements java.io.Serializable {
 
 	public void setBuSummary(BUSummary buSummary) {
 		this.buSummary = buSummary;
+	}
+
+	@Override
+	public void updateFromFlashlist(FlashlistType flashlistType, JsonNode flashlistRow) {
+		if (flashlistType == FlashlistType.LEVEL_ZERO_FM_SUBSYS){
+			this.daqState = flashlistRow.get("STATE").asText();
+		}
+		else if (flashlistType == FlashlistType.LEVEL_ZERO_FM_DYNAMIC){
+			this.levelZeroState = flashlistRow.get("STATE").asText();
+			this.lhcBeamMode = flashlistRow.get("LHC_BEAM_MODE").asText();
+			this.lhcMachineMode = flashlistRow.get("LHC_MACHINE_MODE").asText();
+		}
+		
+	}
+
+	public String getLevelZeroState() {
+		return levelZeroState;
+	}
+
+	public void setLevelZeroState(String levelZeroState) {
+		this.levelZeroState = levelZeroState;
+	}
+
+	public String getLhcMachineMode() {
+		return lhcMachineMode;
+	}
+
+	public void setLhcMachineMode(String lhcMachineMode) {
+		this.lhcMachineMode = lhcMachineMode;
+	}
+
+	public String getLhcBeamMode() {
+		return lhcBeamMode;
+	}
+
+	public void setLhcBeamMode(String lhcBeamMode) {
+		this.lhcBeamMode = lhcBeamMode;
 	}
 
 }
