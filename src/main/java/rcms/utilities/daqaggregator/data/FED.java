@@ -65,11 +65,11 @@ public class FED implements java.io.Serializable, FlashlistUpdatable {
 	private long eventCounter;
 
 	private boolean fmmMasked;
-	
+
 	private boolean frlMasked;
-	
+
 	private boolean hasSLINK;
-	
+
 	private boolean hasTTS;
 
 	/**
@@ -143,7 +143,7 @@ public class FED implements java.io.Serializable, FlashlistUpdatable {
 	public void updateFromFlashlist(FlashlistType flashlistType, JsonNode flashlistRow) {
 
 		if (flashlistType == FlashlistType.FMM_INPUT) {
-			
+
 			this.percentWarning = (float) (flashlistRow.get("fractionWarning").asDouble() * 100);
 			this.percentBusy = (float) (flashlistRow.get("fractionBusy").asDouble() * 100);
 			this.ttsState = flashlistRow.get("inputState").asText();
@@ -157,6 +157,13 @@ public class FED implements java.io.Serializable, FlashlistUpdatable {
 			this.numFRCerrors = flashlistRow.get("FEDCRCError").asInt();
 			this.numTriggers = flashlistRow.get("TriggerNumber").asInt();
 			this.eventCounter = flashlistRow.get("EventCounter").asInt();
+		} else if (flashlistType == FlashlistType.FEROL_CONFIGURATION) {
+
+			if (this.frlIO == 0)
+				this.frlMasked = flashlistRow.get("enableStream0").asBoolean();
+
+			else if (this.frlIO == 1)
+				this.frlMasked = flashlistRow.get("enableStream1").asBoolean();
 		}
 
 	}
@@ -280,7 +287,6 @@ public class FED implements java.io.Serializable, FlashlistUpdatable {
 	public void setId(int id) {
 		this.id = id;
 	}
-
 
 	@Override
 	public String toString() {

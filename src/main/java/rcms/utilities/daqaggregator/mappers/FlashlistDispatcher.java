@@ -11,6 +11,10 @@ import org.apache.log4j.Logger;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import rcms.utilities.daqaggregator.data.FED;
+import rcms.utilities.daqaggregator.mappers.helper.ContextHelper;
+import rcms.utilities.daqaggregator.mappers.helper.FedGeoFinder;
+import rcms.utilities.daqaggregator.mappers.helper.FedInFmmGeoFinder;
+import rcms.utilities.daqaggregator.mappers.helper.FedInFrlGeoFinder;
 
 public class FlashlistDispatcher {
 
@@ -39,7 +43,7 @@ public class FlashlistDispatcher {
 			dispatchRowsByInstanceId(flashlist, structureMapper.getObjectMapper().fedsById);
 			break;
 		case FMM_INPUT:
-			dispatchRowsByGeo(flashlist, structureMapper.getObjectMapper().fedsById.values());
+			dispatchRowsByGeo(flashlist, structureMapper.getObjectMapper().fedsById.values(), new FedInFmmGeoFinder());
 			break;
 		case FEROL_STATUS:
 			dispatchRowsByInstanceId(flashlist, structureMapper.getObjectMapper().ttcpartitionsById);
@@ -59,7 +63,7 @@ public class FlashlistDispatcher {
 			dispatchRowsByHostname(flashlist, structureMapper.getObjectMapper().fmmApplicationByHostname, "hostname");
 			break;
 
-		case LEVEL_ZERO_FM_SUBSYS:
+		case LEVEL_ZERO_FM_SUBSYS: // TODO: SID column
 			for (JsonNode rowNode : flashlist.getRowsNode()) {
 				if (rowNode.get("SUBSYS").asText().equals("DAQ") && rowNode.get("FMURL").asText().contains("toppro")) {
 					structureMapper.getObjectMapper().daq.updateFromFlashlist(flashlist.getFlashlistType(), rowNode);
@@ -73,6 +77,7 @@ public class FlashlistDispatcher {
 			break;
 		case FEROL_CONFIGURATION:
 			dispatchRowsByHostname(flashlist, structureMapper.getObjectMapper().frlPcByHostname, "context");
+			dispatchRowsByGeo(flashlist, structureMapper.getObjectMapper().fedsById.values(), new FedInFrlGeoFinder());
 			break;
 		default:
 			break;
@@ -86,13 +91,13 @@ public class FlashlistDispatcher {
 	 * @param flashlist
 	 * @param objects
 	 */
-	public void dispatchRowsByGeo(Flashlist flashlist, Collection<FED> objects) {
+	public void dispatchRowsByGeo(Flashlist flashlist, Collection<FED> objects, FedGeoFinder finder) {
 
 		int failed = 0;
 		int total = 0;
 
 		/*
-		 * There may be FED without FMM or FMMApplication - either way we cannot
+		 * There may be FED without FMM/FRL or FMMApplication/FRLPc - either way we cannot
 		 * map them by hostname (comes from FMMApplication) and geoslot (comes
 		 * from FMM), we will process only these ones:
 		 */
@@ -100,15 +105,15 @@ public class FlashlistDispatcher {
 
 		Map<String, Map<Integer, Map<Integer, JsonNode>>> hostnameGeoslotMap = new HashMap<>();
 		for (FED t : objects) {
-			total++;
-			if (t.getFmm() == null || t.getFmm().getFmmApplication() == null) {
-				failed++;
+			//total++;
+			if (finder.getHostname(t) == null || finder.getGeoslot(t) == null) {
+				//failed++;
 				continue;
 			}
 			fedsToProcess.add(t);
 
-			Integer geoslot = t.getFmm().getGeoslot();
-			String hostname = t.getFmm().getFmmApplication().getHostname();
+			Integer geoslot = finder.getGeoslot(t);
+			String hostname = finder.getHostname(t);
 
 			// prepare HOSTNAME
 			if (!hostnameGeoslotMap.containsKey(hostname)) {
@@ -124,30 +129,49 @@ public class FlashlistDispatcher {
 
 		/* prepare data from flashlist */
 		for (JsonNode row : flashlist.getRowsNode()) {
-			String hostname = row.get("hostname").asText();
-			Integer geoslot = row.get("geoslot").asInt();
-			Integer io = row.get("io").asInt();
-			if (hostnameGeoslotMap.containsKey(hostname) && hostnameGeoslotMap.get(hostname).containsKey(geoslot)) {
-				hostnameGeoslotMap.get(hostname).get(geoslot).put(io, row);
+
+			/* preparing data if FMM_INPUT flashlist */
+			if (flashlist.getFlashlistType() == FlashlistType.FMM_INPUT) {
+				String hostname = row.get("hostname").asText();
+				Integer geoslot = row.get("geoslot").asInt();
+				Integer io = row.get("io").asInt();
+				if (hostnameGeoslotMap.containsKey(hostname) && hostnameGeoslotMap.get(hostname).containsKey(geoslot)) {
+					hostnameGeoslotMap.get(hostname).get(geoslot).put(io, row);
+				}
+			}
+
+			/* preparing data if FEROL_CONFIGURATION flashlist */
+			else if (flashlist.getFlashlistType() == FlashlistType.FEROL_CONFIGURATION) {
+				String hostname = row.get("context").asText();
+
+				hostname = ContextHelper.getHostnameFromContext(hostname);
+				Integer geoslot = row.get("slotNumber").asInt();
+				Integer io0 = 0;
+				Integer io1 = 1;
+				if (hostnameGeoslotMap.containsKey(hostname) && hostnameGeoslotMap.get(hostname).containsKey(geoslot)) {
+					hostnameGeoslotMap.get(hostname).get(geoslot).put(io0, row);
+					hostnameGeoslotMap.get(hostname).get(geoslot).put(io1, row);
+				}
 			}
 		}
 
 		/* pass right flashlist rows to corresponding FEDs */
-		for (FED t : fedsToProcess) {
-			String hostname = t.getFmm().getFmmApplication().getHostname();
-			Integer geoslot = t.getFmm().getGeoslot();
-			Integer io = t.getFmmIO();
+		for (FED fed : fedsToProcess) {
+
+			String hostname = finder.getHostname(fed);
+			Integer geoslot = finder.getGeoslot(fed);
+			Integer io = finder.getIO(fed);
 			JsonNode row = hostnameGeoslotMap.get(hostname).get(geoslot).get(io);
 			total++;
 			if (row != null)
-				t.updateFromFlashlist(flashlist.getFlashlistType(), row);
+				fed.updateFromFlashlist(flashlist.getFlashlistType(), row);
 			else {
 				failed++;
 			}
 		}
 
-		MappingReporter.get().increaseMissing(flashlist.getName(), failed);
-		MappingReporter.get().increaseTotal(flashlist.getName(), total);
+		MappingReporter.get().increaseMissing(flashlist.getFlashlistType().name(), failed);
+		MappingReporter.get().increaseTotal(flashlist.getFlashlistType().name(), total);
 
 	}
 
@@ -169,17 +193,7 @@ public class FlashlistDispatcher {
 
 		for (JsonNode rowNode : flashlist.getRowsNode()) {
 			String hostname = rowNode.get(flashlistKey).asText();
-			// remove protocol
-			if (hostname.startsWith("http://")) {
-				hostname = hostname.substring(7);
-			}
-			// remove port
-			if (hostname.contains(":")) {
-				hostname = hostname.substring(0, hostname.indexOf(":"));
-			}
-			if (!hostname.endsWith(".cms")) {
-				hostname = hostname + ".cms";
-			}
+			hostname = ContextHelper.getHostnameFromContext(hostname);
 			if (objectsByHostname.containsKey(hostname)) {
 				T flashlistUpdatableObject = objectsByHostname.get(hostname);
 				flashlistUpdatableObject.updateFromFlashlist(flashlist.getFlashlistType(), rowNode);
@@ -191,8 +205,8 @@ public class FlashlistDispatcher {
 		}
 
 		// TODO: better report this warnings
-		MappingReporter.get().increaseMissing(flashlist.getName(), failed);
-		MappingReporter.get().increaseTotal(flashlist.getName(), failed + found);
+		MappingReporter.get().increaseMissing(flashlist.getFlashlistType().name(), failed);
+		MappingReporter.get().increaseTotal(flashlist.getFlashlistType().name(), failed + found);
 	}
 
 	/**
@@ -235,8 +249,8 @@ public class FlashlistDispatcher {
 			}
 		}
 
-		MappingReporter.get().increaseMissing(flashlist.getName(), failed);
-		MappingReporter.get().increaseTotal(flashlist.getName(), failed + found);
+		MappingReporter.get().increaseMissing(flashlist.getFlashlistType().name(), failed);
+		MappingReporter.get().increaseTotal(flashlist.getFlashlistType().name(), failed + found);
 	}
 
 	// TODO: verify data

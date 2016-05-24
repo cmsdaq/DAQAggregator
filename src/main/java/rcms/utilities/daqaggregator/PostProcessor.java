@@ -14,6 +14,7 @@ import rcms.utilities.daqaggregator.data.FRLPc;
 import rcms.utilities.daqaggregator.data.RU;
 import rcms.utilities.daqaggregator.data.SubFEDBuilder;
 import rcms.utilities.daqaggregator.data.TTCPartition;
+import rcms.utilities.daqaggregator.mappers.MappingReporter;
 
 public class PostProcessor {
 
@@ -29,14 +30,17 @@ public class PostProcessor {
 	public void postProcess() {
 		calculateDerivedValuesForSubFeds();
 		calculateDerivedValuesForTTCPs();
+		calculateDerivedValuesForRUs();
 
 		daq.getBuSummary().calculateDerivedValues();
 		daq.getFedBuilderSummary().calculateDerivedValues();
 
 		summarizeFeds();
 		summarizeCrashed();
-		summarizeRus();
 		summarizeDAQ();
+
+		MappingReporter.get().summarize();
+		MappingReporter.get().detailedSummarize();
 	}
 
 	private void summarizeDAQ() {
@@ -47,22 +51,6 @@ public class PostProcessor {
 
 		logger.info("DAQ state: " + daqStatus + ", LHC beam mode: " + lhcBeamMode + ", LHC machine mode: "
 				+ lhcMachineMode + ", L0 state: " + levelZeroState);
-
-	}
-
-	private void summarizeRus() {
-		int enabledRus = 0, rus = 0, evms = 0;
-
-		for (FEDBuilder fedBuilder : daq.getFedBuilders()) {
-			RU ru = fedBuilder.getRu();
-			rus++;
-			if (ru.getStatus().equalsIgnoreCase("enabled"))
-				enabledRus++;
-			if (ru.isEVM())
-				evms++;
-
-		}
-		logger.info("RU raport: [" + enabledRus + "|" + evms + "]/" + rus + " [enabled|evms]/all");
 
 	}
 
@@ -83,6 +71,68 @@ public class PostProcessor {
 				+ fmmappCrashed + "/" + daq.getFmmApplications().size());
 	}
 
+	private void summarizeFeds() {
+		int feds = 0;
+		int fedsFmmMasked = 0;
+		int fedsFrlMasked = 0;
+		for (FMMApplication fmma : daq.getFmmApplications()) {
+			for (FMM fmm : fmma.getFmms()) {
+				for (FED fed : fmm.getFeds()) {
+					feds++;
+					if (fed.isFmmMasked())
+						fedsFmmMasked++;
+					if (fed.isFrlMasked())
+						fedsFrlMasked++;
+				}
+			}
+		}
+		logger.info("FED raport: [" + fedsFmmMasked + "|" + fedsFrlMasked + "]/" + feds
+				+ ", [fmm masked|frl masked]/all FEDS");
+	}
+
+	private void calculateDerivedValuesForSubFeds() {
+		Set<SubFEDBuilder> sfbs = new HashSet<SubFEDBuilder>();
+
+		for (FEDBuilder fb : daq.getFedBuilders()) {
+			for (SubFEDBuilder sfb : fb.getSubFedbuilders()) {
+				sfbs.add(sfb);
+			}
+		}
+
+		// calculate min/max triger per SubFEDBuilder
+		for (SubFEDBuilder subFedBuilder : sfbs) {
+			subFedBuilder.calculateDerived();
+		}
+
+	}
+
+	private void calculateDerivedValuesForRUs() {
+		int masked = 0;
+		int all = 0;
+		int enabledRus = 0;
+		int evms = 0;
+		for (FEDBuilder fedBuilder : daq.getFedBuilders()) {
+			RU ru = fedBuilder.getRu();
+			if (!ru.isEVM()) {
+				ru.calculateDerivedValues();
+				all++;
+				if (ru.isMasked()) {
+					masked++;
+				}
+				if (ru.getStatus().equalsIgnoreCase("enabled"))
+					enabledRus++;
+				if (ru.isEVM())
+					evms++;
+			} else {
+				evms++;
+			}
+		}
+
+		logger.info(
+				"RU raport: [" + enabledRus + "|" + masked + "|" + evms + "]/" + all + " [enabled|masked|evms]/all");
+
+	}
+
 	private void calculateDerivedValuesForTTCPs() {
 
 		int masked = 0;
@@ -100,37 +150,6 @@ public class PostProcessor {
 
 		logger.info("TTCP derived values report: [" + masked + "|" + withoutFMM + "]/" + daq.getTtcPartitions().size()
 				+ " [masked|missing FMM]/all TTCPs");
-
-	}
-
-	private void summarizeFeds() {
-		int feds = 0;
-		int fedsMasked = 0;
-		for (FMMApplication fmma : daq.getFmmApplications()) {
-			for (FMM fmm : fmma.getFmms()) {
-				for (FED fed : fmm.getFeds()) {
-					feds++;
-					if (fed.isFmmMasked())
-						fedsMasked++;
-				}
-			}
-		}
-		logger.info("FED in structure: " + fedsMasked + "/" + feds + " masked");
-	}
-
-	private void calculateDerivedValuesForSubFeds() {
-		Set<SubFEDBuilder> sfbs = new HashSet<SubFEDBuilder>();
-
-		for (FEDBuilder fb : daq.getFedBuilders()) {
-			for (SubFEDBuilder sfb : fb.getSubFedbuilders()) {
-				sfbs.add(sfb);
-			}
-		}
-
-		// calculate min/max triger per SubFEDBuilder
-		for (SubFEDBuilder subFedBuilder : sfbs) {
-			subFedBuilder.calculateDerived();
-		}
 
 	}
 

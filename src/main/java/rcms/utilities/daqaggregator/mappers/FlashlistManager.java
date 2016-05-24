@@ -102,7 +102,6 @@ public class FlashlistManager {
 		timeResult = (int) (stopTime - startTime);
 		logger.info("Reading and mapping all flashlists finished in " + timeResult + "ms");
 
-		MappingReporter.get().summarize();
 
 	}
 

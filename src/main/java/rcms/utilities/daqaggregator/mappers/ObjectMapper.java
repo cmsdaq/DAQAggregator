@@ -58,14 +58,13 @@ public class ObjectMapper implements Serializable {
 	public Map<Integer, FED> fedsById;
 	public Map<Integer, FED> ttcpById;
 	public Map<Integer, TTCPartition> ttcpartitionsById;
-	
+
 	public Map<String, FRLPc> frlPcByHostname;
 	public Map<String, FMMApplication> fmmApplicationByHostname;
 
 	public void mapAllObjects(DAQPartition daqPartition) {
 
 		daq = new DAQ();
-
 
 		// TODO: this is for flashlist mapping, refactor me
 		rusById = new HashMap<>();
@@ -108,6 +107,8 @@ public class ObjectMapper implements Serializable {
 			fed.setFmmIO(hwfed.getFMMIO());
 			fed.setFrlIO(hwfed.getFRLIO());
 			fed.setSrcIdExpected(hwfed.getSrcId());
+			fed.setHasSLINK(hwfed.hasSLINK());
+			fed.setHasTTS(hwfed.hasTTS());
 			feds.put(hwfed.hashCode(), fed);
 		}
 
@@ -144,7 +145,7 @@ public class ObjectMapper implements Serializable {
 		FEDBuilderSummary fedBuilderSummary = new FEDBuilderSummary();
 		daq.setFedBuilderSummary(fedBuilderSummary);
 		fedBuilderSummary.setDaq(daq);
-		
+
 		logger.info("Retrieval summary " + this.toString());
 
 	}

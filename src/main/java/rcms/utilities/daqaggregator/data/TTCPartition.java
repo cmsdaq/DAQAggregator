@@ -39,22 +39,6 @@ public class TTCPartition implements java.io.Serializable, FlashlistUpdatable, D
 
 	private float percentBusy;
 
-	@Override
-	public void updateFromFlashlist(FlashlistType flashlistType, JsonNode flashlistRow) {
-
-		if (flashlistType == FlashlistType.FMM_STATUS) {
-
-			// TODO: this needs to be consulted still
-			// if fmm is single - get A
-			// if fmm is dual - check mffIO - if 22,23 -> take B
-
-			this.percentBusy = (float) flashlistRow.get("outputFractionBusyA").asDouble() * 100;
-			this.percentWarning = (float) flashlistRow.get("outputFractionWarningA").asDouble() * 100;
-			this.ttsState = flashlistRow.get("outputStateA").asText();
-		}
-
-	}
-
 	public String getTtsState() {
 		return ttsState;
 	}
@@ -116,6 +100,22 @@ public class TTCPartition implements java.io.Serializable, FlashlistUpdatable, D
 		/* TTCPartition is mask if any of FED is masked */
 		if (maskedFeds > 0) {
 			masked = true;
+		}
+
+	}
+	
+	@Override
+	public void updateFromFlashlist(FlashlistType flashlistType, JsonNode flashlistRow) {
+
+		if (flashlistType == FlashlistType.FMM_STATUS) {
+
+			// TODO: this needs to be consulted still
+			// if fmm is single - get A
+			// if fmm is dual - check mffIO - if 22,23 -> take B
+
+			this.percentBusy = (float) flashlistRow.get("outputFractionBusyA").asDouble() * 100;
+			this.percentWarning = (float) flashlistRow.get("outputFractionWarningA").asDouble() * 100;
+			this.ttsState = flashlistRow.get("outputStateA").asText();
 		}
 
 	}

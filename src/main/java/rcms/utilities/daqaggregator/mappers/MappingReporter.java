@@ -43,6 +43,19 @@ public class MappingReporter {
 				+ " objects with warnings updating values from flashlists to hw structure");
 	}
 
+	public void detailedSummarize() {
+		StringBuilder sb = new StringBuilder();
+		for (String key : missingObjects.keySet()) {
+			sb.append(key);
+			sb.append(":");
+			sb.append(missingObjects.get(key));
+			sb.append("/");
+			sb.append(totalObjects.get(key));
+			sb.append(", ");
+		}
+		logger.info("Detailed flashlist-hw mapping report (warnings): " + sb.toString());
+	}
+
 	public void increaseMissing(String key, int number) {
 		increaseMap(missingObjects, key, number);
 	}
