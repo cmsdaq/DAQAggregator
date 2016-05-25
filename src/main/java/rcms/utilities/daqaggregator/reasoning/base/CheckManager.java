@@ -11,7 +11,7 @@ import rcms.utilities.daqaggregator.reasoning.NoRate;
 import rcms.utilities.daqaggregator.reasoning.RateOutOfRange;
 import rcms.utilities.daqaggregator.reasoning.RunComparator;
 import rcms.utilities.daqaggregator.reasoning.SessionComparator;
-import rcms.utilities.daqaggregator.reasoning.WarningInTTCP;
+import rcms.utilities.daqaggregator.reasoning.WarningInSubsystem;
 
 /**
  * Manager of checking process
@@ -34,7 +34,7 @@ public class CheckManager {
 	public CheckManager() {
 		checkers.add(new RateOutOfRange());
 		checkers.add(new NoRate());
-		checkers.add(new WarningInTTCP());
+		checkers.add(new WarningInSubsystem());
 		comparators.add(new SessionComparator());
 		comparators.add(new RunComparator());
 	}

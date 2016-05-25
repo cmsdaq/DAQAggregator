@@ -22,12 +22,12 @@ import rcms.utilities.daqaggregator.data.FRLPc;
 import rcms.utilities.daqaggregator.data.FRLType;
 import rcms.utilities.daqaggregator.data.RU;
 import rcms.utilities.daqaggregator.data.SubFEDBuilder;
+import rcms.utilities.daqaggregator.data.SubSystem;
 import rcms.utilities.daqaggregator.data.TTCPartition;
 import rcms.utilities.hwcfg.HardwareConfigurationException;
 import rcms.utilities.hwcfg.dp.DAQPartition;
 import rcms.utilities.hwcfg.dp.DAQPartitionSet;
 import rcms.utilities.hwcfg.dp.DPGenericHost;
-import rcms.utilities.hwcfg.eq.FMMFMMLink;
 import rcms.utilities.hwcfg.eq.FMMTriggerLink;
 import rcms.utilities.hwcfg.fb.FBI;
 
@@ -54,6 +54,7 @@ public class ObjectMapper implements Serializable {
 	public Map<Integer, FMM> fmms;
 	public Map<Integer, FED> feds;
 	public Map<Integer, FMMApplication> fmmApplications;
+	public Map<Integer, SubSystem> subSystems;
 
 	public Map<Integer, RU> rusById;
 	public Map<Integer, BU> busById;
@@ -63,6 +64,7 @@ public class ObjectMapper implements Serializable {
 
 	public Map<String, FRLPc> frlPcByHostname;
 	public Map<String, FMMApplication> fmmApplicationByHostname;
+	public Map<String, SubSystem> subsystemByName;
 
 	public void mapAllObjects(DAQPartition daqPartition) {
 
@@ -76,12 +78,14 @@ public class ObjectMapper implements Serializable {
 		ttcpartitionsById = new HashMap<>();
 		frlPcByHostname = new HashMap<>();
 		fmmApplicationByHostname = new HashMap<>();
+		subsystemByName = new HashMap<>();
 
 		/* Building objects */
 		bus = mapBUs(daqPartition);
 		rus = mapRUs(daqPartition);
 		frlPcs = mapFrlPcs(daqPartition);
 		ttcPartitions = mapTTCPartitions(daqPartition);
+		subSystems = mapSubSystem(daqPartition);
 
 		/* map FEDBuilders from hardware structure */
 		fedBuilders = new HashMap<>();
@@ -160,6 +164,7 @@ public class ObjectMapper implements Serializable {
 		fedBuilderSummary.setDaq(daq);
 
 		logger.info("Retrieval summary " + this.toString());
+		logger.info("Subsystem summary " + subSystems.values());
 
 	}
 
@@ -168,8 +173,9 @@ public class ObjectMapper implements Serializable {
 
 		StringBuilder sb = new StringBuilder();
 
-		int objectsMapped = rus.size() + bus.size() + feds.size() + frls.size() + fmms.size() + ttcPartitions.size()
-				+ fedBuilders.size() + subFedBuilders.size() + fmmApplications.size() + frlPcs.size();
+		int objectsMapped = subSystems.size() + rus.size() + bus.size() + feds.size() + frls.size() + fmms.size()
+				+ ttcPartitions.size() + fedBuilders.size() + subFedBuilders.size() + fmmApplications.size()
+				+ frlPcs.size();
 
 		int bFmms = 0;
 		for (FMM fmm : fmms.values()) {
@@ -178,6 +184,7 @@ public class ObjectMapper implements Serializable {
 		}
 
 		sb.append("Object mapping raport: " + objectsMapped + " objects mapped: ");
+		sb.append("[Subsystems:" + subSystems.size() + "],");
 		sb.append("[RUs:" + rus.size() + "],");
 		sb.append("[BUs:" + bus.size() + "],");
 		sb.append("[FEDs:" + feds.size() + "],");
@@ -383,4 +390,20 @@ public class ObjectMapper implements Serializable {
 		return result;
 	}
 
+	public Map<Integer, SubSystem> mapSubSystem(DAQPartition daqPartition) {
+
+		Map<Integer, SubSystem> result = new HashMap<>();
+
+		for (rcms.utilities.hwcfg.eq.SubSystem hwsubsystem : daqPartition.getDAQPartitionSet().getEquipmentSet()
+				.getSubsystems().values()) {
+
+			SubSystem subSystem = new SubSystem();
+			subSystem.setName(hwsubsystem.getName());
+			result.put(hwsubsystem.hashCode(), subSystem);
+			subsystemByName.put(hwsubsystem.getName(), subSystem);
+		}
+
+		return result;
+
+	}
 }

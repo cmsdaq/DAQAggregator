@@ -1,6 +1,8 @@
 package rcms.utilities.daqaggregator.mappers;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -13,6 +15,7 @@ import rcms.utilities.daqaggregator.data.FMMApplication;
 import rcms.utilities.daqaggregator.data.FRLPc;
 import rcms.utilities.daqaggregator.data.RU;
 import rcms.utilities.daqaggregator.data.SubFEDBuilder;
+import rcms.utilities.daqaggregator.data.SubSystem;
 import rcms.utilities.daqaggregator.data.TTCPartition;
 
 public class PostProcessor {
@@ -49,8 +52,17 @@ public class PostProcessor {
 		String lhcMachineMode = daq.getLhcMachineMode();
 		String levelZeroState = daq.getLevelZeroState();
 
+		Map<String, Integer> states = new HashMap<>();
+
+		for (SubSystem sub : daq.getSubSystems()) {
+			if (!states.containsKey(sub.getStatus())) {
+				states.put(sub.getStatus(), 0);
+			}
+			states.put(sub.getStatus(), states.get(sub.getStatus()) + 1);
+		}
+
 		logger.info("DAQ state: " + daqStatus + ", LHC beam mode: " + lhcBeamMode + ", LHC machine mode: "
-				+ lhcMachineMode + ", L0 state: " + levelZeroState);
+				+ lhcMachineMode + ", L0 state: " + levelZeroState + ", Subsystems states: " + states);
 
 	}
 
@@ -137,18 +149,22 @@ public class PostProcessor {
 
 		int masked = 0;
 		int withoutFMM = 0;
+		int all = 0;
 
-		for (TTCPartition ttcp : daq.getTtcPartitions()) {
-			if (ttcp.getFmm() != null) {
-				ttcp.calculateDerivedValues();
-				if (ttcp.isMasked())
-					masked++;
-			} else {
-				withoutFMM++;
+		for (SubSystem subsystem : daq.getSubSystems()) {
+			for (TTCPartition ttcp : subsystem.getTtcPartitions()) {
+				all++;
+				if (ttcp.getFmm() != null) {
+					ttcp.calculateDerivedValues();
+					if (ttcp.isMasked())
+						masked++;
+				} else {
+					withoutFMM++;
+				}
 			}
 		}
 
-		logger.info("TTCP derived values report: [" + masked + "|" + withoutFMM + "]/" + daq.getTtcPartitions().size()
+		logger.info("TTCP derived values report: [" + masked + "|" + withoutFMM + "]/" + all
 				+ " [masked|missing FMM]/all TTCPs");
 
 	}

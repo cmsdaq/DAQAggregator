@@ -1,17 +1,12 @@
 package rcms.utilities.daqaggregator.vis.tree;
 
-import java.io.File;
-import java.io.IOException;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import rcms.utilities.daqaggregator.data.BU;
 import rcms.utilities.daqaggregator.data.DAQ;
 import rcms.utilities.daqaggregator.data.FEDBuilder;
 import rcms.utilities.daqaggregator.data.FMMApplication;
 import rcms.utilities.daqaggregator.data.FRLPc;
 import rcms.utilities.daqaggregator.data.SubFEDBuilder;
-import rcms.utilities.daqaggregator.data.TTCPartition;
+import rcms.utilities.daqaggregator.data.SubSystem;
 
 public class DaqVisualizer extends TreeVisualizer {
 
@@ -31,7 +26,7 @@ public class DaqVisualizer extends TreeVisualizer {
 		Element root = new Element("DAQ");
 
 		Element fmmApplications = new Element("FMM Applications " + daq.getFmmApplications().size());
-		Element ttcPartitions = new Element("TTC Partitions " + daq.getTtcPartitions().size());
+		Element ttcPartitions = new Element("SubSystems " + daq.getSubSystems().size());
 		Element frlPcs = new Element("FRL PCs " + daq.getFrlPcs().size());
 		Element bus = new Element("BUs " + daq.getBus().size());
 		Element fedBuilders = new Element("FBs " + daq.getFedBuilders().size());
@@ -48,8 +43,8 @@ public class DaqVisualizer extends TreeVisualizer {
 		}
 
 		// create FMMApplications
-		for (TTCPartition ttcPartition : daq.getTtcPartitions()) {
-			Element ttcPartitionElement = new Element(ttcPartition.getName());
+		for (SubSystem subsystem : daq.getSubSystems()) {
+			Element ttcPartitionElement = new Element(subsystem.getName());
 			ttcPartitions.getChildren().add(ttcPartitionElement);
 		}
 

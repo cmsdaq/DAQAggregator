@@ -2,14 +2,14 @@ package rcms.utilities.daqaggregator.mappers;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
-
-import java.util.Set;
 
 import rcms.utilities.daqaggregator.data.DAQ;
 import rcms.utilities.daqaggregator.data.FED;
@@ -20,6 +20,7 @@ import rcms.utilities.daqaggregator.data.FRL;
 import rcms.utilities.daqaggregator.data.FRLPc;
 import rcms.utilities.daqaggregator.data.RU;
 import rcms.utilities.daqaggregator.data.SubFEDBuilder;
+import rcms.utilities.daqaggregator.data.SubSystem;
 import rcms.utilities.daqaggregator.data.TTCPartition;
 import rcms.utilities.hwcfg.dp.DAQPartition;
 
@@ -45,6 +46,7 @@ public class RelationMapper implements Serializable {
 	public Map<Integer, Set<Integer>> frlToFed;
 	public Map<Integer, Set<Integer>> fmmApplicationToFmm;
 	public Map<Integer, Set<Integer>> frlPcToFrl;
+	public Map<Integer, Set<Integer>> subsystemToTTCP;
 
 	public RelationMapper(ObjectMapper objectMapper) {
 		this.objectMapper = objectMapper;
@@ -57,11 +59,12 @@ public class RelationMapper implements Serializable {
 		subFMMToTTCP = mapRelationsFmmToTTCP(daqPartition);
 		ruToFedBuilder = mapRelationsRuToFedBuilder(daqPartition);
 		frlPcToFrl = mapRelationsFrlPcToFrl(daqPartition);
+		subsystemToTTCP = mapRelationsSubsystemToTTCP(daqPartition);
 	}
 
 	private void buildRelations() {
 		objectMapper.daq.setBus(new ArrayList<>(objectMapper.bus.values()));
-		objectMapper.daq.setTtcPartitions(new ArrayList<TTCPartition>(objectMapper.ttcPartitions.values()));
+		objectMapper.daq.setSubSystems(new HashSet<>(objectMapper.subSystems.values()));
 		objectMapper.daq.setFrlPcs(new ArrayList<FRLPc>(objectMapper.frlPcs.values()));
 		objectMapper.daq.setFmmApplications(new ArrayList<FMMApplication>(objectMapper.fmmApplications.values()));
 		objectMapper.daq.getFedBuilders().addAll(objectMapper.fedBuilders.values());
@@ -153,7 +156,7 @@ public class RelationMapper implements Serializable {
 			ru.setFedBuilder(fedBuilder);
 			fedBuilder.setRu(ru);
 		}
-		
+
 		/* building FRLPc - FRL */
 		for (Entry<Integer, Set<Integer>> relation : frlPcToFrl.entrySet()) {
 			FRLPc frlPc = objectMapper.frlPcs.get(relation.getKey());
@@ -161,6 +164,16 @@ public class RelationMapper implements Serializable {
 				FRL frl = objectMapper.frls.get(frlId);
 				frlPc.getFrls().add(frl);
 				frl.setFrlPc(frlPc);
+			}
+		}
+		
+		/* building Subsystsem - TTCP */
+		for (Entry<Integer, Set<Integer>> relation : subsystemToTTCP.entrySet()) {
+			SubSystem subsystem = objectMapper.subSystems.get(relation.getKey());
+			for (int ttcpId : relation.getValue()) {
+				TTCPartition ttcp = objectMapper.ttcPartitions.get(ttcpId);
+				subsystem.getTtcPartitions().add(ttcp);
+				ttcp.setSubsystem(subsystem);
 			}
 		}
 
@@ -285,7 +298,7 @@ public class RelationMapper implements Serializable {
 		for (rcms.utilities.hwcfg.eq.FRL hwfrl : frls) {
 
 			String frlPc = hwfrl.getFRLCrate().getHostName();
-			
+
 			if (!result.containsKey(frlPc.hashCode())) {
 				HashSet<Integer> children = new HashSet<>();
 				result.put(frlPc.hashCode(), children);
@@ -296,4 +309,30 @@ public class RelationMapper implements Serializable {
 		return result;
 	}
 
+	/**
+	 * Retrieve Subsystem-TTCP relations
+	 * 
+	 * @return map representing Subsystem-TTCP one to many relation
+	 */
+	private Map<Integer, Set<Integer>> mapRelationsSubsystemToTTCP(DAQPartition daqPartition) {
+
+		Map<Integer, Set<Integer>> result = new HashMap<>();
+
+		Collection<rcms.utilities.hwcfg.eq.SubSystem> subsystems = daqPartition.getDAQPartitionSet().getEquipmentSet()
+				.getSubsystems().values();
+		for (rcms.utilities.hwcfg.eq.SubSystem hwsubsystem : subsystems) {
+
+			Collection<rcms.utilities.hwcfg.eq.TTCPartition> ttcPartitions = hwsubsystem.getTTCPartitions().values();
+
+			HashSet<Integer> children = new HashSet<>();
+			result.put(hwsubsystem.hashCode(), children);
+
+			for (rcms.utilities.hwcfg.eq.TTCPartition ttcPartition : ttcPartitions) {
+
+				result.get(hwsubsystem.hashCode()).add(ttcPartition.hashCode());
+			}
+
+		}
+		return result;
+	}
 }

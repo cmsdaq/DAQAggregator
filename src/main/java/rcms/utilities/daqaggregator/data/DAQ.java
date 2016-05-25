@@ -2,6 +2,7 @@ package rcms.utilities.daqaggregator.data;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
@@ -27,7 +28,7 @@ public class DAQ implements java.io.Serializable , FlashlistUpdatable{
 	// ----------------------------------------
 	// fields set at beginning of session
 	// ----------------------------------------
-	private List<TTCPartition> ttcPartitions;
+	private Set<SubSystem> subSystems;
 
 	private List<FRLPc> frlPcs;
 
@@ -89,9 +90,6 @@ public class DAQ implements java.io.Serializable , FlashlistUpdatable{
 		this.daqState = daqState;
 	}
 
-	public List<TTCPartition> getTtcPartitions() {
-		return ttcPartitions;
-	}
 
 	public List<FRLPc> getFrlPcs() {
 		return frlPcs;
@@ -119,10 +117,6 @@ public class DAQ implements java.io.Serializable , FlashlistUpdatable{
 
 	public BUSummary getBuSummary() {
 		return buSummary;
-	}
-
-	public void setTtcPartitions(List<TTCPartition> ttcPartitions) {
-		this.ttcPartitions = ttcPartitions;
 	}
 
 	public void setFrlPcs(List<FRLPc> frlPcs) {
@@ -189,5 +183,14 @@ public class DAQ implements java.io.Serializable , FlashlistUpdatable{
 	public void setLhcBeamMode(String lhcBeamMode) {
 		this.lhcBeamMode = lhcBeamMode;
 	}
+
+	public Set<SubSystem> getSubSystems() {
+		return subSystems;
+	}
+
+	public void setSubSystems(Set<SubSystem> subSystems) {
+		this.subSystems = subSystems;
+	}
+
 
 }

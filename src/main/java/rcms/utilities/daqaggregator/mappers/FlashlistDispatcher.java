@@ -70,9 +70,18 @@ public class FlashlistDispatcher {
 
 		case LEVEL_ZERO_FM_SUBSYS: // TODO: SID column
 			for (JsonNode rowNode : flashlist.getRowsNode()) {
-				if (rowNode.get("SUBSYS").asText().equals("DAQ") && rowNode.get("FMURL").asText().contains("toppro")) {
+
+				String subsystemName = rowNode.get("SUBSYS").asText();
+
+				if (subsystemName.equals("DAQ") && rowNode.get("FMURL").asText().contains("toppro")) {
 					mappingManager.getObjectMapper().daq.updateFromFlashlist(flashlist.getFlashlistType(), rowNode);
 				}
+
+				if (mappingManager.getObjectMapper().subsystemByName.containsKey(subsystemName)) {
+					mappingManager.getObjectMapper().subsystemByName.get(subsystemName)
+							.updateFromFlashlist(flashlist.getFlashlistType(), rowNode);
+				}
+
 			}
 			break;
 		case LEVEL_ZERO_FM_DYNAMIC:

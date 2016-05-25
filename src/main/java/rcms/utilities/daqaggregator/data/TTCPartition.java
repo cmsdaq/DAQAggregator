@@ -28,6 +28,8 @@ public class TTCPartition implements java.io.Serializable, FlashlistUpdatable, D
 
 	/** can be null */
 	private FMM fmm;
+	
+	private SubSystem subsystem;
 
 	// ----------------------------------------
 	// fields updated periodically
@@ -121,6 +123,14 @@ public class TTCPartition implements java.io.Serializable, FlashlistUpdatable, D
 			this.ttsState = flashlistRow.get(ttsStateKey + output).asText();
 		}
 
+	}
+
+	public SubSystem getSubsystem() {
+		return subsystem;
+	}
+
+	public void setSubsystem(SubSystem subsystem) {
+		this.subsystem = subsystem;
 	}
 
 }
