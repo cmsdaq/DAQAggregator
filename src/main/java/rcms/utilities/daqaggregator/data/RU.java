@@ -38,6 +38,8 @@ public class RU implements Serializable, FlashlistUpdatable {
 	// fields updated periodically
 	// ----------------------------------------
 
+	private String stateName;
+
 	private String errorMsg;
 
 	private String warnMsg;
@@ -76,6 +78,8 @@ public class RU implements Serializable, FlashlistUpdatable {
 
 		if (flashlistType == FlashlistType.RU) {
 			// direct values
+			this.setStateName(flashlistRow.get("stateName").asText());
+			this.setErrorMsg(flashlistRow.get("errorMsg").asText());
 			this.requests = flashlistRow.get("eventCount").asInt();
 			this.rate = flashlistRow.get("eventRate").asInt();
 			this.eventsInRU = flashlistRow.get("eventsInRU").asInt();
@@ -90,6 +94,14 @@ public class RU implements Serializable, FlashlistUpdatable {
 	}
 
 	// ----------------------------------------------------------------------
+
+	public String getStateName() {
+		return stateName;
+	}
+
+	public void setStateName(String stateName) {
+		this.stateName = stateName;
+	}
 
 	public String getErrorMsg() {
 		return errorMsg;

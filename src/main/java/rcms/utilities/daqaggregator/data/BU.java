@@ -33,12 +33,6 @@ public class BU implements Serializable, FlashlistUpdatable {
 	// fields updated periodically
 	// ----------------------------------------
 
-	/** event rate in kHz ? */
-	private float rate;
-
-	/** throughput in MByte/s ? */
-	private float throughput;
-
 	public void setDaq(DAQ daq) {
 		this.daq = daq;
 	}
@@ -47,11 +41,21 @@ public class BU implements Serializable, FlashlistUpdatable {
 		this.hostname = hostname;
 	}
 
-	/** in MByte/s ? */
-	private float eventSizeMean;
-	private float eventSizeStddev;
+	private String stateName;
 
-	/** is this processed or requested ? */
+	private String errorMsg;
+
+	/** event rate in Hz */
+	private int rate;
+
+	/** throughput in Byte/s */
+	private long throughput;
+
+	/** in Byte */
+	private int eventSizeMean;
+	private int eventSizeStddev;
+
+	/** events processed */
 	private int numEvents;
 
 	private int numEventsInBU;
@@ -64,7 +68,7 @@ public class BU implements Serializable, FlashlistUpdatable {
 
 	private int numRequestsBlocked;
 
-	private int numFUsHlt;
+	private int numFUsHLT;
 
 	private int numFUsCrashed;
 
@@ -72,13 +76,13 @@ public class BU implements Serializable, FlashlistUpdatable {
 
 	private int numFUsCloud;
 
-	/** in percent ? */
-	private float ramDiskUsage;
+	/** in percent */
+	private double ramDiskUsage;
 
-	/** total amount of ramdisk */
-	private float ramDiskTotal;
+	/** total amount of ramdisk in GB */
+	private double ramDiskTotal;
 
-	/** processed ? to be processed ? on ramdisk ? */
+	/** total number of files written */
 	private int numFiles;
 
 	private int numLumisectionsWithFiles;
@@ -88,6 +92,8 @@ public class BU implements Serializable, FlashlistUpdatable {
 	private int numLumisectionsForHLT;
 
 	private int numLumisectionsOutHLT;
+
+	private double fuOutputBandwidthInMB;
 
 	// ----------------------------------------------------------------------
 
@@ -103,6 +109,8 @@ public class BU implements Serializable, FlashlistUpdatable {
 		if (flashlistType == FlashlistType.BU) {
 
 			// direct values
+			this.setStateName(flashlistRow.get("stateName").asText());
+			this.setErrorMsg(flashlistRow.get("errorMsg").asText());
 			this.rate = flashlistRow.get("eventRate").asInt();
 			this.throughput = flashlistRow.get("bandwidth").asInt();
 			this.eventSizeMean = flashlistRow.get("eventSize").asInt();
@@ -110,53 +118,70 @@ public class BU implements Serializable, FlashlistUpdatable {
 			this.numEvents = flashlistRow.get("nbEventsBuilt").asInt();
 			this.numEventsInBU = flashlistRow.get("nbEventsInBU").asInt();
 			this.priority = flashlistRow.get("priority").asInt();
-			this.numRequestsSent = flashlistRow.get("requestCount").asInt();
-			this.numRequestsUsed = flashlistRow.get("outstandingRequests").asInt();
+			this.numRequestsSent = flashlistRow.get("nbSentResources").asInt();
+			this.numRequestsUsed = flashlistRow.get("nbUsedResources").asInt();
 			this.numRequestsBlocked = flashlistRow.get("nbBlockedResources").asInt();
-			this.numFUsHlt = flashlistRow.get("fuSlotsHLT").asInt();
+			this.numFUsHLT = flashlistRow.get("fuSlotsHLT").asInt();
 			this.numFUsCrashed = flashlistRow.get("fuSlotsQuarantined").asInt();
 			this.numFUsStale = flashlistRow.get("fuSlotsStale").asInt();
 			this.numFUsCloud = flashlistRow.get("fuSlotsCloud").asInt();
-			this.ramDiskUsage = flashlistRow.get("ramDiskUsed").asInt();
-			this.ramDiskTotal = flashlistRow.get("ramDiskSizeInGB").asInt();
+			this.ramDiskUsage = flashlistRow.get("ramDiskUsed").asDouble();
+			this.ramDiskTotal = flashlistRow.get("ramDiskSizeInGB").asDouble();
 			this.numFiles = flashlistRow.get("nbFilesWritten").asInt();
 			this.numLumisectionsWithFiles = flashlistRow.get("nbLumiSections").asInt();
 			this.currentLumisection = flashlistRow.get("currentLumiSection").asInt();
 			this.numLumisectionsForHLT = flashlistRow.get("queuedLumiSections").asInt();
 			this.numLumisectionsOutHLT = flashlistRow.get("queuedLumiSectionsOnFUs").asInt();
+			this.fuOutputBandwidthInMB = flashlistRow.get("fuOutputBandwidthInMB").asDouble();
 
 		}
 	}
 
-	public float getRate() {
+	public String getStateName() {
+		return stateName;
+	}
+
+	public void setStateName(String stateName) {
+		this.stateName = stateName;
+	}
+
+	public String getErrorMsg() {
+		return errorMsg;
+	}
+
+	public void setErrorMsg(String errorMsg) {
+		this.errorMsg = errorMsg;
+	}
+
+	public int getRate() {
 		return rate;
 	}
 
-	public void setRate(float rate) {
+	public void setRate(int rate) {
 		this.rate = rate;
 	}
 
-	public float getThroughput() {
+	public long getThroughput() {
 		return throughput;
 	}
 
-	public void setThroughput(float throughput) {
+	public void setThroughput(long throughput) {
 		this.throughput = throughput;
 	}
 
-	public float getEventSizeMean() {
+	public int getEventSizeMean() {
 		return eventSizeMean;
 	}
 
-	public void setEventSizeMean(float eventSizeMean) {
+	public void setEventSizeMean(int eventSizeMean) {
 		this.eventSizeMean = eventSizeMean;
 	}
 
-	public float getEventSizeStddev() {
+	public int getEventSizeStddev() {
 		return eventSizeStddev;
 	}
 
-	public void setEventSizeStddev(float eventSizeStddev) {
+	public void setEventSizeStddev(int eventSizeStddev) {
 		this.eventSizeStddev = eventSizeStddev;
 	}
 
@@ -208,12 +233,12 @@ public class BU implements Serializable, FlashlistUpdatable {
 		this.numRequestsBlocked = numRequestsBlocked;
 	}
 
-	public int getNumFUsHlt() {
-		return numFUsHlt;
+	public int getNumFUsHLT() {
+		return numFUsHLT;
 	}
 
-	public void setNumFUsHlt(int numFUsHlt) {
-		this.numFUsHlt = numFUsHlt;
+	public void setNumFUsHLT(int numFUsHLT) {
+		this.numFUsHLT = numFUsHLT;
 	}
 
 	public int getNumFUsCrashed() {
@@ -240,19 +265,19 @@ public class BU implements Serializable, FlashlistUpdatable {
 		this.numFUsCloud = numFUsCloud;
 	}
 
-	public float getRamDiskUsage() {
+	public double getRamDiskUsage() {
 		return ramDiskUsage;
 	}
 
-	public void setRamDiskUsage(float ramDiskUsage) {
+	public void setRamDiskUsage(double ramDiskUsage) {
 		this.ramDiskUsage = ramDiskUsage;
 	}
 
-	public float getRamDiskTotal() {
+	public double getRamDiskTotal() {
 		return ramDiskTotal;
 	}
 
-	public void setRamDiskTotal(float ramDiskTotal) {
+	public void setRamDiskTotal(double ramDiskTotal) {
 		this.ramDiskTotal = ramDiskTotal;
 	}
 
@@ -294,6 +319,14 @@ public class BU implements Serializable, FlashlistUpdatable {
 
 	public void setNumLumisectionsOutHLT(int numLumisectionsOutHLT) {
 		this.numLumisectionsOutHLT = numLumisectionsOutHLT;
+	}
+
+	public void setFuOutputBandwidthInMB(double fuOutputBandwidthInMB) {
+		this.fuOutputBandwidthInMB = fuOutputBandwidthInMB;
+	}
+
+	public double getFuOutputBandwidthInMB() {
+		return fuOutputBandwidthInMB;
 	}
 
 	public DAQ getDaq() {
