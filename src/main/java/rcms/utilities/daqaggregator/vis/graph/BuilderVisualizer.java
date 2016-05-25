@@ -9,11 +9,11 @@ import rcms.utilities.daqaggregator.data.FEDBuilder;
 import rcms.utilities.daqaggregator.data.FRL;
 import rcms.utilities.daqaggregator.data.RU;
 import rcms.utilities.daqaggregator.data.SubFEDBuilder;
-import rcms.utilities.daqaggregator.mappers.StructureMapper;
+import rcms.utilities.daqaggregator.mappers.MappingManager;
 
 public class BuilderVisualizer extends GraphVisualizer {
 
-	public BuilderVisualizer(StructureMapper structureMapper) {
+	public BuilderVisualizer(MappingManager structureMapper) {
 		super(structureMapper);
 	}
 
@@ -119,7 +119,7 @@ public class BuilderVisualizer extends GraphVisualizer {
 		return data;
 	}
 
-	private boolean isFrlConnected(Entry<Integer, FRL> frl, StructureMapper structureMapper) {
+	private boolean isFrlConnected(Entry<Integer, FRL> frl, MappingManager structureMapper) {
 
 		for (Entry<Integer, Set<Integer>> relation : structureMapper.getRelationMapper().subFedBuilderToFrl
 				.entrySet()) {

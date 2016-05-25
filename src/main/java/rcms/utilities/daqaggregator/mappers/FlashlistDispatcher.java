@@ -32,31 +32,31 @@ public class FlashlistDispatcher {
 	 * {@link FlashlistManager}
 	 * 
 	 * @param flashlist
-	 * @param structureMapper
+	 * @param mappingManager
 	 */
-	public void dispatch(Flashlist flashlist, StructureMapper structureMapper) {
+	public void dispatch(Flashlist flashlist, MappingManager mappingManager) {
 		FlashlistType type = flashlist.getFlashlistType();
 		switch (type) {
 		case RU:
-			dispatchRowsByInstanceId(flashlist, structureMapper.getObjectMapper().rusById);
+			dispatchRowsByInstanceId(flashlist, mappingManager.getObjectMapper().rusById);
 			break;
 		case BU:
-			dispatchRowsByInstanceId(flashlist, structureMapper.getObjectMapper().busById);
+			dispatchRowsByInstanceId(flashlist, mappingManager.getObjectMapper().busById);
 			break;
 		case FEROL_INPUT_STREAM:
-			dispatchRowsByInstanceId(flashlist, structureMapper.getObjectMapper().fedsById);
+			dispatchRowsByInstanceId(flashlist, mappingManager.getObjectMapper().fedsById);
 			break;
 		case FMM_INPUT:
-			dispatchRowsByThreeElementGeo(flashlist, structureMapper.getObjectMapper().fedsById.values(),
+			dispatchRowsByThreeElementGeo(flashlist, mappingManager.getObjectMapper().fedsById.values(),
 					new FedInFmmGeoFinder());
 			break;
 		case FEROL_STATUS:
-			dispatchRowsByTwoElementGeo(flashlist, structureMapper.getObjectMapper().frls.values(), new FRLGeoFinder());
+			dispatchRowsByTwoElementGeo(flashlist, mappingManager.getObjectMapper().frls.values(), new FRLGeoFinder());
 			break;
 		case EVM:
 			if (flashlist.getRowsNode().isArray()) {
 				int runNumber = flashlist.getRowsNode().get(0).get("runNumber").asInt();
-				structureMapper.getObjectMapper().daq.setRunNumber(runNumber);
+				mappingManager.getObjectMapper().daq.setRunNumber(runNumber);
 				logger.debug("Successfully got runnumber: " + runNumber);
 			} else {
 				logger.error("runnumber problem " + flashlist.getRowsNode());
@@ -64,29 +64,29 @@ public class FlashlistDispatcher {
 			break;
 
 		case JOB_CONTROL:
-			dispatchRowsByHostname(flashlist, structureMapper.getObjectMapper().frlPcByHostname, "hostname");
-			dispatchRowsByHostname(flashlist, structureMapper.getObjectMapper().fmmApplicationByHostname, "hostname");
+			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().frlPcByHostname, "hostname");
+			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().fmmApplicationByHostname, "hostname");
 			break;
 
 		case LEVEL_ZERO_FM_SUBSYS: // TODO: SID column
 			for (JsonNode rowNode : flashlist.getRowsNode()) {
 				if (rowNode.get("SUBSYS").asText().equals("DAQ") && rowNode.get("FMURL").asText().contains("toppro")) {
-					structureMapper.getObjectMapper().daq.updateFromFlashlist(flashlist.getFlashlistType(), rowNode);
+					mappingManager.getObjectMapper().daq.updateFromFlashlist(flashlist.getFlashlistType(), rowNode);
 				}
 			}
 			break;
 		case LEVEL_ZERO_FM_DYNAMIC:
 			for (JsonNode rowNode : flashlist.getRowsNode()) {
-				structureMapper.getObjectMapper().daq.updateFromFlashlist(flashlist.getFlashlistType(), rowNode);
+				mappingManager.getObjectMapper().daq.updateFromFlashlist(flashlist.getFlashlistType(), rowNode);
 			}
 			break;
 		case FEROL_CONFIGURATION:
-			dispatchRowsByHostname(flashlist, structureMapper.getObjectMapper().frlPcByHostname, "context");
-			dispatchRowsByThreeElementGeo(flashlist, structureMapper.getObjectMapper().fedsById.values(),
+			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().frlPcByHostname, "context");
+			dispatchRowsByThreeElementGeo(flashlist, mappingManager.getObjectMapper().fedsById.values(),
 					new FedInFrlGeoFinder());
 			break;
 		case FMM_STATUS:
-			dispatchRowsByTwoElementGeo(flashlist, structureMapper.getObjectMapper().fmms.values(), new FMMGeoFinder());
+			dispatchRowsByTwoElementGeo(flashlist, mappingManager.getObjectMapper().fmms.values(), new FMMGeoFinder());
 
 			// dispatch to TTCPartitions
 			// dual FMMs

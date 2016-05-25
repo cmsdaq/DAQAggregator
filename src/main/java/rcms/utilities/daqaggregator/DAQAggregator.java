@@ -16,7 +16,7 @@ import rcms.common.db.DBConnectorMySQL;
 import rcms.common.db.DBConnectorOracle;
 import rcms.utilities.daqaggregator.data.DAQ;
 import rcms.utilities.daqaggregator.mappers.FlashlistManager;
-import rcms.utilities.daqaggregator.mappers.StructureMapper;
+import rcms.utilities.daqaggregator.mappers.MappingManager;
 import rcms.utilities.hwcfg.HWCfgConnector;
 import rcms.utilities.hwcfg.HWCfgDescriptor;
 import rcms.utilities.hwcfg.dp.DAQPartition;
@@ -82,7 +82,7 @@ public class DAQAggregator {
 			Thread monitorThread = null;
 			DAQPartition dp = null;
 
-			StructureMapper structureMapper = null;
+			MappingManager mappingManager = null;
 			DAQ daq = null;
 			Set<String> flashlistUrls = new HashSet<String>(Arrays.asList(lasURLs));
 			// TODO: move directory conf to configuration file
@@ -118,11 +118,11 @@ public class DAQAggregator {
 						dp = dpset.getDPs().values().iterator().next();
 
 						// map the structure to new DAQ
-						structureMapper = new StructureMapper(dp);
-						daq = structureMapper.map();
+						mappingManager = new MappingManager(dp);
+						daq = mappingManager.map();
 						daq.setSessionId(_sid);
 						daq.setDpsetPath(_dpsetPath);
-						flashlistManager = new FlashlistManager(flashlistUrls, structureMapper, _sid);
+						flashlistManager = new FlashlistManager(flashlistUrls, mappingManager, _sid);
 						flashlistManager.retrieveAvailableFlashlists();
 
 						logger.info("Done for session " + daq.getSessionId());

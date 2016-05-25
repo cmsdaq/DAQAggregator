@@ -10,7 +10,7 @@ import org.apache.log4j.Logger;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import rcms.utilities.daqaggregator.data.DAQ;
-import rcms.utilities.daqaggregator.mappers.StructureMapper;
+import rcms.utilities.daqaggregator.mappers.MappingManager;
 import rcms.utilities.daqaggregator.vis.graph.BuilderVisualizer;
 import rcms.utilities.daqaggregator.vis.graph.DAQViewStyleVisualizer;
 import rcms.utilities.daqaggregator.vis.tree.DaqVisualizer;
@@ -25,9 +25,9 @@ public class VisualizerManager {
 
 	Logger logger = Logger.getLogger(VisualizerManager.class);
 
-	private final StructureMapper structureMapper;
+	private final MappingManager structureMapper;
 
-	public VisualizerManager(DAQ daq, StructureMapper structureMapper) {
+	public VisualizerManager(DAQ daq, MappingManager structureMapper) {
 		visualizers = new ArrayList<>();
 		this.structureMapper = structureMapper;
 		this.daq = daq;

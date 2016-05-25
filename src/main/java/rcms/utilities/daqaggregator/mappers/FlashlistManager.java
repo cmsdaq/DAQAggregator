@@ -23,17 +23,17 @@ public class FlashlistManager {
 	private final Set<String> lasUrls;
 
 	// TODO: refactor this field
-	private final StructureMapper structureMapper;
+	private final MappingManager mappingManager;
 
 	// TODO: refactor this field
 	private final int sessionId;
 
 	private static final Logger logger = Logger.getLogger(FlashlistManager.class);
 
-	public FlashlistManager(Set<String> lasUrls, StructureMapper structureMapper, int sessionId) {
+	public FlashlistManager(Set<String> lasUrls, MappingManager mappingManager, int sessionId) {
 		this.flashlists = new HashSet<Flashlist>();
 		this.lasUrls = lasUrls;
-		this.structureMapper = structureMapper;
+		this.mappingManager = mappingManager;
 		this.sessionId = sessionId;
 	}
 
@@ -91,7 +91,7 @@ public class FlashlistManager {
 					flashlist.initialize();
 					logger.debug("Flashlist definition:" + flashlist.getDefinitionNode());
 					FlashlistDispatcher dispatcher = new FlashlistDispatcher();
-					dispatcher.dispatch(flashlist, structureMapper);
+					dispatcher.dispatch(flashlist, mappingManager);
 
 				} catch (IOException e) {
 					logger.error("Error reading flashlist " + flashlist);
