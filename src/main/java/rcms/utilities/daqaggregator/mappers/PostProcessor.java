@@ -1,4 +1,4 @@
-package rcms.utilities.daqaggregator;
+package rcms.utilities.daqaggregator.mappers;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -14,7 +14,6 @@ import rcms.utilities.daqaggregator.data.FRLPc;
 import rcms.utilities.daqaggregator.data.RU;
 import rcms.utilities.daqaggregator.data.SubFEDBuilder;
 import rcms.utilities.daqaggregator.data.TTCPartition;
-import rcms.utilities.daqaggregator.mappers.MappingReporter;
 
 public class PostProcessor {
 
@@ -31,6 +30,7 @@ public class PostProcessor {
 		calculateDerivedValuesForSubFeds();
 		calculateDerivedValuesForTTCPs();
 		calculateDerivedValuesForRUs();
+		calculateDerivedValuesForFRLPcs();
 
 		daq.getBuSummary().calculateDerivedValues();
 		daq.getFedBuilderSummary().calculateDerivedValues();
@@ -150,6 +150,22 @@ public class PostProcessor {
 
 		logger.info("TTCP derived values report: [" + masked + "|" + withoutFMM + "]/" + daq.getTtcPartitions().size()
 				+ " [masked|missing FMM]/all TTCPs");
+
+	}
+
+	private void calculateDerivedValuesForFRLPcs() {
+		int masked = 0;
+		int all = 0;
+		for (FRLPc frlPc : daq.getFrlPcs()) {
+			all++;
+			frlPc.calculateDerivedValues();
+			if (frlPc.isMasked()) {
+				masked++;
+			}
+
+		}
+
+		logger.info("FRLPc raport: " + masked + "/" + all + " masked/all");
 
 	}
 

@@ -36,6 +36,8 @@ public class FRL implements java.io.Serializable, FlashlistUpdatable {
 	 * not FED 0
 	 */
 	private final Map<Integer, FED> feds = new HashMap<>();
+	
+	private FRLPc frlPc;
 
 	// ----------------------------------------
 	// fields updated periodically
@@ -108,6 +110,14 @@ public class FRL implements java.io.Serializable, FlashlistUpdatable {
 			url = flashlistRow.get("context").asText();
 		}
 		
+	}
+
+	public FRLPc getFrlPc() {
+		return frlPc;
+	}
+
+	public void setFrlPc(FRLPc frlPc) {
+		this.frlPc = frlPc;
 	}
 
 	// ----------------------------------------------------------------------

@@ -1,9 +1,14 @@
 package rcms.utilities.daqaggregator.data;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.databind.JsonNode;
 
+import rcms.utilities.daqaggregator.mappers.Derivable;
 import rcms.utilities.daqaggregator.mappers.FlashlistType;
 import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
 
@@ -15,7 +20,7 @@ import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
  */
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
-public class FRLPc implements java.io.Serializable, FlashlistUpdatable {
+public class FRLPc implements java.io.Serializable, FlashlistUpdatable, Derivable {
 
 	// ----------------------------------------
 	// fields set at beginning of session
@@ -23,8 +28,9 @@ public class FRLPc implements java.io.Serializable, FlashlistUpdatable {
 
 	private String hostname;
 
-
 	private boolean masked;
+
+	private List<FRL> frls = new ArrayList<FRL>();
 
 	// ----------------------------------------
 	// fields updated periodically
@@ -45,8 +51,6 @@ public class FRLPc implements java.io.Serializable, FlashlistUpdatable {
 		return hostname;
 	}
 
-
-
 	public boolean isMasked() {
 		return masked;
 	}
@@ -55,9 +59,16 @@ public class FRLPc implements java.io.Serializable, FlashlistUpdatable {
 		this.hostname = hostname;
 	}
 
-
 	public void setMasked(boolean masked) {
 		this.masked = masked;
+	}
+
+	public List<FRL> getFrls() {
+		return frls;
+	}
+
+	public void setFrls(List<FRL> frls) {
+		this.frls = frls;
 	}
 
 	@Override
@@ -81,6 +92,28 @@ public class FRLPc implements java.io.Serializable, FlashlistUpdatable {
 		}
 
 	}
-	// ----------------------------------------------------------------------
+
+	@Override
+	public void calculateDerivedValues() {
+
+		masked = false;
+		int maskedFeds = 0;
+		int allFeds = 0;
+
+		for (FRL frl : frls){
+			for (FED fed : frl.getFeds().values()) {
+				allFeds++;
+				if (fed.isFrlMasked()) {
+					maskedFeds++;
+				}
+			}
+		}
+
+		/* FRLPc is mask if all of FEDs are masked */
+		if (maskedFeds == allFeds) {
+			masked = true;
+		}
+
+	}
 
 }

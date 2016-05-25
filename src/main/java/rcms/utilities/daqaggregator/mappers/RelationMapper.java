@@ -44,6 +44,7 @@ public class RelationMapper implements Serializable {
 	public Map<Integer, Set<Integer>> fmmToFed;
 	public Map<Integer, Set<Integer>> frlToFed;
 	public Map<Integer, Set<Integer>> fmmApplicationToFmm;
+	public Map<Integer, Set<Integer>> frlPcToFrl;
 
 	public RelationMapper(ObjectMapper objectMapper) {
 		this.objectMapper = objectMapper;
@@ -55,6 +56,7 @@ public class RelationMapper implements Serializable {
 		fmmApplicationToFmm = mapRelationsFmmApplicationToFmm(daqPartition);
 		subFMMToTTCP = mapRelationsFmmToTTCP(daqPartition);
 		ruToFedBuilder = mapRelationsRuToFedBuilder(daqPartition);
+		frlPcToFrl = mapRelationsFrlPcToFrl(daqPartition);
 	}
 
 	private void buildRelations() {
@@ -80,7 +82,6 @@ public class RelationMapper implements Serializable {
 		}
 		if (ignoredFeds > 0)
 			logger.warn("There are " + ignoredFeds + " warnings/problems mapping FED-FMM relations");
-		
 
 		/* building FRL-FED */
 		for (Entry<Integer, Set<Integer>> relation : frlToFed.entrySet()) {
@@ -151,6 +152,16 @@ public class RelationMapper implements Serializable {
 			FEDBuilder fedBuilder = objectMapper.fedBuilders.get(relation.getValue());
 			ru.setFedBuilder(fedBuilder);
 			fedBuilder.setRu(ru);
+		}
+		
+		/* building FRLPc - FRL */
+		for (Entry<Integer, Set<Integer>> relation : frlPcToFrl.entrySet()) {
+			FRLPc frlPc = objectMapper.frlPcs.get(relation.getKey());
+			for (int frlId : relation.getValue()) {
+				FRL frl = objectMapper.frls.get(frlId);
+				frlPc.getFrls().add(frl);
+				frl.setFrlPc(frlPc);
+			}
 		}
 
 	}
@@ -257,6 +268,30 @@ public class RelationMapper implements Serializable {
 			rcms.utilities.hwcfg.fb.FEDBuilder hwFedBuilder = daqPartition.getDAQPartitionSet().getFEDBuilderSet()
 					.getFBs().get(hwru.getFBId());
 			result.put(hwru.hashCode(), hwFedBuilder.hashCode());
+		}
+		return result;
+	}
+
+	/**
+	 * Retrieve FRLPc-FRL relations
+	 * 
+	 * @return map representing FRLPc-FRL one to many relation
+	 */
+	private Map<Integer, Set<Integer>> mapRelationsFrlPcToFrl(DAQPartition daqPartition) {
+
+		Map<Integer, Set<Integer>> result = new HashMap<>();
+
+		Set<rcms.utilities.hwcfg.eq.FRL> frls = objectMapper.getHardwareFrls(daqPartition);
+		for (rcms.utilities.hwcfg.eq.FRL hwfrl : frls) {
+
+			String frlPc = hwfrl.getFRLCrate().getHostName();
+			
+			if (!result.containsKey(frlPc.hashCode())) {
+				HashSet<Integer> children = new HashSet<>();
+				result.put(frlPc.hashCode(), children);
+			}
+			result.get(frlPc.hashCode()).add(hwfrl.hashCode());
+
 		}
 		return result;
 	}

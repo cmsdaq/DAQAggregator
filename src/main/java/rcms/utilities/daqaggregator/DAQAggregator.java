@@ -17,6 +17,7 @@ import rcms.common.db.DBConnectorOracle;
 import rcms.utilities.daqaggregator.data.DAQ;
 import rcms.utilities.daqaggregator.mappers.FlashlistManager;
 import rcms.utilities.daqaggregator.mappers.MappingManager;
+import rcms.utilities.daqaggregator.mappers.PostProcessor;
 import rcms.utilities.hwcfg.HWCfgConnector;
 import rcms.utilities.hwcfg.HWCfgDescriptor;
 import rcms.utilities.hwcfg.dp.DAQPartition;
