@@ -7,8 +7,8 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.databind.JsonNode;
 
-import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
 import rcms.utilities.daqaggregator.mappers.FlashlistType;
+import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
 
 /**
  * Builder Unit
@@ -111,7 +111,7 @@ public class BU implements Serializable, FlashlistUpdatable {
 			this.numEventsInBU = flashlistRow.get("nbEventsInBU").asInt();
 			this.priority = flashlistRow.get("priority").asInt();
 			this.numRequestsSent = flashlistRow.get("requestCount").asInt();
-			this.numRequestsUsed = flashlistRow.get("outstandingRequests").asInt();
+			//this.numRequestsUsed = flashlistRow.get("outstandingRequests").asInt(); //FIXME change
 			this.numRequestsBlocked = flashlistRow.get("nbBlockedResources").asInt();
 			this.numFUsHlt = flashlistRow.get("fuSlotsHLT").asInt();
 			this.numFUsCrashed = flashlistRow.get("fuSlotsQuarantined").asInt();
