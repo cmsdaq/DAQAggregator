@@ -65,6 +65,7 @@ public class RelationMapper implements Serializable {
 		objectMapper.daq.getFedBuilders().addAll(objectMapper.fedBuilders.values());
 
 		/* building FMM-FED */
+		int ignoredFeds = 0;
 		for (Entry<Integer, Set<Integer>> relation : fmmToFed.entrySet()) {
 			FMM fmm = objectMapper.fmms.get(relation.getKey());
 			for (int fedId : relation.getValue()) {
@@ -73,10 +74,13 @@ public class RelationMapper implements Serializable {
 					fmm.getFeds().add(fed);
 					fed.setFmm(fmm);
 				} else {
-					logger.warn("FMM has relation with FED that does not have FRL, ignoring this FED");
+					ignoredFeds++;
 				}
 			}
 		}
+		if (ignoredFeds > 0)
+			logger.warn("There are " + ignoredFeds + " warnings/problems mapping FED-FMM relations");
+		
 
 		/* building FRL-FED */
 		for (Entry<Integer, Set<Integer>> relation : frlToFed.entrySet()) {

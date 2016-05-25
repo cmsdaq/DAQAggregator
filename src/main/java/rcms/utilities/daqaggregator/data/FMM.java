@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -33,6 +34,9 @@ public class FMM implements java.io.Serializable, FlashlistUpdatable {
 	private String url;
 
 	private List<FED> feds = new ArrayList<FED>();
+	
+	@JsonIgnore
+	public boolean takeB;
 
 	public TTCPartition getTtcPartition() {
 		return ttcPartition;

@@ -58,7 +58,7 @@ public class FlashlistManager {
 			}
 
 		}
-		logger.info("Retrieved " + flashlists.size() + " flashlists");
+		logger.info("There are " + flashlists.size() + " flashlists available");
 	}
 
 	/**

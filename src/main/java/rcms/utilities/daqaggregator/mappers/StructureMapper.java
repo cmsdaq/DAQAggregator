@@ -147,7 +147,7 @@ public class StructureMapper implements Serializable {
 				}
 			}
 		}
-		logger.info("Sub FED builders retrieved: " + subFedBuilders.size());
+		logger.debug("Sub FED builders retrieved: " + subFedBuilders.size());
 
 		return subFedBuilders;
 	}

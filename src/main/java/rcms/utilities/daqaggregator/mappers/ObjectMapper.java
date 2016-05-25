@@ -27,6 +27,8 @@ import rcms.utilities.hwcfg.HardwareConfigurationException;
 import rcms.utilities.hwcfg.dp.DAQPartition;
 import rcms.utilities.hwcfg.dp.DAQPartitionSet;
 import rcms.utilities.hwcfg.dp.DPGenericHost;
+import rcms.utilities.hwcfg.eq.FMMFMMLink;
+import rcms.utilities.hwcfg.eq.FMMTriggerLink;
 import rcms.utilities.hwcfg.fb.FBI;
 
 /**
@@ -113,11 +115,22 @@ public class ObjectMapper implements Serializable {
 		}
 
 		/* map FMMs */
+		Set<FMMTriggerLink> fmmLinks = daqPartition.getDAQPartitionSet().getEquipmentSet().getFMMTriggerLinks();
+		HashMap<Long, FMMTriggerLink> fmmMap = new HashMap<>();
+		for (FMMTriggerLink fmmLink : fmmLinks) {
+			fmmMap.put(fmmLink.getFMMId(), fmmLink);
+		}
 		fmms = new HashMap<>();
 		for (rcms.utilities.hwcfg.eq.FMM hwfmm : getHardwareFmms(daqPartition)) {
 			FMM fmm = new FMM();
 			fmm.setGeoslot(hwfmm.getGeoSlot());
-			// fmm.setUrl(hwfmm.); TODO: where is url?
+
+			if (hwfmm.getDual()) {
+				FMMTriggerLink fmmLink = fmmMap.get(hwfmm.getId());
+				int fmmIO = fmmLink.getFMMIO();
+				if (fmmIO == 22 || fmmIO == 23)
+					fmm.takeB = true;
+			}
 			fmms.put(hwfmm.hashCode(), fmm);
 		}
 
@@ -152,10 +165,32 @@ public class ObjectMapper implements Serializable {
 
 	@Override
 	public String toString() {
-		return "ObjectMapper [subFedBuilders=" + subFedBuilders.size() + ", fedBuilders=" + fedBuilders.size()
-				+ ", frls=" + frls.size() + ", ttcPartitions=" + ttcPartitions.size() + ", frlPcs=" + frlPcs.size()
-				+ ", bus=" + bus.size() + ", rus=" + rus.size() + ", fmms=" + fmms.size() + ", feds=" + feds.size()
-				+ ", fmmApplications=" + fmmApplications.size() + "]";
+
+		StringBuilder sb = new StringBuilder();
+
+		int objectsMapped = rus.size() + bus.size() + feds.size() + frls.size() + fmms.size() + ttcPartitions.size()
+				+ fedBuilders.size() + subFedBuilders.size() + fmmApplications.size() + frlPcs.size();
+
+		int bFmms = 0;
+		for (FMM fmm : fmms.values()) {
+			if (fmm.takeB)
+				bFmms++;
+		}
+
+		sb.append("Object mapping raport: " + objectsMapped + " objects mapped: ");
+		sb.append("[RUs:" + rus.size() + "],");
+		sb.append("[BUs:" + bus.size() + "],");
+		sb.append("[FEDs:" + feds.size() + "],");
+		sb.append("[FRLs:" + frls.size() + "],");
+		sb.append("[FMMs:" + fmms.size() + "(" + bFmms + " dual with io 22|23)],");
+		sb.append("[TTCPs:" + ttcPartitions.size() + "],");
+		sb.append("[FBs:" + fedBuilders.size() + "],");
+		sb.append("[sFBs:" + subFedBuilders.size() + "],");
+		sb.append("[FMMApps:" + fmmApplications.size() + "],");
+		sb.append("[FRLPs:" + frlPcs.size() + "],");
+
+		return sb.toString();
+
 	}
 
 	/**
