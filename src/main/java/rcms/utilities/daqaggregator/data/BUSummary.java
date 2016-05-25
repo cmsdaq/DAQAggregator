@@ -5,6 +5,8 @@ import java.io.Serializable;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
+import rcms.utilities.daqaggregator.mappers.Derivable;
+
 /**
  * Summary statistics of BUs
  * 
@@ -13,7 +15,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
  */
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
-public class BUSummary implements Serializable {
+public class BUSummary implements Serializable , Derivable{
 
 	// ----------------------------------------
 	// fields set at beginning of session
@@ -266,9 +268,9 @@ public class BUSummary implements Serializable {
 
 	// ----------------------------------------------------------------------
 
-	
 
-	public void summarize() {
+	@Override
+	public void calculateDerivedValues() {
 
 		/* TODO sum or avg? */
 		int currentLumisection = 0;
@@ -365,4 +367,5 @@ public class BUSummary implements Serializable {
 		this.setRate(rate);
 		this.setThroughput(throughput);
 	}
+
 }

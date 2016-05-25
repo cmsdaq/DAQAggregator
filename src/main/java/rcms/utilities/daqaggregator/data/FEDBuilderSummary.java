@@ -5,6 +5,8 @@ import java.io.Serializable;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
+import rcms.utilities.daqaggregator.mappers.Derivable;
+
 /**
  * Summary statistics of FED builders
  * 
@@ -13,7 +15,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
  */
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
-public class FEDBuilderSummary implements Serializable {
+public class FEDBuilderSummary implements Serializable , Derivable{
 
 	// ----------------------------------------
 	// fields set at beginning of session
@@ -129,7 +131,8 @@ public class FEDBuilderSummary implements Serializable {
 
 	// ----------------------------------------------------------------------
 
-	public void summarize() {
+	@Override
+	public void calculateDerivedValues() {
 		this.setDaq(daq);
 		int numberOfRus = daq.getFedBuilders().size();
 

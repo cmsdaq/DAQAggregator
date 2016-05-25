@@ -23,17 +23,17 @@ public class FlashlistManager {
 	private final Set<String> lasUrls;
 
 	// TODO: refactor this field
-	private final StructureMapper structureMapper;
+	private final MappingManager mappingManager;
 
 	// TODO: refactor this field
 	private final int sessionId;
 
 	private static final Logger logger = Logger.getLogger(FlashlistManager.class);
 
-	public FlashlistManager(Set<String> lasUrls, StructureMapper structureMapper, int sessionId) {
+	public FlashlistManager(Set<String> lasUrls, MappingManager mappingManager, int sessionId) {
 		this.flashlists = new HashSet<Flashlist>();
 		this.lasUrls = lasUrls;
-		this.structureMapper = structureMapper;
+		this.mappingManager = mappingManager;
 		this.sessionId = sessionId;
 	}
 
@@ -58,34 +58,40 @@ public class FlashlistManager {
 			}
 
 		}
-		logger.info("Retrieved " + flashlists.size() + " flashlists");
+		logger.info("There are " + flashlists.size() + " flashlists available");
 	}
 
 	/**
-	 * Read flashlists
+	 * This method retrieves data only from necessary flashlists. After
+	 * retrieving it passes flashlist to dispatcher {@link FlashlistDispatcher}
 	 */
 	public void readFlashlists() {
 
 		int timeResult;
 		long startTime = System.currentTimeMillis();
 
+		MappingReporter.get().clear();
+
 		for (Flashlist flashlist : flashlists) {
 
 			/* read only this flashlists */
 			if (flashlist.getFlashlistType() == FlashlistType.RU
 					|| flashlist.getFlashlistType() == FlashlistType.FEROL_INPUT_STREAM
+					|| flashlist.getFlashlistType() == FlashlistType.FEROL_CONFIGURATION
+					|| flashlist.getFlashlistType() == FlashlistType.FEROL_STATUS
 					|| flashlist.getFlashlistType() == FlashlistType.BU
 					|| flashlist.getFlashlistType() == FlashlistType.FMM_INPUT
 					|| flashlist.getFlashlistType() == FlashlistType.FMM_STATUS
 					|| flashlist.getFlashlistType() == FlashlistType.EVM
 					|| flashlist.getFlashlistType() == FlashlistType.JOB_CONTROL
+					|| flashlist.getFlashlistType() == FlashlistType.LEVEL_ZERO_FM_DYNAMIC
 					|| flashlist.getFlashlistType() == FlashlistType.LEVEL_ZERO_FM_SUBSYS)
 				try {
 
 					flashlist.initialize();
 					logger.debug("Flashlist definition:" + flashlist.getDefinitionNode());
-					ObjectUpdater updater = new ObjectUpdater();
-					updater.update(flashlist, structureMapper);
+					FlashlistDispatcher dispatcher = new FlashlistDispatcher();
+					dispatcher.dispatch(flashlist, mappingManager);
 
 				} catch (IOException e) {
 					logger.error("Error reading flashlist " + flashlist);
@@ -95,7 +101,7 @@ public class FlashlistManager {
 
 		long stopTime = System.currentTimeMillis();
 		timeResult = (int) (stopTime - startTime);
-		logger.info("Reading all flashlists finished in " + timeResult + "ms");
+		logger.info("Reading and mapping all flashlists finished in " + timeResult + "ms");
 
 	}
 

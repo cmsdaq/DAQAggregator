@@ -61,8 +61,16 @@ public class FED implements java.io.Serializable, FlashlistUpdatable {
 	private long numFRCerrors;
 
 	private long numTriggers;
-	
+
 	private long eventCounter;
+
+	private boolean fmmMasked;
+
+	private boolean frlMasked;
+
+	private boolean hasSLINK;
+
+	private boolean hasTTS;
 
 	/**
 	 * Available columns in flashlist FMM_INPUT:
@@ -139,6 +147,7 @@ public class FED implements java.io.Serializable, FlashlistUpdatable {
 			this.percentWarning = (float) (flashlistRow.get("fractionWarning").asDouble() * 100);
 			this.percentBusy = (float) (flashlistRow.get("fractionBusy").asDouble() * 100);
 			this.ttsState = flashlistRow.get("inputState").asText();
+			this.fmmMasked = !flashlistRow.get("isActive").asBoolean();
 
 		} else if (flashlistType == FlashlistType.FEROL_INPUT_STREAM) {
 			// TODO or WrongFEDIdDetected
@@ -148,6 +157,13 @@ public class FED implements java.io.Serializable, FlashlistUpdatable {
 			this.numFRCerrors = flashlistRow.get("FEDCRCError").asInt();
 			this.numTriggers = flashlistRow.get("TriggerNumber").asInt();
 			this.eventCounter = flashlistRow.get("EventCounter").asInt();
+		} else if (flashlistType == FlashlistType.FEROL_CONFIGURATION) {
+
+			if (this.frlIO == 0)
+				this.frlMasked = flashlistRow.get("enableStream0").asBoolean();
+
+			else if (this.frlIO == 1)
+				this.frlMasked = flashlistRow.get("enableStream1").asBoolean();
 		}
 
 	}
@@ -274,7 +290,7 @@ public class FED implements java.io.Serializable, FlashlistUpdatable {
 
 	@Override
 	public String toString() {
-		return "FED [id=" + id + ", frlIO=" + frlIO + ", fmmIO=" + fmmIO + ", srcIdExpected=" + srcIdExpected + "]";
+		return "FED [fmm=" + fmm + ", fmmIO=" + fmmIO + "]";
 	}
 
 	public long getEventCounter() {
@@ -283,6 +299,38 @@ public class FED implements java.io.Serializable, FlashlistUpdatable {
 
 	public void setEventCounter(long eventCounter) {
 		this.eventCounter = eventCounter;
+	}
+
+	public boolean isFmmMasked() {
+		return fmmMasked;
+	}
+
+	public void setFmmMasked(boolean fmmMasked) {
+		this.fmmMasked = fmmMasked;
+	}
+
+	public boolean isFrlMasked() {
+		return frlMasked;
+	}
+
+	public void setFrlMasked(boolean frlMasked) {
+		this.frlMasked = frlMasked;
+	}
+
+	public boolean isHasSLINK() {
+		return hasSLINK;
+	}
+
+	public void setHasSLINK(boolean hasSLINK) {
+		this.hasSLINK = hasSLINK;
+	}
+
+	public boolean isHasTTS() {
+		return hasTTS;
+	}
+
+	public void setHasTTS(boolean hasTTS) {
+		this.hasTTS = hasTTS;
 	}
 
 	// ----------------------------------------------------------------------

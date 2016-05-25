@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
+import rcms.utilities.daqaggregator.mappers.Derivable;
 import rcms.utilities.daqaggregator.mappers.FlashlistType;
 
 /**
@@ -17,7 +18,7 @@ import rcms.utilities.daqaggregator.mappers.FlashlistType;
  */
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
-public class RU implements Serializable, FlashlistUpdatable {
+public class RU implements Serializable, FlashlistUpdatable, Derivable {
 
 	// ----------------------------------------
 	// fields set at beginning of session
@@ -66,32 +67,6 @@ public class RU implements Serializable, FlashlistUpdatable {
 
 	/** requests from BUs ? */
 	private int requests;
-
-	/**
-	 * Update object based on given flashlist fragment
-	 * 
-	 * @param flashlistRow
-	 *            JsonNode representing one row from flashlist
-	 */
-	@Override
-	public void updateFromFlashlist(FlashlistType flashlistType, JsonNode flashlistRow) {
-
-		if (flashlistType == FlashlistType.RU) {
-			// direct values
-			this.setStateName(flashlistRow.get("stateName").asText());
-			this.setErrorMsg(flashlistRow.get("errorMsg").asText());
-			this.requests = flashlistRow.get("eventCount").asInt();
-			this.rate = flashlistRow.get("eventRate").asInt();
-			this.eventsInRU = flashlistRow.get("eventsInRU").asInt();
-			this.fragmentsInRU = flashlistRow.get("fragmentCount").asInt();
-			this.superFragmentSizeMean = flashlistRow.get("superFragmentSize").asInt();
-			this.superFragmentSizeStddev = flashlistRow.get("superFragmentSizeStdDev").asInt();
-
-			// derived values
-			this.throughput = rate * superFragmentSizeMean;
-
-		}
-	}
 
 	// ----------------------------------------------------------------------
 
@@ -230,6 +205,57 @@ public class RU implements Serializable, FlashlistUpdatable {
 				+ ", eventsInRU=" + eventsInRU + "]";
 	}
 
-	// ----------------------------------------------------------------------
+	@Override
+	public void calculateDerivedValues() {
+
+		masked = false;
+		int maskedFeds = 0;
+		int allFeds = 0;
+
+		for (SubFEDBuilder subFedBuilder : fedBuilder.getSubFedbuilders()) {
+			for (FRL frl : subFedBuilder.getFrls()) {
+				for (FED fed : frl.getFeds().values()) {
+					allFeds++;
+					if (fed.isFrlMasked()) {
+						maskedFeds++;
+					}
+				}
+			}
+		}
+
+		/* Ru is mask if all of FEDs are masked */
+		if (maskedFeds == allFeds) {
+			masked = true;
+		}
+
+	}
+
+	/**
+	 * Update object based on given flashlist fragment
+	 * 
+	 * @param flashlistRow
+	 *            JsonNode representing one row from flashlist
+	 */
+	@Override
+	public void updateFromFlashlist(FlashlistType flashlistType, JsonNode flashlistRow) {
+
+		if (flashlistType == FlashlistType.RU) {
+			// direct values
+
+			this.setStateName(flashlistRow.get("stateName").asText());
+			this.setErrorMsg(flashlistRow.get("errorMsg").asText());
+			this.requests = flashlistRow.get("eventCount").asInt();
+			this.rate = flashlistRow.get("eventRate").asInt();
+			this.eventsInRU = flashlistRow.get("eventsInRU").asInt();
+			this.fragmentsInRU = flashlistRow.get("fragmentCount").asInt();
+			this.superFragmentSizeMean = flashlistRow.get("superFragmentSize").asInt();
+			this.superFragmentSizeStddev = flashlistRow.get("superFragmentSizeStdDev").asInt();
+
+			// derived values
+			this.throughput = rate * superFragmentSizeMean;
+
+		}
+	}
+	
 
 }
