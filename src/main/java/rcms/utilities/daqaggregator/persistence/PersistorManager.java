@@ -1,4 +1,4 @@
-package rcms.utilities.daqaggregator;
+package rcms.utilities.daqaggregator.persistence;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,6 +17,8 @@ import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import rcms.utilities.daqaggregator.DummyDAQ;
+import rcms.utilities.daqaggregator.TaskManager;
 import rcms.utilities.daqaggregator.data.DAQ;
 import rcms.utilities.daqaggregator.reasoning.base.CheckManager;
 

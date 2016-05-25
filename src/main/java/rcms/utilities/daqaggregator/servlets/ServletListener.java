@@ -11,9 +11,9 @@ import org.apache.log4j.Logger;
 
 import rcms.utilities.daqaggregator.DAQAggregator;
 import rcms.utilities.daqaggregator.DataResolutionManager;
-import rcms.utilities.daqaggregator.PersistorManager;
 import rcms.utilities.daqaggregator.TaskManager;
 import rcms.utilities.daqaggregator.data.DAQ;
+import rcms.utilities.daqaggregator.persistence.PersistorManager;
 import rcms.utilities.daqaggregator.reasoning.base.CheckManager;
 import rcms.utilities.daqaggregator.reasoning.base.EventProducer;
 

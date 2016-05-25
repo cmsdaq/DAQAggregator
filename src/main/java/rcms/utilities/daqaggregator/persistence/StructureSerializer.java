@@ -1,4 +1,4 @@
-package rcms.utilities.daqaggregator;
+package rcms.utilities.daqaggregator.persistence;
 
 import java.io.File;
 import java.io.FileInputStream;

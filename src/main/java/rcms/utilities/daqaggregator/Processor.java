@@ -2,6 +2,8 @@ package rcms.utilities.daqaggregator;
 
 import java.io.IOException;
 
+import rcms.utilities.daqaggregator.persistence.PersistorManager;
+
 public class Processor {
 
 	public static void main (String[] args){
