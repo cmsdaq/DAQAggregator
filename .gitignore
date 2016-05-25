@@ -1,5 +1,14 @@
-/bin/
-
 # ignore properties file (credentials)
 DAQAggregator.properties
-/target/
+*/DAQAggregator.properties
+
+.classpath
+.project
+.settings
+
+*.class
+*.jar
+*.war
+*.ear
+
+target
