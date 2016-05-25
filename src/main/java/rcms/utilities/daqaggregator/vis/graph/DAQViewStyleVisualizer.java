@@ -15,12 +15,12 @@ import rcms.utilities.daqaggregator.data.FRL;
 import rcms.utilities.daqaggregator.data.FRLPc;
 import rcms.utilities.daqaggregator.data.SubFEDBuilder;
 import rcms.utilities.daqaggregator.data.TTCPartition;
-import rcms.utilities.daqaggregator.mappers.StructureMapper;
+import rcms.utilities.daqaggregator.mappers.MappingManager;
 import rcms.utilities.daqaggregator.vis.Visualizer;
 
 public class DAQViewStyleVisualizer extends GraphVisualizer {
 
-	public DAQViewStyleVisualizer(StructureMapper structureMapper) {
+	public DAQViewStyleVisualizer(MappingManager structureMapper) {
 		super(structureMapper);
 	}
 
@@ -134,7 +134,7 @@ public class DAQViewStyleVisualizer extends GraphVisualizer {
 		return data;
 	}
 
-	private boolean isFrlPcConnected(Entry<Integer, FRLPc> frlPc, StructureMapper structureMapper) {
+	private boolean isFrlPcConnected(Entry<Integer, FRLPc> frlPc, MappingManager structureMapper) {
 
 		for (Entry<Integer, Integer> relation : structureMapper.getRelationMapper().subFedBuilderToFrlPc.entrySet()) {
 			if (relation.getValue().equals(frlPc.getKey()))
@@ -143,7 +143,7 @@ public class DAQViewStyleVisualizer extends GraphVisualizer {
 		return false;
 	}
 
-	private boolean isTTCPConnected(Entry<Integer, TTCPartition> ttcp, StructureMapper structureMapper) {
+	private boolean isTTCPConnected(Entry<Integer, TTCPartition> ttcp, MappingManager structureMapper) {
 
 		for (Entry<Integer, Integer> relation : structureMapper.getRelationMapper().subFedBuilderToTTCP.entrySet()) {
 			if (relation.getValue().equals(ttcp.getKey()))

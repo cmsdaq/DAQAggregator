@@ -4,7 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.databind.JsonNode;
+
+import rcms.utilities.daqaggregator.mappers.FlashlistType;
+import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
 
 /**
  * Fast Merging Module
@@ -13,7 +18,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
  * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
-public class FMM implements java.io.Serializable {
+public class FMM implements java.io.Serializable, FlashlistUpdatable {
 
 	// ----------------------------------------
 	// fields set at beginning of session
@@ -29,6 +34,9 @@ public class FMM implements java.io.Serializable {
 	private String url;
 
 	private List<FED> feds = new ArrayList<FED>();
+	
+	@JsonIgnore
+	public boolean takeB;
 
 	public TTCPartition getTtcPartition() {
 		return ttcPartition;
@@ -36,6 +44,11 @@ public class FMM implements java.io.Serializable {
 
 	public FMMApplication getFmmApplication() {
 		return fmmApplication;
+	}
+
+	@Override
+	public String toString() {
+		return "FMM [fmmApplication=" + fmmApplication + ", geoslot=" + geoslot + "]";
 	}
 
 	public int getGeoslot() {
@@ -68,5 +81,13 @@ public class FMM implements java.io.Serializable {
 
 	public void setFeds(List<FED> feds) {
 		this.feds = feds;
+	}
+
+	@Override
+	public void updateFromFlashlist(FlashlistType flashlistType, JsonNode flashlistRow) {
+		if(flashlistType == FlashlistType.FMM_STATUS){
+			url = flashlistRow.get("context").asText();
+		}
+		
 	}
 }

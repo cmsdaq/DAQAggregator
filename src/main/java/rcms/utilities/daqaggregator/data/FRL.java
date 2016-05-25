@@ -5,6 +5,10 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.databind.JsonNode;
+
+import rcms.utilities.daqaggregator.mappers.FlashlistType;
+import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
 
 /**
  * Front-end Readout Link
@@ -13,7 +17,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
  * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
-public class FRL implements java.io.Serializable {
+public class FRL implements java.io.Serializable, FlashlistUpdatable {
 
 	// ----------------------------------------
 	// fields set at beginning of session
@@ -32,11 +36,26 @@ public class FRL implements java.io.Serializable {
 	 * not FED 0
 	 */
 	private final Map<Integer, FED> feds = new HashMap<>();
+	
+	private FRLPc frlPc;
 
 	// ----------------------------------------
 	// fields updated periodically
 	// ----------------------------------------
 	private String state;
+
+	private String substate;
+
+	/** xdaq application url */
+	private String url;
+
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
+	}
 
 	public String getState() {
 		return state;
@@ -72,6 +91,33 @@ public class FRL implements java.io.Serializable {
 
 	public void setType(FRLType type) {
 		this.type = type;
+	}
+
+	public String getSubstate() {
+		return substate;
+	}
+
+	public void setSubstate(String substate) {
+		this.substate = substate;
+	}
+
+	@Override
+	public void updateFromFlashlist(FlashlistType flashlistType, JsonNode flashlistRow) {
+
+		if (flashlistType == FlashlistType.FEROL_STATUS) {
+			state = flashlistRow.get("stateName").asText();
+			substate = flashlistRow.get("subState").asText();
+			url = flashlistRow.get("context").asText();
+		}
+		
+	}
+
+	public FRLPc getFrlPc() {
+		return frlPc;
+	}
+
+	public void setFrlPc(FRLPc frlPc) {
+		this.frlPc = frlPc;
 	}
 
 	// ----------------------------------------------------------------------

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.databind.JsonNode;
 
+import rcms.utilities.daqaggregator.mappers.Derivable;
 import rcms.utilities.daqaggregator.mappers.FlashlistType;
 import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
 
@@ -15,7 +16,7 @@ import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
  */
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
-public class TTCPartition implements java.io.Serializable, FlashlistUpdatable {
+public class TTCPartition implements java.io.Serializable, FlashlistUpdatable, Derivable {
 
 	// ----------------------------------------
 	// fields set at beginning of session
@@ -27,6 +28,8 @@ public class TTCPartition implements java.io.Serializable, FlashlistUpdatable {
 
 	/** can be null */
 	private FMM fmm;
+	
+	private SubSystem subsystem;
 
 	// ----------------------------------------
 	// fields updated periodically
@@ -37,26 +40,6 @@ public class TTCPartition implements java.io.Serializable, FlashlistUpdatable {
 	private float percentWarning;
 
 	private float percentBusy;
-
-	@Override
-	public void updateFromFlashlist(FlashlistType flashlistType, JsonNode flashlistRow) {
-
-		if (flashlistType == FlashlistType.FMM_STATUS) {
-
-			// TODO: this needs to be consulted still
-			// if fmm is single - get A
-			// if fmm is dual - check mffIO - if 22,23 -> take B
-
-			this.percentBusy = (float) flashlistRow.get("outputFractionBusyA").asDouble() * 100;
-			this.percentWarning = (float) flashlistRow.get("outputFractionWarningA").asDouble() * 100;
-			this.ttsState = flashlistRow.get("outputStateA").asText();
-		}
-
-		else if (flashlistType == FlashlistType.FMM_INPUT) {
-			System.out.println("TTCPartition masked (isActive) " + flashlistRow.get("isActive").asText());
-		}
-
-	}
 
 	public String getTtsState() {
 		return ttsState;
@@ -104,6 +87,50 @@ public class TTCPartition implements java.io.Serializable, FlashlistUpdatable {
 
 	public void setFmm(FMM fmm) {
 		this.fmm = fmm;
+	}
+
+	@Override
+	public void calculateDerivedValues() {
+		masked = false;
+		int maskedFeds = 0;
+		for (FED fed : fmm.getFeds()) {
+			if (fed.isFmmMasked()) {
+				maskedFeds++;
+			}
+		}
+
+		/* TTCPartition is mask if any of FED is masked */
+		if (maskedFeds > 0) {
+			masked = true;
+		}
+
+	}
+
+	@Override
+	public void updateFromFlashlist(FlashlistType flashlistType, JsonNode flashlistRow) {
+
+		if (flashlistType == FlashlistType.FMM_STATUS) {
+
+			String busyKey = "outputFractionBusy";
+			String warningKey = "outputFractionWarning";
+			String ttsStateKey = "outputState";
+			String output = "A";
+			if (fmm.takeB)
+				output = "B";
+
+			this.percentBusy = (float) flashlistRow.get(busyKey + output).asDouble() * 100;
+			this.percentWarning = (float) flashlistRow.get(warningKey + output).asDouble() * 100;
+			this.ttsState = flashlistRow.get(ttsStateKey + output).asText();
+		}
+
+	}
+
+	public SubSystem getSubsystem() {
+		return subsystem;
+	}
+
+	public void setSubsystem(SubSystem subsystem) {
+		this.subsystem = subsystem;
 	}
 
 }

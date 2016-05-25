@@ -30,9 +30,9 @@ import rcms.utilities.hwcfg.fb.FBI;
  * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
  *
  */
-public class StructureMapper implements Serializable {
+public class MappingManager implements Serializable {
 
-	private static final Logger logger = Logger.getLogger(StructureMapper.class);
+	private static final Logger logger = Logger.getLogger(MappingManager.class);
 
 	private final ObjectMapper objectMapper;
 
@@ -45,7 +45,7 @@ public class StructureMapper implements Serializable {
 	 * @param daqPartition
 	 *            object representing hardware configuration
 	 */
-	public StructureMapper(DAQPartition daqPartition) {
+	public MappingManager(DAQPartition daqPartition) {
 		objectMapper = new ObjectMapper();
 		relationMapper = new RelationMapper(objectMapper);
 		this.daqPartition = daqPartition;
@@ -147,7 +147,7 @@ public class StructureMapper implements Serializable {
 				}
 			}
 		}
-		logger.info("Sub FED builders retrieved: " + subFedBuilders.size());
+		logger.debug("Sub FED builders retrieved: " + subFedBuilders.size());
 
 		return subFedBuilders;
 	}

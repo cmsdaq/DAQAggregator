@@ -27,7 +27,6 @@ public class FMMApplication implements java.io.Serializable, FlashlistUpdatable 
 
 	private String hostname;
 
-	private String url;
 
 	private final List<FMM> fmms = new ArrayList<FMM>();
 
@@ -55,9 +54,6 @@ public class FMMApplication implements java.io.Serializable, FlashlistUpdatable 
 		return hostname;
 	}
 
-	public String getUrl() {
-		return url;
-	}
 
 	public List<FMM> getFmms() {
 		return fmms;
@@ -71,14 +67,16 @@ public class FMMApplication implements java.io.Serializable, FlashlistUpdatable 
 		this.hostname = hostname;
 	}
 
-	public void setUrl(String url) {
-		this.url = url;
+
+	@Override
+	public String toString() {
+		return "FMMApplication [hostname=" + hostname + "]";
 	}
 
 	@Override
 	public void updateFromFlashlist(FlashlistType flashlistType, JsonNode flashlistRow) {
+
 		if (flashlistType == FlashlistType.JOB_CONTROL) {
-			// TODO: use job control for crashed
 			JsonNode jobTable = flashlistRow.get("jobTable");
 
 			JsonNode rows = jobTable.get("rows");
@@ -87,8 +85,8 @@ public class FMMApplication implements java.io.Serializable, FlashlistUpdatable 
 
 				String status = row.get("status").asText();
 
-				// if not alive than crashed, if no data than default value witch
-				// is not crashed
+				// if not alive than crashed, if no data than default value
+				// witch is not crashed
 				if (!status.equalsIgnoreCase("alive"))
 					this.crashed = true;
 

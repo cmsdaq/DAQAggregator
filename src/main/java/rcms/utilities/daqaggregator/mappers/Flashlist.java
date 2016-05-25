@@ -57,15 +57,14 @@ public class Flashlist {
 
 		int timeResult;
 		String requestAddress = address + "/retrieveCollection?flash=" + name + "&fmt=json";
-		
-		if(flashlistType.isSessionContext()){
+
+		if (flashlistType.isSessionContext()) {
 			requestAddress = requestAddress + "&sessionid=" + sessionId;
 		}
-		
+
 		long startTime = System.currentTimeMillis();
 
-		List<String> result = Connector.get()
-				.retrieveLines(requestAddress);
+		List<String> result = Connector.get().retrieveLines(requestAddress);
 
 		com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
 		JsonNode rootNode = mapper.readValue(result.get(0), JsonNode.class);
@@ -75,14 +74,9 @@ public class Flashlist {
 
 		long stopTime = System.currentTimeMillis();
 		timeResult = (int) (stopTime - startTime);
-		logger.info("Reading " + name + " finished in " + timeResult + "ms, fetched " + rowsNode.size() + " rows and "
-				+ definitionNode.size() + " columns");
-	}
-
-	public void preetyPrint() {
-		String format = "|%-20.20s|%n";
-		System.out.format(format, "a");
-
+		if (definitionNode.size() == 0 || rowsNode.size() == 0)
+			logger.warn("Reading " + name + " finished in " + timeResult + "ms, fetched " + rowsNode.size()
+					+ " rows and " + definitionNode.size() + " columns");
 	}
 
 	public FlashlistType getFlashlistType() {

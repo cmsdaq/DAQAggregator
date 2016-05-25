@@ -4,31 +4,35 @@ import org.apache.log4j.Logger;
 
 public enum FlashlistType {
 
-	BU("BU",true),
-	EVM("EVM",true),
-	FMM_INPUT("FMMInput",true),
-	FMM_INPUT_DETAIL("FMMInputDetail",true),
-	FMM_STATUS("FMMStatus",true),
-	RU("RU",true),
-	FEROL_CONFIGURATION("ferolConfiguration",true),
-	FEROL_INPUT_STREAM("ferolInputStream",true),
-	FEROL_MONITORING("ferolMonitoring",true),
-	FEROL_STATUS("ferolStatus",true),
-	FEROL_TCP_STREAM("ferolTcpStream",true),
-	FRL_MONITORING("frlMonitoring",true),
-	HOST_INFO("hostInfo",true),
-	LEVEL_ZERO_FM_DYNAMIC("levelZeroFM_dynamic",true),
-	LEVEL_ZERO_FM_STATIC("levelZeroFM_static",true),
-	LEVEL_ZERO_FM_SUBSYS("levelZeroFM_subsys",false),
-	JOB_CONTROL("jobcontrol",false),
-	DISK_INFO("diskInfo",true),
-	FMM_PARTITION_DEAD_TIME("FMMPartitionDeadTime",true),
-	FMM_FED_DEAD_TIME("FMMFEDDeadTime",true);
+	BU("BU", true),
+	EVM("EVM", true),
+	FMM_INPUT("FMMInput", true),
+	FMM_INPUT_DETAIL("FMMInputDetail", true),
+	FMM_STATUS("FMMStatus", true),
+	RU("RU", true),
+	FEROL_CONFIGURATION("ferolConfiguration", true),
+	FEROL_INPUT_STREAM("ferolInputStream", true),
+	FEROL_MONITORING("ferolMonitoring", true),
+	FEROL_STATUS("ferolStatus", true),
+	FEROL_TCP_STREAM("ferolTcpStream", true),
+	FRL_MONITORING("frlMonitoring", true),
+	HOST_INFO("hostInfo", true),
+	LEVEL_ZERO_FM_DYNAMIC("levelZeroFM_dynamic", false),
+	LEVEL_ZERO_FM_STATIC("levelZeroFM_static", true),
+	LEVEL_ZERO_FM_SUBSYS("levelZeroFM_subsys", false),
+	JOB_CONTROL("jobcontrol", false),
+	DISK_INFO("diskInfo", true),
+	FMM_PARTITION_DEAD_TIME("FMMPartitionDeadTime", true),
+	FMM_FED_DEAD_TIME("FMMFEDDeadTime", true);
 
 	private static Logger logger = Logger.getLogger(FlashlistType.class);
 
 	private final String name;
-	
+
+	/**
+	 * Retrieval of flashlist is in session context. Note that not every
+	 * flashlist needs session id to retrieve.
+	 */
 	private final boolean sessionContext;
 
 	private FlashlistType(String name, boolean sessionContext) {
