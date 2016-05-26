@@ -9,18 +9,17 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.collections4.queue.CircularFifoQueue;
 import org.apache.log4j.Logger;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import rcms.utilities.daqaggregator.DummyDAQ;
 import rcms.utilities.daqaggregator.TaskManager;
 import rcms.utilities.daqaggregator.data.DAQ;
 import rcms.utilities.daqaggregator.reasoning.base.CheckManager;
+import rcms.utilities.daqaggregator.reasoning.base.EventProducer;
 
 /**
  * This class manages persistence
@@ -49,9 +48,9 @@ public class PersistorManager {
 			String isoDate = dateFormat.format(new Date(daq.getLastUpdate()));
 
 			StructureSerializer persistor = new StructureSerializer();
-			//persistor.serializeToJSON(daq, isoDate, persistenceDir);
-			//persistor.serializeToJava(daq, isoDate, persistenceDir);
-			//persistor.serializeToBSON(daq, isoDate, persistenceDir);
+			// persistor.serializeToJSON(daq, isoDate, persistenceDir);
+			// persistor.serializeToJava(daq, isoDate, persistenceDir);
+			// persistor.serializeToBSON(daq, isoDate, persistenceDir);
 			persistor.serializeToSmile(daq, isoDate, persistenceDir);
 			logger.info("Successfully persisted in " + persistenceDir + " as file " + isoDate);
 		} catch (IOException e) {
@@ -67,25 +66,39 @@ public class PersistorManager {
 	 */
 	public void walkAll() throws IOException {
 
+		Date earliestSnapshotDate = null, latestSnapshotDate;
 		List<File> fileList = getFiles();
 		Collections.sort(fileList, FileComparator);
 
 		StructureSerializer structurePersistor = new StructureSerializer();
 		CheckManager checkManager = new CheckManager();
-		DAQ daq;
+		DAQ daq = null;
 		logger.info("Processing files...");
+
+		long start = System.currentTimeMillis();
 		for (File path : fileList) {
 			logger.debug(path.getName().toString());
 
 			daq = structurePersistor.deserializeFromSmile(path.getAbsolutePath().toString());
 
+			if (earliestSnapshotDate == null)
+				earliestSnapshotDate = new Date(daq.getLastUpdate());
 			// test logic modules
 			checkManager.runCheckers(daq);
 			TaskManager.get().rawData.add(new DummyDAQ(daq));
-			daq = null;
 
 		}
-		logger.info("processed " + fileList.size() + " objects");
+		EventProducer.get().finish(new Date(daq.getLastUpdate()));
+		latestSnapshotDate = new Date(daq.getLastUpdate());
+		long diff = latestSnapshotDate.getTime() - earliestSnapshotDate.getTime();
+
+		long end = System.currentTimeMillis();
+		int result = (int) (end - start);
+		long hours = TimeUnit.HOURS.convert(diff, TimeUnit.MILLISECONDS);
+		logger.info("Deserializing and running analysis modules on " + hours + " hours data (" + fileList.size()
+				+ " snapshots) finished in " + result + "ms. (1h of data processed in " + result / hours
+				+ "ms)");
+		logger.info("Current producer state: " + EventProducer.get().toString());
 	}
 
 	/**

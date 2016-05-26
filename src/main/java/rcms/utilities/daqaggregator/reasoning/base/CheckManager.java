@@ -7,6 +7,9 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import rcms.utilities.daqaggregator.data.DAQ;
+import rcms.utilities.daqaggregator.reasoning.LHCBeamModeComparator;
+import rcms.utilities.daqaggregator.reasoning.LHCMachineModeComparator;
+import rcms.utilities.daqaggregator.reasoning.LevelZeroStateComparator;
 import rcms.utilities.daqaggregator.reasoning.NoRate;
 import rcms.utilities.daqaggregator.reasoning.RateOutOfRange;
 import rcms.utilities.daqaggregator.reasoning.RunComparator;
@@ -36,7 +39,10 @@ public class CheckManager {
 		checkers.add(new NoRate());
 		checkers.add(new WarningInSubsystem());
 		comparators.add(new SessionComparator());
+		comparators.add(new LHCBeamModeComparator());
+		comparators.add(new LHCMachineModeComparator());
 		comparators.add(new RunComparator());
+		comparators.add(new LevelZeroStateComparator());
 	}
 
 	/**
@@ -53,22 +59,20 @@ public class CheckManager {
 		}
 		for (Comparator comparator : comparators) {
 			Date last = null;
-			if(comparator.getLast() != null)
+			if (comparator.getLast() != null)
 				last = new Date(comparator.getLast().getLastUpdate());
-			
+
 			/* add artificial event starting point */
-			if(last == null ){
+			if (last == null) {
 				DAQ fake = new DAQ();
 				last = new Date(daq.getLastUpdate());
 				fake.setLastUpdate(daq.getLastUpdate());
 				comparator.setLast(fake);
 			}
-			
+
 			boolean result = comparator.compare(daq);
 			Date current = new Date(comparator.getLast().getLastUpdate());
-			
-			
-			
+
 			EventProducer.get().produce(comparator, result, last, current);
 		}
 	}

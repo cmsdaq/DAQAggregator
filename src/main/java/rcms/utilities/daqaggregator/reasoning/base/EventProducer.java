@@ -62,7 +62,7 @@ public class EventProducer {
 
 		if (value) {
 			logger.debug("New lazy event " + current);
-			produce(comparator, !value, last, comparator.getLevel());
+			produce(comparator, !value, current, comparator.getLevel());
 			produce(comparator, value, current, comparator.getLevel());
 		}
 	}
