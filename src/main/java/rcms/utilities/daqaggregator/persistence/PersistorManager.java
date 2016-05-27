@@ -51,7 +51,7 @@ public class PersistorManager {
 			// persistor.serializeToJSON(daq, isoDate, persistenceDir);
 			// persistor.serializeToJava(daq, isoDate, persistenceDir);
 			// persistor.serializeToBSON(daq, isoDate, persistenceDir);
-			persistor.serializeToSmile(daq, isoDate, persistenceDir);
+			 persistor.serializeToSmile(daq, isoDate, persistenceDir);
 			logger.info("Successfully persisted in " + persistenceDir + " as file " + isoDate);
 		} catch (IOException e) {
 			logger.warn("Problem persisting " + e.getMessage());
@@ -96,8 +96,7 @@ public class PersistorManager {
 		int result = (int) (end - start);
 		long hours = TimeUnit.HOURS.convert(diff, TimeUnit.MILLISECONDS);
 		logger.info("Deserializing and running analysis modules on " + hours + " hours data (" + fileList.size()
-				+ " snapshots) finished in " + result + "ms. (1h of data processed in " + result / hours
-				+ "ms)");
+				+ " snapshots) finished in " + result + "ms. (1h of data processed in " + result / hours + "ms)");
 		logger.info("Current producer state: " + EventProducer.get().toString());
 	}
 

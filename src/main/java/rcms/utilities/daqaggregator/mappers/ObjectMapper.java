@@ -165,6 +165,7 @@ public class ObjectMapper implements Serializable {
 		FEDBuilderSummary fedBuilderSummary = new FEDBuilderSummary();
 		daq.setFedBuilderSummary(fedBuilderSummary);
 		fedBuilderSummary.setDaq(daq);
+		daq.setAllFeds(new HashSet<>(feds.values()));
 
 		logger.info("Retrieval summary " + this.toString());
 		logger.info("Subsystem summary " + subSystems.values());

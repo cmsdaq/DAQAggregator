@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -16,10 +17,11 @@ import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
  * 
  * @author Andre Georg Holzner (andre.georg.holzner@cern.ch)
  * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
- *
+ * 
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
-public class DAQ implements java.io.Serializable , FlashlistUpdatable{
+@JsonPropertyOrder({ "allFeds", "frlPcs", "subSystems", "fedBuilders", "fmmApplications" })
+public class DAQ implements java.io.Serializable, FlashlistUpdatable {
 
 	public String toString() {
 		return "BUs number in DAQ: " + bus.toString();
@@ -44,6 +46,8 @@ public class DAQ implements java.io.Serializable , FlashlistUpdatable{
 
 	private BUSummary buSummary;
 
+	private Set<FED> allFeds;
+
 	// TODO: fed builders not in the structure, but addes tmprlly?
 	private final List<FEDBuilder> fedBuilders = new ArrayList<>();
 
@@ -65,7 +69,7 @@ public class DAQ implements java.io.Serializable , FlashlistUpdatable{
 	private String levelZeroState;
 	private String lhcMachineMode;
 	private String lhcBeamMode;
-	
+
 	public int getRunNumber() {
 		return runNumber;
 	}
@@ -89,7 +93,6 @@ public class DAQ implements java.io.Serializable , FlashlistUpdatable{
 	public void setDaqState(String daqState) {
 		this.daqState = daqState;
 	}
-
 
 	public List<FRLPc> getFrlPcs() {
 		return frlPcs;
@@ -149,15 +152,14 @@ public class DAQ implements java.io.Serializable , FlashlistUpdatable{
 
 	@Override
 	public void updateFromFlashlist(FlashlistType flashlistType, JsonNode flashlistRow) {
-		if (flashlistType == FlashlistType.LEVEL_ZERO_FM_SUBSYS){
+		if (flashlistType == FlashlistType.LEVEL_ZERO_FM_SUBSYS) {
 			this.daqState = flashlistRow.get("STATE").asText();
-		}
-		else if (flashlistType == FlashlistType.LEVEL_ZERO_FM_DYNAMIC){
+		} else if (flashlistType == FlashlistType.LEVEL_ZERO_FM_DYNAMIC) {
 			this.levelZeroState = flashlistRow.get("STATE").asText();
 			this.lhcBeamMode = flashlistRow.get("LHC_BEAM_MODE").asText();
 			this.lhcMachineMode = flashlistRow.get("LHC_MACHINE_MODE").asText();
 		}
-		
+
 	}
 
 	public String getLevelZeroState() {
@@ -197,5 +199,12 @@ public class DAQ implements java.io.Serializable , FlashlistUpdatable{
 		// nothing to do
 	}
 
+	public Set<FED> getAllFeds() {
+		return allFeds;
+	}
+
+	public void setAllFeds(Set<FED> allFeds) {
+		this.allFeds = allFeds;
+	}
 
 }

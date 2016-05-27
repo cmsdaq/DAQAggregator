@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -30,6 +31,7 @@ public class FRLPc implements java.io.Serializable, FlashlistUpdatable, Derivabl
 
 	private boolean masked;
 
+	@JsonBackReference
 	private List<FRL> frls = new ArrayList<FRL>();
 
 	// ----------------------------------------

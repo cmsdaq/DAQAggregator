@@ -1,5 +1,6 @@
 package rcms.utilities.daqaggregator.data;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -27,8 +28,10 @@ public class TTCPartition implements java.io.Serializable, FlashlistUpdatable, D
 	private boolean masked;
 
 	/** can be null */
+	@JsonBackReference
 	private FMM fmm;
-	
+
+	@JsonBackReference
 	private SubSystem subsystem;
 
 	// ----------------------------------------

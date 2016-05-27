@@ -3,6 +3,7 @@ package rcms.utilities.daqaggregator.data;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
@@ -28,9 +29,11 @@ public class FED implements java.io.Serializable, FlashlistUpdatable {
 	private int id;
 
 	/** the parent FRL */
+	@JsonBackReference
 	private FRL frl;
 
 	/** can be null */
+	@JsonBackReference
 	private FMM fmm;
 
 	/** which FRL input: 0 or 1 */
