@@ -93,14 +93,16 @@ public class TTCPartition implements java.io.Serializable, FlashlistUpdatable, D
 	public void calculateDerivedValues() {
 		masked = false;
 		int maskedFeds = 0;
+		int all =0;
 		for (FED fed : fmm.getFeds()) {
+			all++;
 			if (fed.isFmmMasked()) {
 				maskedFeds++;
 			}
 		}
 
-		/* TTCPartition is mask if any of FED is masked */
-		if (maskedFeds > 0) {
+		/* TTCPartition is mask if all FEDs are masked */
+		if (maskedFeds == all) {
 			masked = true;
 		}
 

@@ -1,14 +1,20 @@
 package rcms.utilities.daqaggregator.data;
 
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
 import rcms.utilities.daqaggregator.mappers.FlashlistType;
+import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
 
 /**
  * Front End Driver
@@ -71,6 +77,9 @@ public class FED implements java.io.Serializable, FlashlistUpdatable {
 	private boolean hasSLINK;
 
 	private boolean hasTTS;
+
+	@JsonIgnore
+	private String timestamp;
 
 	/**
 	 * Available columns in flashlist FMM_INPUT:
@@ -152,11 +161,26 @@ public class FED implements java.io.Serializable, FlashlistUpdatable {
 		} else if (flashlistType == FlashlistType.FEROL_INPUT_STREAM) {
 			// TODO or WrongFEDIdDetected
 			this.srcIdReceived = flashlistRow.get("WrongFEDId").asInt();
-			this.percentBackpressure = (float) flashlistRow.get("AccBackpressureSecond").asDouble();
 			this.numSCRCerrors = flashlistRow.get("LinkCRCError").asInt();
 			this.numFRCerrors = flashlistRow.get("FEDCRCError").asInt();
 			this.numTriggers = flashlistRow.get("TriggerNumber").asInt();
 			this.eventCounter = flashlistRow.get("EventCounter").asInt();
+
+			/*
+			 * converting accumulated backpressure from flashlist - subtract
+			 * last from current based on timestamp
+			 */
+			if (!flashlistRow.get("timestamp").asText().equals(timestamp)) {
+				this.percentBackpressure = (float) flashlistRow.get("AccBackpressureSecond").asDouble()
+						- percentBackpressure;
+			}
+			/*
+			 * timestamp updated as last - thus can be used as last updated for
+			 * this flashlist (calculating backpresusure from accumulated
+			 * backpressure)
+			 */
+			this.timestamp = flashlistRow.get("timestamp").asText();
+
 		} else if (flashlistType == FlashlistType.FEROL_CONFIGURATION) {
 
 			if (this.frlIO == 0)
