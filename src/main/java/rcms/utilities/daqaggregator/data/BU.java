@@ -88,6 +88,18 @@ public class BU implements Serializable, FlashlistUpdatable {
 	private int numLumisectionsForHLT;
 
 	private int numLumisectionsOutHLT;
+
+	private int fragmentCount;
+
+	private int nbCorruptedEvents;
+
+	private int nbEventsMissingData;
+
+	private int nbEventsWithCRCerrors;
+
+	private int nbTotalResources;
+
+	private String stateName;
 	
 	
 
@@ -127,6 +139,14 @@ public class BU implements Serializable, FlashlistUpdatable {
 			this.numLumisectionsForHLT = flashlistRow.get("queuedLumiSections").asInt();
 			this.numLumisectionsOutHLT = flashlistRow.get("queuedLumiSectionsOnFUs").asInt();
 
+			
+			this.fragmentCount = flashlistRow.get("fragmentCount").asInt();
+			this.nbCorruptedEvents = flashlistRow.get("nbCorruptedEvents").asInt();
+			this.nbEventsMissingData = flashlistRow.get("nbEventsMissingData").asInt();
+			this.nbEventsWithCRCerrors = flashlistRow.get("nbEventsWithCRCerrors").asInt();
+			this.nbTotalResources = flashlistRow.get("nbTotalResources").asInt();
+			this.stateName = flashlistRow.get("stateName").asText();
+			
 		}
 	}
 	
@@ -320,6 +340,54 @@ public class BU implements Serializable, FlashlistUpdatable {
 			// assume both are non-null
 			return bu1.getHostname().compareTo(bu2.getHostname());
 		}
+	}
+
+	public int getFragmentCount() {
+		return fragmentCount;
+	}
+
+	public void setFragmentCount(int fragmentCount) {
+		this.fragmentCount = fragmentCount;
+	}
+
+	public int getNbCorruptedEvents() {
+		return nbCorruptedEvents;
+	}
+
+	public void setNbCorruptedEvents(int nbCorruptedEvents) {
+		this.nbCorruptedEvents = nbCorruptedEvents;
+	}
+
+	public int getNbEventsMissingData() {
+		return nbEventsMissingData;
+	}
+
+	public void setNbEventsMissingData(int nbEventsMissingData) {
+		this.nbEventsMissingData = nbEventsMissingData;
+	}
+
+	public int getNbEventsWithCRCerrors() {
+		return nbEventsWithCRCerrors;
+	}
+
+	public void setNbEventsWithCRCerrors(int nbEventsWithCRCerrors) {
+		this.nbEventsWithCRCerrors = nbEventsWithCRCerrors;
+	}
+
+	public int getNbTotalResources() {
+		return nbTotalResources;
+	}
+
+	public void setNbTotalResources(int nbTotalResources) {
+		this.nbTotalResources = nbTotalResources;
+	}
+
+	public String getStateName() {
+		return stateName;
+	}
+
+	public void setStateName(String stateName) {
+		this.stateName = stateName;
 	}
 
 	// ----------------------------------------------------------------------

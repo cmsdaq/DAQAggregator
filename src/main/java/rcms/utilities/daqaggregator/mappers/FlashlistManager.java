@@ -143,6 +143,7 @@ public class FlashlistManager {
 	}
 
 	private void cleanStructure() {
+		//TODO: clean other objects if necessary
 		for (FED fed : mappingManager.getObjectMapper().feds.values()) {
 			fed.clean();
 		}
