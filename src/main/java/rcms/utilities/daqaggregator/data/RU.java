@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
 import rcms.utilities.daqaggregator.mappers.Derivable;
+import rcms.utilities.daqaggregator.mappers.FlashlistDispatcher;
 import rcms.utilities.daqaggregator.mappers.FlashlistType;
 
 /**
@@ -239,7 +240,15 @@ public class RU implements Serializable, FlashlistUpdatable, Derivable {
 	@Override
 	public void updateFromFlashlist(FlashlistType flashlistType, JsonNode flashlistRow) {
 
-		if (flashlistType == FlashlistType.RU) {
+		/* ignore data from RU flashlist for EVM */
+		if (isEVM && flashlistType == FlashlistType.RU)
+			return;
+		
+		/**
+		 * For dispatching Flashlist RU to RU objects and flashist EVM to EVM
+		 * objects see {@link FlashlistDispatcher}
+		 */
+		if (flashlistType == FlashlistType.RU || flashlistType == FlashlistType.EVM) {
 			// direct values
 			this.requests = flashlistRow.get("eventCount").asInt();
 			this.rate = flashlistRow.get("eventRate").asInt();

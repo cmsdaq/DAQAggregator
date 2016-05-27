@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -11,7 +12,7 @@ import org.apache.log4j.Logger;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import rcms.utilities.daqaggregator.data.FED;
-import rcms.utilities.daqaggregator.data.FRL;
+import rcms.utilities.daqaggregator.data.RU;
 import rcms.utilities.daqaggregator.mappers.helper.ContextHelper;
 import rcms.utilities.daqaggregator.mappers.helper.FMMGeoFinder;
 import rcms.utilities.daqaggregator.mappers.helper.FRLGeoFinder;
@@ -60,6 +61,12 @@ public class FlashlistDispatcher {
 				logger.debug("Successfully got runnumber: " + runNumber);
 			} else {
 				logger.error("runnumber problem " + flashlist.getRowsNode());
+			}
+
+			for (RU ru : mappingManager.getObjectMapper().rus.values()) {
+				if (ru.isEVM())
+					ru.updateFromFlashlist(flashlist.getFlashlistType(), flashlist.getRowsNode().get(0));
+
 			}
 			break;
 
