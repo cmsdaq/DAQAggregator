@@ -34,7 +34,7 @@ public class FMM implements java.io.Serializable, FlashlistUpdatable {
 	private String url;
 
 	private List<FED> feds = new ArrayList<FED>();
-	
+
 	@JsonIgnore
 	public boolean takeB;
 
@@ -85,9 +85,13 @@ public class FMM implements java.io.Serializable, FlashlistUpdatable {
 
 	@Override
 	public void updateFromFlashlist(FlashlistType flashlistType, JsonNode flashlistRow) {
-		if(flashlistType == FlashlistType.FMM_STATUS){
+		if (flashlistType == FlashlistType.FMM_STATUS) {
 			url = flashlistRow.get("context").asText();
 		}
-		
+	}
+
+	@Override
+	public void clean() {
+		// nothing to do
 	}
 }

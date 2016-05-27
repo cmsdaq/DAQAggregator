@@ -14,6 +14,7 @@ import java.util.concurrent.Future;
 import org.apache.log4j.Logger;
 
 import rcms.utilities.daqaggregator.Connector;
+import rcms.utilities.daqaggregator.data.FED;
 
 public class FlashlistManager {
 
@@ -79,6 +80,7 @@ public class FlashlistManager {
 
 		MappingReporter.get().clear();
 		downloadFlashlists();
+		cleanStructure();
 		mapFlashlists();
 
 		long stopTime = System.currentTimeMillis();
@@ -140,4 +142,10 @@ public class FlashlistManager {
 		logger.info("Mapping all flashlists finished in " + time + "ms");
 	}
 
+	private void cleanStructure() {
+		for (FED fed : mappingManager.getObjectMapper().feds.values()) {
+			fed.clean();
+		}
+
+	}
 }

@@ -94,13 +94,18 @@ public class FRLPc implements java.io.Serializable, FlashlistUpdatable, Derivabl
 	}
 
 	@Override
+	public void clean() {
+		crashed = false;
+	}
+
+	@Override
 	public void calculateDerivedValues() {
 
 		masked = false;
 		int maskedFeds = 0;
 		int allFeds = 0;
 
-		for (FRL frl : frls){
+		for (FRL frl : frls) {
 			for (FED fed : frl.getFeds().values()) {
 				allFeds++;
 				if (fed.isFrlMasked()) {

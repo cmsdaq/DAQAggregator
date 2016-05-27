@@ -192,5 +192,10 @@ public class DAQ implements java.io.Serializable , FlashlistUpdatable{
 		this.subSystems = subSystems;
 	}
 
+	@Override
+	public void clean() {
+		// nothing to do
+	}
+
 
 }

@@ -1,17 +1,12 @@
 package rcms.utilities.daqaggregator.data;
 
-import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import rcms.utilities.daqaggregator.mappers.FlashlistType;
 import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
@@ -77,6 +72,14 @@ public class FED implements java.io.Serializable, FlashlistUpdatable {
 	private boolean hasSLINK;
 
 	private boolean hasTTS;
+
+	private boolean ruFedInError;
+	private int ruFedBXError;
+	private int ruFedCRCError;
+	private int ruFedDataCorruption;
+	private int ruFedOutOfSync;
+
+	private boolean ruFedWitioutFragments;
 
 	@JsonIgnore
 	private String timestamp;
@@ -188,7 +191,42 @@ public class FED implements java.io.Serializable, FlashlistUpdatable {
 
 			else if (this.frlIO == 1)
 				this.frlMasked = flashlistRow.get("enableStream1").asBoolean();
+		} else if (flashlistType == FlashlistType.RU) {
+
+			int myPositionInErrorArray = -1;
+			int currentPosition = 0;
+			for (JsonNode fedIdWithError : flashlistRow.get("fedIdsWithErrors")) {
+				if (srcIdExpected == fedIdWithError.asInt())
+					myPositionInErrorArray = currentPosition;
+				currentPosition++;
+			}
+			if (myPositionInErrorArray >= 0) {
+				ruFedInError = true;
+				ruFedBXError = flashlistRow.get("fedBXerrors").get(myPositionInErrorArray).asInt();
+				ruFedCRCError = flashlistRow.get("fedCRCerrors").get(myPositionInErrorArray).asInt();
+				ruFedDataCorruption = flashlistRow.get("fedDataCorruption").get(myPositionInErrorArray).asInt();
+				ruFedOutOfSync = flashlistRow.get("fedOutOfSync").get(myPositionInErrorArray).asInt();
+			}
+
+			for (JsonNode fedIdWithError : flashlistRow.get("fedIdsWithoutFragments")) {
+				if (srcIdExpected == fedIdWithError.asInt()) {
+					ruFedWitioutFragments = true;
+					break;
+				}
+			}
 		}
+
+	}
+
+	@Override
+	public void clean() {
+		ruFedBXError = 0;
+		ruFedCRCError = 0;
+		ruFedDataCorruption = 0;
+		ruFedOutOfSync = 0;
+
+		ruFedInError = false;
+		ruFedWitioutFragments = false;
 
 	}
 
@@ -355,6 +393,54 @@ public class FED implements java.io.Serializable, FlashlistUpdatable {
 
 	public void setHasTTS(boolean hasTTS) {
 		this.hasTTS = hasTTS;
+	}
+
+	public boolean isRuFedInError() {
+		return ruFedInError;
+	}
+
+	public void setRuFedInError(boolean ruFedInError) {
+		this.ruFedInError = ruFedInError;
+	}
+
+	public int getRuFedBXError() {
+		return ruFedBXError;
+	}
+
+	public void setRuFedBXError(int ruFedBXError) {
+		this.ruFedBXError = ruFedBXError;
+	}
+
+	public int getRuFedCRCError() {
+		return ruFedCRCError;
+	}
+
+	public void setRuFedCRCError(int ruFedCRCError) {
+		this.ruFedCRCError = ruFedCRCError;
+	}
+
+	public int getRuFedDataCorruption() {
+		return ruFedDataCorruption;
+	}
+
+	public void setRuFedDataCorruption(int ruFedDataCorruption) {
+		this.ruFedDataCorruption = ruFedDataCorruption;
+	}
+
+	public int getRuFedOutOfSync() {
+		return ruFedOutOfSync;
+	}
+
+	public void setRuFedOutOfSync(int ruFedOutOfSync) {
+		this.ruFedOutOfSync = ruFedOutOfSync;
+	}
+
+	public boolean isRuFedWitioutFragments() {
+		return ruFedWitioutFragments;
+	}
+
+	public void setRuFedWitioutFragments(boolean ruFedWitioutFragments) {
+		this.ruFedWitioutFragments = ruFedWitioutFragments;
 	}
 
 	// ----------------------------------------------------------------------

@@ -95,6 +95,10 @@ public class FMMApplication implements java.io.Serializable, FlashlistUpdatable 
 		}
 	}
 
+	@Override
+	public void clean() {
+		this.crashed = false;
+	}
 	// ----------------------------------------------------------------------
 
 }

@@ -16,4 +16,9 @@ public interface FlashlistUpdatable {
 	 *            row of flashlist
 	 */
 	public void updateFromFlashlist(FlashlistType flashlistType, JsonNode flashlistRow);
+	
+	/**
+	 * Clean before updating with data from flashlist
+	 */
+	public void clean();
 }

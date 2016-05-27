@@ -53,4 +53,10 @@ public class SubSystem implements FlashlistUpdatable {
 		return name;
 	}
 
+	@Override
+	public void clean() {
+		// nothing to do
+
+	}
+
 }

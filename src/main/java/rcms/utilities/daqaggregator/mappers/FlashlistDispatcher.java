@@ -40,6 +40,7 @@ public class FlashlistDispatcher {
 		switch (type) {
 		case RU:
 			dispatchRowsByInstanceId(flashlist, mappingManager.getObjectMapper().rusById);
+			dispatchRowsByFedIdsWithErrors(flashlist, mappingManager.getObjectMapper().fedsByExpectedId);
 			break;
 		case BU:
 			dispatchRowsByInstanceId(flashlist, mappingManager.getObjectMapper().busById);
@@ -110,6 +111,48 @@ public class FlashlistDispatcher {
 			break;
 		default:
 			break;
+		}
+
+	}
+
+	private void dispatchRowsByFedIdsWithErrors(Flashlist flashlist, Map<Integer, FED> fedsByExpectedId) {
+
+		HashMap<FED, JsonNode> fedToFlashlistRow = new HashMap<>();
+
+		for (JsonNode row : flashlist.getRowsNode()) {
+			if (row.get("fedIdsWithErrors").isArray()) {
+				for (JsonNode fedIdWithErrors : row.get("fedIdsWithErrors")) {
+					int fedId = fedIdWithErrors.asInt();
+					if (fedsByExpectedId.containsKey(fedId)) {
+						FED fed = fedsByExpectedId.get(fedId);
+						fedToFlashlistRow.put(fed, row);
+
+					} else {
+						logger.info(
+								"FED with problem indicated by flashlist RU.fedIdsWithErrors could not be found by id "
+										+ fedId);
+					}
+				}
+				for (JsonNode fedIdWithoutFragment : row.get("fedIdsWithoutFragments")) {
+					int fedId = fedIdWithoutFragment.asInt();
+					if (fedsByExpectedId.containsKey(fedId)) {
+						FED fed = fedsByExpectedId.get(fedId);
+						fedToFlashlistRow.put(fed, row);
+
+					} else {
+						logger.info(
+								"FED with problem indicated by flashlist RU.fedIdsWithoutFragments could not be found by id "
+										+ fedId);
+					}
+				}
+
+			}
+
+		}
+		logger.info("There are " + fedToFlashlistRow.size() + " FEDs with problems (according to RU flashlist)");
+		for (Entry<FED, JsonNode> entry : fedToFlashlistRow.entrySet()) {
+			FED fed = entry.getKey();
+			fed.updateFromFlashlist(flashlist.getFlashlistType(), entry.getValue());
 		}
 
 	}

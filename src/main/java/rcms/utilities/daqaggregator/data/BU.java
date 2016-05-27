@@ -88,6 +88,8 @@ public class BU implements Serializable, FlashlistUpdatable {
 	private int numLumisectionsForHLT;
 
 	private int numLumisectionsOutHLT;
+	
+	
 
 	// ----------------------------------------------------------------------
 
@@ -126,6 +128,12 @@ public class BU implements Serializable, FlashlistUpdatable {
 			this.numLumisectionsOutHLT = flashlistRow.get("queuedLumiSectionsOnFUs").asInt();
 
 		}
+	}
+	
+
+	@Override
+	public void clean() {
+		// nothing to do
 	}
 
 	public float getRate() {

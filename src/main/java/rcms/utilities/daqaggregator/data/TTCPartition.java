@@ -91,7 +91,6 @@ public class TTCPartition implements java.io.Serializable, FlashlistUpdatable, D
 
 	@Override
 	public void calculateDerivedValues() {
-		masked = false;
 		int maskedFeds = 0;
 		int all =0;
 		for (FED fed : fmm.getFeds()) {
@@ -106,6 +105,12 @@ public class TTCPartition implements java.io.Serializable, FlashlistUpdatable, D
 			masked = true;
 		}
 
+	}
+	
+
+	@Override
+	public void clean() {
+		masked = false;
 	}
 
 	@Override

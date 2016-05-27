@@ -51,7 +51,7 @@ public class RU implements Serializable, FlashlistUpdatable, Derivable {
 
 	/** MByte per second ? */
 	private float throughput;
-
+	
 	/**
 	 * TODO: mean superfragment size in kByte?, TODO: mean over what period ?
 	 */
@@ -68,6 +68,9 @@ public class RU implements Serializable, FlashlistUpdatable, Derivable {
 	private int requests;
 
 	private String status;
+	
+	private int incompleteSuperFragmentCount;
+
 
 	// ----------------------------------------------------------------------
 
@@ -206,6 +209,15 @@ public class RU implements Serializable, FlashlistUpdatable, Derivable {
 		this.status = status;
 	}
 
+
+	public int getIncompleteSuperFragmentCount() {
+		return incompleteSuperFragmentCount;
+	}
+
+	public void setIncompleteSuperFragmentCount(int incompleteSuperFragmentCount) {
+		this.incompleteSuperFragmentCount = incompleteSuperFragmentCount;
+	}
+
 	@Override
 	public void calculateDerivedValues() {
 
@@ -257,13 +269,18 @@ public class RU implements Serializable, FlashlistUpdatable, Derivable {
 			this.superFragmentSizeMean = flashlistRow.get("superFragmentSize").asInt();
 			this.superFragmentSizeStddev = flashlistRow.get("superFragmentSizeStdDev").asInt();
 			this.status = flashlistRow.get("stateName").asText();
+			this.incompleteSuperFragmentCount = flashlistRow.get("incompleteSuperFragmentCount").asInt();
 
 			// derived values
 			this.throughput = rate * superFragmentSizeMean;
 
 		}
 	}
+	
 
-	// ----------------------------------------------------------------------
+	@Override
+	public void clean() {
+		// nothing to do
+	}
 
 }

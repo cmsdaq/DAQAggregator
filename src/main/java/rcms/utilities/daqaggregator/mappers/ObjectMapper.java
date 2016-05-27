@@ -59,6 +59,7 @@ public class ObjectMapper implements Serializable {
 	public Map<Integer, RU> rusById;
 	public Map<Integer, BU> busById;
 	public Map<Integer, FED> fedsById;
+	public Map<Integer, FED> fedsByExpectedId;
 	public Map<Integer, FED> ttcpById;
 	public Map<Integer, TTCPartition> ttcpartitionsById;
 
@@ -74,6 +75,7 @@ public class ObjectMapper implements Serializable {
 		rusById = new HashMap<>();
 		busById = new HashMap<>();
 		fedsById = new HashMap<>();
+		fedsByExpectedId = new HashMap<>();
 		ttcpById = new HashMap<>();
 		ttcpartitionsById = new HashMap<>();
 		frlPcByHostname = new HashMap<>();
@@ -113,6 +115,7 @@ public class ObjectMapper implements Serializable {
 			fed.setFmmIO(hwfed.getFMMIO());
 			fed.setFrlIO(hwfed.getFRLIO());
 			fed.setSrcIdExpected(hwfed.getSrcId());
+			fedsByExpectedId.put(fed.getSrcIdExpected(), fed);
 			fed.setHasSLINK(hwfed.hasSLINK());
 			fed.setHasTTS(hwfed.hasTTS());
 			feds.put(hwfed.hashCode(), fed);
