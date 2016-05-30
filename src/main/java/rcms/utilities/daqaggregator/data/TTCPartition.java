@@ -28,10 +28,10 @@ public class TTCPartition implements java.io.Serializable, FlashlistUpdatable, D
 	private boolean masked;
 
 	/** can be null */
-	@JsonBackReference
+	@JsonBackReference(value="fmm-ttcp")
 	private FMM fmm;
 
-	@JsonBackReference
+	@JsonBackReference(value="subsystem-ttcp")
 	private SubSystem subsystem;
 
 	// ----------------------------------------

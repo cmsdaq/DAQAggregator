@@ -2,7 +2,6 @@ package rcms.utilities.daqaggregator.data;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
@@ -31,7 +30,7 @@ public class FRLPc implements java.io.Serializable, FlashlistUpdatable, Derivabl
 
 	private boolean masked;
 
-	@JsonBackReference
+	@JsonBackReference(value="frl-frlpc")
 	private List<FRL> frls = new ArrayList<FRL>();
 
 	// ----------------------------------------

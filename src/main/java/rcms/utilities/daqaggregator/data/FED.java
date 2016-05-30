@@ -29,11 +29,11 @@ public class FED implements java.io.Serializable, FlashlistUpdatable {
 	private int id;
 
 	/** the parent FRL */
-	@JsonBackReference
+	@JsonBackReference(value="frl-fed")
 	private FRL frl;
 
 	/** can be null */
-	@JsonBackReference
+	@JsonBackReference(value="fmm-fed")
 	private FMM fmm;
 
 	/** which FRL input: 0 or 1 */
