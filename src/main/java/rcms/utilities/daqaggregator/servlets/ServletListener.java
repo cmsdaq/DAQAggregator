@@ -21,7 +21,7 @@ public class ServletListener implements ServletContextListener {
 
 	private static final Logger logger = Logger.getLogger(ServletListener.class);
 
-	PersistorManager persistorManager = new PersistorManager("/tmp/mgladki/snapshots");
+	PersistorManager persistorManager = new PersistorManager("/tmp/mgladki/persistence");
 
 	public void contextInitialized(ServletContextEvent e) {
 		test2();

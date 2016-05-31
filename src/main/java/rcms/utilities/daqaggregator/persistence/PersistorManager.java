@@ -3,8 +3,10 @@ package rcms.utilities.daqaggregator.persistence;
 import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -14,6 +16,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.collections4.queue.CircularFifoQueue;
 import org.apache.log4j.Logger;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import rcms.utilities.daqaggregator.DummyDAQ;
 import rcms.utilities.daqaggregator.TaskManager;
@@ -34,24 +38,34 @@ public class PersistorManager {
 	/** Persistence directory to work with */
 	private final String persistenceDir;
 
+	private ObjectMapper objectMapper = new ObjectMapper();
+
 	/** Constructor */
 	public PersistorManager(String persistenceDir) {
 		this.persistenceDir = persistenceDir;
+		instance = this;
+	}
+	
+	private static PersistorManager instance;
+	
+	public static PersistorManager get(){
+		if(instance == null)
+			throw new RuntimeException("Persister manager not initialized");
+		return instance;
 	}
 
 	public void persistSnapshot(DAQ daq) {
 
 		try {
 
-			DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-			dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-			String isoDate = dateFormat.format(new Date(daq.getLastUpdate()));
+			String isoDate = objectMapper.writeValueAsString(new Date(daq.getLastUpdate()));
 
 			StructureSerializer persistor = new StructureSerializer();
 			// persistor.serializeToJSON(daq, isoDate, persistenceDir);
 			// persistor.serializeToJava(daq, isoDate, persistenceDir);
 			// persistor.serializeToBSON(daq, isoDate, persistenceDir);
 			persistor.serializeToSmile(daq, isoDate, persistenceDir);
+
 			logger.info("Successfully persisted in " + persistenceDir + " as file " + isoDate);
 		} catch (IOException e) {
 			logger.warn("Problem persisting " + e.getMessage());
@@ -77,7 +91,7 @@ public class PersistorManager {
 		StructureSerializer structurePersistor = new StructureSerializer();
 		CheckManager checkManager = new CheckManager();
 		DAQ daq = null;
-		logger.info("Processing files...");
+		logger.info("Processing files from " + persistenceDir + "...");
 
 		long start = System.currentTimeMillis();
 		for (File path : fileList) {
@@ -103,6 +117,57 @@ public class PersistorManager {
 			logger.info("Deserializing and running analysis modules on " + hours + " hours data (" + fileList.size()
 					+ " snapshots) finished in " + result + "ms. (1h of data processed in " + result / hours + "ms)");
 		logger.info("Current producer state: " + EventProducer.get().toString());
+	}
+
+	public DAQ findSnapshot(Date date) {
+		StructureSerializer structurePersistor = new StructureSerializer();
+		try {
+			List<File> fileList = getFiles();
+			if (fileList.size() == 0) {
+				logger.error("No files to process");
+				return null;
+			}
+			Collections.sort(fileList, FileComparator);
+
+			long diff = Integer.MAX_VALUE;
+			String bestFile = null;
+			DAQ best = null;
+			for (File path : fileList) {
+
+				String currentName = path.getAbsolutePath().toString();
+				String dateFromFileName = path.getName();
+				if (dateFromFileName.contains(".")) {
+					int indexOfDot = dateFromFileName.indexOf(".");
+					dateFromFileName = dateFromFileName.substring(0, indexOfDot);
+				}
+				Date currentDate;
+				currentDate = objectMapper.readValue(dateFromFileName, Date.class);
+
+				logger.trace("Current file: " + currentName);
+
+				if (bestFile == null) {
+					bestFile = currentName;
+					continue;
+				}
+
+				long currDiff = date.getTime() - currentDate.getTime();
+
+				if (Math.abs(currDiff) < diff) {
+					bestFile = currentName;
+					diff = Math.abs(currDiff);
+				}
+			}
+
+			logger.info("Best file found: " + bestFile + " with time diff: " + diff + "ms.");
+			best = structurePersistor.deserializeFromSmile(bestFile);
+			return best;
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return null;
+
 	}
 
 	/**
@@ -154,7 +219,7 @@ public class PersistorManager {
 
 			daq = structurePersistor.deserializeFromSmile(path.getAbsolutePath().toString());
 			if (daq != null)
-				structurePersistor.serializeToJSON(daq, path.getName().toString(), targetDirectory);
+				structurePersistor.serializeToSmile(daq, daq.getLastUpdate() + ".smile", targetDirectory);
 		}
 	}
 
