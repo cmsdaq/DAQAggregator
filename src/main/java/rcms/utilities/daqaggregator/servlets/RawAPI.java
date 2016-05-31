@@ -40,11 +40,11 @@ public class RawAPI extends HttpServlet {
 
 		String startRange = request.getParameter("start");
 		String endRange = request.getParameter("end");
-		logger.info("Getting reasons from : " + startRange + " to " + endRange);
+		logger.debug("Getting reasons from : " + startRange + " to " + endRange);
 
 		Date startDate = objectMapper.readValue(startRange, Date.class);
 		Date endDate = objectMapper.readValue(endRange, Date.class);
-		logger.info("Parsed range from : " + startDate + " to " + endDate);
+		logger.debug("Parsed range from : " + startDate + " to " + endDate);
 
 		List<HashMap<String, Long>> data = new ArrayList<>();
 
@@ -52,7 +52,6 @@ public class RawAPI extends HttpServlet {
 		DataResolution range = rangeResolver.resolve(startDate, endDate);
 		
 
-		logger.info("Using " + range + " data");
 
 		List<DummyDAQ> rawData = null;
 		switch (range) {
@@ -92,7 +91,7 @@ public class RawAPI extends HttpServlet {
 		// logger.info("Response JSON: " + json);
 
 		response.addHeader("Access-Control-Allow-Origin", "*");
-		response.addHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE, HEAD");
+		response.addHeader("Access-Control-Allow-Methods", "GET");
 		response.addHeader("Access-Control-Allow-Headers",
 				"X-PINGOTHER, Origin, X-Requested-With, Content-Type, Accept");
 		response.addHeader("Access-Control-Max-Age", "1728000");
@@ -100,7 +99,7 @@ public class RawAPI extends HttpServlet {
 		response.setContentType("application/json");
 		response.setCharacterEncoding("UTF-8");
 
-		logger.info("Number of elements returned: " + data.size());
+		logger.info("Number of elements returned: " + data.size() + ", using " + range + " data");
 
 		response.getWriter().write(json);
 

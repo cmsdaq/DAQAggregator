@@ -7,7 +7,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.TimeZone;
 
@@ -66,6 +68,29 @@ public class ReasonsAPI extends HttpServlet {
 
 	}
 
+	private void addToGrouped(Map<String, Entry> grouped, Map<String, Integer> groupedQuantities, Entry entry,
+			Date startDate, Date endDate) {
+		if (!grouped.containsKey(entry.getGroup())) {
+			Entry gruped = new Entry();
+			gruped.setContent("Grouped");
+			gruped.setEnd(startDate);
+			gruped.setStart(endDate);
+			gruped.setGroup(entry.getGroup());
+			grouped.put(entry.getGroup(), gruped);
+			groupedQuantities.put(entry.getGroup(), 0);
+		}
+
+		Entry gruped = grouped.get(entry.getGroup());
+		groupedQuantities.put(entry.getGroup(), groupedQuantities.get(entry.getGroup()) + 1);
+
+		if (entry.getStart().before(gruped.getStart())) {
+			gruped.setStart(entry.getStart());
+		} else if (entry.getEnd().after(gruped.getEnd())) {
+			gruped.setEnd(entry.getEnd());
+		}
+
+	}
+
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -81,10 +106,9 @@ public class ReasonsAPI extends HttpServlet {
 		List<Entry> result = new ArrayList<>();
 		long diff = endDate.getTime() - startDate.getTime();
 
-		Entry gruped = new Entry();
-		gruped.setContent("Gruped");
-		gruped.setEnd(startDate);
-		gruped.setStart(endDate);
+		Map<String, Entry> grouped = new HashMap<>();
+		Map<String, Integer> groupedQuantities = new HashMap<>();
+
 		int elementsInRow = 100;
 
 		int filtered = 0;
@@ -94,12 +118,7 @@ public class ReasonsAPI extends HttpServlet {
 					if (entry.getDuration() > diff / elementsInRow) {
 						result.add(entry);
 					} else {
-						filtered++;
-						if (entry.getStart().before(gruped.getStart())) {
-							gruped.setStart(entry.getStart());
-						} else if (entry.getEnd().after(gruped.getEnd())) {
-							gruped.setEnd(entry.getEnd());
-						}
+						addToGrouped(grouped, groupedQuantities, entry, startDate, endDate);
 					}
 				}
 			} catch (NullPointerException e) {
@@ -115,28 +134,32 @@ public class ReasonsAPI extends HttpServlet {
 			}
 
 		}
-		gruped.setContent("Gruped: " + filtered);
-		gruped.setGroup("filtered");
-		gruped.calculateDuration();
-		int k = 10;
-		if (gruped.getDuration() < diff / 10) {
-			Calendar c = Calendar.getInstance();
-			c.setTime(gruped.getStart());
-			if (diff < Integer.MAX_VALUE)
-				c.add(Calendar.MILLISECOND, (int) (diff / k));
-			else
-				c.add(Calendar.SECOND, (int) ((diff / 1000) / k));
-			gruped.setEnd(c.getTime());
-		}
-		logger.info("Grouped " + filtered + " entries");
 
-		if (filtered > 0)
-			result.add(gruped);
+		for (Entry gruped : grouped.values()) {
+			gruped.calculateDuration();
+			int k = 10;
+			if (gruped.getDuration() < diff / 10) {
+				Calendar c = Calendar.getInstance();
+				c.setTime(gruped.getStart());
+				if (diff < Integer.MAX_VALUE)
+					c.add(Calendar.MILLISECOND, (int) (diff / k));
+				else
+					c.add(Calendar.SECOND, (int) ((diff / 1000) / k));
+				gruped.setEnd(c.getTime());
+			}
+
+			gruped.setContent("Grouped: " + groupedQuantities.get(gruped.getGroup()));
+
+			logger.info("Grouped " + filtered + " entries");
+
+		}
+
+		result.addAll(grouped.values());
 
 		String json = objectMapper.writeValueAsString(result);
 		// TODO: externalize the Allow-Origin
 		response.addHeader("Access-Control-Allow-Origin", "*");
-		response.addHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE, HEAD");
+		response.addHeader("Access-Control-Allow-Methods", "GET");
 		response.addHeader("Access-Control-Allow-Headers",
 				"X-PINGOTHER, Origin, X-Requested-With, Content-Type, Accept");
 		response.addHeader("Access-Control-Max-Age", "1728000");
