@@ -7,9 +7,13 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import rcms.utilities.daqaggregator.data.DAQ;
+import rcms.utilities.daqaggregator.reasoning.DAQStateComparator;
+import rcms.utilities.daqaggregator.reasoning.EVMComparator;
 import rcms.utilities.daqaggregator.reasoning.LHCBeamModeComparator;
 import rcms.utilities.daqaggregator.reasoning.LHCMachineModeComparator;
 import rcms.utilities.daqaggregator.reasoning.LevelZeroStateComparator;
+import rcms.utilities.daqaggregator.reasoning.Message1;
+import rcms.utilities.daqaggregator.reasoning.Message2;
 import rcms.utilities.daqaggregator.reasoning.NoRate;
 import rcms.utilities.daqaggregator.reasoning.RateOutOfRange;
 import rcms.utilities.daqaggregator.reasoning.RunComparator;
@@ -38,11 +42,15 @@ public class CheckManager {
 		checkers.add(new RateOutOfRange());
 		checkers.add(new NoRate());
 		checkers.add(new WarningInSubsystem());
+		checkers.add(new Message1());
+		checkers.add(new Message2());
 		comparators.add(new SessionComparator());
 		comparators.add(new LHCBeamModeComparator());
 		comparators.add(new LHCMachineModeComparator());
 		comparators.add(new RunComparator());
 		comparators.add(new LevelZeroStateComparator());
+		comparators.add(new DAQStateComparator());
+		comparators.add(new EVMComparator());
 	}
 
 	/**
