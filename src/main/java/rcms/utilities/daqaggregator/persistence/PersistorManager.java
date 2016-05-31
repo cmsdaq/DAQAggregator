@@ -51,7 +51,7 @@ public class PersistorManager {
 			// persistor.serializeToJSON(daq, isoDate, persistenceDir);
 			// persistor.serializeToJava(daq, isoDate, persistenceDir);
 			// persistor.serializeToBSON(daq, isoDate, persistenceDir);
-			 persistor.serializeToSmile(daq, isoDate, persistenceDir);
+			persistor.serializeToSmile(daq, isoDate, persistenceDir);
 			logger.info("Successfully persisted in " + persistenceDir + " as file " + isoDate);
 		} catch (IOException e) {
 			logger.warn("Problem persisting " + e.getMessage());
@@ -68,6 +68,10 @@ public class PersistorManager {
 
 		Date earliestSnapshotDate = null, latestSnapshotDate;
 		List<File> fileList = getFiles();
+		if (fileList.size() == 0) {
+			logger.error("No files to process");
+			return;
+		}
 		Collections.sort(fileList, FileComparator);
 
 		StructureSerializer structurePersistor = new StructureSerializer();
@@ -95,8 +99,9 @@ public class PersistorManager {
 		long end = System.currentTimeMillis();
 		int result = (int) (end - start);
 		long hours = TimeUnit.HOURS.convert(diff, TimeUnit.MILLISECONDS);
-		logger.info("Deserializing and running analysis modules on " + hours + " hours data (" + fileList.size()
-				+ " snapshots) finished in " + result + "ms. (1h of data processed in " + result / hours + "ms)");
+		if (hours != 0)
+			logger.info("Deserializing and running analysis modules on " + hours + " hours data (" + fileList.size()
+					+ " snapshots) finished in " + result + "ms. (1h of data processed in " + result / hours + "ms)");
 		logger.info("Current producer state: " + EventProducer.get().toString());
 	}
 
@@ -147,7 +152,7 @@ public class PersistorManager {
 		for (File path : fileList) {
 			logger.debug(path.getName().toString());
 
-			daq = structurePersistor.deserializeFromJava(path.getAbsolutePath().toString());
+			daq = structurePersistor.deserializeFromSmile(path.getAbsolutePath().toString());
 			if (daq != null)
 				structurePersistor.serializeToJSON(daq, path.getName().toString(), targetDirectory);
 		}
