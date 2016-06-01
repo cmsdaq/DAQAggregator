@@ -9,7 +9,11 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 public class Level0DataRetriever  {
+	
+	private static final Logger logger = Logger.getLogger(Level0DataRetriever.class);
 
 	protected String _delimiter = "\177";
 	private String _lasBaseURLge = null;
@@ -47,7 +51,7 @@ public class Level0DataRetriever  {
 		{
 			String lasUrl = _lasBaseURLge + "levelZeroFM_static" + lasTrailer;
 			Map<String, String> l0data = new HashMap<String, String>();
-			System.out.println("LASURL = " + lasUrl);
+			logger.info("LASURL = " + lasUrl);
 			String fields[] = { "FMURL", "HWCFG_KEY", "SID", "timestamp" };
 			readInfospaceByFilter(lasUrl, _fmURLFilter1, _fmURLFilter2, l0data, fields);
 			if ( ! l0data.isEmpty() ) {
@@ -89,7 +93,6 @@ public class Level0DataRetriever  {
 				if (line == null)
 					break;
 
-				//	System.out.println("Line: " + line);
 
 				if (firstLine) {
 					fieldNames = line.split(_delimiter);
@@ -104,18 +107,14 @@ public class Level0DataRetriever  {
 							values[i] = values[i].substring(1, values[i].length()-1);
 					}
 
-					/*				for (int i  = 0;i<fieldNames.length;++i) {
-					System.out.println(fieldNames[i] + " : " + values[i]);
-				}
-					 */
 
 					String fmURL = values[fieldMap.get("FMURL")];
 
-					System.out.println("  checking fm url " + fmURL + "  with filters '"+fmURLFilter1+"' and '"+fmURLFilter2+"'");
+					logger.info("  checking fm url " + fmURL + "  with filters '"+fmURLFilter1+"' and '"+fmURLFilter2+"'");
 
 					if (fmURL.contains(fmURLFilter1) && fmURL.contains(fmURLFilter2)) {
 
-						System.out.println("    URL contains filters '" + fmURLFilter1 + "' and '" + fmURLFilter2 + "'.");
+						logger.info("    URL contains filters '" + fmURLFilter1 + "' and '" + fmURLFilter2 + "'.");
 
 
 						String timestamp = values[fieldMap.get("timestamp")];
