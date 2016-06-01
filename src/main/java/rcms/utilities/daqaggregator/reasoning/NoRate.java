@@ -2,6 +2,7 @@ package rcms.utilities.daqaggregator.reasoning;
 
 import rcms.utilities.daqaggregator.data.DAQ;
 import rcms.utilities.daqaggregator.reasoning.base.Level;
+import rcms.utilities.daqaggregator.servlets.Entry;
 import rcms.utilities.daqaggregator.reasoning.base.Condition;
 
 public class NoRate implements Condition {
@@ -22,6 +23,11 @@ public class NoRate implements Condition {
 	@Override
 	public String getText() {
 		return "No rate";
+	}
+
+	@Override
+	public void gatherInfo(DAQ daq, Entry entry) {
+		// nothing to do
 	}
 
 }

@@ -8,6 +8,7 @@ import rcms.utilities.daqaggregator.data.DAQ;
 import rcms.utilities.daqaggregator.data.SubSystem;
 import rcms.utilities.daqaggregator.data.TTCPartition;
 import rcms.utilities.daqaggregator.reasoning.base.Level;
+import rcms.utilities.daqaggregator.servlets.Entry;
 import rcms.utilities.daqaggregator.reasoning.base.Condition;
 
 public class WarningInSubsystem implements Condition {
@@ -44,6 +45,11 @@ public class WarningInSubsystem implements Condition {
 	@Override
 	public String getText() {
 		return text;
+	}
+
+	@Override
+	public void gatherInfo(DAQ daq, Entry entry) {
+		// nothing to do
 	}
 
 }

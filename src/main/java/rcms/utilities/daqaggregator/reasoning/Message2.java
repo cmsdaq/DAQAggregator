@@ -5,6 +5,7 @@ import org.apache.log4j.Logger;
 import rcms.utilities.daqaggregator.data.DAQ;
 import rcms.utilities.daqaggregator.reasoning.base.Condition;
 import rcms.utilities.daqaggregator.reasoning.base.Level;
+import rcms.utilities.daqaggregator.servlets.Entry;
 
 public class Message2 implements Condition {
 
@@ -15,7 +16,7 @@ public class Message2 implements Condition {
 	public Boolean satisfied(DAQ daq) {
 		String l0state = daq.getLevelZeroState();
 		String daqstate = daq.getDaqState();
-		if (ERROR_STATE.equalsIgnoreCase(l0state) && ERROR_STATE.equalsIgnoreCase(daqstate)){
+		if (ERROR_STATE.equalsIgnoreCase(l0state) && ERROR_STATE.equalsIgnoreCase(daqstate)) {
 
 			logger.debug("Message 2  DAQ and level 0 in error state");
 			return true;
@@ -31,6 +32,11 @@ public class Message2 implements Condition {
 	@Override
 	public String getText() {
 		return "Message2: DAQ and level 0 in error state";
+	}
+
+	@Override
+	public void gatherInfo(DAQ daq, Entry entry) {
+
 	}
 
 }

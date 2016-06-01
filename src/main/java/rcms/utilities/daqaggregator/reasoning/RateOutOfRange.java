@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 
 import rcms.utilities.daqaggregator.data.DAQ;
 import rcms.utilities.daqaggregator.reasoning.base.Level;
+import rcms.utilities.daqaggregator.servlets.Entry;
 import rcms.utilities.daqaggregator.reasoning.base.Condition;
 
 public class RateOutOfRange implements Condition {
@@ -12,7 +13,7 @@ public class RateOutOfRange implements Condition {
 	@Override
 	public Boolean satisfied(DAQ daq) {
 		float a = daq.getFedBuilderSummary().getRate();
-		
+
 		boolean result = false;
 		if (50000 > a)
 			result = true;
@@ -21,13 +22,18 @@ public class RateOutOfRange implements Condition {
 	}
 
 	@Override
-	public Level getLevel(){
+	public Level getLevel() {
 		return Level.Info;
 	}
-	
+
 	@Override
 	public String getText() {
 		return RateOutOfRange.class.getSimpleName();
+	}
+
+	@Override
+	public void gatherInfo(DAQ daq, Entry entry) {
+		// nothing to do
 	}
 
 }

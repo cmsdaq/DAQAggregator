@@ -7,6 +7,7 @@ import rcms.utilities.daqaggregator.data.FED;
 import rcms.utilities.daqaggregator.data.FMM;
 import rcms.utilities.daqaggregator.data.FMMApplication;
 import rcms.utilities.daqaggregator.reasoning.base.Level;
+import rcms.utilities.daqaggregator.servlets.Entry;
 import rcms.utilities.daqaggregator.reasoning.base.Condition;
 
 public class NotEqualTriggersInFed implements Condition {
@@ -41,6 +42,11 @@ public class NotEqualTriggersInFed implements Condition {
 	@Override
 	public String getText() {
 		return NotEqualTriggersInFed.class.getSimpleName();
+	}
+
+	@Override
+	public void gatherInfo(DAQ daq, Entry entry) {
+		// nothing to do
 	}
 
 }

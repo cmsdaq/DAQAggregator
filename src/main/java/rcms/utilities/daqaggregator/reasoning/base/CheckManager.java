@@ -19,6 +19,7 @@ import rcms.utilities.daqaggregator.reasoning.RateOutOfRange;
 import rcms.utilities.daqaggregator.reasoning.RunComparator;
 import rcms.utilities.daqaggregator.reasoning.SessionComparator;
 import rcms.utilities.daqaggregator.reasoning.WarningInSubsystem;
+import rcms.utilities.daqaggregator.servlets.Entry;
 
 /**
  * Manager of checking process
@@ -63,7 +64,11 @@ public class CheckManager {
 		for (Condition checker : checkers) {
 			boolean result = checker.satisfied(daq);
 			curr = new Date(daq.getLastUpdate());
-			EventProducer.get().produce(checker, result, curr);
+			Entry entry = EventProducer.get().produce(checker, result, curr);
+			if (entry != null)
+				checker.gatherInfo(daq, entry);
+			else
+				logger.warn("EP did not returned entry");
 		}
 		for (Comparator comparator : comparators) {
 			Date last = null;
