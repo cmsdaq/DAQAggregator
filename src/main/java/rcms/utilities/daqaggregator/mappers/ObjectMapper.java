@@ -65,6 +65,7 @@ public class ObjectMapper implements Serializable {
 
 	public Map<String, FRLPc> frlPcByHostname;
 	public Map<String, FMMApplication> fmmApplicationByHostname;
+	public Map<String, RU> rusByHostname;
 	public Map<String, SubSystem> subsystemByName;
 
 	public void mapAllObjects(DAQPartition daqPartition) {
@@ -81,6 +82,7 @@ public class ObjectMapper implements Serializable {
 		frlPcByHostname = new HashMap<>();
 		fmmApplicationByHostname = new HashMap<>();
 		subsystemByName = new HashMap<>();
+		rusByHostname = new HashMap<>();
 
 		/* Building objects */
 		bus = mapBUs(daqPartition);
@@ -232,6 +234,7 @@ public class ObjectMapper implements Serializable {
 			ru.setHostname(hwru.getHostName());
 			ru.setStatus("unknown");
 			rusById.put(ru.getInstance(), ru);
+			rusByHostname.put(ru.getHostname(), ru);
 			result.put(hwru.hashCode(), ru);
 		}
 		return result;

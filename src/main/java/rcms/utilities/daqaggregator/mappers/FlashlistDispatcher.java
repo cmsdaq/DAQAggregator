@@ -39,7 +39,7 @@ public class FlashlistDispatcher {
 		FlashlistType type = flashlist.getFlashlistType();
 		switch (type) {
 		case RU:
-			dispatchRowsByInstanceId(flashlist, mappingManager.getObjectMapper().rusById);
+			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().rusByHostname,"context");
 			dispatchRowsByFedIdsWithErrors(flashlist, mappingManager.getObjectMapper().fedsByExpectedId);
 			break;
 		case BU:
