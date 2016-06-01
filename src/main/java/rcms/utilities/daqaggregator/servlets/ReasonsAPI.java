@@ -111,6 +111,7 @@ public class ReasonsAPI extends HttpServlet {
 			}
 
 			gruped.setContent("Grouped: " + groupedQuantities.get(gruped.getGroup()));
+			gruped.setClassName("filtered");
 
 			logger.debug("Grouped " + filtered + " entries");
 

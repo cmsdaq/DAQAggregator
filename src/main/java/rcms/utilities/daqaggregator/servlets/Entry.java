@@ -1,6 +1,8 @@
 package rcms.utilities.daqaggregator.servlets;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -13,6 +15,9 @@ public class Entry implements Comparable<Entry>{
 	
 	@JsonIgnore
 	private boolean show;
+	
+	@JsonIgnore
+	private final Map<String,Object> additional = new HashMap<>();
 
 	private int id;
 	private String content;
@@ -20,6 +25,7 @@ public class Entry implements Comparable<Entry>{
 	private Date start;
 	private Date end;
 	private String group;
+	private String className ;
 	
 	public String getGroup() {
 		return group;
@@ -76,5 +82,14 @@ public class Entry implements Comparable<Entry>{
 	public int compareTo(Entry arg0) {
 		// TODO Auto-generated method stub
 		return (int) (this.duration - arg0.duration);
+	}
+	public String getClassName() {
+		return className;
+	}
+	public void setClassName(String className) {
+		this.className = className;
+	}
+	public Map<String, Object> getAdditional() {
+		return additional;
 	}
 }
