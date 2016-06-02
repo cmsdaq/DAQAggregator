@@ -122,6 +122,8 @@ public class PersistorManager {
 		StructureSerializer structurePersistor = new StructureSerializer();
 		try {
 			List<File> fileList = getFiles(persistenceDir);
+			List<File> updatedList = getFiles(updatedDir);
+			fileList.addAll(updatedList);
 			if (fileList.size() == 0) {
 				logger.error("No files to process");
 				return null;
