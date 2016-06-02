@@ -9,6 +9,8 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import rcms.utilities.daqaggregator.data.BU;
 import rcms.utilities.daqaggregator.data.BUSummary;
 import rcms.utilities.daqaggregator.data.DAQ;
@@ -381,9 +383,10 @@ public class ObjectMapper implements Serializable {
 	public Map<Integer, TTCPartition> mapTTCPartitions(DAQPartition daqPartition) {
 
 		Map<Integer, TTCPartition> result = new HashMap<>();
-		DAQPartitionSet daqPartitionSet = daqPartition.getDAQPartitionSet();
-		for (rcms.utilities.hwcfg.eq.TTCPartition hwttcPartition : daqPartitionSet.getEquipmentSet().getTTCPartitions()
-				.values()) {
+		for (rcms.utilities.hwcfg.eq.FED hwfed : getHardwareFeds(daqPartition)) {
+
+			rcms.utilities.hwcfg.eq.TTCPartition hwttcPartition = hwfed.getTTCPartition();
+
 			TTCPartition ttcPartition = new TTCPartition();
 			ttcPartition.setName(hwttcPartition.getName());
 			ttcpartitionsById.put((int) hwttcPartition.getId(), ttcPartition);
@@ -393,6 +396,7 @@ public class ObjectMapper implements Serializable {
 			result.put(hwttcPartition.hashCode(), ttcPartition);
 
 		}
+		
 
 		return result;
 	}

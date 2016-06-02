@@ -35,6 +35,9 @@ public class FED implements java.io.Serializable, FlashlistUpdatable {
 	/** can be null */
 	@JsonBackReference(value="fmm-fed")
 	private FMM fmm;
+	
+	@JsonBackReference(value="ttcp-fed")
+	private TTCPartition ttcp;
 
 	/** which FRL input: 0 or 1 */
 	private int frlIO;
@@ -444,6 +447,14 @@ public class FED implements java.io.Serializable, FlashlistUpdatable {
 
 	public void setRuFedWitioutFragments(boolean ruFedWitioutFragments) {
 		this.ruFedWitioutFragments = ruFedWitioutFragments;
+	}
+
+	public TTCPartition getTtcp() {
+		return ttcp;
+	}
+
+	public void setTtcp(TTCPartition ttcp) {
+		this.ttcp = ttcp;
 	}
 
 	// ----------------------------------------------------------------------

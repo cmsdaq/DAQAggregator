@@ -1,5 +1,8 @@
 package rcms.utilities.daqaggregator.data;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
@@ -43,6 +46,8 @@ public class TTCPartition implements java.io.Serializable, FlashlistUpdatable, D
 	private float percentWarning;
 
 	private float percentBusy;
+	
+	private Set<FED> feds = new HashSet<>();
 
 	public String getTtsState() {
 		return ttsState;
@@ -141,6 +146,19 @@ public class TTCPartition implements java.io.Serializable, FlashlistUpdatable, D
 
 	public void setSubsystem(SubSystem subsystem) {
 		this.subsystem = subsystem;
+	}
+
+	public Set<FED> getFeds() {
+		return feds;
+	}
+
+	public void setFeds(Set<FED> feds) {
+		this.feds = feds;
+	}
+
+	@Override
+	public String toString() {
+		return "TTCPartition [name=" + name + ", subsystem=" + subsystem + "]";
 	}
 
 }
