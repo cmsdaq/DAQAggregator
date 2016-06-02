@@ -9,6 +9,7 @@ import rcms.utilities.daqaggregator.data.FED;
 import rcms.utilities.daqaggregator.data.FEDBuilder;
 import rcms.utilities.daqaggregator.data.RU;
 import rcms.utilities.daqaggregator.reasoning.base.Condition;
+import rcms.utilities.daqaggregator.reasoning.base.EventClass;
 import rcms.utilities.daqaggregator.reasoning.base.Level;
 import rcms.utilities.daqaggregator.servlets.Entry;
 
@@ -71,13 +72,18 @@ public class Message1 implements Condition {
 			for (FED fed : daq.getAllFeds()) {
 				if (fed.getRuFedOutOfSync() > 0) {
 					String fedString = "FED id: " + fed.getId() + ", FED expected id: " + fed.getSrcIdExpected()
-							+ ", FED OOS: " + fed.getRuFedOutOfSync();
+							+ ", FED OOS: " + fed.getRuFedOutOfSync() + ", FED ttcp: " + fed.getTtcp();
 					((HashSet<Object>) entry.getAdditional().get("fedsOutOfSync")).add(fedString);
 				}
 
 			}
 		}
 
+	}
+	
+	@Override
+	public EventClass getClassName() {
+		return EventClass.critical;
 	}
 
 }

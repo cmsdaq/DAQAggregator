@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 
 import rcms.utilities.daqaggregator.data.DAQ;
 import rcms.utilities.daqaggregator.reasoning.base.Comparator;
+import rcms.utilities.daqaggregator.reasoning.base.EventClass;
 import rcms.utilities.daqaggregator.reasoning.base.Level;
 
 public class SessionComparator extends Comparator {
@@ -34,6 +35,11 @@ public class SessionComparator extends Comparator {
 	@Override
 	public Level getLevel() {
 		return Level.Run;
+	}
+	
+	@Override
+	public EventClass getClassName() {
+		return EventClass.defaultt;
 	}
 
 

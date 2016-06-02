@@ -9,4 +9,5 @@ public interface Condition extends Classificable {
 	
 	public void gatherInfo(DAQ daq, Entry entry);
 	
+	
 }

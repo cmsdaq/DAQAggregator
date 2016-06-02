@@ -4,6 +4,7 @@ import rcms.utilities.daqaggregator.data.DAQ;
 import rcms.utilities.daqaggregator.reasoning.base.Level;
 import rcms.utilities.daqaggregator.servlets.Entry;
 import rcms.utilities.daqaggregator.reasoning.base.Condition;
+import rcms.utilities.daqaggregator.reasoning.base.EventClass;
 
 public class NoRate implements Condition {
 
@@ -30,4 +31,8 @@ public class NoRate implements Condition {
 		// nothing to do
 	}
 
+	@Override
+	public EventClass getClassName() {
+		return EventClass.defaultt;
+	}
 }

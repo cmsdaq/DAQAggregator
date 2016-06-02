@@ -10,6 +10,7 @@ import rcms.utilities.daqaggregator.data.FED;
 import rcms.utilities.daqaggregator.data.FEDBuilder;
 import rcms.utilities.daqaggregator.data.RU;
 import rcms.utilities.daqaggregator.reasoning.base.Condition;
+import rcms.utilities.daqaggregator.reasoning.base.EventClass;
 import rcms.utilities.daqaggregator.reasoning.base.Level;
 import rcms.utilities.daqaggregator.servlets.Entry;
 
@@ -82,6 +83,11 @@ public class Message2 implements Condition {
 			}
 		}
 
+	}
+	
+	@Override
+	public EventClass getClassName() {
+		return EventClass.critical;
 	}
 
 }

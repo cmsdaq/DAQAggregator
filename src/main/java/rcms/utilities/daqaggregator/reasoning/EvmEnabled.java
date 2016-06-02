@@ -10,6 +10,7 @@ import rcms.utilities.daqaggregator.data.RU;
 import rcms.utilities.daqaggregator.reasoning.base.Level;
 import rcms.utilities.daqaggregator.servlets.Entry;
 import rcms.utilities.daqaggregator.reasoning.base.Condition;
+import rcms.utilities.daqaggregator.reasoning.base.EventClass;
 
 public class EvmEnabled implements Condition {
 	private final static Logger logger = Logger.getLogger(EvmEnabled.class);
@@ -41,6 +42,11 @@ public class EvmEnabled implements Condition {
 	public void gatherInfo(DAQ daq, Entry entry) {
 		// nothing to do
 
+	}
+	
+	@Override
+	public EventClass getClassName() {
+		return EventClass.defaultt;
 	}
 
 }

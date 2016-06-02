@@ -8,9 +8,6 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import rcms.utilities.daqaggregator.servlets.Entry;
 
 public class EventProducer {
@@ -80,12 +77,13 @@ public class EventProducer {
 		// get current state
 		String className = classificable.getClass().getSimpleName();
 		String content = classificable.getText();
+		EventClass eventClass = classificable.getClassName();
 		Entry result = null;
 		if (states.containsKey(className)) {
 			boolean currentState = states.get(className);
 
 			if (currentState != value) {
-				result = finishOldAddNew(className, content, value, date, level);
+				result = finishOldAddNew(className, content, value, date, level, eventClass);
 				states.put(className, value);
 			} else {
 				result = unfinished.get(className);
@@ -95,12 +93,13 @@ public class EventProducer {
 		// no prior states
 		else {
 			states.put(className, value);
-			result = finishOldAddNew(className, content, value, date, level);
+			result = finishOldAddNew(className, content, value, date, level, eventClass);
 		}
 		return result;
 	}
 
-	private Entry finishOldAddNew(String className, String content, Boolean value, Date date, Level level) {
+	private Entry finishOldAddNew(String className, String content, Boolean value, Date date, Level level,
+			EventClass eventClass) {
 
 		/* finish old entry */
 		if (unfinished.containsKey(className)) {
@@ -111,12 +110,7 @@ public class EventProducer {
 
 		/* add new entry */
 		Entry entry = new Entry();
-
-		if (level == Level.Message) {
-			entry.setClassName("critical");
-		} else {
-			entry.setClassName("default");
-		}
+		entry.setClassName(eventClass.getCode());
 		entry.setContent(content);
 		entry.setShow(value);
 		entry.setStart(date);

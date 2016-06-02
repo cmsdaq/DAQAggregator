@@ -6,6 +6,7 @@ import rcms.utilities.daqaggregator.data.DAQ;
 import rcms.utilities.daqaggregator.reasoning.base.Level;
 import rcms.utilities.daqaggregator.servlets.Entry;
 import rcms.utilities.daqaggregator.reasoning.base.Condition;
+import rcms.utilities.daqaggregator.reasoning.base.EventClass;
 
 public class RateOutOfRange implements Condition {
 	private final static Logger logger = Logger.getLogger(RateOutOfRange.class);
@@ -34,6 +35,11 @@ public class RateOutOfRange implements Condition {
 	@Override
 	public void gatherInfo(DAQ daq, Entry entry) {
 		// nothing to do
+	}
+	
+	@Override
+	public EventClass getClassName() {
+		return EventClass.defaultt;
 	}
 
 }

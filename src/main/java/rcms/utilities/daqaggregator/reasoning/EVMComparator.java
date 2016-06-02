@@ -8,6 +8,7 @@ import rcms.utilities.daqaggregator.data.DAQ;
 import rcms.utilities.daqaggregator.data.FEDBuilder;
 import rcms.utilities.daqaggregator.data.RU;
 import rcms.utilities.daqaggregator.reasoning.base.Comparator;
+import rcms.utilities.daqaggregator.reasoning.base.EventClass;
 import rcms.utilities.daqaggregator.reasoning.base.Level;
 
 public class EVMComparator extends Comparator {
@@ -53,6 +54,10 @@ public class EVMComparator extends Comparator {
 	@Override
 	public Level getLevel() {
 		return Level.Info;
+	}
+	@Override
+	public EventClass getClassName() {
+		return EventClass.defaultt;
 	}
 
 }
