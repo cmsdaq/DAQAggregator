@@ -18,7 +18,7 @@ public class RunComparator extends Comparator {
 
 		if (current.getRunNumber() != previous.getRunNumber()) {
 			logger.debug("New run identified " + current.getRunNumber());
-			runId = "run id: " + current.getRunNumber();
+			runId = "run number: " + current.getRunNumber();
 			result = true;
 		}
 		return result;

@@ -7,13 +7,10 @@ import org.apache.log4j.Logger;
 import rcms.utilities.daqaggregator.data.DAQ;
 import rcms.utilities.daqaggregator.data.FED;
 import rcms.utilities.daqaggregator.data.FEDBuilder;
-import rcms.utilities.daqaggregator.data.FRL;
 import rcms.utilities.daqaggregator.data.RU;
-import rcms.utilities.daqaggregator.data.SubFEDBuilder;
 import rcms.utilities.daqaggregator.reasoning.base.Condition;
 import rcms.utilities.daqaggregator.reasoning.base.Level;
 import rcms.utilities.daqaggregator.servlets.Entry;
-import rcms.utilities.hwcfg.gui.fb.design.FedBuilderDesignPanel;
 
 public class Message1 implements Condition {
 
@@ -28,6 +25,10 @@ public class Message1 implements Condition {
 	public Boolean satisfied(DAQ daq) {
 		String l0state = daq.getLevelZeroState();
 		String daqstate = daq.getDaqState();
+		
+		if(!"Stable Beams".equalsIgnoreCase(daq.getLhcBeamMode()))
+			return false;
+		
 		if (RUNBLOCKED_STATE.equalsIgnoreCase(l0state) && RUNBLOCKED_STATE.equalsIgnoreCase(daqstate)) {
 
 			for (FEDBuilder fb : daq.getFedBuilders()) {
@@ -69,7 +70,8 @@ public class Message1 implements Condition {
 
 			for (FED fed : daq.getAllFeds()) {
 				if (fed.getRuFedOutOfSync() > 0) {
-					String fedString = "FED id: " + fed.getId() + ", FED expected id: " + fed.getSrcIdExpected();
+					String fedString = "FED id: " + fed.getId() + ", FED expected id: " + fed.getSrcIdExpected()
+							+ ", FED OOS: " + fed.getRuFedOutOfSync();
 					((HashSet<Object>) entry.getAdditional().get("fedsOutOfSync")).add(fedString);
 				}
 
