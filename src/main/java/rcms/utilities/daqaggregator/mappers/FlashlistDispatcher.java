@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import rcms.utilities.daqaggregator.data.FED;
 import rcms.utilities.daqaggregator.data.RU;
+import rcms.utilities.daqaggregator.data.TTCPartition;
 import rcms.utilities.daqaggregator.mappers.helper.ContextHelper;
 import rcms.utilities.daqaggregator.mappers.helper.FMMGeoFinder;
 import rcms.utilities.daqaggregator.mappers.helper.FRLGeoFinder;
@@ -20,6 +21,7 @@ import rcms.utilities.daqaggregator.mappers.helper.FedGeoFinder;
 import rcms.utilities.daqaggregator.mappers.helper.FedInFmmGeoFinder;
 import rcms.utilities.daqaggregator.mappers.helper.FedInFrlGeoFinder;
 import rcms.utilities.daqaggregator.mappers.helper.HostnameGeoslotFinder;
+import rcms.utilities.daqaggregator.mappers.helper.TTCPartitionGeoFinder;
 
 public class FlashlistDispatcher {
 
@@ -39,7 +41,7 @@ public class FlashlistDispatcher {
 		FlashlistType type = flashlist.getFlashlistType();
 		switch (type) {
 		case RU:
-			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().rusByHostname,"context");
+			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().rusByHostname, "context");
 			dispatchRowsByFedIdsWithErrors(flashlist, mappingManager.getObjectMapper().fedsByExpectedId);
 			break;
 		case BU:
@@ -104,10 +106,8 @@ public class FlashlistDispatcher {
 			break;
 		case FMM_STATUS:
 			dispatchRowsByTwoElementGeo(flashlist, mappingManager.getObjectMapper().fmms.values(), new FMMGeoFinder());
-
-			// dispatch to TTCPartitions
-			// dual FMMs
-			// FMMTrigerLinks
+			dispatchRowsByTwoElementGeo(flashlist, mappingManager.getObjectMapper().ttcPartitions.values(),
+					new TTCPartitionGeoFinder());
 			break;
 		default:
 			break;
@@ -177,7 +177,9 @@ public class FlashlistDispatcher {
 		}
 
 		/* prepare data from flashlist */
+		int rows = 0;
 		for (JsonNode row : flashlist.getRowsNode()) {
+			rows++;
 
 			String hostname = row.get(finder.getFlashlistHostnameKey()).asText();
 
@@ -202,6 +204,7 @@ public class FlashlistDispatcher {
 			}
 		}
 
+		
 		MappingReporter.get().increaseMissing(flashlist.getFlashlistType().name(), failed);
 		MappingReporter.get().increaseTotal(flashlist.getFlashlistType().name(), total);
 
