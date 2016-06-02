@@ -51,6 +51,7 @@ public class EventProducer {
 		for (Entry entry : unfinished.values()) {
 			entry.setEnd(date);
 			entry.calculateDuration();
+			// entry.setEnd(null);
 		}
 	}
 
@@ -86,7 +87,7 @@ public class EventProducer {
 			if (currentState != value) {
 				result = finishOldAddNew(className, content, value, date, level);
 				states.put(className, value);
-			}else{
+			} else {
 				result = unfinished.get(className);
 			}
 		}
@@ -104,23 +105,18 @@ public class EventProducer {
 		/* finish old entry */
 		if (unfinished.containsKey(className)) {
 			Entry toFinish = unfinished.get(className);
-			toFinish.setClassName("default");
 			toFinish.setEnd(date);
-			if (level == Level.Message){
-				toFinish.setClassName("red");
-				ObjectMapper om = new ObjectMapper();
-				try {
-					System.out.println(om.writeValueAsString(toFinish.getAdditional()));
-				} catch (JsonProcessingException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
 			toFinish.calculateDuration();
 		}
 
 		/* add new entry */
 		Entry entry = new Entry();
+
+		if (level == Level.Message) {
+			entry.setClassName("critical");
+		} else {
+			entry.setClassName("default");
+		}
 		entry.setContent(content);
 		entry.setShow(value);
 		entry.setStart(date);

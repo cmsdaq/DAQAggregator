@@ -2,16 +2,12 @@ package rcms.utilities.daqaggregator.persistence;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.collections4.queue.CircularFifoQueue;
@@ -38,18 +34,21 @@ public class PersistorManager {
 	/** Persistence directory to work with */
 	private final String persistenceDir;
 
+	private final String updatedDir;
+
 	private ObjectMapper objectMapper = new ObjectMapper();
 
 	/** Constructor */
 	public PersistorManager(String persistenceDir) {
 		this.persistenceDir = persistenceDir;
+		this.updatedDir = "/tmp/mgladki/snapshots/";
 		instance = this;
 	}
-	
+
 	private static PersistorManager instance;
-	
-	public static PersistorManager get(){
-		if(instance == null)
+
+	public static PersistorManager get() {
+		if (instance == null)
 			throw new RuntimeException("Persister manager not initialized");
 		return instance;
 	}
@@ -81,7 +80,7 @@ public class PersistorManager {
 	public void walkAll() throws IOException {
 
 		Date earliestSnapshotDate = null, latestSnapshotDate;
-		List<File> fileList = getFiles();
+		List<File> fileList = getFiles(persistenceDir);
 		if (fileList.size() == 0) {
 			logger.error("No files to process");
 			return;
@@ -122,7 +121,7 @@ public class PersistorManager {
 	public DAQ findSnapshot(Date date) {
 		StructureSerializer structurePersistor = new StructureSerializer();
 		try {
-			List<File> fileList = getFiles();
+			List<File> fileList = getFiles(persistenceDir);
 			if (fileList.size() == 0) {
 				logger.error("No files to process");
 				return null;
@@ -180,7 +179,7 @@ public class PersistorManager {
 		/* dont read more files than */
 		int maxFiles = 1000000;
 
-		List<File> fileList = getFiles();
+		List<File> fileList = getFiles(persistenceDir);
 		Collections.sort(fileList, FileComparator);
 
 		logger.info("Available files: " + fileList.size() + ", oldest: " + fileList.get(0).getName() + ", newest: "
@@ -208,7 +207,7 @@ public class PersistorManager {
 	 */
 	public void convertSnapshots(String targetDirectory) throws IOException {
 
-		List<File> fileList = getFiles();
+		List<File> fileList = getFiles(persistenceDir);
 		Collections.sort(fileList, FileComparator);
 
 		StructureSerializer structurePersistor = new StructureSerializer();
@@ -223,16 +222,41 @@ public class PersistorManager {
 		}
 	}
 
+	public void getUnprocessedSnapshots(Map<String, File> processed, CheckManager checkManager) throws IOException {
+
+		List<File> fileList = getFiles(updatedDir);
+		Collections.sort(fileList, FileComparator);
+
+		StructureSerializer structurePersistor = new StructureSerializer();
+		DAQ daq = null;
+		logger.info("Processing files from " + updatedDir + "...");
+
+		for (File path : fileList) {
+			if (!processed.containsKey(path.getName())) {
+
+				daq = structurePersistor.deserializeFromSmile(path.getAbsolutePath().toString());
+				checkManager.runCheckers(daq);
+				TaskManager.get().rawData.add(new DummyDAQ(daq));
+				processed.put(path.getName(), path);
+			}
+		}
+
+		 //temporarly finish
+		 if (daq != null)
+		 EventProducer.get().finish(new Date(daq.getLastUpdate()));
+
+	}
+
 	/**
 	 * Get available file names from persistence folder
 	 * 
 	 * @return available file names from persistence folder
 	 * @throws IOException
 	 */
-	private List<File> getFiles() throws IOException {
+	private List<File> getFiles(String file) throws IOException {
 		List<File> result = new ArrayList<>();
 
-		File folder = new File(persistenceDir);
+		File folder = new File(file);
 		File[] listOfFiles = folder.listFiles();
 
 		for (int i = 0; i < listOfFiles.length; i++) {

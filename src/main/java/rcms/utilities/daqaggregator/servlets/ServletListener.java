@@ -1,20 +1,16 @@
 package rcms.utilities.daqaggregator.servlets;
 
 import java.io.IOException;
-import java.util.Date;
-import java.util.Iterator;
+import java.util.Timer;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 import org.apache.log4j.Logger;
 
-import rcms.utilities.daqaggregator.DAQAggregator;
 import rcms.utilities.daqaggregator.DataResolutionManager;
-import rcms.utilities.daqaggregator.TaskManager;
-import rcms.utilities.daqaggregator.data.DAQ;
+import rcms.utilities.daqaggregator.ReaderTask;
 import rcms.utilities.daqaggregator.persistence.PersistorManager;
-import rcms.utilities.daqaggregator.reasoning.base.CheckManager;
 import rcms.utilities.daqaggregator.reasoning.base.EventProducer;
 
 public class ServletListener implements ServletContextListener {
@@ -22,9 +18,13 @@ public class ServletListener implements ServletContextListener {
 	private static final Logger logger = Logger.getLogger(ServletListener.class);
 
 	PersistorManager persistorManager = new PersistorManager("/tmp/mgladki/persistence");
+	DataResolutionManager dataSegmentator = new DataResolutionManager();
 
 	public void contextInitialized(ServletContextEvent e) {
-		test2();
+		long last = walkAllFilesProcessAndStoreInMemory();
+		
+		Timer t = new Timer();
+		t.scheduleAtFixedRate(new ReaderTask(dataSegmentator,last), 10000, 10000);
 
 	}
 
@@ -32,7 +32,10 @@ public class ServletListener implements ServletContextListener {
 
 	}
 
-	private void test2() {
+	/**
+	 * Will walk all files, analyze all snapshots and results will be in memory
+	 */
+	private long walkAllFilesProcessAndStoreInMemory() {
 		try {
 			logger.info("Walking through all data..");
 			persistorManager.walkAll();
@@ -40,40 +43,19 @@ public class ServletListener implements ServletContextListener {
 			e1.printStackTrace();
 		}
 
-		// prepare data
-		DataResolutionManager dataSegmentator = new DataResolutionManager();
 		dataSegmentator.prepareMultipleResolutionData();
-	}
-
-	/**
-	 * Load recent data to memory Process data from memory
-	 */
-	private void test() {
-		try {
-			logger.info("Loading historic data");
-			persistorManager.loadRecent();
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
-		new Thread() {
-			public void run() {
-
-				DAQAggregator da = new DAQAggregator();
-				// da.run();
+		
+		long last = 0;
+		
+		for(Entry e: EventProducer.get().getResult()){
+			if(e.getStart().getTime() > last){
+				last = e.getStart().getTime();
 			}
-		}.start();
-
-		logger.info("Servlet initialized");
-
-		Iterator<DAQ> iter = TaskManager.get().buf.iterator();
-		DAQ daq = null;
-		CheckManager checkManager = new CheckManager();
-		while (iter.hasNext()) {
-			daq = iter.next();
-			checkManager.runCheckers(daq);
 		}
-		EventProducer.get().finish(new Date(daq.getLastUpdate()));
-		logger.info(EventProducer.get().toString());
+		return last;
+		
 	}
+
+
 
 }

@@ -65,10 +65,8 @@ public class CheckManager {
 			boolean result = checker.satisfied(daq);
 			curr = new Date(daq.getLastUpdate());
 			Entry entry = EventProducer.get().produce(checker, result, curr);
-			if (entry != null)
+			if (entry != null && result)
 				checker.gatherInfo(daq, entry);
-			else
-				logger.warn("EP did not returned entry");
 		}
 		for (Comparator comparator : comparators) {
 			Date last = null;
