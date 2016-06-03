@@ -1,7 +1,7 @@
 package rcms.utilities.daqaggregator.reasoning.base;
 
 public enum Level {
-	LHC("lhc"), Info("info"), Warning("warning"), Error("error"), Run("run"), Message("message");
+	LHC("lhc"), Info("info"), Warning("warning"), Error("error"), Run("run"), FLOWCHART("flowchart"), DAQ("daq");
 
 	private final String code;
 

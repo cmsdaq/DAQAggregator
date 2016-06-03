@@ -19,7 +19,6 @@ import rcms.utilities.daqaggregator.reasoning.RateOutOfRange;
 import rcms.utilities.daqaggregator.reasoning.RunComparator;
 import rcms.utilities.daqaggregator.reasoning.SessionComparator;
 import rcms.utilities.daqaggregator.reasoning.WarningInSubsystem;
-import rcms.utilities.daqaggregator.servlets.Entry;
 
 /**
  * Manager of checking process

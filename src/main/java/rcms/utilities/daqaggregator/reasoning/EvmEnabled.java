@@ -8,8 +8,8 @@ import rcms.utilities.daqaggregator.data.DAQ;
 import rcms.utilities.daqaggregator.data.FEDBuilder;
 import rcms.utilities.daqaggregator.data.RU;
 import rcms.utilities.daqaggregator.reasoning.base.Level;
-import rcms.utilities.daqaggregator.servlets.Entry;
 import rcms.utilities.daqaggregator.reasoning.base.Condition;
+import rcms.utilities.daqaggregator.reasoning.base.Entry;
 import rcms.utilities.daqaggregator.reasoning.base.EventClass;
 
 public class EvmEnabled implements Condition {

@@ -7,8 +7,8 @@ import rcms.utilities.daqaggregator.data.FED;
 import rcms.utilities.daqaggregator.data.FMM;
 import rcms.utilities.daqaggregator.data.FMMApplication;
 import rcms.utilities.daqaggregator.reasoning.base.Level;
-import rcms.utilities.daqaggregator.servlets.Entry;
 import rcms.utilities.daqaggregator.reasoning.base.Condition;
+import rcms.utilities.daqaggregator.reasoning.base.Entry;
 import rcms.utilities.daqaggregator.reasoning.base.EventClass;
 
 public class NotEqualTriggersInFed implements Condition {

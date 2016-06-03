@@ -10,14 +10,18 @@ import rcms.utilities.daqaggregator.data.FED;
 import rcms.utilities.daqaggregator.data.FEDBuilder;
 import rcms.utilities.daqaggregator.data.RU;
 import rcms.utilities.daqaggregator.reasoning.base.Condition;
+import rcms.utilities.daqaggregator.reasoning.base.Entry;
 import rcms.utilities.daqaggregator.reasoning.base.EventClass;
+import rcms.utilities.daqaggregator.reasoning.base.EventRaport;
 import rcms.utilities.daqaggregator.reasoning.base.Level;
-import rcms.utilities.daqaggregator.servlets.Entry;
 
 public class Message2 implements Condition {
 
 	private static Logger logger = Logger.getLogger(Message2.class);
 	private final String ERROR_STATE = "ERROR";
+	private static final String name = "cDAQ is stack during STABLE BEAMS, no events flowing. DAQ and Level-0 are in Error state, exists RU in Failed state";
+	private static final String description = "A FED has sent corrupted data to the DAQ. Corresponding system of the FED and RU in Failde state attached below.";
+	private static final String action = "Try to recover: Stop the run. Red & green recycle both the DAQ and the subsystem. Start new Run. (try up to 2 times). Problem not fixed: Call the DOC for the subsystem that sent currupted data, Problem fixed: Make an e-log entry. Call the DOC for the subsystem that sent corrupted data to informa about the problem.";
 
 	@Override
 	public Boolean satisfied(DAQ daq) {
@@ -45,7 +49,7 @@ public class Message2 implements Condition {
 
 	@Override
 	public Level getLevel() {
-		return Level.Message;
+		return Level.FLOWCHART;
 	}
 
 	@Override
@@ -56,35 +60,32 @@ public class Message2 implements Condition {
 	@Override
 	public void gatherInfo(DAQ daq, Entry entry) {
 
-		Set<RU> problemRus = new HashSet<>();
+		EventRaport eventRaport = entry.getEventRaport();
+		if (!eventRaport.isInitialized()) {
+			eventRaport.initialize(name, description, action);
+		}
+
 		for (FEDBuilder fb : daq.getFedBuilders()) {
 			RU ru = fb.getRu();
 			if (ru.getStatus().equalsIgnoreCase("Failed")) {
-				problemRus.add(ru);
+				eventRaport.getSetByCode("problemRu").add(ru.getHostname() + ": " + ru.getStatus());
 			}
 		}
 
-		for (RU ru : problemRus) {
-			if (!entry.getAdditional().containsKey("problemRus")) {
-				entry.getAdditional().put("problemRus", new HashSet<Object>());
-			}
-			if (!entry.getAdditional().containsKey("fedsCorruptedData")) {
-				entry.getAdditional().put("fedsCorruptedData", new HashSet<Object>());
-			}
-			((HashSet<Object>) entry.getAdditional().get("problemRus")).add(ru.getHostname());
+		for (FED fed : daq.getAllFeds()) {
+			if (fed.getRuFedDataCorruption() > 0) {
+				String fedString = "FED id: " + fed.getId() + ", FED expected id: " + fed.getSrcIdExpected()
+						+ ", FED corrupted: " + fed.getRuFedDataCorruption();
 
-			for (FED fed : daq.getAllFeds()) {
-				if (fed.getRuFedDataCorruption() > 0) {
-					String fedString = "FED id: " + fed.getId() + ", FED expected id: " + fed.getSrcIdExpected()
-							+ ", FED corrupted: " + fed.getRuFedDataCorruption();
-					((HashSet<Object>) entry.getAdditional().get("fedsCorruptedData")).add(fedString);
-				}
-
+				eventRaport.getSetByCode("corruptedFeds").add(fedString);
+			}
+			if (fed.isRuFedInError()) {
+				String fedString = "FED id: " + fed.getId() + ", FED expected id: " + fed.getSrcIdExpected();
+				eventRaport.getSetByCode("fedsInError").add(fedString);
 			}
 		}
-
 	}
-	
+
 	@Override
 	public EventClass getClassName() {
 		return EventClass.critical;

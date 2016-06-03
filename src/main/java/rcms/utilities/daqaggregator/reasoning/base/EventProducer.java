@@ -1,14 +1,13 @@
 package rcms.utilities.daqaggregator.reasoning.base;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-
-import rcms.utilities.daqaggregator.servlets.Entry;
 
 public class EventProducer {
 
@@ -19,7 +18,7 @@ public class EventProducer {
 	private static EventProducer instance;
 
 	/** All produced reasons are kept in this list */
-	private final List<Entry> result = new ArrayList<>();
+	private final List<Entry> result =  Collections.synchronizedList(new ArrayList<Entry>());
 
 	/** All events without end date are kept here (unfinished) */
 	private final Map<String, Entry> unfinished = new HashMap<>();

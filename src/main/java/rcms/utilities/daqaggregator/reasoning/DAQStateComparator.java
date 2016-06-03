@@ -31,7 +31,7 @@ public class DAQStateComparator extends Comparator {
 
 	@Override
 	public Level getLevel() {
-		return Level.Run;
+		return Level.DAQ;
 	}
 
 	@Override
