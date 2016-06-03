@@ -99,7 +99,7 @@ public class RawAPI extends HttpServlet {
 		response.setContentType("application/json");
 		response.setCharacterEncoding("UTF-8");
 
-		logger.info("Number of elements returned: " + data.size() + ", using " + range + " data");
+		logger.debug("Number of elements returned: " + data.size() + ", using " + range + " data");
 
 		response.getWriter().write(json);
 

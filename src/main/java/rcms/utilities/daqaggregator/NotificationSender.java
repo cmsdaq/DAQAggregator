@@ -18,7 +18,7 @@ import org.apache.log4j.Logger;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import rcms.utilities.daqaggregator.servlets.Entry;
+import rcms.utilities.daqaggregator.reasoning.base.Entry;
 
 public class NotificationSender {
 
@@ -35,14 +35,14 @@ public class NotificationSender {
 		int sent = 0;
 		for (Entry event : list) {
 			if ("critical".equals(event.getClassName())) {
-				logger.info("Sending notification: " + event.getContent());
+				logger.debug("Sending notification: " + event.getContent());
 
 				Notification notification = new Notification();
 				notification.setDate(event.getStart());
 				String message = "Event: " + event.getContent();
 				message = message + ", date: " + event.getStart();
 				try {
-					message = message + ", raport: " + objectMapper.writeValueAsString(event.getAdditional());
+					message = message + ", raport: " + objectMapper.writeValueAsString(event.getEventRaport());
 				} catch (JsonProcessingException e) {
 					e.printStackTrace();
 				}
@@ -111,9 +111,9 @@ public class NotificationSender {
 			BufferedReader br = new BufferedReader(new InputStreamReader((response.getEntity().getContent())));
 
 			String output;
-			System.out.println("Output from Server .... \n");
+			logger.debug("Output from Server .... \n");
 			while ((output = br.readLine()) != null) {
-				System.out.println(output);
+				logger.debug(output);
 			}
 
 			httpClient.getConnectionManager().shutdown();

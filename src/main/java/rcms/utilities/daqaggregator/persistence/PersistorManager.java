@@ -115,7 +115,7 @@ public class PersistorManager {
 		if (hours != 0)
 			logger.info("Deserializing and running analysis modules on " + hours + " hours data (" + fileList.size()
 					+ " snapshots) finished in " + result + "ms. (1h of data processed in " + result / hours + "ms)");
-		logger.info("Current producer state: " + EventProducer.get().toString());
+		logger.debug("Current producer state: " + EventProducer.get().toString());
 	}
 
 	public DAQ findSnapshot(Date date) {
@@ -231,7 +231,7 @@ public class PersistorManager {
 
 		StructureSerializer structurePersistor = new StructureSerializer();
 		DAQ daq = null;
-		logger.info("Processing files from " + updatedDir + "...");
+		logger.debug("Processing files from " + updatedDir + "...");
 
 		for (File path : fileList) {
 			if (!processed.containsKey(path.getName())) {

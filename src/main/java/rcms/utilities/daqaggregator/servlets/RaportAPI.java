@@ -1,7 +1,6 @@
 package rcms.utilities.daqaggregator.servlets;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -13,13 +12,13 @@ import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import rcms.utilities.daqaggregator.reasoning.base.Entry;
 import rcms.utilities.daqaggregator.reasoning.base.EventProducer;
 
 public class RaportAPI extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	private static final Logger logger = Logger.getLogger(RaportAPI.class);
-
 
 	ObjectMapper objectMapper = new ObjectMapper();
 
@@ -33,9 +32,9 @@ public class RaportAPI extends HttpServlet {
 
 		Object result = null;
 		List<Entry> entries = EventProducer.get().getResult();
-		for(Entry entry: entries){
-			if(entry.getId() == id)
-				result= entry.getAdditional();
+		for (Entry entry : entries) {
+			if (entry.getId() == id)
+				result = entry.getEventRaport();
 		}
 
 		String json = objectMapper.writeValueAsString(result);
@@ -49,7 +48,6 @@ public class RaportAPI extends HttpServlet {
 		response.setContentType("application/json");
 		response.setCharacterEncoding("UTF-8");
 		response.getWriter().write(json);
-
 
 	}
 

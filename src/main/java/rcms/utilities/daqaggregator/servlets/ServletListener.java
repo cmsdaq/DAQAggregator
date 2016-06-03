@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 import rcms.utilities.daqaggregator.DataResolutionManager;
 import rcms.utilities.daqaggregator.ReaderTask;
 import rcms.utilities.daqaggregator.persistence.PersistorManager;
+import rcms.utilities.daqaggregator.reasoning.base.Entry;
 import rcms.utilities.daqaggregator.reasoning.base.EventProducer;
 
 public class ServletListener implements ServletContextListener {
@@ -19,17 +20,18 @@ public class ServletListener implements ServletContextListener {
 
 	PersistorManager persistorManager = new PersistorManager("/tmp/mgladki/persistence");
 	DataResolutionManager dataSegmentator = new DataResolutionManager();
+	
+
+	Timer t = new Timer();
 
 	public void contextInitialized(ServletContextEvent e) {
 		long last = walkAllFilesProcessAndStoreInMemory();
 		
-		Timer t = new Timer();
 		t.scheduleAtFixedRate(new ReaderTask(dataSegmentator,last), 10000, 10000);
-
 	}
 
 	public void contextDestroyed(ServletContextEvent e) {
-
+		t.cancel();
 	}
 
 	/**

@@ -1,6 +1,5 @@
 package rcms.utilities.daqaggregator;
 
-import java.awt.Event;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,8 +12,8 @@ import org.apache.log4j.Logger;
 
 import rcms.utilities.daqaggregator.persistence.PersistorManager;
 import rcms.utilities.daqaggregator.reasoning.base.CheckManager;
+import rcms.utilities.daqaggregator.reasoning.base.Entry;
 import rcms.utilities.daqaggregator.reasoning.base.EventProducer;
-import rcms.utilities.daqaggregator.servlets.Entry;
 
 public class ReaderTask extends TimerTask {
 
@@ -40,7 +39,7 @@ public class ReaderTask extends TimerTask {
 
 			PersistorManager.get().getUnprocessedSnapshots(filesProcessed, checkManager);
 			int all = filesProcessed.size();
-			logger.info("files processed in this round " + (all - last));
+			logger.debug("files processed in this round " + (all - last));
 			last = all;
 
 			NotificationSender notificationSender = new NotificationSender();
@@ -57,7 +56,6 @@ public class ReaderTask extends TimerTask {
 				}
 			}
 
-			
 			logger.debug(recentEvents.size() + " notifications can be sent in this round");
 			notificationSender.send(recentEvents);
 			dontSendBefore = latest;
