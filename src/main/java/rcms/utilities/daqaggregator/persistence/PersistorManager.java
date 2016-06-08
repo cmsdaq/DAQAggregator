@@ -7,19 +7,14 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.collections4.queue.CircularFifoQueue;
 import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import rcms.utilities.daqaggregator.DummyDAQ;
 import rcms.utilities.daqaggregator.TaskManager;
 import rcms.utilities.daqaggregator.data.DAQ;
-import rcms.utilities.daqaggregator.reasoning.base.CheckManager;
-import rcms.utilities.daqaggregator.reasoning.base.EventProducer;
 
 /**
  * This class manages persistence
@@ -32,9 +27,9 @@ public class PersistorManager {
 	private static final Logger logger = Logger.getLogger(PersistorManager.class);
 
 	/** Persistence directory to work with */
-	private final String persistenceDir;
+	protected final String persistenceDir;
 
-	private final String updatedDir;
+	protected final String updatedDir;
 
 	private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -71,52 +66,6 @@ public class PersistorManager {
 		}
 	}
 
-	/**
-	 * This method walks through all files but does not keep them in memory. It
-	 * runs analysis modules and saves the results.
-	 * 
-	 * @throws IOException
-	 */
-	public void walkAll() throws IOException {
-
-		Date earliestSnapshotDate = null, latestSnapshotDate;
-		List<File> fileList = getFiles(persistenceDir);
-		if (fileList.size() == 0) {
-			logger.error("No files to process");
-			return;
-		}
-		Collections.sort(fileList, FileComparator);
-
-		StructureSerializer structurePersistor = new StructureSerializer();
-		CheckManager checkManager = new CheckManager();
-		DAQ daq = null;
-		logger.info("Processing files from " + persistenceDir + "...");
-
-		long start = System.currentTimeMillis();
-		for (File path : fileList) {
-			logger.debug(path.getName().toString());
-
-			daq = structurePersistor.deserializeFromSmile(path.getAbsolutePath().toString());
-
-			if (earliestSnapshotDate == null)
-				earliestSnapshotDate = new Date(daq.getLastUpdate());
-			// test logic modules
-			checkManager.runCheckers(daq);
-			TaskManager.get().rawData.add(new DummyDAQ(daq));
-
-		}
-		EventProducer.get().finish(new Date(daq.getLastUpdate()));
-		latestSnapshotDate = new Date(daq.getLastUpdate());
-		long diff = latestSnapshotDate.getTime() - earliestSnapshotDate.getTime();
-
-		long end = System.currentTimeMillis();
-		int result = (int) (end - start);
-		long hours = TimeUnit.HOURS.convert(diff, TimeUnit.MILLISECONDS);
-		if (hours != 0)
-			logger.info("Deserializing and running analysis modules on " + hours + " hours data (" + fileList.size()
-					+ " snapshots) finished in " + result + "ms. (1h of data processed in " + result / hours + "ms)");
-		logger.debug("Current producer state: " + EventProducer.get().toString());
-	}
 
 	public DAQ findSnapshot(Date date) {
 		StructureSerializer structurePersistor = new StructureSerializer();
@@ -224,30 +173,7 @@ public class PersistorManager {
 		}
 	}
 
-	public void getUnprocessedSnapshots(Map<String, File> processed, CheckManager checkManager) throws IOException {
 
-		List<File> fileList = getFiles(updatedDir);
-		Collections.sort(fileList, FileComparator);
-
-		StructureSerializer structurePersistor = new StructureSerializer();
-		DAQ daq = null;
-		logger.debug("Processing files from " + updatedDir + "...");
-
-		for (File path : fileList) {
-			if (!processed.containsKey(path.getName())) {
-
-				daq = structurePersistor.deserializeFromSmile(path.getAbsolutePath().toString());
-				checkManager.runCheckers(daq);
-				TaskManager.get().rawData.add(new DummyDAQ(daq));
-				processed.put(path.getName(), path);
-			}
-		}
-
-		 //temporarly finish
-		 if (daq != null)
-		 EventProducer.get().finish(new Date(daq.getLastUpdate()));
-
-	}
 
 	/**
 	 * Get available file names from persistence folder
@@ -255,7 +181,7 @@ public class PersistorManager {
 	 * @return available file names from persistence folder
 	 * @throws IOException
 	 */
-	private List<File> getFiles(String file) throws IOException {
+	protected List<File> getFiles(String file) throws IOException {
 		List<File> result = new ArrayList<>();
 
 		File folder = new File(file);
