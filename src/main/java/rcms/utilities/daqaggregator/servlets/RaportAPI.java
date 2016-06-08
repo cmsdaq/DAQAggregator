@@ -28,27 +28,31 @@ public class RaportAPI extends HttpServlet {
 
 		String idString = request.getParameter("id");
 		logger.info("Requested explanation of event: " + idString);
-		int id = Integer.parseInt(idString);
+		try {
+			int id = Integer.parseInt(idString);
 
-		Object result = null;
-		List<Entry> entries = EventProducer.get().getResult();
-		for (Entry entry : entries) {
-			if (entry.getId() == id)
-				result = entry.getEventRaport();
+			Object result = null;
+			List<Entry> entries = EventProducer.get().getResult();
+			for (Entry entry : entries) {
+				if (entry.getId() == id)
+					result = entry.getEventRaport();
+			}
+
+			String json = objectMapper.writeValueAsString(result);
+			// TODO: externalize the Allow-Origin
+			response.addHeader("Access-Control-Allow-Origin", "*");
+			response.addHeader("Access-Control-Allow-Methods", "GET");
+			response.addHeader("Access-Control-Allow-Headers",
+					"X-PINGOTHER, Origin, X-Requested-With, Content-Type, Accept");
+			response.addHeader("Access-Control-Max-Age", "1728000");
+
+			response.setContentType("application/json");
+			response.setCharacterEncoding("UTF-8");
+			response.getWriter().write(json);
+
+		} catch (NumberFormatException e) {
+			logger.warn("There was problem parsing number in raport api request: " + e.getMessage());
 		}
-
-		String json = objectMapper.writeValueAsString(result);
-		// TODO: externalize the Allow-Origin
-		response.addHeader("Access-Control-Allow-Origin", "*");
-		response.addHeader("Access-Control-Allow-Methods", "GET");
-		response.addHeader("Access-Control-Allow-Headers",
-				"X-PINGOTHER, Origin, X-Requested-With, Content-Type, Accept");
-		response.addHeader("Access-Control-Max-Age", "1728000");
-
-		response.setContentType("application/json");
-		response.setCharacterEncoding("UTF-8");
-		response.getWriter().write(json);
-
 	}
 
 	@Override
