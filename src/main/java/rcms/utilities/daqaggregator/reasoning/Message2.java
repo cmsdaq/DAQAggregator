@@ -49,12 +49,12 @@ public class Message2 implements Condition {
 
 	@Override
 	public Level getLevel() {
-		return Level.FLOWCHART;
+		return Level.FL2;
 	}
 
 	@Override
 	public String getText() {
-		return "Message2: DAQ and level 0 in error state";
+		return "M2: DAQ and level 0 in error state";
 	}
 
 	@Override

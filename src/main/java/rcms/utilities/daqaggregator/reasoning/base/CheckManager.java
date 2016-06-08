@@ -14,6 +14,8 @@ import rcms.utilities.daqaggregator.reasoning.LHCMachineModeComparator;
 import rcms.utilities.daqaggregator.reasoning.LevelZeroStateComparator;
 import rcms.utilities.daqaggregator.reasoning.Message1;
 import rcms.utilities.daqaggregator.reasoning.Message2;
+import rcms.utilities.daqaggregator.reasoning.Message3;
+import rcms.utilities.daqaggregator.reasoning.Message4;
 import rcms.utilities.daqaggregator.reasoning.NoRate;
 import rcms.utilities.daqaggregator.reasoning.RateOutOfRange;
 import rcms.utilities.daqaggregator.reasoning.RunComparator;
@@ -44,6 +46,8 @@ public class CheckManager {
 		checkers.add(new WarningInSubsystem());
 		checkers.add(new Message1());
 		checkers.add(new Message2());
+		checkers.add(new Message3());
+		checkers.add(new Message4());
 		comparators.add(new SessionComparator());
 		comparators.add(new LHCBeamModeComparator());
 		comparators.add(new LHCMachineModeComparator());

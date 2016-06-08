@@ -42,7 +42,7 @@ public class Message1 implements Condition {
 
 			}
 
-			message = "Message1: DAQ and L0 in RUNBLOCKED";
+			message = "M1: DAQ and L0 in RUNBLOCKED";
 			logger.debug(message);
 			return true;
 		}
@@ -51,7 +51,7 @@ public class Message1 implements Condition {
 
 	@Override
 	public Level getLevel() {
-		return Level.FLOWCHART;
+		return Level.FL1;
 	}
 
 	@Override
