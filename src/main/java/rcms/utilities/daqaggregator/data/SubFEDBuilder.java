@@ -15,7 +15,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
  * 
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
-public class SubFEDBuilder implements java.io.Serializable {
+public class SubFEDBuilder {
 
 	// ----------------------------------------
 	// fields set at beginning of session
@@ -82,7 +82,7 @@ public class SubFEDBuilder implements java.io.Serializable {
 	}
 
 	public void calculateDerived() {
-		
+
 		maxTrig = Long.MIN_VALUE;
 		minTrig = Long.MAX_VALUE;
 
@@ -97,6 +97,55 @@ public class SubFEDBuilder implements java.io.Serializable {
 				}
 			}
 		}
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((frlPc == null) ? 0 : frlPc.hashCode());
+		result = prime * result + ((frls == null) ? 0 : frls.hashCode());
+		result = prime * result + (int) (maxTrig ^ (maxTrig >>> 32));
+		result = prime * result + (int) (minTrig ^ (minTrig >>> 32));
+		result = prime * result + ((ttcPartition == null) ? 0 : ttcPartition.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		SubFEDBuilder other = (SubFEDBuilder) obj;
+		if (frlPc == null) {
+			if (other.frlPc != null)
+				return false;
+		} else if (!frlPc.equals(other.frlPc))
+			return false;
+		if (frls == null) {
+			if (other.frls != null)
+				return false;
+		} else if (!frls.equals(other.frls))
+			return false;
+		if (maxTrig != other.maxTrig)
+			return false;
+		if (minTrig != other.minTrig)
+			return false;
+		if (ttcPartition == null) {
+			if (other.ttcPartition != null)
+				return false;
+		} else if (!ttcPartition.equals(other.ttcPartition))
+			return false;
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "SubFEDBuilder [ttcPartition=" + ttcPartition + ", frlPc=" + frlPc
+				+ ", frls=" + frls + ", minTrig=" + minTrig + ", maxTrig=" + maxTrig + "]";
 	}
 
 }

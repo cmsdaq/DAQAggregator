@@ -35,11 +35,12 @@ public class StructureSerializer {
 		mapper.writeValue(file, daq);
 	}
 
-	public void serializeToSmile(DAQ daq, String name, String folder)
+	public String serializeToSmile(DAQ daq, String name, String folder)
 			throws JsonGenerationException, JsonMappingException, IOException {
 		File file = new File(folder + name + ".smile");
 		ObjectMapper mapper = new ObjectMapper(new SmileFactory());
 		mapper.writeValue(file, daq);
+		return file.getAbsolutePath();
 	}
 
 	public void serializeToJSON(DAQ daq, String name, String folder)

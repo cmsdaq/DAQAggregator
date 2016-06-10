@@ -1,15 +1,12 @@
 package rcms.utilities.daqaggregator.data;
 
-import java.io.Serializable;
-
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.databind.JsonNode;
 
-import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
 import rcms.utilities.daqaggregator.mappers.Derivable;
-import rcms.utilities.daqaggregator.mappers.FlashlistDispatcher;
 import rcms.utilities.daqaggregator.mappers.FlashlistType;
+import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
 
 /**
  * Readout Unit
@@ -19,7 +16,7 @@ import rcms.utilities.daqaggregator.mappers.FlashlistType;
  */
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
-public class RU implements Serializable, FlashlistUpdatable, Derivable {
+public class RU implements FlashlistUpdatable, Derivable {
 
 	// ----------------------------------------
 	// fields set at beginning of session
@@ -281,6 +278,88 @@ public class RU implements Serializable, FlashlistUpdatable, Derivable {
 	@Override
 	public void clean() {
 		// nothing to do
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((errorMsg == null) ? 0 : errorMsg.hashCode());
+		result = prime * result + eventsInRU;
+		result = prime * result + fragmentsInRU;
+		result = prime * result + ((hostname == null) ? 0 : hostname.hashCode());
+		result = prime * result + incompleteSuperFragmentCount;
+		result = prime * result + ((infoMsg == null) ? 0 : infoMsg.hashCode());
+		result = prime * result + instance;
+		result = prime * result + (isEVM ? 1231 : 1237);
+		result = prime * result + (masked ? 1231 : 1237);
+		result = prime * result + Float.floatToIntBits(rate);
+		result = prime * result + requests;
+		result = prime * result + ((status == null) ? 0 : status.hashCode());
+		result = prime * result + Float.floatToIntBits(superFragmentSizeMean);
+		result = prime * result + Float.floatToIntBits(superFragmentSizeStddev);
+		result = prime * result + Float.floatToIntBits(throughput);
+		result = prime * result + ((warnMsg == null) ? 0 : warnMsg.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		RU other = (RU) obj;
+		if (errorMsg == null) {
+			if (other.errorMsg != null)
+				return false;
+		} else if (!errorMsg.equals(other.errorMsg))
+			return false;
+		if (eventsInRU != other.eventsInRU)
+			return false;
+		if (fragmentsInRU != other.fragmentsInRU)
+			return false;
+		if (hostname == null) {
+			if (other.hostname != null)
+				return false;
+		} else if (!hostname.equals(other.hostname))
+			return false;
+		if (incompleteSuperFragmentCount != other.incompleteSuperFragmentCount)
+			return false;
+		if (infoMsg == null) {
+			if (other.infoMsg != null)
+				return false;
+		} else if (!infoMsg.equals(other.infoMsg))
+			return false;
+		if (instance != other.instance)
+			return false;
+		if (isEVM != other.isEVM)
+			return false;
+		if (masked != other.masked)
+			return false;
+		if (Float.floatToIntBits(rate) != Float.floatToIntBits(other.rate))
+			return false;
+		if (requests != other.requests)
+			return false;
+		if (status == null) {
+			if (other.status != null)
+				return false;
+		} else if (!status.equals(other.status))
+			return false;
+		if (Float.floatToIntBits(superFragmentSizeMean) != Float.floatToIntBits(other.superFragmentSizeMean))
+			return false;
+		if (Float.floatToIntBits(superFragmentSizeStddev) != Float.floatToIntBits(other.superFragmentSizeStddev))
+			return false;
+		if (Float.floatToIntBits(throughput) != Float.floatToIntBits(other.throughput))
+			return false;
+		if (warnMsg == null) {
+			if (other.warnMsg != null)
+				return false;
+		} else if (!warnMsg.equals(other.warnMsg))
+			return false;
+		return true;
 	}
 
 }

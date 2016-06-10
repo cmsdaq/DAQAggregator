@@ -29,14 +29,12 @@ public class PersistorManager {
 	/** Persistence directory to work with */
 	protected final String persistenceDir;
 
-	protected final String updatedDir;
 
 	private ObjectMapper objectMapper = new ObjectMapper();
 
 	/** Constructor */
 	public PersistorManager(String persistenceDir) {
 		this.persistenceDir = persistenceDir;
-		this.updatedDir = "/tmp/mgladki/snapshots/";
 		instance = this;
 	}
 
@@ -48,7 +46,7 @@ public class PersistorManager {
 		return instance;
 	}
 
-	public void persistSnapshot(DAQ daq) {
+	public String persistSnapshot(DAQ daq) {
 
 		try {
 
@@ -58,67 +56,17 @@ public class PersistorManager {
 			// persistor.serializeToJSON(daq, isoDate, persistenceDir);
 			// persistor.serializeToJava(daq, isoDate, persistenceDir);
 			// persistor.serializeToBSON(daq, isoDate, persistenceDir);
-			persistor.serializeToSmile(daq, isoDate, persistenceDir);
+			String filename = persistor.serializeToSmile(daq, isoDate, persistenceDir);
 
-			logger.info("Successfully persisted in " + persistenceDir + " as file " + isoDate);
+			logger.info("Successfully persisted in " + persistenceDir + " as file " + filename);
+			return filename;
 		} catch (IOException e) {
 			logger.warn("Problem persisting " + e.getMessage());
+			return null;
 		}
 	}
 
 
-	public DAQ findSnapshot(Date date) {
-		StructureSerializer structurePersistor = new StructureSerializer();
-		try {
-			List<File> fileList = getFiles(persistenceDir);
-			List<File> updatedList = getFiles(updatedDir);
-			fileList.addAll(updatedList);
-			if (fileList.size() == 0) {
-				logger.error("No files to process");
-				return null;
-			}
-			Collections.sort(fileList, FileComparator);
-
-			long diff = Integer.MAX_VALUE;
-			String bestFile = null;
-			DAQ best = null;
-			for (File path : fileList) {
-
-				String currentName = path.getAbsolutePath().toString();
-				String dateFromFileName = path.getName();
-				if (dateFromFileName.contains(".")) {
-					int indexOfDot = dateFromFileName.indexOf(".");
-					dateFromFileName = dateFromFileName.substring(0, indexOfDot);
-				}
-				Date currentDate;
-				currentDate = objectMapper.readValue(dateFromFileName, Date.class);
-
-				logger.trace("Current file: " + currentName);
-
-				if (bestFile == null) {
-					bestFile = currentName;
-					continue;
-				}
-
-				long currDiff = date.getTime() - currentDate.getTime();
-
-				if (Math.abs(currDiff) < diff) {
-					bestFile = currentName;
-					diff = Math.abs(currDiff);
-				}
-			}
-
-			logger.info("Best file found: " + bestFile + " with time diff: " + diff + "ms.");
-			best = structurePersistor.deserializeFromSmile(bestFile);
-			return best;
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		return null;
-
-	}
 
 	/**
 	 * Loads most recent files

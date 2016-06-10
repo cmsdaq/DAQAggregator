@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -20,7 +21,7 @@ import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
  */
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
-public class FRLPc implements java.io.Serializable, FlashlistUpdatable, Derivable {
+public class FRLPc implements FlashlistUpdatable, Derivable {
 
 	// ----------------------------------------
 	// fields set at beginning of session
@@ -30,8 +31,9 @@ public class FRLPc implements java.io.Serializable, FlashlistUpdatable, Derivabl
 
 	private boolean masked;
 
-	@JsonBackReference(value="frl-frlpc")
-	private List<FRL> frls = new ArrayList<FRL>();
+	@JsonIgnore
+	@JsonBackReference(value = "frl-frlpc")
+	private List<FRL> frls = new ArrayList<>();
 
 	// ----------------------------------------
 	// fields updated periodically
@@ -89,9 +91,7 @@ public class FRLPc implements java.io.Serializable, FlashlistUpdatable, Derivabl
 					this.crashed = true;
 
 			}
-
 		}
-
 	}
 
 	@Override
@@ -120,6 +120,37 @@ public class FRLPc implements java.io.Serializable, FlashlistUpdatable, Derivabl
 			masked = true;
 		}
 
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (crashed ? 1231 : 1237);
+		result = prime * result + ((hostname == null) ? 0 : hostname.hashCode());
+		result = prime * result + (masked ? 1231 : 1237);
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		FRLPc other = (FRLPc) obj;
+		if (crashed != other.crashed)
+			return false;
+		if (hostname == null) {
+			if (other.hostname != null)
+				return false;
+		} else if (!hostname.equals(other.hostname))
+			return false;
+		if (masked != other.masked)
+			return false;
+		return true;
 	}
 
 }

@@ -19,7 +19,7 @@ import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
  * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
-public class FED implements java.io.Serializable, FlashlistUpdatable {
+public class FED implements FlashlistUpdatable {
 
 	// ----------------------------------------
 	// fields set at beginning of session
@@ -29,14 +29,14 @@ public class FED implements java.io.Serializable, FlashlistUpdatable {
 	private int id;
 
 	/** the parent FRL */
-	@JsonBackReference(value="frl-fed")
+	@JsonBackReference(value = "frl-fed")
 	private FRL frl;
 
 	/** can be null */
-	@JsonBackReference(value="fmm-fed")
+	@JsonBackReference(value = "fmm-fed")
 	private FMM fmm;
-	
-	@JsonBackReference(value="ttcp-fed")
+
+	@JsonBackReference(value = "ttcp-fed")
 	private TTCPartition ttcp;
 
 	/** which FRL input: 0 or 1 */
@@ -356,11 +356,6 @@ public class FED implements java.io.Serializable, FlashlistUpdatable {
 		this.id = id;
 	}
 
-	@Override
-	public String toString() {
-		return "FED [fmm=" + fmm + ", fmmIO=" + fmmIO + "]";
-	}
-
 	public long getEventCounter() {
 		return eventCounter;
 	}
@@ -455,6 +450,108 @@ public class FED implements java.io.Serializable, FlashlistUpdatable {
 
 	public void setTtcp(TTCPartition ttcp) {
 		this.ttcp = ttcp;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (int) (eventCounter ^ (eventCounter >>> 32));
+		result = prime * result + fmmIO;
+		result = prime * result + (fmmMasked ? 1231 : 1237);
+		result = prime * result + frlIO;
+		result = prime * result + (frlMasked ? 1231 : 1237);
+		result = prime * result + (hasSLINK ? 1231 : 1237);
+		result = prime * result + (hasTTS ? 1231 : 1237);
+		result = prime * result + id;
+		result = prime * result + ((mainFeds == null) ? 0 : mainFeds.hashCode());
+		result = prime * result + (int) (numFRCerrors ^ (numFRCerrors >>> 32));
+		result = prime * result + (int) (numSCRCerrors ^ (numSCRCerrors >>> 32));
+		result = prime * result + (int) (numTriggers ^ (numTriggers >>> 32));
+		result = prime * result + Float.floatToIntBits(percentBackpressure);
+		result = prime * result + Float.floatToIntBits(percentBusy);
+		result = prime * result + Float.floatToIntBits(percentWarning);
+		result = prime * result + ruFedBXError;
+		result = prime * result + ruFedCRCError;
+		result = prime * result + ruFedDataCorruption;
+		result = prime * result + (ruFedInError ? 1231 : 1237);
+		result = prime * result + ruFedOutOfSync;
+		result = prime * result + (ruFedWitioutFragments ? 1231 : 1237);
+		result = prime * result + srcIdExpected;
+		result = prime * result + srcIdReceived;
+		result = prime * result + ((ttsState == null) ? 0 : ttsState.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		FED other = (FED) obj;
+		if (eventCounter != other.eventCounter)
+			return false;
+		if (fmmIO != other.fmmIO)
+			return false;
+		if (fmmMasked != other.fmmMasked)
+			return false;
+		if (frlIO != other.frlIO)
+			return false;
+		if (frlMasked != other.frlMasked)
+			return false;
+		if (hasSLINK != other.hasSLINK)
+			return false;
+		if (hasTTS != other.hasTTS)
+			return false;
+		if (id != other.id)
+			return false;
+		if (mainFeds == null) {
+			if (other.mainFeds != null)
+				return false;
+		} else if (!mainFeds.equals(other.mainFeds))
+			return false;
+		if (numFRCerrors != other.numFRCerrors)
+			return false;
+		if (numSCRCerrors != other.numSCRCerrors)
+			return false;
+		if (numTriggers != other.numTriggers)
+			return false;
+		if (Float.floatToIntBits(percentBackpressure) != Float.floatToIntBits(other.percentBackpressure))
+			return false;
+		if (Float.floatToIntBits(percentBusy) != Float.floatToIntBits(other.percentBusy))
+			return false;
+		if (Float.floatToIntBits(percentWarning) != Float.floatToIntBits(other.percentWarning))
+			return false;
+		if (ruFedBXError != other.ruFedBXError)
+			return false;
+		if (ruFedCRCError != other.ruFedCRCError)
+			return false;
+		if (ruFedDataCorruption != other.ruFedDataCorruption)
+			return false;
+		if (ruFedInError != other.ruFedInError)
+			return false;
+		if (ruFedOutOfSync != other.ruFedOutOfSync)
+			return false;
+		if (ruFedWitioutFragments != other.ruFedWitioutFragments)
+			return false;
+		if (srcIdExpected != other.srcIdExpected)
+			return false;
+		if (srcIdReceived != other.srcIdReceived)
+			return false;
+		if (ttsState == null) {
+			if (other.ttsState != null)
+				return false;
+		} else if (!ttsState.equals(other.ttsState))
+			return false;
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "FED [id=" + id + ", ttsState=" + ttsState + ", frlMasked=" + frlMasked + "]";
 	}
 
 	// ----------------------------------------------------------------------

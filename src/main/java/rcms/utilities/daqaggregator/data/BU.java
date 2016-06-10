@@ -1,6 +1,5 @@
 package rcms.utilities.daqaggregator.data;
 
-import java.io.Serializable;
 import java.util.Comparator;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
@@ -18,7 +17,7 @@ import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
  *
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
-public class BU implements Serializable, FlashlistUpdatable {
+public class BU implements FlashlistUpdatable {
 
 	// ----------------------------------------
 	// fields set at beginning of session
@@ -388,6 +387,131 @@ public class BU implements Serializable, FlashlistUpdatable {
 
 	public void setStateName(String stateName) {
 		this.stateName = stateName;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + currentLumisection;
+		result = prime * result + Float.floatToIntBits(eventSizeMean);
+		result = prime * result + Float.floatToIntBits(eventSizeStddev);
+		result = prime * result + fragmentCount;
+		result = prime * result + ((hostname == null) ? 0 : hostname.hashCode());
+		result = prime * result + nbCorruptedEvents;
+		result = prime * result + nbEventsMissingData;
+		result = prime * result + nbEventsWithCRCerrors;
+		result = prime * result + nbTotalResources;
+		result = prime * result + numEvents;
+		result = prime * result + numEventsInBU;
+		result = prime * result + numFUsCloud;
+		result = prime * result + numFUsCrashed;
+		result = prime * result + numFUsHlt;
+		result = prime * result + numFUsStale;
+		result = prime * result + numFiles;
+		result = prime * result + numLumisectionsForHLT;
+		result = prime * result + numLumisectionsOutHLT;
+		result = prime * result + numLumisectionsWithFiles;
+		result = prime * result + numRequestsBlocked;
+		result = prime * result + numRequestsSent;
+		result = prime * result + numRequestsUsed;
+		result = prime * result + priority;
+		result = prime * result + Float.floatToIntBits(ramDiskTotal);
+		result = prime * result + Float.floatToIntBits(ramDiskUsage);
+		result = prime * result + Float.floatToIntBits(rate);
+		result = prime * result + ((stateName == null) ? 0 : stateName.hashCode());
+		result = prime * result + Float.floatToIntBits(throughput);
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		BU other = (BU) obj;
+		if (currentLumisection != other.currentLumisection)
+			return false;
+		if (Float.floatToIntBits(eventSizeMean) != Float.floatToIntBits(other.eventSizeMean))
+			return false;
+		if (Float.floatToIntBits(eventSizeStddev) != Float.floatToIntBits(other.eventSizeStddev))
+			return false;
+		if (fragmentCount != other.fragmentCount)
+			return false;
+		if (hostname == null) {
+			if (other.hostname != null)
+				return false;
+		} else if (!hostname.equals(other.hostname))
+			return false;
+		if (nbCorruptedEvents != other.nbCorruptedEvents)
+			return false;
+		if (nbEventsMissingData != other.nbEventsMissingData)
+			return false;
+		if (nbEventsWithCRCerrors != other.nbEventsWithCRCerrors)
+			return false;
+		if (nbTotalResources != other.nbTotalResources)
+			return false;
+		if (numEvents != other.numEvents)
+			return false;
+		if (numEventsInBU != other.numEventsInBU)
+			return false;
+		if (numFUsCloud != other.numFUsCloud)
+			return false;
+		if (numFUsCrashed != other.numFUsCrashed)
+			return false;
+		if (numFUsHlt != other.numFUsHlt)
+			return false;
+		if (numFUsStale != other.numFUsStale)
+			return false;
+		if (numFiles != other.numFiles)
+			return false;
+		if (numLumisectionsForHLT != other.numLumisectionsForHLT)
+			return false;
+		if (numLumisectionsOutHLT != other.numLumisectionsOutHLT)
+			return false;
+		if (numLumisectionsWithFiles != other.numLumisectionsWithFiles)
+			return false;
+		if (numRequestsBlocked != other.numRequestsBlocked)
+			return false;
+		if (numRequestsSent != other.numRequestsSent)
+			return false;
+		if (numRequestsUsed != other.numRequestsUsed)
+			return false;
+		if (priority != other.priority)
+			return false;
+		if (Float.floatToIntBits(ramDiskTotal) != Float.floatToIntBits(other.ramDiskTotal))
+			return false;
+		if (Float.floatToIntBits(ramDiskUsage) != Float.floatToIntBits(other.ramDiskUsage))
+			return false;
+		if (Float.floatToIntBits(rate) != Float.floatToIntBits(other.rate))
+			return false;
+		if (stateName == null) {
+			if (other.stateName != null)
+				return false;
+		} else if (!stateName.equals(other.stateName))
+			return false;
+		if (Float.floatToIntBits(throughput) != Float.floatToIntBits(other.throughput))
+			return false;
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "BU [daq=" + daq + ", hostname=" + hostname + ", rate=" + rate + ", throughput=" + throughput
+				+ ", eventSizeMean=" + eventSizeMean + ", eventSizeStddev=" + eventSizeStddev + ", numEvents="
+				+ numEvents + ", numEventsInBU=" + numEventsInBU + ", priority=" + priority + ", numRequestsSent="
+				+ numRequestsSent + ", numRequestsUsed=" + numRequestsUsed + ", numRequestsBlocked="
+				+ numRequestsBlocked + ", numFUsHlt=" + numFUsHlt + ", numFUsCrashed=" + numFUsCrashed
+				+ ", numFUsStale=" + numFUsStale + ", numFUsCloud=" + numFUsCloud + ", ramDiskUsage=" + ramDiskUsage
+				+ ", ramDiskTotal=" + ramDiskTotal + ", numFiles=" + numFiles + ", numLumisectionsWithFiles="
+				+ numLumisectionsWithFiles + ", currentLumisection=" + currentLumisection + ", numLumisectionsForHLT="
+				+ numLumisectionsForHLT + ", numLumisectionsOutHLT=" + numLumisectionsOutHLT + ", fragmentCount="
+				+ fragmentCount + ", nbCorruptedEvents=" + nbCorruptedEvents + ", nbEventsMissingData="
+				+ nbEventsMissingData + ", nbEventsWithCRCerrors=" + nbEventsWithCRCerrors + ", nbTotalResources="
+				+ nbTotalResources + ", stateName=" + stateName + "]";
 	}
 
 	// ----------------------------------------------------------------------

@@ -188,14 +188,14 @@ public class RelationMapper implements Serializable {
 		}
 
 		/* building FRLPc - FRL */
-		for (Entry<Integer, Set<Integer>> relation : frlPcToFrl.entrySet()) {
-			FRLPc frlPc = objectMapper.frlPcs.get(relation.getKey());
-			for (int frlId : relation.getValue()) {
-				FRL frl = objectMapper.frls.get(frlId);
-				frlPc.getFrls().add(frl);
-				frl.setFrlPc(frlPc);
-			}
-		}
+//		for (Entry<Integer, Set<Integer>> relation : frlPcToFrl.entrySet()) {
+//			FRLPc frlPc = objectMapper.frlPcs.get(relation.getKey());
+//			for (int frlId : relation.getValue()) {
+//				FRL frl = objectMapper.frls.get(frlId);
+//				frlPc.getFrls().add(frl);
+//				frl.setFrlPc(frlPc);
+//			}
+//		}
 
 		/* building Subsystsem - TTCP */
 		int ignoredTTCP = 0;

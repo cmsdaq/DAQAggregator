@@ -1,6 +1,5 @@
 package rcms.utilities.daqaggregator.mappers;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -8,8 +7,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
 
 import rcms.utilities.daqaggregator.data.BU;
 import rcms.utilities.daqaggregator.data.BUSummary;
@@ -28,7 +25,6 @@ import rcms.utilities.daqaggregator.data.SubSystem;
 import rcms.utilities.daqaggregator.data.TTCPartition;
 import rcms.utilities.hwcfg.HardwareConfigurationException;
 import rcms.utilities.hwcfg.dp.DAQPartition;
-import rcms.utilities.hwcfg.dp.DAQPartitionSet;
 import rcms.utilities.hwcfg.dp.DPGenericHost;
 import rcms.utilities.hwcfg.eq.FMMTriggerLink;
 import rcms.utilities.hwcfg.fb.FBI;
@@ -39,7 +35,7 @@ import rcms.utilities.hwcfg.fb.FBI;
  * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
  *
  */
-public class ObjectMapper implements Serializable {
+public class ObjectMapper {
 
 	private static final Logger logger = Logger.getLogger(ObjectMapper.class);
 
@@ -169,7 +165,7 @@ public class ObjectMapper implements Serializable {
 		FEDBuilderSummary fedBuilderSummary = new FEDBuilderSummary();
 		daq.setFedBuilderSummary(fedBuilderSummary);
 		fedBuilderSummary.setDaq(daq);
-		daq.setAllFeds(new HashSet<>(feds.values()));
+		daq.setAllFeds(new HashSet<FED>(feds.values()));
 
 		logger.info("Retrieval summary " + this.toString());
 		logger.info("Subsystem summary " + subSystems.values());
