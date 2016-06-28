@@ -1,6 +1,7 @@
 package rcms.utilities.daqaggregator.persistence;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,12 +9,10 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.collections4.queue.CircularFifoQueue;
 import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import rcms.utilities.daqaggregator.TaskManager;
 import rcms.utilities.daqaggregator.data.DAQ;
 
 /**
@@ -28,7 +27,6 @@ public class PersistorManager {
 
 	/** Persistence directory to work with */
 	protected final String persistenceDir;
-
 
 	private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -67,40 +65,6 @@ public class PersistorManager {
 	}
 
 
-
-	/**
-	 * Loads most recent files
-	 * 
-	 * @throws IOException
-	 */
-	public void loadRecent() throws IOException {
-
-		/* dont read more files than */
-		int maxFiles = 1000000;
-
-		List<File> fileList = getFiles(persistenceDir);
-		Collections.sort(fileList, FileComparator);
-
-		logger.info("Available files: " + fileList.size() + ", oldest: " + fileList.get(0).getName() + ", newest: "
-				+ fileList.get(fileList.size() - 1).getName().toString());
-
-		CircularFifoQueue<File> buf = new CircularFifoQueue<>(maxFiles);
-		for (File path : fileList) {
-			buf.add(path);
-		}
-
-		StructureSerializer structurePersistor = new StructureSerializer();
-		logger.info("Loading files...");
-		for (File path : buf) {
-			logger.debug(path.getName().toString());
-
-			DAQ daq = structurePersistor.deserializeFromJava(path.getAbsolutePath().toString());
-			TaskManager.get().buf.add(daq);
-		}
-		logger.info("deserialized " + TaskManager.get().buf.size() + " objects");
-
-	}
-
 	/**
 	 * Converts files from one format to another
 	 */
@@ -121,8 +85,6 @@ public class PersistorManager {
 		}
 	}
 
-
-
 	/**
 	 * Get available file names from persistence folder
 	 * 
@@ -133,18 +95,24 @@ public class PersistorManager {
 		List<File> result = new ArrayList<>();
 
 		File folder = new File(file);
-		File[] listOfFiles = folder.listFiles();
 
-		for (int i = 0; i < listOfFiles.length; i++) {
-			if (listOfFiles[i].isFile()) {
+		if (folder.exists() && folder.isDirectory()) {
 
-				result.add(listOfFiles[i]);
-			} else if (listOfFiles[i].isDirectory()) {
-				System.out.println("Directory " + listOfFiles[i].getName());
+			File[] listOfFiles = folder.listFiles();
+
+			for (int i = 0; i < listOfFiles.length; i++) {
+				if (listOfFiles[i].isFile()) {
+
+					result.add(listOfFiles[i]);
+				} else if (listOfFiles[i].isDirectory()) {
+					System.out.println("Directory " + listOfFiles[i].getName());
+				}
 			}
-		}
 
-		return result;
+			return result;
+		} else {
+			throw new FileNotFoundException("Folder does not exist " + folder.getAbsolutePath());
+		}
 	}
 
 	/**

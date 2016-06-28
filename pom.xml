@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>ch.cern</groupId>
 	<artifactId>DAQAggregator</artifactId>
-	<version>0.34</version>
+	<version>0.41</version>
 
 
 	<build>
