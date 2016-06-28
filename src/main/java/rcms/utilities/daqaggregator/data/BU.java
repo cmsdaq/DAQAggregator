@@ -51,9 +51,9 @@ public class BU implements FlashlistUpdatable {
 	private float eventSizeStddev;
 
 	/** is this processed or requested ? */
-	private int numEvents;
+	private long numEvents;
 
-	private int numEventsInBU;
+	private long numEventsInBU;
 
 	private int priority;
 
@@ -99,8 +99,6 @@ public class BU implements FlashlistUpdatable {
 	private int nbTotalResources;
 
 	private String stateName;
-	
-	
 
 	// ----------------------------------------------------------------------
 
@@ -120,11 +118,12 @@ public class BU implements FlashlistUpdatable {
 			this.throughput = flashlistRow.get("bandwidth").asInt();
 			this.eventSizeMean = flashlistRow.get("eventSize").asInt();
 			this.eventSizeStddev = flashlistRow.get("eventSizeStdDev").asInt();
-			this.numEvents = flashlistRow.get("nbEventsBuilt").asInt();
-			this.numEventsInBU = flashlistRow.get("nbEventsInBU").asInt();
+			this.numEvents = flashlistRow.get("nbEventsBuilt").asLong();
+			this.numEventsInBU = flashlistRow.get("nbEventsInBU").asLong();
 			this.priority = flashlistRow.get("priority").asInt();
 			this.numRequestsSent = flashlistRow.get("requestCount").asInt();
-			//this.numRequestsUsed = flashlistRow.get("outstandingRequests").asInt(); //FIXME change
+			// this.numRequestsUsed =
+			// flashlistRow.get("outstandingRequests").asInt(); //FIXME change
 			this.numRequestsBlocked = flashlistRow.get("nbBlockedResources").asInt();
 			this.numFUsHlt = flashlistRow.get("fuSlotsHLT").asInt();
 			this.numFUsCrashed = flashlistRow.get("fuSlotsQuarantined").asInt();
@@ -138,17 +137,15 @@ public class BU implements FlashlistUpdatable {
 			this.numLumisectionsForHLT = flashlistRow.get("queuedLumiSections").asInt();
 			this.numLumisectionsOutHLT = flashlistRow.get("queuedLumiSectionsOnFUs").asInt();
 
-			
 			this.fragmentCount = flashlistRow.get("fragmentCount").asInt();
 			this.nbCorruptedEvents = flashlistRow.get("nbCorruptedEvents").asInt();
 			this.nbEventsMissingData = flashlistRow.get("nbEventsMissingData").asInt();
 			this.nbEventsWithCRCerrors = flashlistRow.get("nbEventsWithCRCerrors").asInt();
 			this.nbTotalResources = flashlistRow.get("nbTotalResources").asInt();
 			this.stateName = flashlistRow.get("stateName").asText();
-			
+
 		}
 	}
-	
 
 	@Override
 	public void clean() {
@@ -187,19 +184,19 @@ public class BU implements FlashlistUpdatable {
 		this.eventSizeStddev = eventSizeStddev;
 	}
 
-	public int getNumEvents() {
+	public long getNumEvents() {
 		return numEvents;
 	}
 
-	public void setNumEvents(int numEvents) {
+	public void setNumEvents(long numEvents) {
 		this.numEvents = numEvents;
 	}
 
-	public int getNumEventsInBU() {
+	public long getNumEventsInBU() {
 		return numEventsInBU;
 	}
 
-	public void setNumEventsInBU(int numEventsInBU) {
+	public void setNumEventsInBU(long numEventsInBU) {
 		this.numEventsInBU = numEventsInBU;
 	}
 
@@ -402,8 +399,8 @@ public class BU implements FlashlistUpdatable {
 		result = prime * result + nbEventsMissingData;
 		result = prime * result + nbEventsWithCRCerrors;
 		result = prime * result + nbTotalResources;
-		result = prime * result + numEvents;
-		result = prime * result + numEventsInBU;
+		result = prime * result + (int) (numEvents ^ (numEvents >>> 32));
+		result = prime * result + (int) (numEventsInBU ^ (numEventsInBU >>> 32));
 		result = prime * result + numFUsCloud;
 		result = prime * result + numFUsCrashed;
 		result = prime * result + numFUsHlt;

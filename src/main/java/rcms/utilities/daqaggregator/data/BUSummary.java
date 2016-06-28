@@ -37,9 +37,9 @@ public class BUSummary implements Derivable {
 	private float eventSizeStddev;
 
 	/** is this processed or requested ? */
-	private int numEvents;
+	private long numEvents;
 
-	private int numEventsInBU;
+	private long numEventsInBU;
 
 	private int priority;
 
@@ -110,19 +110,19 @@ public class BUSummary implements Derivable {
 		this.eventSizeStddev = eventSizeStddev;
 	}
 
-	public int getNumEvents() {
+	public long getNumEvents() {
 		return numEvents;
 	}
 
-	public void setNumEvents(int numEvents) {
+	public void setNumEvents(long numEvents) {
 		this.numEvents = numEvents;
 	}
 
-	public int getNumEventsInBU() {
+	public long getNumEventsInBU() {
 		return numEventsInBU;
 	}
 
-	public void setNumEventsInBU(int numEventsInBU) {
+	public void setNumEventsInBU(long numEventsInBU) {
 		this.numEventsInBU = numEventsInBU;
 	}
 
@@ -272,8 +272,8 @@ public class BUSummary implements Derivable {
 		float ramDiskTotal = 0;
 		float ramDiskUsage = 0;
 		float throughput = 0;
-		int numEvents = 0;
-		int numEventsInBU = 0;
+		long numEvents = 0;
+		long numEventsInBU = 0;
 		int numFiles = 0;
 		int numFUsCloud = 0;
 		int numFUsCrashed = 0;
@@ -349,8 +349,8 @@ public class BUSummary implements Derivable {
 		result = prime * result + currentLumisection;
 		result = prime * result + Float.floatToIntBits(eventSizeMean);
 		result = prime * result + Float.floatToIntBits(eventSizeStddev);
-		result = prime * result + numEvents;
-		result = prime * result + numEventsInBU;
+		result = prime * result + (int) (numEvents ^ (numEvents >>> 32));
+		result = prime * result + (int) (numEventsInBU ^ (numEventsInBU >>> 32));
 		result = prime * result + numFUsCloud;
 		result = prime * result + numFUsCrashed;
 		result = prime * result + numFUsHlt;
