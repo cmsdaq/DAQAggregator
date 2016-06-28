@@ -121,8 +121,8 @@ public class DAQAggregator {
 					
 					// FIXME: the timer should be used here as sleep time !=
 					// period time
-					logger.info("sleeping for 10 seconds ....\n");
-					Thread.sleep(5000);
+					logger.info("sleeping for 2 seconds ....\n");
+					Thread.sleep(2000);
 				} catch (Exception e) {
 					logger.error("Error in main loop:\n" + e);
 					e.printStackTrace();
