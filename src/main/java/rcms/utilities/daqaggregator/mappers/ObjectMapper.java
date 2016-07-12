@@ -134,9 +134,14 @@ public class ObjectMapper {
 
 			if (hwfmm.getDual()) {
 				FMMTriggerLink fmmLink = fmmMap.get(hwfmm.getId());
-				int fmmIO = fmmLink.getFMMIO();
-				if (fmmIO == 22 || fmmIO == 23)
-					fmm.takeB = true;
+				try {
+					int fmmIO = fmmLink.getFMMIO();
+					if (fmmIO == 22 || fmmIO == 23)
+						fmm.takeB = true;
+				} catch (NullPointerException e) {
+					logger.warn("Dual FMM has no link: ");
+					logger.warn("Problem fmm :" + hwfmm.getGeoSlot() + hwfmm.getFMMCrate().getHostName());
+				}
 			}
 			fmms.put(hwfmm.hashCode(), fmm);
 		}
@@ -392,7 +397,6 @@ public class ObjectMapper {
 			result.put(hwttcPartition.hashCode(), ttcPartition);
 
 		}
-		
 
 		return result;
 	}
