@@ -26,6 +26,8 @@ public class FMMApplication implements FlashlistUpdatable {
 	private DAQ daq;
 
 	private String hostname;
+	
+	private int port;
 
 	private final List<FMM> fmms = new ArrayList<FMM>();
 
@@ -55,6 +57,14 @@ public class FMMApplication implements FlashlistUpdatable {
 
 	public List<FMM> getFmms() {
 		return fmms;
+	}
+
+	public int getPort() {
+		return port;
+	}
+
+	public void setPort(int port) {
+		this.port = port;
 	}
 
 	public void setDaq(DAQ daq) {

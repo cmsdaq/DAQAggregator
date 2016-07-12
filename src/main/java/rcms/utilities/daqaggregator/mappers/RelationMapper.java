@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Vector;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -24,7 +25,12 @@ import rcms.utilities.daqaggregator.data.RU;
 import rcms.utilities.daqaggregator.data.SubFEDBuilder;
 import rcms.utilities.daqaggregator.data.SubSystem;
 import rcms.utilities.daqaggregator.data.TTCPartition;
+import rcms.utilities.hwcfg.HardwareConfigurationException;
 import rcms.utilities.hwcfg.dp.DAQPartition;
+import rcms.utilities.hwcfg.eq.FMMFMMLink;
+import rcms.utilities.hwcfg.eq.FMMTriggerLink;
+import rcms.utilities.hwcfg.eq.TCDSiCI;
+import rcms.utilities.hwcfg.eq.Trigger;
 
 /**
  * This class performs mapping of hardware objects' relations into {@link DAQ}
@@ -243,6 +249,59 @@ public class RelationMapper implements Serializable {
 		return result;
 	}
 
+	private rcms.utilities.hwcfg.eq.FMM getTopFMMForPartition(DAQPartition dp, String ttcpName) {
+		
+		
+		if ("CPM-PRI".equals(ttcpName) || "CPM-SEC".equals(ttcpName)) {
+			return null;
+		}
+
+		String triggerName = "TCDS-PRI";
+		
+		Trigger trigger;
+		try {
+			trigger = dp.getDAQPartitionSet().getEquipmentSet().getTriggerByName(triggerName);
+		} catch (HardwareConfigurationException e) {
+			e.printStackTrace();
+			return null;
+		}
+		
+		// Find the ICI
+		TCDSiCI ici;
+		try {
+			ici = trigger.getICIByTTCPName(ttcpName);
+		} catch (HardwareConfigurationException e) {
+			e.printStackTrace();
+			return null;
+		}
+		
+		
+		rcms.utilities.hwcfg.eq.FMM pi = null;
+		// Find the PI connected to this partition
+		for (FMMTriggerLink ftl : dp.getDAQPartitionSet().getEquipmentSet().getFMMTriggerLinks())
+			if (ftl.getTriggerId() == trigger.getId() && 
+			    ftl.getLPMNr() == ici.getPMNr() &&
+			    ftl.getiCINr() == ici.getICINr()) {
+				pi = dp.getDAQPartitionSet().getEquipmentSet().getFMMs().get( ftl.getFMMId() );
+			}
+		
+		if (pi==null) {
+			return null;
+		}
+		
+		
+		// Find the FMM connected to the PI	
+		for (FMMFMMLink fmmfmm : dp.getDAQPartitionSet().getEquipmentSet().getFMMFMMLinks()) {
+			if (fmmfmm.getTargetFMMId() == pi.getId()) {
+							
+				rcms.utilities.hwcfg.eq.FMM fmm = dp.getDAQPartitionSet().getEquipmentSet().getFMMs().get( fmmfmm.getSourceFMMId() );
+				return fmm;
+			}
+		}
+
+		return null;
+	}
+
 	/**
 	 * Retrieve FMM-TTCP relations
 	 * 
@@ -252,15 +311,13 @@ public class RelationMapper implements Serializable {
 
 		Map<Integer, Integer> result = new HashMap<>();
 
-		Set<rcms.utilities.hwcfg.eq.FMM> fmms = objectMapper.getHardwareFmms(daqPartition);
-		for (rcms.utilities.hwcfg.eq.FMM hwfmm : fmms) {
+		for (rcms.utilities.hwcfg.eq.TTCPartition hwttcPartition  : daqPartition.getDAQPartitionSet().getEquipmentSet().getTTCPartitions().values()) {
 
-			for (rcms.utilities.hwcfg.eq.FED hwfed : hwfmm.getFEDs().values()) {
-				rcms.utilities.hwcfg.eq.TTCPartition hwttcPartition = hwfed.getTTCPartition();
+			rcms.utilities.hwcfg.eq.FMM hwfmm = getTopFMMForPartition( daqPartition, hwttcPartition.getName() );
+			if (hwfmm != null)
 				result.put(hwfmm.hashCode(), hwttcPartition.hashCode());
-			}
+			
 		}
-
 		return result;
 	}
 

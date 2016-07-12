@@ -22,6 +22,8 @@ import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
 public class FMM implements FlashlistUpdatable {
 
+	
+	
 	// ----------------------------------------
 	// fields set at beginning of session
 	// ----------------------------------------
@@ -32,6 +34,10 @@ public class FMM implements FlashlistUpdatable {
 
 	private FMMApplication fmmApplication;
 
+	private FMMType fmmType;
+	
+	private String serviceName;
+	
 	private int geoslot;
 
 	private String url;
@@ -65,6 +71,22 @@ public class FMM implements FlashlistUpdatable {
 
 	public List<FED> getFeds() {
 		return feds;
+	}
+
+	public FMMType getFmmType() {
+		return fmmType;
+	}
+
+	public String getServiceName() {
+		return serviceName;
+	}
+
+	public void setFmmType(FMMType fmmType) {
+		this.fmmType = fmmType;
+	}
+
+	public void setServiceName(String serviceName) {
+		this.serviceName = serviceName;
 	}
 
 	public void setTtcPartition(TTCPartition ttcPartition) {

@@ -19,6 +19,7 @@ import rcms.utilities.daqaggregator.data.FMMApplication;
 import rcms.utilities.daqaggregator.data.FRL;
 import rcms.utilities.daqaggregator.data.FRLPc;
 import rcms.utilities.daqaggregator.data.FRLType;
+import rcms.utilities.daqaggregator.data.FMMType;
 import rcms.utilities.daqaggregator.data.RU;
 import rcms.utilities.daqaggregator.data.SubFEDBuilder;
 import rcms.utilities.daqaggregator.data.SubSystem;
@@ -26,6 +27,7 @@ import rcms.utilities.daqaggregator.data.TTCPartition;
 import rcms.utilities.hwcfg.HardwareConfigurationException;
 import rcms.utilities.hwcfg.dp.DAQPartition;
 import rcms.utilities.hwcfg.dp.DPGenericHost;
+import rcms.utilities.hwcfg.eq.FMMFMMLink;
 import rcms.utilities.hwcfg.eq.FMMTriggerLink;
 import rcms.utilities.hwcfg.fb.FBI;
 
@@ -64,6 +66,7 @@ public class ObjectMapper {
 	public Map<String, FRLPc> frlPcByHostname;
 	public Map<String, FMMApplication> fmmApplicationByHostname;
 	public Map<String, RU> rusByHostname;
+	public Map<String, BU> busByHostname;
 	public Map<String, SubSystem> subsystemByName;
 
 	public void mapAllObjects(DAQPartition daqPartition) {
@@ -81,6 +84,7 @@ public class ObjectMapper {
 		fmmApplicationByHostname = new HashMap<>();
 		subsystemByName = new HashMap<>();
 		rusByHostname = new HashMap<>();
+		busByHostname = new HashMap<>();
 
 		/* Building objects */
 		bus = mapBUs(daqPartition);
@@ -122,41 +126,46 @@ public class ObjectMapper {
 		}
 
 		/* map FMMs */
-		Set<FMMTriggerLink> fmmLinks = daqPartition.getDAQPartitionSet().getEquipmentSet().getFMMTriggerLinks();
-		HashMap<Long, FMMTriggerLink> fmmMap = new HashMap<>();
-		for (FMMTriggerLink fmmLink : fmmLinks) {
-			fmmMap.put(fmmLink.getFMMId(), fmmLink);
+		Set<FMMFMMLink> fmmLinks = daqPartition.getDAQPartitionSet().getEquipmentSet().getFMMFMMLinks();
+		HashMap<Long, FMMFMMLink> fmmMap = new HashMap<>();
+		for (FMMFMMLink fmmLink : fmmLinks) {
+			fmmMap.put(fmmLink.getSourceFMMId(), fmmLink);
 		}
 		fmms = new HashMap<>();
 		for (rcms.utilities.hwcfg.eq.FMM hwfmm : getHardwareFmms(daqPartition)) {
 			FMM fmm = new FMM();
 			fmm.setGeoslot(hwfmm.getGeoSlot());
-
+			fmm.setFmmType(FMMType.valueOf( hwfmm.getFMMType().name() ));			
+			fmm.setServiceName(hwfmm.getServiceName());
 			if (hwfmm.getDual()) {
-				FMMTriggerLink fmmLink = fmmMap.get(hwfmm.getId());
-				try {
-					int fmmIO = fmmLink.getFMMIO();
-					if (fmmIO == 22 || fmmIO == 23)
-						fmm.takeB = true;
-				} catch (NullPointerException e) {
-					logger.warn("Dual FMM has no link: ");
-					logger.warn("Problem fmm :" + hwfmm.getGeoSlot() + hwfmm.getFMMCrate().getHostName());
-				}
+				FMMFMMLink fmmLink = fmmMap.get(hwfmm.getId());
+				if (fmmLink != null &&
+					daqPartition.getDAQPartitionSet().getEquipmentSet().getFMMs().get(fmmLink.getTargetFMMId()).getFMMType().equals( rcms.utilities.hwcfg.eq.FMM.FMMType.pi )) {
+					try {
+						int fmmIO = fmmLink.getSourceFMMIO();
+						if (fmmIO == 22 || fmmIO == 23)
+							fmm.takeB = true;
+					} catch (NullPointerException e) {
+						logger.warn("Dual FMM has no link: ");
+						logger.warn("Problem fmm :" + hwfmm.getGeoSlot() + hwfmm.getFMMCrate().getHostName());
+					}
+				} 
 			}
 			fmms.put(hwfmm.hashCode(), fmm);
 		}
 
 		/* map FMMApplications */
 		fmmApplications = new HashMap<>();
-		Set<String> fmmPcs = new HashSet<>();
+		Map<String, Integer> fmmPcs = new HashMap<>();
 		for (rcms.utilities.hwcfg.eq.FMM hwfmm : getHardwareFmms(daqPartition)) {
 			String fmmPc = hwfmm.getFMMCrate().getHostName();
-			if (!fmmPcs.contains(fmmPc))
-				fmmPcs.add(fmmPc);
+			if (!fmmPcs.containsKey(fmmPc))
+				fmmPcs.put(fmmPc, hwfmm.getFMMCrate().getPort());
 		}
-		for (String fmmPc : fmmPcs) {
+		for (String fmmPc : fmmPcs.keySet()) {
 			FMMApplication fmmApplication = new FMMApplication();
 			fmmApplication.setHostname(fmmPc);
+			fmmApplication.setPort(fmmPcs.get(fmmPc));
 			fmmApplications.put(fmmPc.hashCode(), fmmApplication);
 			fmmApplicationByHostname.put(fmmApplication.getHostname(), fmmApplication);
 		}
@@ -218,6 +227,7 @@ public class ObjectMapper {
 			if (host.getRole().equals("BU")) {
 				BU bu = new BU();
 				busById.put((int) host.getId(), bu);
+				busByHostname.put(host.getHostName(), bu);
 				bu.setHostname(host.getHostName());
 				result.put(host.hashCode(), bu);
 			}

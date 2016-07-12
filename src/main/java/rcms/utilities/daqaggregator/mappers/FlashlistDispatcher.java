@@ -45,7 +45,7 @@ public class FlashlistDispatcher {
 			dispatchRowsByFedIdsWithErrors(flashlist, mappingManager.getObjectMapper().fedsByExpectedId);
 			break;
 		case BU:
-			dispatchRowsByInstanceId(flashlist, mappingManager.getObjectMapper().busById);
+			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().busByHostname, "context"); 
 			break;
 		case FEROL_INPUT_STREAM:
 			dispatchRowsByInstanceId(flashlist, mappingManager.getObjectMapper().fedsById);
@@ -76,6 +76,7 @@ public class FlashlistDispatcher {
 		case JOB_CONTROL:
 			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().frlPcByHostname, "hostname");
 			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().fmmApplicationByHostname, "hostname");
+			//TODO: should go to RU, BU
 			break;
 
 		case LEVEL_ZERO_FM_SUBSYS: // TODO: SID column
