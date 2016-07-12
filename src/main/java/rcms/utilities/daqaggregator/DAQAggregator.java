@@ -48,6 +48,8 @@ public class DAQAggregator {
 	protected static String PROPERTYNAME_PROXY_HOST = "socksproy.host";
 	protected static String PROPERTYNAME_PROXY_PORT = "socksproxy.port";
 
+	protected static String PERSISTENCE_DIR = "persistence.dir";
+
 	protected static DBConnectorIF _dbconn = null;
 	protected static HWCfgConnector _hwconn = null;
 
@@ -87,7 +89,8 @@ public class DAQAggregator {
 			DAQ daq = null;
 			Set<String> flashlistUrls = new HashSet<String>(Arrays.asList(lasURLs));
 			// TODO: move directory conf to configuration file
-			PersistorManager persistorManager = new PersistorManager("/tmp/mgladki/snapshots/");
+			PersistorManager persistorManager = new PersistorManager(
+					daqAggregatorProperties.getProperty(PERSISTENCE_DIR));
 			FlashlistManager flashlistManager = null;
 
 			while (true) {
@@ -118,7 +121,7 @@ public class DAQAggregator {
 					}
 
 					prepareAndPersistSnapshot(daq, flashlistManager, persistorManager);
-					
+
 					// FIXME: the timer should be used here as sleep time !=
 					// period time
 					logger.info("sleeping for 2 seconds ....\n");
@@ -135,9 +138,9 @@ public class DAQAggregator {
 			e.printStackTrace();
 		}
 	}
-	
-	private static void prepareDAQStructure(){
-		
+
+	private static void prepareDAQStructure() {
+
 	}
 
 	protected static String prepareAndPersistSnapshot(DAQ daq, FlashlistManager flashlistManager,
@@ -231,6 +234,7 @@ public class DAQAggregator {
 		_hwconn = new HWCfgConnector(_dbconn);
 
 	}
+
 	/*
 	 * FIXME: handling exceptions of type Exception may mask bugs, fix
 	 */
