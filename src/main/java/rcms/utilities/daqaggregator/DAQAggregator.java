@@ -88,13 +88,14 @@ public class DAQAggregator {
 			MappingManager mappingManager = null;
 			DAQ daq = null;
 			Set<String> flashlistUrls = new HashSet<String>(Arrays.asList(lasURLs));
-			
+
 			String persistenceDir = daqAggregatorProperties.getProperty(PERSISTENCE_DIR);
-			if(persistenceDir == null){
+			if (persistenceDir == null) {
 				persistenceDir = "/tmp/snapshots/";
 			}
-			
+
 			PersistorManager persistorManager = new PersistorManager(persistenceDir);
+
 			FlashlistManager flashlistManager = null;
 
 			while (true) {
@@ -129,6 +130,7 @@ public class DAQAggregator {
 					} else {
 						logger.warn("Flashlist manager not initialized, session id not available");
 					}
+
 					// FIXME: the timer should be used here as sleep time !=
 					// period time
 					logger.info("sleeping for 2 seconds ....\n");
