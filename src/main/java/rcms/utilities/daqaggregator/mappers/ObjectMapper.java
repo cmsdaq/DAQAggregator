@@ -1,5 +1,6 @@
 package rcms.utilities.daqaggregator.mappers;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -135,21 +136,21 @@ public class ObjectMapper {
 		for (rcms.utilities.hwcfg.eq.FMM hwfmm : getHardwareFmms(daqPartition)) {
 			FMM fmm = new FMM();
 			fmm.setGeoslot(hwfmm.getGeoSlot());
-			fmm.setFmmType(FMMType.valueOf( hwfmm.getFMMType().name() ));			
+			fmm.setFmmType(FMMType.valueOf(hwfmm.getFMMType().name()));
 			fmm.setServiceName(hwfmm.getServiceName());
 			if (hwfmm.getDual()) {
 				FMMFMMLink fmmLink = fmmMap.get(hwfmm.getId());
-				if (fmmLink != null &&
-					daqPartition.getDAQPartitionSet().getEquipmentSet().getFMMs().get(fmmLink.getTargetFMMId()).getFMMType().equals( rcms.utilities.hwcfg.eq.FMM.FMMType.pi )) {
+				if (fmmLink != null && daqPartition.getDAQPartitionSet().getEquipmentSet().getFMMs()
+						.get(fmmLink.getTargetFMMId()).getFMMType().equals(rcms.utilities.hwcfg.eq.FMM.FMMType.pi)) {
 					try {
 						int fmmIO = fmmLink.getSourceFMMIO();
 						if (fmmIO == 22 || fmmIO == 23)
-							fmm.takeB = true;
+							fmm.setTakeB(true);
 					} catch (NullPointerException e) {
 						logger.warn("Dual FMM has no link: ");
 						logger.warn("Problem fmm :" + hwfmm.getGeoSlot() + hwfmm.getFMMCrate().getHostName());
 					}
-				} 
+				}
 			}
 			fmms.put(hwfmm.hashCode(), fmm);
 		}
@@ -179,7 +180,13 @@ public class ObjectMapper {
 		FEDBuilderSummary fedBuilderSummary = new FEDBuilderSummary();
 		daq.setFedBuilderSummary(fedBuilderSummary);
 		fedBuilderSummary.setDaq(daq);
-		daq.setAllFeds(new HashSet<FED>(feds.values()));
+
+		daq.setTtcPartitions(new ArrayList<>(ttcpartitionsById.values()));
+		daq.setFmms(new ArrayList<>(fmms.values()));
+		daq.setRus(new ArrayList<>(rus.values()));
+		daq.setFrls(new ArrayList<>(frls.values()));
+		daq.setFeds(new ArrayList<>(feds.values()));
+		daq.setSubFEDBuilders(new ArrayList<>(subFedBuilders.values()));
 
 		logger.info("Retrieval summary " + this.toString());
 		logger.info("Subsystem summary " + subSystems.values());
@@ -197,7 +204,7 @@ public class ObjectMapper {
 
 		int bFmms = 0;
 		for (FMM fmm : fmms.values()) {
-			if (fmm.takeB)
+			if (fmm.isTakeB())
 				bFmms++;
 		}
 

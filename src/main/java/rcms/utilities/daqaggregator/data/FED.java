@@ -3,10 +3,7 @@ package rcms.utilities.daqaggregator.data;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import rcms.utilities.daqaggregator.mappers.FlashlistType;
@@ -18,7 +15,6 @@ import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
  * @author Andre Georg Holzner (andre.georg.holzner@cern.ch)
  * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
  */
-@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
 public class FED implements FlashlistUpdatable {
 
 	// ----------------------------------------
@@ -29,14 +25,11 @@ public class FED implements FlashlistUpdatable {
 	private int id;
 
 	/** the parent FRL */
-	@JsonBackReference(value = "frl-fed")
 	private FRL frl;
 
 	/** can be null */
-	@JsonBackReference(value = "fmm-fed")
 	private FMM fmm;
 
-	@JsonBackReference(value = "ttcp-fed")
 	private TTCPartition ttcp;
 
 	/** which FRL input: 0 or 1 */

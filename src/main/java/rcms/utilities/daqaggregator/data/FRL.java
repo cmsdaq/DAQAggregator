@@ -3,11 +3,6 @@ package rcms.utilities.daqaggregator.data;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import rcms.utilities.daqaggregator.mappers.FlashlistType;
@@ -19,12 +14,13 @@ import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
  * @author Andre Georg Holzner (andre.georg.holzner@cern.ch)
  * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
  */
-@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
 public class FRL implements FlashlistUpdatable {
 
 	// ----------------------------------------
 	// fields set at beginning of session
 	// ----------------------------------------
+	
+	private String id;
 
 	/** the parent SubFEDBuilder this FRL belongs to */
 	private SubFEDBuilder subFedbuilder;
@@ -38,12 +34,8 @@ public class FRL implements FlashlistUpdatable {
 	 * maps from 0, 1 to FED. Note that some FRLs have only FED 1 connected but
 	 * not FED 0
 	 */
-	@JsonManagedReference(value = "frl-fed")
 	private final Map<Integer, FED> feds = new HashMap<>();
 
-
-	@JsonIgnore
-	@JsonManagedReference(value = "frl-frlpc")
 	private FRLPc frlPc;
 
 	// ----------------------------------------
@@ -137,7 +129,7 @@ public class FRL implements FlashlistUpdatable {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((feds == null) ? 0 : feds.hashCode());
-		//result = prime * result + ((frlPc == null) ? 0 : frlPc.hashCode());
+		// result = prime * result + ((frlPc == null) ? 0 : frlPc.hashCode());
 		result = prime * result + geoSlot;
 		result = prime * result + ((state == null) ? 0 : state.hashCode());
 		result = prime * result + ((substate == null) ? 0 : substate.hashCode());
@@ -160,11 +152,11 @@ public class FRL implements FlashlistUpdatable {
 				return false;
 		} else if (!feds.equals(other.feds))
 			return false;
-//		if (frlPc == null) {
-//			if (other.frlPc != null)
-//				return false;
-//		} else if (!frlPc.equals(other.frlPc))
-//			return false;
+		// if (frlPc == null) {
+		// if (other.frlPc != null)
+		// return false;
+		// } else if (!frlPc.equals(other.frlPc))
+		// return false;
 		if (geoSlot != other.geoSlot)
 			return false;
 		if (state == null) {
@@ -185,6 +177,14 @@ public class FRL implements FlashlistUpdatable {
 		} else if (!url.equals(other.url))
 			return false;
 		return true;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
 	}
 
 	// ----------------------------------------------------------------------

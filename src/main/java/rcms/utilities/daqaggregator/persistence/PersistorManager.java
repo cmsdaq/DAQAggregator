@@ -51,10 +51,11 @@ public class PersistorManager {
 			String isoDate = objectMapper.writeValueAsString(new Date(daq.getLastUpdate()));
 
 			StructureSerializer persistor = new StructureSerializer();
-			// persistor.serializeToJSON(daq, isoDate, persistenceDir);
+			String filename = persistor.serializeToJSON(daq, isoDate, persistenceDir);
 			// persistor.serializeToJava(daq, isoDate, persistenceDir);
 			// persistor.serializeToBSON(daq, isoDate, persistenceDir);
-			String filename = persistor.serializeToSmile(daq, isoDate, persistenceDir);
+			// String filename = persistor.serializeToSmile(daq, isoDate,
+			// persistenceDir);
 
 			logger.info("Successfully persisted in " + persistenceDir + " as file " + filename);
 			return filename;
@@ -63,7 +64,6 @@ public class PersistorManager {
 			return null;
 		}
 	}
-
 
 	/**
 	 * Converts files from one format to another
