@@ -3,12 +3,14 @@ package rcms.utilities.daqaggregator.data;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.databind.JsonNode;
 
-import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
 import rcms.utilities.daqaggregator.mappers.FlashlistType;
+import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
 
 /**
  * Front End Driver
@@ -17,7 +19,7 @@ import rcms.utilities.daqaggregator.mappers.FlashlistType;
  * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
-public class FED implements java.io.Serializable, FlashlistUpdatable {
+public class FED implements FlashlistUpdatable {
 
 	// ----------------------------------------
 	// fields set at beginning of session
@@ -27,10 +29,15 @@ public class FED implements java.io.Serializable, FlashlistUpdatable {
 	private int id;
 
 	/** the parent FRL */
+	@JsonBackReference(value = "frl-fed")
 	private FRL frl;
 
 	/** can be null */
+	@JsonBackReference(value = "fmm-fed")
 	private FMM fmm;
+
+	@JsonBackReference(value = "ttcp-fed")
+	private TTCPartition ttcp;
 
 	/** which FRL input: 0 or 1 */
 	private int frlIO;
@@ -71,6 +78,17 @@ public class FED implements java.io.Serializable, FlashlistUpdatable {
 	private boolean hasSLINK;
 
 	private boolean hasTTS;
+
+	private boolean ruFedInError;
+	private int ruFedBXError;
+	private int ruFedCRCError;
+	private int ruFedDataCorruption;
+	private int ruFedOutOfSync;
+
+	private boolean ruFedWitioutFragments;
+
+	@JsonIgnore
+	private String timestamp;
 
 	/**
 	 * Available columns in flashlist FMM_INPUT:
@@ -152,11 +170,26 @@ public class FED implements java.io.Serializable, FlashlistUpdatable {
 		} else if (flashlistType == FlashlistType.FEROL_INPUT_STREAM) {
 			// TODO or WrongFEDIdDetected
 			this.srcIdReceived = flashlistRow.get("WrongFEDId").asInt();
-			this.percentBackpressure = (float) flashlistRow.get("AccBackpressureSecond").asDouble();
 			this.numSCRCerrors = flashlistRow.get("LinkCRCError").asInt();
 			this.numFRCerrors = flashlistRow.get("FEDCRCError").asInt();
 			this.numTriggers = flashlistRow.get("TriggerNumber").asInt();
 			this.eventCounter = flashlistRow.get("EventCounter").asInt();
+
+			/*
+			 * converting accumulated backpressure from flashlist - subtract
+			 * last from current based on timestamp
+			 */
+			if (!flashlistRow.get("timestamp").asText().equals(timestamp)) {
+				this.percentBackpressure = (float) flashlistRow.get("AccBackpressureSecond").asDouble()
+						- percentBackpressure;
+			}
+			/*
+			 * timestamp updated as last - thus can be used as last updated for
+			 * this flashlist (calculating backpresusure from accumulated
+			 * backpressure)
+			 */
+			this.timestamp = flashlistRow.get("timestamp").asText();
+
 		} else if (flashlistType == FlashlistType.FEROL_CONFIGURATION) {
 
 			if (this.frlIO == 0)
@@ -164,7 +197,42 @@ public class FED implements java.io.Serializable, FlashlistUpdatable {
 
 			else if (this.frlIO == 1)
 				this.frlMasked = flashlistRow.get("enableStream1").asBoolean();
+		} else if (flashlistType == FlashlistType.RU) {
+
+			int myPositionInErrorArray = -1;
+			int currentPosition = 0;
+			for (JsonNode fedIdWithError : flashlistRow.get("fedIdsWithErrors")) {
+				if (srcIdExpected == fedIdWithError.asInt())
+					myPositionInErrorArray = currentPosition;
+				currentPosition++;
+			}
+			if (myPositionInErrorArray >= 0) {
+				ruFedInError = true;
+				ruFedBXError = flashlistRow.get("fedBXerrors").get(myPositionInErrorArray).asInt();
+				ruFedCRCError = flashlistRow.get("fedCRCerrors").get(myPositionInErrorArray).asInt();
+				ruFedDataCorruption = flashlistRow.get("fedDataCorruption").get(myPositionInErrorArray).asInt();
+				ruFedOutOfSync = flashlistRow.get("fedOutOfSync").get(myPositionInErrorArray).asInt();
+			}
+
+			for (JsonNode fedIdWithError : flashlistRow.get("fedIdsWithoutFragments")) {
+				if (srcIdExpected == fedIdWithError.asInt()) {
+					ruFedWitioutFragments = true;
+					break;
+				}
+			}
 		}
+
+	}
+
+	@Override
+	public void clean() {
+		ruFedBXError = 0;
+		ruFedCRCError = 0;
+		ruFedDataCorruption = 0;
+		ruFedOutOfSync = 0;
+
+		ruFedInError = false;
+		ruFedWitioutFragments = false;
 
 	}
 
@@ -288,11 +356,6 @@ public class FED implements java.io.Serializable, FlashlistUpdatable {
 		this.id = id;
 	}
 
-	@Override
-	public String toString() {
-		return "FED [fmm=" + fmm + ", fmmIO=" + fmmIO + "]";
-	}
-
 	public long getEventCounter() {
 		return eventCounter;
 	}
@@ -331,6 +394,164 @@ public class FED implements java.io.Serializable, FlashlistUpdatable {
 
 	public void setHasTTS(boolean hasTTS) {
 		this.hasTTS = hasTTS;
+	}
+
+	public boolean isRuFedInError() {
+		return ruFedInError;
+	}
+
+	public void setRuFedInError(boolean ruFedInError) {
+		this.ruFedInError = ruFedInError;
+	}
+
+	public int getRuFedBXError() {
+		return ruFedBXError;
+	}
+
+	public void setRuFedBXError(int ruFedBXError) {
+		this.ruFedBXError = ruFedBXError;
+	}
+
+	public int getRuFedCRCError() {
+		return ruFedCRCError;
+	}
+
+	public void setRuFedCRCError(int ruFedCRCError) {
+		this.ruFedCRCError = ruFedCRCError;
+	}
+
+	public int getRuFedDataCorruption() {
+		return ruFedDataCorruption;
+	}
+
+	public void setRuFedDataCorruption(int ruFedDataCorruption) {
+		this.ruFedDataCorruption = ruFedDataCorruption;
+	}
+
+	public int getRuFedOutOfSync() {
+		return ruFedOutOfSync;
+	}
+
+	public void setRuFedOutOfSync(int ruFedOutOfSync) {
+		this.ruFedOutOfSync = ruFedOutOfSync;
+	}
+
+	public boolean isRuFedWitioutFragments() {
+		return ruFedWitioutFragments;
+	}
+
+	public void setRuFedWitioutFragments(boolean ruFedWitioutFragments) {
+		this.ruFedWitioutFragments = ruFedWitioutFragments;
+	}
+
+	public TTCPartition getTtcp() {
+		return ttcp;
+	}
+
+	public void setTtcp(TTCPartition ttcp) {
+		this.ttcp = ttcp;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (int) (eventCounter ^ (eventCounter >>> 32));
+		result = prime * result + fmmIO;
+		result = prime * result + (fmmMasked ? 1231 : 1237);
+		result = prime * result + frlIO;
+		result = prime * result + (frlMasked ? 1231 : 1237);
+		result = prime * result + (hasSLINK ? 1231 : 1237);
+		result = prime * result + (hasTTS ? 1231 : 1237);
+		result = prime * result + id;
+		result = prime * result + ((mainFeds == null) ? 0 : mainFeds.hashCode());
+		result = prime * result + (int) (numFRCerrors ^ (numFRCerrors >>> 32));
+		result = prime * result + (int) (numSCRCerrors ^ (numSCRCerrors >>> 32));
+		result = prime * result + (int) (numTriggers ^ (numTriggers >>> 32));
+		result = prime * result + Float.floatToIntBits(percentBackpressure);
+		result = prime * result + Float.floatToIntBits(percentBusy);
+		result = prime * result + Float.floatToIntBits(percentWarning);
+		result = prime * result + ruFedBXError;
+		result = prime * result + ruFedCRCError;
+		result = prime * result + ruFedDataCorruption;
+		result = prime * result + (ruFedInError ? 1231 : 1237);
+		result = prime * result + ruFedOutOfSync;
+		result = prime * result + (ruFedWitioutFragments ? 1231 : 1237);
+		result = prime * result + srcIdExpected;
+		result = prime * result + srcIdReceived;
+		result = prime * result + ((ttsState == null) ? 0 : ttsState.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		FED other = (FED) obj;
+		if (eventCounter != other.eventCounter)
+			return false;
+		if (fmmIO != other.fmmIO)
+			return false;
+		if (fmmMasked != other.fmmMasked)
+			return false;
+		if (frlIO != other.frlIO)
+			return false;
+		if (frlMasked != other.frlMasked)
+			return false;
+		if (hasSLINK != other.hasSLINK)
+			return false;
+		if (hasTTS != other.hasTTS)
+			return false;
+		if (id != other.id)
+			return false;
+		if (mainFeds == null) {
+			if (other.mainFeds != null)
+				return false;
+		} else if (!mainFeds.equals(other.mainFeds))
+			return false;
+		if (numFRCerrors != other.numFRCerrors)
+			return false;
+		if (numSCRCerrors != other.numSCRCerrors)
+			return false;
+		if (numTriggers != other.numTriggers)
+			return false;
+		if (Float.floatToIntBits(percentBackpressure) != Float.floatToIntBits(other.percentBackpressure))
+			return false;
+		if (Float.floatToIntBits(percentBusy) != Float.floatToIntBits(other.percentBusy))
+			return false;
+		if (Float.floatToIntBits(percentWarning) != Float.floatToIntBits(other.percentWarning))
+			return false;
+		if (ruFedBXError != other.ruFedBXError)
+			return false;
+		if (ruFedCRCError != other.ruFedCRCError)
+			return false;
+		if (ruFedDataCorruption != other.ruFedDataCorruption)
+			return false;
+		if (ruFedInError != other.ruFedInError)
+			return false;
+		if (ruFedOutOfSync != other.ruFedOutOfSync)
+			return false;
+		if (ruFedWitioutFragments != other.ruFedWitioutFragments)
+			return false;
+		if (srcIdExpected != other.srcIdExpected)
+			return false;
+		if (srcIdReceived != other.srcIdReceived)
+			return false;
+		if (ttsState == null) {
+			if (other.ttsState != null)
+				return false;
+		} else if (!ttsState.equals(other.ttsState))
+			return false;
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "FED [id=" + id + ", ttsState=" + ttsState + ", frlMasked=" + frlMasked + "]";
 	}
 
 	// ----------------------------------------------------------------------

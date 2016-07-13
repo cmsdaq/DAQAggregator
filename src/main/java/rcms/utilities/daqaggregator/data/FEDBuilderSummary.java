@@ -1,7 +1,5 @@
 package rcms.utilities.daqaggregator.data;
 
-import java.io.Serializable;
-
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
@@ -15,7 +13,7 @@ import rcms.utilities.daqaggregator.mappers.Derivable;
  */
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
-public class FEDBuilderSummary implements Serializable , Derivable{
+public class FEDBuilderSummary implements Derivable{
 
 	// ----------------------------------------
 	// fields set at beginning of session
@@ -187,5 +185,48 @@ public class FEDBuilderSummary implements Serializable , Derivable{
 		this.setSuperFragmentSizeStddev(superFragmentSizeStddev);
 		this.setThroughput(throughput);
 
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + deltaEvents;
+		result = prime * result + Float.floatToIntBits(rate);
+		result = prime * result + sumEventsInRU;
+		result = prime * result + sumFragmentsInRU;
+		result = prime * result + (int) (sumRequests ^ (sumRequests >>> 32));
+		result = prime * result + Float.floatToIntBits(superFragmentSizeMean);
+		result = prime * result + Float.floatToIntBits(superFragmentSizeStddev);
+		result = prime * result + Float.floatToIntBits(throughput);
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		FEDBuilderSummary other = (FEDBuilderSummary) obj;
+		if (deltaEvents != other.deltaEvents)
+			return false;
+		if (Float.floatToIntBits(rate) != Float.floatToIntBits(other.rate))
+			return false;
+		if (sumEventsInRU != other.sumEventsInRU)
+			return false;
+		if (sumFragmentsInRU != other.sumFragmentsInRU)
+			return false;
+		if (sumRequests != other.sumRequests)
+			return false;
+		if (Float.floatToIntBits(superFragmentSizeMean) != Float.floatToIntBits(other.superFragmentSizeMean))
+			return false;
+		if (Float.floatToIntBits(superFragmentSizeStddev) != Float.floatToIntBits(other.superFragmentSizeStddev))
+			return false;
+		if (Float.floatToIntBits(throughput) != Float.floatToIntBits(other.throughput))
+			return false;
+		return true;
 	}
 }

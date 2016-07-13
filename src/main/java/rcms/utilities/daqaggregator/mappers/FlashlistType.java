@@ -4,26 +4,26 @@ import org.apache.log4j.Logger;
 
 public enum FlashlistType {
 
-	BU("BU", true),
-	EVM("EVM", true),
-	FMM_INPUT("FMMInput", true),
-	FMM_INPUT_DETAIL("FMMInputDetail", true),
-	FMM_STATUS("FMMStatus", true),
-	RU("RU", true),
-	FEROL_CONFIGURATION("ferolConfiguration", true),
-	FEROL_INPUT_STREAM("ferolInputStream", true),
-	FEROL_MONITORING("ferolMonitoring", true),
-	FEROL_STATUS("ferolStatus", true),
-	FEROL_TCP_STREAM("ferolTcpStream", true),
-	FRL_MONITORING("frlMonitoring", true),
-	HOST_INFO("hostInfo", true),
-	LEVEL_ZERO_FM_DYNAMIC("levelZeroFM_dynamic", false),
-	LEVEL_ZERO_FM_STATIC("levelZeroFM_static", true),
-	LEVEL_ZERO_FM_SUBSYS("levelZeroFM_subsys", false),
-	JOB_CONTROL("jobcontrol", false),
-	DISK_INFO("diskInfo", true),
-	FMM_PARTITION_DEAD_TIME("FMMPartitionDeadTime", true),
-	FMM_FED_DEAD_TIME("FMMFEDDeadTime", true);
+	BU("BU", true, true),
+	EVM("EVM", true, true),
+	FMM_INPUT("FMMInput", true, true),
+	FMM_INPUT_DETAIL("FMMInputDetail", true, false),
+	FMM_STATUS("FMMStatus", true, true),
+	RU("RU", true, true),
+	FEROL_CONFIGURATION("ferolConfiguration", true, true),
+	FEROL_INPUT_STREAM("ferolInputStream", true, true),
+	FEROL_MONITORING("ferolMonitoring", true, false),
+	FEROL_STATUS("ferolStatus", true, true),
+	FEROL_TCP_STREAM("ferolTcpStream", true, false),
+	FRL_MONITORING("frlMonitoring", true, false),
+	HOST_INFO("hostInfo", true, false),
+	LEVEL_ZERO_FM_DYNAMIC("levelZeroFM_dynamic", false, true),
+	LEVEL_ZERO_FM_STATIC("levelZeroFM_static", true, false),
+	LEVEL_ZERO_FM_SUBSYS("levelZeroFM_subsys", false, true),
+	JOB_CONTROL("jobcontrol", false, true),
+	DISK_INFO("diskInfo", true, false),
+	FMM_PARTITION_DEAD_TIME("FMMPartitionDeadTime", true, false),
+	FMM_FED_DEAD_TIME("FMMFEDDeadTime", true, false);
 
 	private static Logger logger = Logger.getLogger(FlashlistType.class);
 
@@ -35,9 +35,12 @@ public enum FlashlistType {
 	 */
 	private final boolean sessionContext;
 
-	private FlashlistType(String name, boolean sessionContext) {
+	private final boolean download;
+
+	private FlashlistType(String name, boolean sessionContext, boolean download) {
 		this.name = name;
 		this.sessionContext = sessionContext;
+		this.download = download;
 	}
 
 	private static String message = " flashlist type infered from name ";
@@ -132,6 +135,10 @@ public enum FlashlistType {
 
 	public boolean isSessionContext() {
 		return sessionContext;
+	}
+
+	public boolean isDownload() {
+		return download;
 	}
 
 }

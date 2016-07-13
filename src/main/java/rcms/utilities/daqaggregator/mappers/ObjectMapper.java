@@ -1,6 +1,5 @@
 package rcms.utilities.daqaggregator.mappers;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -20,14 +19,15 @@ import rcms.utilities.daqaggregator.data.FMMApplication;
 import rcms.utilities.daqaggregator.data.FRL;
 import rcms.utilities.daqaggregator.data.FRLPc;
 import rcms.utilities.daqaggregator.data.FRLType;
+import rcms.utilities.daqaggregator.data.FMMType;
 import rcms.utilities.daqaggregator.data.RU;
 import rcms.utilities.daqaggregator.data.SubFEDBuilder;
 import rcms.utilities.daqaggregator.data.SubSystem;
 import rcms.utilities.daqaggregator.data.TTCPartition;
 import rcms.utilities.hwcfg.HardwareConfigurationException;
 import rcms.utilities.hwcfg.dp.DAQPartition;
-import rcms.utilities.hwcfg.dp.DAQPartitionSet;
 import rcms.utilities.hwcfg.dp.DPGenericHost;
+import rcms.utilities.hwcfg.eq.FMMFMMLink;
 import rcms.utilities.hwcfg.eq.FMMTriggerLink;
 import rcms.utilities.hwcfg.fb.FBI;
 
@@ -37,7 +37,7 @@ import rcms.utilities.hwcfg.fb.FBI;
  * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
  *
  */
-public class ObjectMapper implements Serializable {
+public class ObjectMapper {
 
 	private static final Logger logger = Logger.getLogger(ObjectMapper.class);
 
@@ -59,11 +59,14 @@ public class ObjectMapper implements Serializable {
 	public Map<Integer, RU> rusById;
 	public Map<Integer, BU> busById;
 	public Map<Integer, FED> fedsById;
+	public Map<Integer, FED> fedsByExpectedId;
 	public Map<Integer, FED> ttcpById;
 	public Map<Integer, TTCPartition> ttcpartitionsById;
 
 	public Map<String, FRLPc> frlPcByHostname;
 	public Map<String, FMMApplication> fmmApplicationByHostname;
+	public Map<String, RU> rusByHostname;
+	public Map<String, BU> busByHostname;
 	public Map<String, SubSystem> subsystemByName;
 
 	public void mapAllObjects(DAQPartition daqPartition) {
@@ -74,11 +77,14 @@ public class ObjectMapper implements Serializable {
 		rusById = new HashMap<>();
 		busById = new HashMap<>();
 		fedsById = new HashMap<>();
+		fedsByExpectedId = new HashMap<>();
 		ttcpById = new HashMap<>();
 		ttcpartitionsById = new HashMap<>();
 		frlPcByHostname = new HashMap<>();
 		fmmApplicationByHostname = new HashMap<>();
 		subsystemByName = new HashMap<>();
+		rusByHostname = new HashMap<>();
+		busByHostname = new HashMap<>();
 
 		/* Building objects */
 		bus = mapBUs(daqPartition);
@@ -113,42 +119,53 @@ public class ObjectMapper implements Serializable {
 			fed.setFmmIO(hwfed.getFMMIO());
 			fed.setFrlIO(hwfed.getFRLIO());
 			fed.setSrcIdExpected(hwfed.getSrcId());
+			fedsByExpectedId.put(fed.getSrcIdExpected(), fed);
 			fed.setHasSLINK(hwfed.hasSLINK());
 			fed.setHasTTS(hwfed.hasTTS());
 			feds.put(hwfed.hashCode(), fed);
 		}
 
 		/* map FMMs */
-		Set<FMMTriggerLink> fmmLinks = daqPartition.getDAQPartitionSet().getEquipmentSet().getFMMTriggerLinks();
-		HashMap<Long, FMMTriggerLink> fmmMap = new HashMap<>();
-		for (FMMTriggerLink fmmLink : fmmLinks) {
-			fmmMap.put(fmmLink.getFMMId(), fmmLink);
+		Set<FMMFMMLink> fmmLinks = daqPartition.getDAQPartitionSet().getEquipmentSet().getFMMFMMLinks();
+		HashMap<Long, FMMFMMLink> fmmMap = new HashMap<>();
+		for (FMMFMMLink fmmLink : fmmLinks) {
+			fmmMap.put(fmmLink.getSourceFMMId(), fmmLink);
 		}
 		fmms = new HashMap<>();
 		for (rcms.utilities.hwcfg.eq.FMM hwfmm : getHardwareFmms(daqPartition)) {
 			FMM fmm = new FMM();
 			fmm.setGeoslot(hwfmm.getGeoSlot());
-
+			fmm.setFmmType(FMMType.valueOf( hwfmm.getFMMType().name() ));			
+			fmm.setServiceName(hwfmm.getServiceName());
 			if (hwfmm.getDual()) {
-				FMMTriggerLink fmmLink = fmmMap.get(hwfmm.getId());
-				int fmmIO = fmmLink.getFMMIO();
-				if (fmmIO == 22 || fmmIO == 23)
-					fmm.takeB = true;
+				FMMFMMLink fmmLink = fmmMap.get(hwfmm.getId());
+				if (fmmLink != null &&
+					daqPartition.getDAQPartitionSet().getEquipmentSet().getFMMs().get(fmmLink.getTargetFMMId()).getFMMType().equals( rcms.utilities.hwcfg.eq.FMM.FMMType.pi )) {
+					try {
+						int fmmIO = fmmLink.getSourceFMMIO();
+						if (fmmIO == 22 || fmmIO == 23)
+							fmm.takeB = true;
+					} catch (NullPointerException e) {
+						logger.warn("Dual FMM has no link: ");
+						logger.warn("Problem fmm :" + hwfmm.getGeoSlot() + hwfmm.getFMMCrate().getHostName());
+					}
+				} 
 			}
 			fmms.put(hwfmm.hashCode(), fmm);
 		}
 
 		/* map FMMApplications */
 		fmmApplications = new HashMap<>();
-		Set<String> fmmPcs = new HashSet<>();
+		Map<String, Integer> fmmPcs = new HashMap<>();
 		for (rcms.utilities.hwcfg.eq.FMM hwfmm : getHardwareFmms(daqPartition)) {
 			String fmmPc = hwfmm.getFMMCrate().getHostName();
-			if (!fmmPcs.contains(fmmPc))
-				fmmPcs.add(fmmPc);
+			if (!fmmPcs.containsKey(fmmPc))
+				fmmPcs.put(fmmPc, hwfmm.getFMMCrate().getPort());
 		}
-		for (String fmmPc : fmmPcs) {
+		for (String fmmPc : fmmPcs.keySet()) {
 			FMMApplication fmmApplication = new FMMApplication();
 			fmmApplication.setHostname(fmmPc);
+			fmmApplication.setPort(fmmPcs.get(fmmPc));
 			fmmApplications.put(fmmPc.hashCode(), fmmApplication);
 			fmmApplicationByHostname.put(fmmApplication.getHostname(), fmmApplication);
 		}
@@ -162,6 +179,7 @@ public class ObjectMapper implements Serializable {
 		FEDBuilderSummary fedBuilderSummary = new FEDBuilderSummary();
 		daq.setFedBuilderSummary(fedBuilderSummary);
 		fedBuilderSummary.setDaq(daq);
+		daq.setAllFeds(new HashSet<FED>(feds.values()));
 
 		logger.info("Retrieval summary " + this.toString());
 		logger.info("Subsystem summary " + subSystems.values());
@@ -209,6 +227,7 @@ public class ObjectMapper implements Serializable {
 			if (host.getRole().equals("BU")) {
 				BU bu = new BU();
 				busById.put((int) host.getId(), bu);
+				busByHostname.put(host.getHostName(), bu);
 				bu.setHostname(host.getHostName());
 				result.put(host.hashCode(), bu);
 			}
@@ -228,6 +247,7 @@ public class ObjectMapper implements Serializable {
 			ru.setHostname(hwru.getHostName());
 			ru.setStateName("unknown");
 			rusById.put(ru.getInstance(), ru);
+			rusByHostname.put(ru.getHostname(), ru);
 			result.put(hwru.hashCode(), ru);
 		}
 		return result;
@@ -374,9 +394,10 @@ public class ObjectMapper implements Serializable {
 	public Map<Integer, TTCPartition> mapTTCPartitions(DAQPartition daqPartition) {
 
 		Map<Integer, TTCPartition> result = new HashMap<>();
-		DAQPartitionSet daqPartitionSet = daqPartition.getDAQPartitionSet();
-		for (rcms.utilities.hwcfg.eq.TTCPartition hwttcPartition : daqPartitionSet.getEquipmentSet().getTTCPartitions()
-				.values()) {
+		for (rcms.utilities.hwcfg.eq.FED hwfed : getHardwareFeds(daqPartition)) {
+
+			rcms.utilities.hwcfg.eq.TTCPartition hwttcPartition = hwfed.getTTCPartition();
+
 			TTCPartition ttcPartition = new TTCPartition();
 			ttcPartition.setName(hwttcPartition.getName());
 			ttcpartitionsById.put((int) hwttcPartition.getId(), ttcPartition);
