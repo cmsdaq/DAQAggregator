@@ -1,14 +1,11 @@
 package rcms.utilities.daqaggregator.data;
 
-import java.io.Serializable;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.databind.JsonNode;
 
-import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
 import rcms.utilities.daqaggregator.mappers.Derivable;
 import rcms.utilities.daqaggregator.mappers.FlashlistType;
+import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
 
 /**
  * Readout Unit
@@ -17,8 +14,7 @@ import rcms.utilities.daqaggregator.mappers.FlashlistType;
  * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
  */
 
-@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
-public class RU implements Serializable, FlashlistUpdatable, Derivable {
+public class RU implements FlashlistUpdatable, Derivable {
 
 	// ----------------------------------------
 	// fields set at beginning of session

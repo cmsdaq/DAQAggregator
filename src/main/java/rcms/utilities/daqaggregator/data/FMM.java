@@ -3,11 +3,6 @@ package rcms.utilities.daqaggregator.data;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import rcms.utilities.daqaggregator.mappers.FlashlistType;
@@ -19,8 +14,9 @@ import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
  * @author Andre Georg Holzner (andre.georg.holzner@cern.ch)
  * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
  */
-@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
 public class FMM implements FlashlistUpdatable {
+
+	private String id;
 
 	
 	
@@ -29,7 +25,6 @@ public class FMM implements FlashlistUpdatable {
 	// ----------------------------------------
 
 	/** parent TTCPartition */
-	@JsonManagedReference(value = "fmm-ttcp")
 	private TTCPartition ttcPartition;
 
 	private FMMApplication fmmApplication;
@@ -38,15 +33,14 @@ public class FMM implements FlashlistUpdatable {
 	
 	private String serviceName;
 	
+
 	private int geoslot;
 
 	private String url;
 
-	@JsonManagedReference(value = "fmm-fed")
 	private List<FED> feds = new ArrayList<FED>();
 
-	@JsonIgnore
-	public boolean takeB;
+	private boolean takeB;
 
 	public TTCPartition getTtcPartition() {
 		return ttcPartition;
@@ -161,4 +155,21 @@ public class FMM implements FlashlistUpdatable {
 			return false;
 		return true;
 	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+	
+	public boolean isTakeB() {
+		return takeB;
+	}
+
+	public void setTakeB(boolean takeB) {
+		this.takeB = takeB;
+	}
+
 }

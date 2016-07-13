@@ -3,9 +3,6 @@ package rcms.utilities.daqaggregator.data;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-
 /**
  * 
  * Class representing one line in DAQView
@@ -14,9 +11,10 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
  * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
  * 
  */
-@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
 public class SubFEDBuilder {
 
+	private String id;
+	
 	// ----------------------------------------
 	// fields set at beginning of session
 	// ----------------------------------------
@@ -146,6 +144,14 @@ public class SubFEDBuilder {
 	public String toString() {
 		return "SubFEDBuilder [ttcPartition=" + ttcPartition + ", frlPc=" + frlPc
 				+ ", frls=" + frls + ", minTrig=" + minTrig + ", maxTrig=" + maxTrig + "]";
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
 	}
 
 }
