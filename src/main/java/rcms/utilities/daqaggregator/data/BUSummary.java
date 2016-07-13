@@ -94,11 +94,11 @@ public class BUSummary implements Derivable {
 		int priority = 0;
 
 		/* Averages */
-		long rate = 0;
 		double eventSizeMean = 0;
 		double eventSizeStddev = 0;
 
 		/* sums */
+		long rate = 0;
 		float ramDiskTotal = 0;
 		float ramDiskUsage = 0;
 		long throughput = 0;
@@ -154,9 +154,8 @@ public class BUSummary implements Derivable {
 			
 		}
 
-		/* avarage values */
+		/* average values */
 		if ( numberOfBus > 0 ) {
-			rate = rate / numberOfBus;
 			eventSizeMean = eventSizeMean / numberOfBus;
 			eventSizeStddev = Math.sqrt(eventSizeStddev);
 		}

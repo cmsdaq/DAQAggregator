@@ -99,7 +99,7 @@ public class PostProcessor {
 						fedsFrlMasked++;
 					if (fed.isRuFedInError())
 						fedsInError++;
-					if (fed.isRuFedWitioutFragments())
+					if (fed.isRuFedWithoutFragments())
 						fedsFragmentMissing++;
 				}
 			}

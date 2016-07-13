@@ -60,6 +60,8 @@ public class RU implements FlashlistUpdatable, Derivable {
 	private int fragmentsInRU;
 
 	private int eventsInRU;
+	
+	private long eventCount;
 
 	/** requests from BUs ? */
 	private int requests;
@@ -157,6 +159,14 @@ public class RU implements FlashlistUpdatable, Derivable {
 		this.eventsInRU = eventsInRU;
 	}
 
+	public long getEventCount() {
+		return eventCount;
+	}
+
+	public void setEventCount(long eventCount) {
+		this.eventCount = eventCount;
+	}
+
 	public int getRequests() {
 		return requests;
 	}
@@ -209,7 +219,7 @@ public class RU implements FlashlistUpdatable, Derivable {
 	public String toString() {
 		return "RU [rate=" + rate + ", throughput=" + throughput + ", superFragmentSizeMean=" + superFragmentSizeMean
 				+ ", superFragmentSizeStddev=" + superFragmentSizeStddev + ", fragmentsInRU=" + fragmentsInRU
-				+ ", eventsInRU=" + eventsInRU + "]";
+				+ ", eventsInRU=" + eventsInRU + ", eventCount=" + eventCount + "]";
 	}
 
 
@@ -271,6 +281,7 @@ public class RU implements FlashlistUpdatable, Derivable {
 			this.requests = flashlistRow.get("eventCount").asInt();
 			this.rate = flashlistRow.get("eventRate").asInt();
 			this.eventsInRU = flashlistRow.get("eventsInRU").asInt();
+			this.eventCount = flashlistRow.get("eventCount").asLong();
 			this.fragmentsInRU = flashlistRow.get("fragmentCount").asInt();
 			this.superFragmentSizeMean = flashlistRow.get("superFragmentSize").asInt();
 			this.superFragmentSizeStddev = flashlistRow.get("superFragmentSizeStdDev").asInt();

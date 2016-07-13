@@ -58,7 +58,7 @@ public class FED implements FlashlistUpdatable {
 
 	private long numSCRCerrors;
 
-	private long numFRCerrors;
+	private long numFCRCerrors;
 
 	private long numTriggers;
 
@@ -78,7 +78,7 @@ public class FED implements FlashlistUpdatable {
 	private int ruFedDataCorruption;
 	private int ruFedOutOfSync;
 
-	private boolean ruFedWitioutFragments;
+	private boolean ruFedWithoutFragments;
 
 	@JsonIgnore
 	private String timestamp;
@@ -164,7 +164,7 @@ public class FED implements FlashlistUpdatable {
 			// TODO or WrongFEDIdDetected
 			this.srcIdReceived = flashlistRow.get("WrongFEDId").asInt();
 			this.numSCRCerrors = flashlistRow.get("LinkCRCError").asInt();
-			this.numFRCerrors = flashlistRow.get("FEDCRCError").asInt();
+			this.numFCRCerrors = flashlistRow.get("FEDCRCError").asInt();
 			this.numTriggers = flashlistRow.get("TriggerNumber").asInt();
 			this.eventCounter = flashlistRow.get("EventCounter").asInt();
 
@@ -209,7 +209,7 @@ public class FED implements FlashlistUpdatable {
 
 			for (JsonNode fedIdWithError : flashlistRow.get("fedIdsWithoutFragments")) {
 				if (srcIdExpected == fedIdWithError.asInt()) {
-					ruFedWitioutFragments = true;
+					ruFedWithoutFragments = true;
 					break;
 				}
 			}
@@ -225,7 +225,7 @@ public class FED implements FlashlistUpdatable {
 		ruFedOutOfSync = 0;
 
 		ruFedInError = false;
-		ruFedWitioutFragments = false;
+		ruFedWithoutFragments = false;
 
 	}
 
@@ -277,12 +277,12 @@ public class FED implements FlashlistUpdatable {
 		this.numSCRCerrors = numSCRCerrors;
 	}
 
-	public long getNumFRCerrors() {
-		return numFRCerrors;
+	public long getNumFCRCerrors() {
+		return numFCRCerrors;
 	}
 
-	public void setNumFRCerrors(long numFRCerrors) {
-		this.numFRCerrors = numFRCerrors;
+	public void setNumFCRCerrors(long numFCRCerrors) {
+		this.numFCRCerrors = numFCRCerrors;
 	}
 
 	public long getNumTriggers() {
@@ -429,12 +429,12 @@ public class FED implements FlashlistUpdatable {
 		this.ruFedOutOfSync = ruFedOutOfSync;
 	}
 
-	public boolean isRuFedWitioutFragments() {
-		return ruFedWitioutFragments;
+	public boolean isRuFedWithoutFragments() {
+		return ruFedWithoutFragments;
 	}
 
-	public void setRuFedWitioutFragments(boolean ruFedWitioutFragments) {
-		this.ruFedWitioutFragments = ruFedWitioutFragments;
+	public void setRuFedWithoutFragments(boolean ruFedWithoutFragments) {
+		this.ruFedWithoutFragments = ruFedWithoutFragments;
 	}
 
 	public TTCPartition getTtcp() {
@@ -458,7 +458,7 @@ public class FED implements FlashlistUpdatable {
 		result = prime * result + (hasTTS ? 1231 : 1237);
 		result = prime * result + id;
 		result = prime * result + ((mainFeds == null) ? 0 : mainFeds.hashCode());
-		result = prime * result + (int) (numFRCerrors ^ (numFRCerrors >>> 32));
+		result = prime * result + (int) (numFCRCerrors ^ (numFCRCerrors >>> 32));
 		result = prime * result + (int) (numSCRCerrors ^ (numSCRCerrors >>> 32));
 		result = prime * result + (int) (numTriggers ^ (numTriggers >>> 32));
 		result = prime * result + Float.floatToIntBits(percentBackpressure);
@@ -469,7 +469,7 @@ public class FED implements FlashlistUpdatable {
 		result = prime * result + ruFedDataCorruption;
 		result = prime * result + (ruFedInError ? 1231 : 1237);
 		result = prime * result + ruFedOutOfSync;
-		result = prime * result + (ruFedWitioutFragments ? 1231 : 1237);
+		result = prime * result + (ruFedWithoutFragments ? 1231 : 1237);
 		result = prime * result + srcIdExpected;
 		result = prime * result + srcIdReceived;
 		result = prime * result + ((ttsState == null) ? 0 : ttsState.hashCode());
@@ -506,7 +506,7 @@ public class FED implements FlashlistUpdatable {
 				return false;
 		} else if (!mainFeds.equals(other.mainFeds))
 			return false;
-		if (numFRCerrors != other.numFRCerrors)
+		if (numFCRCerrors != other.numFCRCerrors)
 			return false;
 		if (numSCRCerrors != other.numSCRCerrors)
 			return false;
@@ -528,7 +528,7 @@ public class FED implements FlashlistUpdatable {
 			return false;
 		if (ruFedOutOfSync != other.ruFedOutOfSync)
 			return false;
-		if (ruFedWitioutFragments != other.ruFedWitioutFragments)
+		if (ruFedWithoutFragments != other.ruFedWithoutFragments)
 			return false;
 		if (srcIdExpected != other.srcIdExpected)
 			return false;
