@@ -1,6 +1,5 @@
 package rcms.utilities.daqaggregator.data;
 
-import java.io.Serializable;
 import java.util.Comparator;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
@@ -18,7 +17,7 @@ import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
  *
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
-public class BU implements Serializable, FlashlistUpdatable {
+public class BU implements FlashlistUpdatable {
 
 	// ----------------------------------------
 	// fields set at beginning of session
@@ -33,20 +32,12 @@ public class BU implements Serializable, FlashlistUpdatable {
 	// fields updated periodically
 	// ----------------------------------------
 
-	public void setDaq(DAQ daq) {
-		this.daq = daq;
-	}
-
-	public void setHostname(String hostname) {
-		this.hostname = hostname;
-	}
-
 	private String stateName;
 
 	private String errorMsg;
 
 	/** event rate in Hz */
-	private int rate;
+	private long rate;
 
 	/** throughput in Byte/s */
 	private long throughput;
@@ -56,9 +47,9 @@ public class BU implements Serializable, FlashlistUpdatable {
 	private int eventSizeStddev;
 
 	/** events processed */
-	private int numEvents;
+	private long numEvents;
 
-	private int numEventsInBU;
+	private long numEventsInBU;
 
 	private int priority;
 
@@ -95,6 +86,16 @@ public class BU implements Serializable, FlashlistUpdatable {
 
 	private double fuOutputBandwidthInMB;
 
+	private int fragmentCount;
+
+	private int nbCorruptedEvents;
+
+	private int nbEventsMissingData;
+
+	private int nbEventsWithCRCerrors;
+
+	private int nbTotalResources;
+
 	// ----------------------------------------------------------------------
 
 	/**
@@ -109,14 +110,14 @@ public class BU implements Serializable, FlashlistUpdatable {
 		if (flashlistType == FlashlistType.BU) {
 
 			// direct values
-			this.setStateName(flashlistRow.get("stateName").asText());
-			this.setErrorMsg(flashlistRow.get("errorMsg").asText());
+			this.stateName = flashlistRow.get("stateName").asText();
+			this.errorMsg = flashlistRow.get("errorMsg").asText();
 			this.rate = flashlistRow.get("eventRate").asInt();
 			this.throughput = flashlistRow.get("bandwidth").asInt();
 			this.eventSizeMean = flashlistRow.get("eventSize").asInt();
 			this.eventSizeStddev = flashlistRow.get("eventSizeStdDev").asInt();
-			this.numEvents = flashlistRow.get("nbEventsBuilt").asInt();
-			this.numEventsInBU = flashlistRow.get("nbEventsInBU").asInt();
+			this.numEvents = flashlistRow.get("nbEventsBuilt").asLong();
+			this.numEventsInBU = flashlistRow.get("nbEventsInBU").asLong();
 			this.priority = flashlistRow.get("priority").asInt();
 			this.numRequestsSent = flashlistRow.get("nbSentResources").asInt();
 			this.numRequestsUsed = flashlistRow.get("nbUsedResources").asInt();
@@ -134,7 +135,45 @@ public class BU implements Serializable, FlashlistUpdatable {
 			this.numLumisectionsOutHLT = flashlistRow.get("queuedLumiSectionsOnFUs").asInt();
 			this.fuOutputBandwidthInMB = flashlistRow.get("fuOutputBandwidthInMB").asDouble();
 
+			this.fragmentCount = flashlistRow.get("fragmentCount").asInt();
+			this.nbCorruptedEvents = flashlistRow.get("nbCorruptedEvents").asInt();
+			this.nbEventsMissingData = flashlistRow.get("nbEventsMissingData").asInt();
+			this.nbEventsWithCRCerrors = flashlistRow.get("nbEventsWithCRCerrors").asInt();
+			this.nbTotalResources = flashlistRow.get("nbTotalResources").asInt();
+			this.stateName = flashlistRow.get("stateName").asText();
+
 		}
+	}
+
+	@Override
+	public void clean() {
+		// nothing to do
+	}
+
+	// ----------------------------------------------------------------------
+
+	public static class HostNameComparator implements Comparator<BU> {
+		@Override
+		public int compare(BU bu1, BU bu2) {
+			// assume both are non-null
+			return bu1.getHostname().compareTo(bu2.getHostname());
+		}
+	}
+
+	public DAQ getDaq() {
+		return daq;
+	}
+
+	public void setDaq(DAQ daq) {
+		this.daq = daq;
+	}
+
+	public String getHostname() {
+		return hostname;
+	}
+
+	public void setHostname(String hostname) {
+		this.hostname = hostname;
 	}
 
 	public String getStateName() {
@@ -153,11 +192,11 @@ public class BU implements Serializable, FlashlistUpdatable {
 		this.errorMsg = errorMsg;
 	}
 
-	public int getRate() {
+	public long getRate() {
 		return rate;
 	}
 
-	public void setRate(int rate) {
+	public void setRate(long rate) {
 		this.rate = rate;
 	}
 
@@ -185,19 +224,19 @@ public class BU implements Serializable, FlashlistUpdatable {
 		this.eventSizeStddev = eventSizeStddev;
 	}
 
-	public int getNumEvents() {
+	public long getNumEvents() {
 		return numEvents;
 	}
 
-	public void setNumEvents(int numEvents) {
+	public void setNumEvents(long numEvents) {
 		this.numEvents = numEvents;
 	}
 
-	public int getNumEventsInBU() {
+	public long getNumEventsInBU() {
 		return numEventsInBU;
 	}
 
-	public void setNumEventsInBU(int numEventsInBU) {
+	public void setNumEventsInBU(long numEventsInBU) {
 		this.numEventsInBU = numEventsInBU;
 	}
 
@@ -321,30 +360,174 @@ public class BU implements Serializable, FlashlistUpdatable {
 		this.numLumisectionsOutHLT = numLumisectionsOutHLT;
 	}
 
-	public void setFuOutputBandwidthInMB(double fuOutputBandwidthInMB) {
-		this.fuOutputBandwidthInMB = fuOutputBandwidthInMB;
-	}
-
 	public double getFuOutputBandwidthInMB() {
 		return fuOutputBandwidthInMB;
 	}
 
-	public DAQ getDaq() {
-		return daq;
+	public void setFuOutputBandwidthInMB(double fuOutputBandwidthInMB) {
+		this.fuOutputBandwidthInMB = fuOutputBandwidthInMB;
 	}
 
-	public String getHostname() {
-		return hostname;
+	public int getFragmentCount() {
+		return fragmentCount;
 	}
 
-	// ----------------------------------------------------------------------
+	public void setFragmentCount(int fragmentCount) {
+		this.fragmentCount = fragmentCount;
+	}
 
-	public static class HostNameComparator implements Comparator<BU> {
-		@Override
-		public int compare(BU bu1, BU bu2) {
-			// assume both are non-null
-			return bu1.getHostname().compareTo(bu2.getHostname());
-		}
+	public int getNbCorruptedEvents() {
+		return nbCorruptedEvents;
+	}
+
+	public void setNbCorruptedEvents(int nbCorruptedEvents) {
+		this.nbCorruptedEvents = nbCorruptedEvents;
+	}
+
+	public int getNbEventsMissingData() {
+		return nbEventsMissingData;
+	}
+
+	public void setNbEventsMissingData(int nbEventsMissingData) {
+		this.nbEventsMissingData = nbEventsMissingData;
+	}
+
+	public int getNbEventsWithCRCerrors() {
+		return nbEventsWithCRCerrors;
+	}
+
+	public void setNbEventsWithCRCerrors(int nbEventsWithCRCerrors) {
+		this.nbEventsWithCRCerrors = nbEventsWithCRCerrors;
+	}
+
+	public int getNbTotalResources() {
+		return nbTotalResources;
+	}
+
+	public void setNbTotalResources(int nbTotalResources) {
+		this.nbTotalResources = nbTotalResources;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + currentLumisection;
+		result = prime * result + ((errorMsg == null) ? 0 : errorMsg.hashCode());
+		result = prime * result + eventSizeMean;
+		result = prime * result + eventSizeStddev;
+		result = prime * result + fragmentCount;
+		long temp;
+		temp = Double.doubleToLongBits(fuOutputBandwidthInMB);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		result = prime * result + ((hostname == null) ? 0 : hostname.hashCode());
+		result = prime * result + nbCorruptedEvents;
+		result = prime * result + nbEventsMissingData;
+		result = prime * result + nbEventsWithCRCerrors;
+		result = prime * result + nbTotalResources;
+		result = prime * result + (int) (numEvents ^ (numEvents >>> 32));
+		result = prime * result + (int) (numEventsInBU ^ (numEventsInBU >>> 32));
+		result = prime * result + numFUsCloud;
+		result = prime * result + numFUsCrashed;
+		result = prime * result + numFUsHLT;
+		result = prime * result + numFUsStale;
+		result = prime * result + numFiles;
+		result = prime * result + numLumisectionsForHLT;
+		result = prime * result + numLumisectionsOutHLT;
+		result = prime * result + numLumisectionsWithFiles;
+		result = prime * result + numRequestsBlocked;
+		result = prime * result + numRequestsSent;
+		result = prime * result + numRequestsUsed;
+		result = prime * result + priority;
+		temp = Double.doubleToLongBits(ramDiskTotal);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		temp = Double.doubleToLongBits(ramDiskUsage);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		result = prime * result + (int) (rate ^ (rate >>> 32));
+		result = prime * result + ((stateName == null) ? 0 : stateName.hashCode());
+		result = prime * result + (int) (throughput ^ (throughput >>> 32));
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		BU other = (BU) obj;
+		if (currentLumisection != other.currentLumisection)
+			return false;
+		if (errorMsg == null) {
+			if (other.errorMsg != null)
+				return false;
+		} else if (!errorMsg.equals(other.errorMsg))
+			return false;
+		if (eventSizeMean != other.eventSizeMean)
+			return false;
+		if (eventSizeStddev != other.eventSizeStddev)
+			return false;
+		if (fragmentCount != other.fragmentCount)
+			return false;
+		if (Double.doubleToLongBits(fuOutputBandwidthInMB) != Double.doubleToLongBits(other.fuOutputBandwidthInMB))
+			return false;
+		if (hostname == null) {
+			if (other.hostname != null)
+				return false;
+		} else if (!hostname.equals(other.hostname))
+			return false;
+		if (nbCorruptedEvents != other.nbCorruptedEvents)
+			return false;
+		if (nbEventsMissingData != other.nbEventsMissingData)
+			return false;
+		if (nbEventsWithCRCerrors != other.nbEventsWithCRCerrors)
+			return false;
+		if (nbTotalResources != other.nbTotalResources)
+			return false;
+		if (numEvents != other.numEvents)
+			return false;
+		if (numEventsInBU != other.numEventsInBU)
+			return false;
+		if (numFUsCloud != other.numFUsCloud)
+			return false;
+		if (numFUsCrashed != other.numFUsCrashed)
+			return false;
+		if (numFUsHLT != other.numFUsHLT)
+			return false;
+		if (numFUsStale != other.numFUsStale)
+			return false;
+		if (numFiles != other.numFiles)
+			return false;
+		if (numLumisectionsForHLT != other.numLumisectionsForHLT)
+			return false;
+		if (numLumisectionsOutHLT != other.numLumisectionsOutHLT)
+			return false;
+		if (numLumisectionsWithFiles != other.numLumisectionsWithFiles)
+			return false;
+		if (numRequestsBlocked != other.numRequestsBlocked)
+			return false;
+		if (numRequestsSent != other.numRequestsSent)
+			return false;
+		if (numRequestsUsed != other.numRequestsUsed)
+			return false;
+		if (priority != other.priority)
+			return false;
+		if (Double.doubleToLongBits(ramDiskTotal) != Double.doubleToLongBits(other.ramDiskTotal))
+			return false;
+		if (Double.doubleToLongBits(ramDiskUsage) != Double.doubleToLongBits(other.ramDiskUsage))
+			return false;
+		if (rate != other.rate)
+			return false;
+		if (stateName == null) {
+			if (other.stateName != null)
+				return false;
+		} else if (!stateName.equals(other.stateName))
+			return false;
+		if (throughput != other.throughput)
+			return false;
+		return true;
 	}
 
 	// ----------------------------------------------------------------------

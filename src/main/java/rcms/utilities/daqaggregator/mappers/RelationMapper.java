@@ -6,10 +6,13 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Vector;
 import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 import rcms.utilities.daqaggregator.data.DAQ;
 import rcms.utilities.daqaggregator.data.FED;
@@ -22,7 +25,12 @@ import rcms.utilities.daqaggregator.data.RU;
 import rcms.utilities.daqaggregator.data.SubFEDBuilder;
 import rcms.utilities.daqaggregator.data.SubSystem;
 import rcms.utilities.daqaggregator.data.TTCPartition;
+import rcms.utilities.hwcfg.HardwareConfigurationException;
 import rcms.utilities.hwcfg.dp.DAQPartition;
+import rcms.utilities.hwcfg.eq.FMMFMMLink;
+import rcms.utilities.hwcfg.eq.FMMTriggerLink;
+import rcms.utilities.hwcfg.eq.TCDSiCI;
+import rcms.utilities.hwcfg.eq.Trigger;
 
 /**
  * This class performs mapping of hardware objects' relations into {@link DAQ}
@@ -38,12 +46,13 @@ public class RelationMapper implements Serializable {
 
 	public Map<Integer, Integer> subFedBuilderToFrlPc;
 	public Map<Integer, Integer> subFedBuilderToTTCP;
-	public Map<Integer, Integer> subFMMToTTCP;
+	public Map<Integer, Integer> FMMToTTCP;
 	public Map<Integer, Integer> ruToFedBuilder;
 	public Map<Integer, Set<Integer>> fedBuilderToSubFedBuilder;
 	public Map<Integer, Set<Integer>> subFedBuilderToFrl;
 	public Map<Integer, Set<Integer>> fmmToFed;
 	public Map<Integer, Set<Integer>> frlToFed;
+	public Map<Integer, Set<Integer>> ttcpToFed;
 	public Map<Integer, Set<Integer>> fmmApplicationToFmm;
 	public Map<Integer, Set<Integer>> frlPcToFrl;
 	public Map<Integer, Set<Integer>> subsystemToTTCP;
@@ -55,8 +64,9 @@ public class RelationMapper implements Serializable {
 	private void fetchRelations(DAQPartition daqPartition) {
 		fmmToFed = mapRelationsFmmToFed(daqPartition);
 		frlToFed = mapRelationsFrlToFed(daqPartition);
+		ttcpToFed = mapRelationsTTCPToFed(daqPartition);
 		fmmApplicationToFmm = mapRelationsFmmApplicationToFmm(daqPartition);
-		subFMMToTTCP = mapRelationsFmmToTTCP(daqPartition);
+		FMMToTTCP = mapRelationsFmmToTTCP(daqPartition);
 		ruToFedBuilder = mapRelationsRuToFedBuilder(daqPartition);
 		frlPcToFrl = mapRelationsFrlPcToFrl(daqPartition);
 		subsystemToTTCP = mapRelationsSubsystemToTTCP(daqPartition);
@@ -95,6 +105,25 @@ public class RelationMapper implements Serializable {
 														// correct
 				fed.setFrl(frl);
 			}
+		}
+
+		/* building TTCP-FED */
+		int all = 0, success = 0;
+		for (Entry<Integer, Set<Integer>> relation : ttcpToFed.entrySet()) {
+			TTCPartition ttcp = objectMapper.ttcPartitions.get(relation.getKey());
+			for (int fedId : relation.getValue()) {
+				FED fed = objectMapper.feds.get(fedId);
+				if (fed != null) {
+					ttcp.getFeds().add(fed);
+					fed.setTtcp(ttcp);
+					success++;
+				}
+				all++;
+
+			}
+		}
+		if (all - success > 0) {
+			logger.warn("All FEDs: " + all + ", mapped " + success);
 		}
 
 		/* building FMMApplication - FMM */
@@ -142,12 +171,19 @@ public class RelationMapper implements Serializable {
 			subFedBuilder.setTtcPartition(ttcPartition);
 		}
 		/* building FMM - TTCP */
-		for (Entry<Integer, Integer> relation : subFMMToTTCP.entrySet()) {
-			FMM fmm = objectMapper.fmms.get(relation.getKey());
-			TTCPartition ttcPartition = objectMapper.ttcPartitions.get(relation.getValue());
-			fmm.setTtcPartition(ttcPartition);
-			ttcPartition.setFmm(fmm);
+		int ignoredttcp = 0;
+		for (Entry<Integer, Integer> relation : FMMToTTCP.entrySet()) {
+			try {
+				FMM fmm = objectMapper.fmms.get(relation.getKey());
+				TTCPartition ttcPartition = objectMapper.ttcPartitions.get(relation.getValue());
+				fmm.setTtcPartition(ttcPartition);
+				ttcPartition.setFmm(fmm);
+			} catch (NullPointerException e) {
+				ignoredttcp++;
+			}
 		}
+		if (ignoredttcp > 0)
+			logger.warn("Problems when FMM-TTCP mapping:" + ignoredttcp);
 
 		/* building RU - FEDBuilder */
 		for (Entry<Integer, Integer> relation : ruToFedBuilder.entrySet()) {
@@ -158,24 +194,30 @@ public class RelationMapper implements Serializable {
 		}
 
 		/* building FRLPc - FRL */
-		for (Entry<Integer, Set<Integer>> relation : frlPcToFrl.entrySet()) {
-			FRLPc frlPc = objectMapper.frlPcs.get(relation.getKey());
-			for (int frlId : relation.getValue()) {
-				FRL frl = objectMapper.frls.get(frlId);
-				frlPc.getFrls().add(frl);
-				frl.setFrlPc(frlPc);
-			}
-		}
-		
+		// for (Entry<Integer, Set<Integer>> relation : frlPcToFrl.entrySet()) {
+		// FRLPc frlPc = objectMapper.frlPcs.get(relation.getKey());
+		// for (int frlId : relation.getValue()) {
+		// FRL frl = objectMapper.frls.get(frlId);
+		// frlPc.getFrls().add(frl);
+		// frl.setFrlPc(frlPc);
+		// }
+		// }
+
 		/* building Subsystsem - TTCP */
+		int ignoredTTCP = 0;
 		for (Entry<Integer, Set<Integer>> relation : subsystemToTTCP.entrySet()) {
 			SubSystem subsystem = objectMapper.subSystems.get(relation.getKey());
 			for (int ttcpId : relation.getValue()) {
-				TTCPartition ttcp = objectMapper.ttcPartitions.get(ttcpId);
-				subsystem.getTtcPartitions().add(ttcp);
-				ttcp.setSubsystem(subsystem);
+				try {
+					TTCPartition ttcp = objectMapper.ttcPartitions.get(ttcpId);
+					ttcp.setSubsystem(subsystem);
+					subsystem.getTtcPartitions().add(ttcp);
+				} catch (NullPointerException e) {
+					ignoredTTCP++;
+				}
 			}
 		}
+		logger.warn("Ignored ttcp in subsystems " + ignoredTTCP);
 
 	}
 
@@ -207,6 +249,60 @@ public class RelationMapper implements Serializable {
 		return result;
 	}
 
+	private rcms.utilities.hwcfg.eq.FMM getTopFMMForPartition(DAQPartition dp, String ttcpName) {
+
+		if ("CPM-PRI".equals(ttcpName) || "CPM-SEC".equals(ttcpName)) {
+			return null;
+		}
+
+		String triggerName = "TCDS-PRI";
+
+		Trigger trigger;
+		try {
+			trigger = dp.getDAQPartitionSet().getEquipmentSet().getTriggerByName(triggerName);
+		} catch (HardwareConfigurationException e) {
+			e.printStackTrace();
+			return null;
+		}
+
+		// Find the ICI
+		TCDSiCI ici;
+		try {
+			ici = trigger.getICIByTTCPName(ttcpName);
+		} catch (HardwareConfigurationException e) {
+			// for LPM/LTC partitions it is normal that some of them will have
+			// no fmm. They are unused in the CDAQ config. You will find no FEDs
+			// in these partitions =.
+			// FIXME: encode in the data model, that this partition has no FMM
+			// (and also no PI and no CI).
+			return null;
+		}
+
+		rcms.utilities.hwcfg.eq.FMM pi = null;
+		// Find the PI connected to this partition
+		for (FMMTriggerLink ftl : dp.getDAQPartitionSet().getEquipmentSet().getFMMTriggerLinks())
+			if (ftl.getTriggerId() == trigger.getId() && ftl.getLPMNr() == ici.getPMNr()
+					&& ftl.getiCINr() == ici.getICINr()) {
+				pi = dp.getDAQPartitionSet().getEquipmentSet().getFMMs().get(ftl.getFMMId());
+			}
+
+		if (pi == null) {
+			return null;
+		}
+
+		// Find the FMM connected to the PI
+		for (FMMFMMLink fmmfmm : dp.getDAQPartitionSet().getEquipmentSet().getFMMFMMLinks()) {
+			if (fmmfmm.getTargetFMMId() == pi.getId()) {
+
+				rcms.utilities.hwcfg.eq.FMM fmm = dp.getDAQPartitionSet().getEquipmentSet().getFMMs()
+						.get(fmmfmm.getSourceFMMId());
+				return fmm;
+			}
+		}
+
+		return null;
+	}
+
 	/**
 	 * Retrieve FMM-TTCP relations
 	 * 
@@ -216,14 +312,13 @@ public class RelationMapper implements Serializable {
 
 		Map<Integer, Integer> result = new HashMap<>();
 
-		Set<rcms.utilities.hwcfg.eq.FMM> fmms = objectMapper.getHardwareFmms(daqPartition);
+		for (rcms.utilities.hwcfg.eq.TTCPartition hwttcPartition : daqPartition.getDAQPartitionSet().getEquipmentSet()
+				.getTTCPartitions().values()) {
 
-		for (rcms.utilities.hwcfg.eq.FMM hwfmm : fmms) {
-
-			for (rcms.utilities.hwcfg.eq.FED hwfed : hwfmm.getFEDs().values()) {
-				rcms.utilities.hwcfg.eq.TTCPartition hwttcPartition = hwfed.getTTCPartition();
+			rcms.utilities.hwcfg.eq.FMM hwfmm = getTopFMMForPartition(daqPartition, hwttcPartition.getName());
+			if (hwfmm != null)
 				result.put(hwfmm.hashCode(), hwttcPartition.hashCode());
-			}
+
 		}
 		return result;
 	}
@@ -332,6 +427,28 @@ public class RelationMapper implements Serializable {
 				result.get(hwsubsystem.hashCode()).add(ttcPartition.hashCode());
 			}
 
+		}
+		return result;
+	}
+
+	/**
+	 * Retrieve TTCP-FED relations
+	 * 
+	 * @return map representing TTCP-FED one to many relation
+	 */
+	private Map<Integer, Set<Integer>> mapRelationsTTCPToFed(DAQPartition daqPartition) {
+
+		Map<Integer, Set<Integer>> result = new HashMap<>();
+
+		for (rcms.utilities.hwcfg.eq.TTCPartition hwttcp : daqPartition.getDAQPartitionSet().getEquipmentSet()
+				.getTTCPartitions().values()) {
+
+			HashSet<Integer> children = new HashSet<>();
+			result.put(hwttcp.hashCode(), children);
+
+			for (rcms.utilities.hwcfg.eq.FED hwfed : hwttcp.getFEDs().values()) {
+				children.add(hwfed.hashCode());
+			}
 		}
 		return result;
 	}

@@ -1,7 +1,5 @@
 package rcms.utilities.daqaggregator.data;
 
-import java.io.Serializable;
-
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
@@ -15,7 +13,7 @@ import rcms.utilities.daqaggregator.mappers.Derivable;
  */
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
-public class BUSummary implements Serializable , Derivable{
+public class BUSummary implements Derivable{
 
 	// ----------------------------------------
 	// fields set at beginning of session
@@ -29,7 +27,7 @@ public class BUSummary implements Serializable , Derivable{
 	// ----------------------------------------
 
 	/** event rate in Hz */
-	private int rate;
+	private long rate;
 
 	/** throughput in Byte/s */
 	private long throughput;
@@ -39,9 +37,9 @@ public class BUSummary implements Serializable , Derivable{
 	private double eventSizeStddev;
 
 	/** is this processed or requested ? */
-	private int numEvents;
+	private long numEvents;
 
-	private int numEventsInBU;
+	private long numEventsInBU;
 
 	private int priority;
 
@@ -60,10 +58,10 @@ public class BUSummary implements Serializable , Derivable{
 	private int numFUsCloud;
 
 	/** in percent ? */
-	private float ramDiskUsage;
+	private double ramDiskUsage;
 
 	/** total amount of ramdisk in GB */
-	private float ramDiskTotal;
+	private double ramDiskTotal;
 
 	/** total number of files written */
 	private int numFiles;
@@ -82,189 +80,9 @@ public class BUSummary implements Serializable , Derivable{
 
 	// ----------------------------------------------------------------------
 
-	public int getRate() {
-		return rate;
-	}
+	
 
-	public void setRate(int rate) {
-		this.rate = rate;
-	}
-
-	public long getThroughput() {
-		return throughput;
-	}
-
-	public void setThroughput(long throughput) {
-		this.throughput = throughput;
-	}
-
-	public double getEventSizeMean() {
-		return eventSizeMean;
-	}
-
-	public void setEventSizeMean(double eventSizeMean) {
-		this.eventSizeMean = eventSizeMean;
-	}
-
-	public double getEventSizeStddev() {
-		return eventSizeStddev;
-	}
-
-	public void setEventSizeStddev(double eventSizeStddev) {
-		this.eventSizeStddev = eventSizeStddev;
-	}
-
-	public int getNumEvents() {
-		return numEvents;
-	}
-
-	public void setNumEvents(int numEvents) {
-		this.numEvents = numEvents;
-	}
-
-	public int getNumEventsInBU() {
-		return numEventsInBU;
-	}
-
-	public void setNumEventsInBU(int numEventsInBU) {
-		this.numEventsInBU = numEventsInBU;
-	}
-
-	public int getPriority() {
-		return priority;
-	}
-
-	public void setPriority(int priority) {
-		this.priority = priority;
-	}
-
-	public int getNumRequestsSent() {
-		return numRequestsSent;
-	}
-
-	public void setNumRequestsSent(int numRequestsSent) {
-		this.numRequestsSent = numRequestsSent;
-	}
-
-	public int getNumRequestsUsed() {
-		return numRequestsUsed;
-	}
-
-	public void setNumRequestsUsed(int numRequestsUsed) {
-		this.numRequestsUsed = numRequestsUsed;
-	}
-
-	public int getNumRequestsBlocked() {
-		return numRequestsBlocked;
-	}
-
-	public void setNumRequestsBlocked(int numRequestsBlocked) {
-		this.numRequestsBlocked = numRequestsBlocked;
-	}
-
-	public int getNumFUsHLT() {
-		return numFUsHLT;
-	}
-
-	public void setNumFUsHLT(int numFUsHLT) {
-		this.numFUsHLT = numFUsHLT;
-	}
-
-	public int getNumFUsCrashed() {
-		return numFUsCrashed;
-	}
-
-	public void setNumFUsCrashed(int numFUsCrashed) {
-		this.numFUsCrashed = numFUsCrashed;
-	}
-
-	public int getNumFUsStale() {
-		return numFUsStale;
-	}
-
-	public void setNumFUsStale(int numFUsStale) {
-		this.numFUsStale = numFUsStale;
-	}
-
-	public int getNumFUsCloud() {
-		return numFUsCloud;
-	}
-
-	public void setNumFUsCloud(int numFUsCloud) {
-		this.numFUsCloud = numFUsCloud;
-	}
-
-	public float getRamDiskUsage() {
-		return ramDiskUsage;
-	}
-
-	public void setRamDiskUsage(float ramDiskUsage) {
-		this.ramDiskUsage = ramDiskUsage;
-	}
-
-	public float getRamDiskTotal() {
-		return ramDiskTotal;
-	}
-
-	public void setRamDiskTotal(float ramDiskTotal) {
-		this.ramDiskTotal = ramDiskTotal;
-	}
-
-	public int getNumFiles() {
-		return numFiles;
-	}
-
-	public void setNumFiles(int numFiles) {
-		this.numFiles = numFiles;
-	}
-
-	public int getNumLumisectionsWithFiles() {
-		return numLumisectionsWithFiles;
-	}
-
-	public void setNumLumisectionsWithFiles(int numLumisectionsWithFiles) {
-		this.numLumisectionsWithFiles = numLumisectionsWithFiles;
-	}
-
-	public int getCurrentLumisection() {
-		return currentLumisection;
-	}
-
-	public void setCurrentLumisection(int currentLumisection) {
-		this.currentLumisection = currentLumisection;
-	}
-
-	public int getNumLumisectionsForHLT() {
-		return numLumisectionsForHLT;
-	}
-
-	public void setNumLumisectionsForHLT(int numLumisectionsForHLT) {
-		this.numLumisectionsForHLT = numLumisectionsForHLT;
-	}
-
-	public int getNumLumisectionsOutHLT() {
-		return numLumisectionsOutHLT;
-	}
-
-	public void setNumLumisectionsOutHLT(int numLumisectionsOutHLT) {
-		this.numLumisectionsOutHLT = numLumisectionsOutHLT;
-	}
-
-	public double getFuOutputBandwidthInMB() {
-		return fuOutputBandwidthInMB;
-	}
-
-	public void setFuOutputBandwidthInMB(double fuOutputBandwidthInMB) {
-		this.fuOutputBandwidthInMB = fuOutputBandwidthInMB;
-	}
-
-	public DAQ getDaq() {
-		return daq;
-	}
-
-	public void setDaq(DAQ daq) {
-		this.daq = daq;
-	}
+	
 
 	// ----------------------------------------------------------------------
 
@@ -277,7 +95,7 @@ public class BUSummary implements Serializable , Derivable{
 		int priority = 0;
 
 		/* Averages */
-		int rate = 0;
+		long rate = 0;
 		double eventSizeMean = 0;
 		double eventSizeStddev = 0;
 
@@ -285,8 +103,8 @@ public class BUSummary implements Serializable , Derivable{
 		float ramDiskTotal = 0;
 		float ramDiskUsage = 0;
 		long throughput = 0;
-		int numEvents = 0;
-		int numEventsInBU = 0;
+		long numEvents = 0;
+		long numEventsInBU = 0;
 		int numFiles = 0;
 		int numFUsCloud = 0;
 		int numFUsCrashed = 0;
@@ -366,6 +184,192 @@ public class BUSummary implements Serializable , Derivable{
 		this.setRamDiskUsage(ramDiskUsage);
 		this.setRate(rate);
 		this.setThroughput(throughput);
+	}
+
+	public DAQ getDaq() {
+		return daq;
+	}
+
+	public void setDaq(DAQ daq) {
+		this.daq = daq;
+	}
+
+	public long getNumEvents() {
+		return numEvents;
+	}
+
+	public void setNumEvents(long numEvents) {
+		this.numEvents = numEvents;
+	}
+
+	public long getNumEventsInBU() {
+		return numEventsInBU;
+	}
+
+	public void setNumEventsInBU(long numEventsInBU) {
+		this.numEventsInBU = numEventsInBU;
+	}
+
+	public long getRate() {
+		return rate;
+	}
+
+	public void setRate(long rate) {
+		this.rate = rate;
+	}
+
+	public long getThroughput() {
+		return throughput;
+	}
+
+	public void setThroughput(long throughput) {
+		this.throughput = throughput;
+	}
+
+	public double getEventSizeMean() {
+		return eventSizeMean;
+	}
+
+	public void setEventSizeMean(double eventSizeMean) {
+		this.eventSizeMean = eventSizeMean;
+	}
+
+	public double getEventSizeStddev() {
+		return eventSizeStddev;
+	}
+
+	public void setEventSizeStddev(double eventSizeStddev) {
+		this.eventSizeStddev = eventSizeStddev;
+	}
+
+
+
+	public int getPriority() {
+		return priority;
+	}
+
+	public void setPriority(int priority) {
+		this.priority = priority;
+	}
+
+	public int getNumRequestsSent() {
+		return numRequestsSent;
+	}
+
+	public void setNumRequestsSent(int numRequestsSent) {
+		this.numRequestsSent = numRequestsSent;
+	}
+
+	public int getNumRequestsUsed() {
+		return numRequestsUsed;
+	}
+
+	public void setNumRequestsUsed(int numRequestsUsed) {
+		this.numRequestsUsed = numRequestsUsed;
+	}
+
+	public int getNumRequestsBlocked() {
+		return numRequestsBlocked;
+	}
+
+	public void setNumRequestsBlocked(int numRequestsBlocked) {
+		this.numRequestsBlocked = numRequestsBlocked;
+	}
+
+	public int getNumFUsHLT() {
+		return numFUsHLT;
+	}
+
+	public void setNumFUsHLT(int numFUsHLT) {
+		this.numFUsHLT = numFUsHLT;
+	}
+
+	public int getNumFUsCrashed() {
+		return numFUsCrashed;
+	}
+
+	public void setNumFUsCrashed(int numFUsCrashed) {
+		this.numFUsCrashed = numFUsCrashed;
+	}
+
+	public int getNumFUsStale() {
+		return numFUsStale;
+	}
+
+	public void setNumFUsStale(int numFUsStale) {
+		this.numFUsStale = numFUsStale;
+	}
+
+	public int getNumFUsCloud() {
+		return numFUsCloud;
+	}
+
+	public void setNumFUsCloud(int numFUsCloud) {
+		this.numFUsCloud = numFUsCloud;
+	}
+
+	public double getRamDiskUsage() {
+		return ramDiskUsage;
+	}
+
+	public void setRamDiskUsage(double ramDiskUsage) {
+		this.ramDiskUsage = ramDiskUsage;
+	}
+
+	public double getRamDiskTotal() {
+		return ramDiskTotal;
+	}
+
+	public void setRamDiskTotal(double ramDiskTotal) {
+		this.ramDiskTotal = ramDiskTotal;
+	}
+
+	public int getNumFiles() {
+		return numFiles;
+	}
+
+	public void setNumFiles(int numFiles) {
+		this.numFiles = numFiles;
+	}
+
+	public int getNumLumisectionsWithFiles() {
+		return numLumisectionsWithFiles;
+	}
+
+	public void setNumLumisectionsWithFiles(int numLumisectionsWithFiles) {
+		this.numLumisectionsWithFiles = numLumisectionsWithFiles;
+	}
+
+	public int getCurrentLumisection() {
+		return currentLumisection;
+	}
+
+	public void setCurrentLumisection(int currentLumisection) {
+		this.currentLumisection = currentLumisection;
+	}
+
+	public int getNumLumisectionsForHLT() {
+		return numLumisectionsForHLT;
+	}
+
+	public void setNumLumisectionsForHLT(int numLumisectionsForHLT) {
+		this.numLumisectionsForHLT = numLumisectionsForHLT;
+	}
+
+	public int getNumLumisectionsOutHLT() {
+		return numLumisectionsOutHLT;
+	}
+
+	public void setNumLumisectionsOutHLT(int numLumisectionsOutHLT) {
+		this.numLumisectionsOutHLT = numLumisectionsOutHLT;
+	}
+
+	public double getFuOutputBandwidthInMB() {
+		return fuOutputBandwidthInMB;
+	}
+
+	public void setFuOutputBandwidthInMB(double fuOutputBandwidthInMB) {
+		this.fuOutputBandwidthInMB = fuOutputBandwidthInMB;
 	}
 
 }

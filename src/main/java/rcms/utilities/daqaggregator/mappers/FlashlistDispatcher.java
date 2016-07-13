@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -11,7 +12,8 @@ import org.apache.log4j.Logger;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import rcms.utilities.daqaggregator.data.FED;
-import rcms.utilities.daqaggregator.data.FRL;
+import rcms.utilities.daqaggregator.data.RU;
+import rcms.utilities.daqaggregator.data.TTCPartition;
 import rcms.utilities.daqaggregator.mappers.helper.ContextHelper;
 import rcms.utilities.daqaggregator.mappers.helper.FMMGeoFinder;
 import rcms.utilities.daqaggregator.mappers.helper.FRLGeoFinder;
@@ -19,6 +21,7 @@ import rcms.utilities.daqaggregator.mappers.helper.FedGeoFinder;
 import rcms.utilities.daqaggregator.mappers.helper.FedInFmmGeoFinder;
 import rcms.utilities.daqaggregator.mappers.helper.FedInFrlGeoFinder;
 import rcms.utilities.daqaggregator.mappers.helper.HostnameGeoslotFinder;
+import rcms.utilities.daqaggregator.mappers.helper.TTCPartitionGeoFinder;
 
 public class FlashlistDispatcher {
 
@@ -38,13 +41,15 @@ public class FlashlistDispatcher {
 		FlashlistType type = flashlist.getFlashlistType();
 		switch (type) {
 		case RU:
-			dispatchRowsByInstanceId(flashlist, mappingManager.getObjectMapper().rusById);
+			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().rusByHostname, "context");
+			dispatchRowsByFedIdsWithErrors(flashlist, mappingManager.getObjectMapper().fedsByExpectedId);
 			break;
 		case BU:
-			dispatchRowsByInstanceId(flashlist, mappingManager.getObjectMapper().busById);
+			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().busByHostname, "context"); 
 			break;
 		case FEROL_INPUT_STREAM:
 			dispatchRowsByInstanceId(flashlist, mappingManager.getObjectMapper().fedsById);
+			//TODO: 3geo
 			break;
 		case FMM_INPUT:
 			dispatchRowsByThreeElementGeo(flashlist, mappingManager.getObjectMapper().fedsById.values(),
@@ -61,11 +66,20 @@ public class FlashlistDispatcher {
 			} else {
 				logger.error("runnumber problem " + flashlist.getRowsNode());
 			}
+
+			for (RU ru : mappingManager.getObjectMapper().rus.values()) {
+				if (ru.isEVM())
+					ru.updateFromFlashlist(flashlist.getFlashlistType(), flashlist.getRowsNode().get(0));
+					// additional check hostname
+
+			}
 			break;
 
 		case JOB_CONTROL:
+			//TODO: dispatch by context (in the future) (multiple context by hostname)
 			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().frlPcByHostname, "hostname");
 			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().fmmApplicationByHostname, "hostname");
+			//TODO: should go to RU, BU
 			break;
 
 		case LEVEL_ZERO_FM_SUBSYS: // TODO: SID column
@@ -90,19 +104,60 @@ public class FlashlistDispatcher {
 			}
 			break;
 		case FEROL_CONFIGURATION:
+			//TODO: future - use frlpc.context for mapping
 			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().frlPcByHostname, "context");
 			dispatchRowsByThreeElementGeo(flashlist, mappingManager.getObjectMapper().fedsById.values(),
 					new FedInFrlGeoFinder());
 			break;
 		case FMM_STATUS:
 			dispatchRowsByTwoElementGeo(flashlist, mappingManager.getObjectMapper().fmms.values(), new FMMGeoFinder());
-
-			// dispatch to TTCPartitions
-			// dual FMMs
-			// FMMTrigerLinks
+			dispatchRowsByTwoElementGeo(flashlist, mappingManager.getObjectMapper().ttcPartitions.values(),
+					new TTCPartitionGeoFinder());
 			break;
 		default:
 			break;
+		}
+
+	}
+
+	private void dispatchRowsByFedIdsWithErrors(Flashlist flashlist, Map<Integer, FED> fedsByExpectedId) {
+
+		HashMap<FED, JsonNode> fedToFlashlistRow = new HashMap<>();
+
+		for (JsonNode row : flashlist.getRowsNode()) {
+			if (row.get("fedIdsWithErrors").isArray()) {
+				for (JsonNode fedIdWithErrors : row.get("fedIdsWithErrors")) {
+					int fedId = fedIdWithErrors.asInt();
+					if (fedsByExpectedId.containsKey(fedId)) {
+						FED fed = fedsByExpectedId.get(fedId);
+						fedToFlashlistRow.put(fed, row);
+
+					} else {
+						logger.info(
+								"FED with problem indicated by flashlist RU.fedIdsWithErrors could not be found by id "
+										+ fedId);
+					}
+				}
+				for (JsonNode fedIdWithoutFragment : row.get("fedIdsWithoutFragments")) {
+					int fedId = fedIdWithoutFragment.asInt();
+					if (fedsByExpectedId.containsKey(fedId)) {
+						FED fed = fedsByExpectedId.get(fedId);
+						fedToFlashlistRow.put(fed, row);
+
+					} else {
+						logger.info(
+								"FED with problem indicated by flashlist RU.fedIdsWithoutFragments could not be found by id "
+										+ fedId);
+					}
+				}
+
+			}
+
+		}
+		logger.info("There are " + fedToFlashlistRow.size() + " FEDs with problems (according to RU flashlist)");
+		for (Entry<FED, JsonNode> entry : fedToFlashlistRow.entrySet()) {
+			FED fed = entry.getKey();
+			fed.updateFromFlashlist(flashlist.getFlashlistType(), entry.getValue());
 		}
 
 	}
@@ -127,7 +182,9 @@ public class FlashlistDispatcher {
 		}
 
 		/* prepare data from flashlist */
+		int rows = 0;
 		for (JsonNode row : flashlist.getRowsNode()) {
+			rows++;
 
 			String hostname = row.get(finder.getFlashlistHostnameKey()).asText();
 
@@ -152,6 +209,7 @@ public class FlashlistDispatcher {
 			}
 		}
 
+		
 		MappingReporter.get().increaseMissing(flashlist.getFlashlistType().name(), failed);
 		MappingReporter.get().increaseTotal(flashlist.getFlashlistType().name(), total);
 

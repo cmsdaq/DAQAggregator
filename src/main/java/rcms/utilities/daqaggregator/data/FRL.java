@@ -3,7 +3,10 @@ package rcms.utilities.daqaggregator.data;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -17,7 +20,7 @@ import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
  * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
-public class FRL implements java.io.Serializable, FlashlistUpdatable {
+public class FRL implements FlashlistUpdatable {
 
 	// ----------------------------------------
 	// fields set at beginning of session
@@ -35,8 +38,12 @@ public class FRL implements java.io.Serializable, FlashlistUpdatable {
 	 * maps from 0, 1 to FED. Note that some FRLs have only FED 1 connected but
 	 * not FED 0
 	 */
+	@JsonManagedReference(value = "frl-fed")
 	private final Map<Integer, FED> feds = new HashMap<>();
-	
+
+
+	@JsonIgnore
+	@JsonManagedReference(value = "frl-frlpc")
 	private FRLPc frlPc;
 
 	// ----------------------------------------
@@ -109,7 +116,12 @@ public class FRL implements java.io.Serializable, FlashlistUpdatable {
 			substate = flashlistRow.get("subState").asText();
 			url = flashlistRow.get("context").asText();
 		}
-		
+
+	}
+
+	@Override
+	public void clean() {
+		// nothing to do
 	}
 
 	public FRLPc getFrlPc() {
@@ -118,6 +130,61 @@ public class FRL implements java.io.Serializable, FlashlistUpdatable {
 
 	public void setFrlPc(FRLPc frlPc) {
 		this.frlPc = frlPc;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((feds == null) ? 0 : feds.hashCode());
+		//result = prime * result + ((frlPc == null) ? 0 : frlPc.hashCode());
+		result = prime * result + geoSlot;
+		result = prime * result + ((state == null) ? 0 : state.hashCode());
+		result = prime * result + ((substate == null) ? 0 : substate.hashCode());
+		result = prime * result + ((type == null) ? 0 : type.hashCode());
+		result = prime * result + ((url == null) ? 0 : url.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		FRL other = (FRL) obj;
+		if (feds == null) {
+			if (other.feds != null)
+				return false;
+		} else if (!feds.equals(other.feds))
+			return false;
+//		if (frlPc == null) {
+//			if (other.frlPc != null)
+//				return false;
+//		} else if (!frlPc.equals(other.frlPc))
+//			return false;
+		if (geoSlot != other.geoSlot)
+			return false;
+		if (state == null) {
+			if (other.state != null)
+				return false;
+		} else if (!state.equals(other.state))
+			return false;
+		if (substate == null) {
+			if (other.substate != null)
+				return false;
+		} else if (!substate.equals(other.substate))
+			return false;
+		if (type != other.type)
+			return false;
+		if (url == null) {
+			if (other.url != null)
+				return false;
+		} else if (!url.equals(other.url))
+			return false;
+		return true;
 	}
 
 	// ----------------------------------------------------------------------

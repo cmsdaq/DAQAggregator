@@ -1,6 +1,12 @@
 package rcms.utilities.daqaggregator.data;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -16,7 +22,7 @@ import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
  */
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
-public class TTCPartition implements java.io.Serializable, FlashlistUpdatable, Derivable {
+public class TTCPartition implements FlashlistUpdatable, Derivable {
 
 	// ----------------------------------------
 	// fields set at beginning of session
@@ -27,8 +33,10 @@ public class TTCPartition implements java.io.Serializable, FlashlistUpdatable, D
 	private boolean masked;
 
 	/** can be null */
+	@JsonBackReference(value = "fmm-ttcp")
 	private FMM fmm;
-	
+
+	@JsonBackReference(value = "subsystem-ttcp")
 	private SubSystem subsystem;
 
 	// ----------------------------------------
@@ -40,6 +48,9 @@ public class TTCPartition implements java.io.Serializable, FlashlistUpdatable, D
 	private float percentWarning;
 
 	private float percentBusy;
+
+	@JsonManagedReference(value = "ttcp-fed")
+	private List<FED> feds = new ArrayList<>();
 
 	public String getTtsState() {
 		return ttsState;
@@ -91,19 +102,25 @@ public class TTCPartition implements java.io.Serializable, FlashlistUpdatable, D
 
 	@Override
 	public void calculateDerivedValues() {
-		masked = false;
 		int maskedFeds = 0;
+		int all = 0;
 		for (FED fed : fmm.getFeds()) {
+			all++;
 			if (fed.isFmmMasked()) {
 				maskedFeds++;
 			}
 		}
 
-		/* TTCPartition is mask if any of FED is masked */
-		if (maskedFeds > 0) {
+		/* TTCPartition is mask if all FEDs are masked */
+		if (maskedFeds == all) {
 			masked = true;
 		}
 
+	}
+
+	@Override
+	public void clean() {
+		masked = false;
 	}
 
 	@Override
@@ -131,6 +148,67 @@ public class TTCPartition implements java.io.Serializable, FlashlistUpdatable, D
 
 	public void setSubsystem(SubSystem subsystem) {
 		this.subsystem = subsystem;
+	}
+
+	public List<FED> getFeds() {
+		return feds;
+	}
+
+	public void setFeds(List<FED> feds) {
+		this.feds = feds;
+	}
+
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((feds == null) ? 0 : feds.hashCode());
+		result = prime * result + (masked ? 1231 : 1237);
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + Float.floatToIntBits(percentBusy);
+		result = prime * result + Float.floatToIntBits(percentWarning);
+		result = prime * result + ((ttsState == null) ? 0 : ttsState.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		TTCPartition other = (TTCPartition) obj;
+		if (feds == null) {
+			if (other.feds != null)
+				return false;
+		} else if (!feds.equals(other.feds))
+			return false;
+		if (masked != other.masked)
+			return false;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		if (Float.floatToIntBits(percentBusy) != Float.floatToIntBits(other.percentBusy))
+			return false;
+		if (Float.floatToIntBits(percentWarning) != Float.floatToIntBits(other.percentWarning))
+			return false;
+		if (ttsState == null) {
+			if (other.ttsState != null)
+				return false;
+		} else if (!ttsState.equals(other.ttsState))
+			return false;
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "TTCPartition [name=" + name + ", masked=" + masked + ", ttsState=" + ttsState + ", percentWarning="
+				+ percentWarning + ", percentBusy=" + percentBusy + ", feds=" + feds + "]";
 	}
 
 }

@@ -68,6 +68,9 @@ public class RU implements Serializable, FlashlistUpdatable, Derivable {
 	/** requests from BUs ? */
 	private int requests;
 
+	private int incompleteSuperFragmentCount;
+	
+	private String status;
 	// ----------------------------------------------------------------------
 
 	public String getStateName() {
@@ -76,6 +79,14 @@ public class RU implements Serializable, FlashlistUpdatable, Derivable {
 
 	public void setStateName(String stateName) {
 		this.stateName = stateName;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
 	}
 
 	public String getErrorMsg() {
@@ -205,6 +216,15 @@ public class RU implements Serializable, FlashlistUpdatable, Derivable {
 				+ ", eventsInRU=" + eventsInRU + "]";
 	}
 
+
+	public int getIncompleteSuperFragmentCount() {
+		return incompleteSuperFragmentCount;
+	}
+
+	public void setIncompleteSuperFragmentCount(int incompleteSuperFragmentCount) {
+		this.incompleteSuperFragmentCount = incompleteSuperFragmentCount;
+	}
+
 	@Override
 	public void calculateDerivedValues() {
 
@@ -239,7 +259,15 @@ public class RU implements Serializable, FlashlistUpdatable, Derivable {
 	@Override
 	public void updateFromFlashlist(FlashlistType flashlistType, JsonNode flashlistRow) {
 
-		if (flashlistType == FlashlistType.RU) {
+		/* ignore data from RU flashlist for EVM */
+		if (isEVM && flashlistType == FlashlistType.RU)
+			return;
+		
+		/**
+		 * For dispatching Flashlist RU to RU objects and flashist EVM to EVM
+		 * objects see {@link FlashlistDispatcher}
+		 */
+		if (flashlistType == FlashlistType.RU || flashlistType == FlashlistType.EVM) {
 			// direct values
 
 			this.setStateName(flashlistRow.get("stateName").asText());
@@ -250,6 +278,7 @@ public class RU implements Serializable, FlashlistUpdatable, Derivable {
 			this.fragmentsInRU = flashlistRow.get("fragmentCount").asInt();
 			this.superFragmentSizeMean = flashlistRow.get("superFragmentSize").asInt();
 			this.superFragmentSizeStddev = flashlistRow.get("superFragmentSizeStdDev").asInt();
+			this.incompleteSuperFragmentCount = flashlistRow.get("incompleteSuperFragmentCount").asInt();
 
 			// derived values
 			this.throughput = rate * superFragmentSizeMean;
@@ -257,5 +286,101 @@ public class RU implements Serializable, FlashlistUpdatable, Derivable {
 		}
 	}
 	
+	
+
+	@Override
+	public void clean() {
+		// nothing to do
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((errorMsg == null) ? 0 : errorMsg.hashCode());
+		result = prime * result + eventsInRU;
+		result = prime * result + fragmentsInRU;
+		result = prime * result + ((hostname == null) ? 0 : hostname.hashCode());
+		result = prime * result + incompleteSuperFragmentCount;
+		result = prime * result + ((infoMsg == null) ? 0 : infoMsg.hashCode());
+		result = prime * result + instance;
+		result = prime * result + (isEVM ? 1231 : 1237);
+		result = prime * result + (masked ? 1231 : 1237);
+		result = prime * result + Float.floatToIntBits(rate);
+		result = prime * result + requests;
+		result = prime * result + ((stateName == null) ? 0 : stateName.hashCode());
+		result = prime * result + ((status == null) ? 0 : status.hashCode());
+		result = prime * result + Float.floatToIntBits(superFragmentSizeMean);
+		result = prime * result + Float.floatToIntBits(superFragmentSizeStddev);
+		result = prime * result + Float.floatToIntBits(throughput);
+		result = prime * result + ((warnMsg == null) ? 0 : warnMsg.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		RU other = (RU) obj;
+		if (errorMsg == null) {
+			if (other.errorMsg != null)
+				return false;
+		} else if (!errorMsg.equals(other.errorMsg))
+			return false;
+		if (eventsInRU != other.eventsInRU)
+			return false;
+		if (fragmentsInRU != other.fragmentsInRU)
+			return false;
+		if (hostname == null) {
+			if (other.hostname != null)
+				return false;
+		} else if (!hostname.equals(other.hostname))
+			return false;
+		if (incompleteSuperFragmentCount != other.incompleteSuperFragmentCount)
+			return false;
+		if (infoMsg == null) {
+			if (other.infoMsg != null)
+				return false;
+		} else if (!infoMsg.equals(other.infoMsg))
+			return false;
+		if (instance != other.instance)
+			return false;
+		if (isEVM != other.isEVM)
+			return false;
+		if (masked != other.masked)
+			return false;
+		if (Float.floatToIntBits(rate) != Float.floatToIntBits(other.rate))
+			return false;
+		if (requests != other.requests)
+			return false;
+		if (stateName == null) {
+			if (other.stateName != null)
+				return false;
+		} else if (!stateName.equals(other.stateName))
+			return false;
+		if (status == null) {
+			if (other.status != null)
+				return false;
+		} else if (!status.equals(other.status))
+			return false;
+		if (Float.floatToIntBits(superFragmentSizeMean) != Float.floatToIntBits(other.superFragmentSizeMean))
+			return false;
+		if (Float.floatToIntBits(superFragmentSizeStddev) != Float.floatToIntBits(other.superFragmentSizeStddev))
+			return false;
+		if (Float.floatToIntBits(throughput) != Float.floatToIntBits(other.throughput))
+			return false;
+		if (warnMsg == null) {
+			if (other.warnMsg != null)
+				return false;
+		} else if (!warnMsg.equals(other.warnMsg))
+			return false;
+		return true;
+	}
+
+
 
 }
