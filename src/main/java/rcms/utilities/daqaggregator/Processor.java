@@ -2,6 +2,8 @@ package rcms.utilities.daqaggregator;
 
 import java.io.IOException;
 
+import rcms.utilities.daqaggregator.persistence.PersistorManager;
+
 public class Processor {
 
 	public static void main (String[] args){
@@ -12,9 +14,9 @@ public class Processor {
 	
 
 	public static void convertToJson(){
-		PersistorManager persistorManager = new PersistorManager("/tmp/mgladki/persistence/");
+		PersistorManager persistorManager = new PersistorManager("/tmp/mgladki/snapshots-2/");
 		try {
-			persistorManager.convertSnapshots("/tmp/mgladki/daq-24h-json/");
+			persistorManager.convertSnapshots("/tmp/mgladki/snapshots-test/");
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}

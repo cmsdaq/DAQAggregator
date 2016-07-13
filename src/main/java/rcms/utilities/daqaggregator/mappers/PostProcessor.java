@@ -87,6 +87,8 @@ public class PostProcessor {
 		int feds = 0;
 		int fedsFmmMasked = 0;
 		int fedsFrlMasked = 0;
+		int fedsInError = 0;
+		int fedsFragmentMissing = 0;
 		for (FMMApplication fmma : daq.getFmmApplications()) {
 			for (FMM fmm : fmma.getFmms()) {
 				for (FED fed : fmm.getFeds()) {
@@ -95,11 +97,15 @@ public class PostProcessor {
 						fedsFmmMasked++;
 					if (fed.isFrlMasked())
 						fedsFrlMasked++;
+					if (fed.isRuFedInError())
+						fedsInError++;
+					if (fed.isRuFedWitioutFragments())
+						fedsFragmentMissing++;
 				}
 			}
 		}
-		logger.info("FED raport: [" + fedsFmmMasked + "|" + fedsFrlMasked + "]/" + feds
-				+ ", [fmm masked|frl masked]/all FEDS");
+		logger.info("FED raport: [" + fedsFmmMasked + "|" + fedsFrlMasked + "|" + fedsInError + "|"
+				+ fedsFragmentMissing + "]/" + feds + ", [fmm masked|frl masked|in error|missing fragments]/all FEDS");
 	}
 
 	private void calculateDerivedValuesForSubFeds() {

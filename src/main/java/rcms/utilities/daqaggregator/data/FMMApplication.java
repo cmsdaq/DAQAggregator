@@ -17,7 +17,7 @@ import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
  * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
-public class FMMApplication implements java.io.Serializable, FlashlistUpdatable {
+public class FMMApplication implements FlashlistUpdatable {
 
 	// ----------------------------------------
 	// fields set at beginning of session
@@ -26,7 +26,8 @@ public class FMMApplication implements java.io.Serializable, FlashlistUpdatable 
 	private DAQ daq;
 
 	private String hostname;
-
+	
+	private int port;
 
 	private final List<FMM> fmms = new ArrayList<FMM>();
 
@@ -54,9 +55,16 @@ public class FMMApplication implements java.io.Serializable, FlashlistUpdatable 
 		return hostname;
 	}
 
-
 	public List<FMM> getFmms() {
 		return fmms;
+	}
+
+	public int getPort() {
+		return port;
+	}
+
+	public void setPort(int port) {
+		this.port = port;
 	}
 
 	public void setDaq(DAQ daq) {
@@ -66,7 +74,6 @@ public class FMMApplication implements java.io.Serializable, FlashlistUpdatable 
 	public void setHostname(String hostname) {
 		this.hostname = hostname;
 	}
-
 
 	@Override
 	public String toString() {
@@ -82,7 +89,7 @@ public class FMMApplication implements java.io.Serializable, FlashlistUpdatable 
 			JsonNode rows = jobTable.get("rows");
 
 			for (JsonNode row : rows) {
-
+				//TODO: get the row with matching jid to the context (additional field)
 				String status = row.get("status").asText();
 
 				// if not alive than crashed, if no data than default value
@@ -95,6 +102,44 @@ public class FMMApplication implements java.io.Serializable, FlashlistUpdatable 
 		}
 	}
 
+	@Override
+	public void clean() {
+		this.crashed = false;
+	}
 	// ----------------------------------------------------------------------
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (crashed ? 1231 : 1237);
+		result = prime * result + ((fmms == null) ? 0 : fmms.hashCode());
+		result = prime * result + ((hostname == null) ? 0 : hostname.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		FMMApplication other = (FMMApplication) obj;
+		if (crashed != other.crashed)
+			return false;
+		if (fmms == null) {
+			if (other.fmms != null)
+				return false;
+		} else if (!fmms.equals(other.fmms))
+			return false;
+		if (hostname == null) {
+			if (other.hostname != null)
+				return false;
+		} else if (!hostname.equals(other.hostname))
+			return false;
+		return true;
+	}
 
 }
