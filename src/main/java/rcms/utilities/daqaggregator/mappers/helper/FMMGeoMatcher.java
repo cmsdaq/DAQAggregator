@@ -2,7 +2,8 @@ package rcms.utilities.daqaggregator.mappers.helper;
 
 import rcms.utilities.daqaggregator.data.FMM;
 
-public class FMMGeoFinder implements HostnameGeoslotFinder<FMM> {
+public class FMMGeoMatcher extends TwoElementGeoMatcher<FMM> {
+
 
 	@Override
 	public String getHostname(FMM fmm) {
@@ -27,5 +28,7 @@ public class FMMGeoFinder implements HostnameGeoslotFinder<FMM> {
 	public String getFlashlistGeoslotKey() {
 		return "geoslot";
 	}
+
+	
 
 }

@@ -13,7 +13,34 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.smile.SmileFactory;
 
+import rcms.utilities.daqaggregator.data.BU;
+import rcms.utilities.daqaggregator.data.BUSummary;
 import rcms.utilities.daqaggregator.data.DAQ;
+import rcms.utilities.daqaggregator.data.FED;
+import rcms.utilities.daqaggregator.data.FEDBuilder;
+import rcms.utilities.daqaggregator.data.FEDBuilderSummary;
+import rcms.utilities.daqaggregator.data.FMM;
+import rcms.utilities.daqaggregator.data.FMMApplication;
+import rcms.utilities.daqaggregator.data.FRL;
+import rcms.utilities.daqaggregator.data.FRLPc;
+import rcms.utilities.daqaggregator.data.RU;
+import rcms.utilities.daqaggregator.data.SubFEDBuilder;
+import rcms.utilities.daqaggregator.data.SubSystem;
+import rcms.utilities.daqaggregator.data.TTCPartition;
+import rcms.utilities.daqaggregator.data.mixin.BUMixIn;
+import rcms.utilities.daqaggregator.data.mixin.BUSummaryMixIn;
+import rcms.utilities.daqaggregator.data.mixin.DAQMixIn;
+import rcms.utilities.daqaggregator.data.mixin.FEDBuilderMixIn;
+import rcms.utilities.daqaggregator.data.mixin.FEDBuilderSummaryMixIn;
+import rcms.utilities.daqaggregator.data.mixin.FEDMixIn;
+import rcms.utilities.daqaggregator.data.mixin.FMMApplicationMixIn;
+import rcms.utilities.daqaggregator.data.mixin.FMMMixIn;
+import rcms.utilities.daqaggregator.data.mixin.FRLMixIn;
+import rcms.utilities.daqaggregator.data.mixin.FRLPcMixIn;
+import rcms.utilities.daqaggregator.data.mixin.RUMixIn;
+import rcms.utilities.daqaggregator.data.mixin.SubFEDBuilderMixIn;
+import rcms.utilities.daqaggregator.data.mixin.SubSystemMixIn;
+import rcms.utilities.daqaggregator.data.mixin.TTCPartitionMixIn;
 
 /**
  * Persists DAQ structure in multiple formats format
@@ -25,19 +52,45 @@ public class StructureSerializer {
 
 	private static final Logger logger = Logger.getLogger(StructureSerializer.class);
 
+	
+	private void addMixins(ObjectMapper objectMapper){
+		objectMapper.addMixIn(BU.class, BUMixIn.class);
+		objectMapper.addMixIn(BUSummary.class, BUSummaryMixIn.class);
+		objectMapper.addMixIn(DAQ.class, DAQMixIn.class);
+		objectMapper.addMixIn(FED.class, FEDMixIn.class);
+		objectMapper.addMixIn(FEDBuilder.class, FEDBuilderMixIn.class);
+		objectMapper.addMixIn(FEDBuilderSummary.class, FEDBuilderSummaryMixIn.class);
+		objectMapper.addMixIn(FMM.class, FMMMixIn.class);
+		objectMapper.addMixIn(FMMApplication.class, FMMApplicationMixIn.class);
+		objectMapper.addMixIn(FRL.class, FRLMixIn.class);
+		objectMapper.addMixIn(FRLPc.class, FRLPcMixIn.class);
+		objectMapper.addMixIn(RU.class, RUMixIn.class);
+		objectMapper.addMixIn(SubFEDBuilder.class, SubFEDBuilderMixIn.class);
+		objectMapper.addMixIn(SubSystem.class, SubSystemMixIn.class);
+		objectMapper.addMixIn(TTCPartition.class, TTCPartitionMixIn.class);
+	}
+
+
 	public String serializeToSmile(DAQ daq, String name, String folder)
 			throws JsonGenerationException, JsonMappingException, IOException {
 		File file = new File(folder + name + ".smile");
-		ObjectMapper mapper = new ObjectMapper(new SmileFactory());
-		mapper.writeValue(file, daq);
+		ObjectMapper objectMapper = new ObjectMapper(new SmileFactory());
+
+		addMixins(objectMapper);
+
+		objectMapper.writeValue(file, daq);
 		return file.getAbsolutePath();
 	}
 
-	public void serializeToJSON(DAQ daq, String name, String folder)
+	public String serializeToJSON(DAQ daqSnapshot, String name, String folder)
 			throws JsonGenerationException, JsonMappingException, IOException {
 		File file = new File(folder + name + ".json");
 		ObjectMapper mapper = new ObjectMapper();
-		mapper.writerWithDefaultPrettyPrinter().writeValue(file, daq);
+
+		addMixins(mapper);
+		mapper.writerWithDefaultPrettyPrinter().writeValue(file, daqSnapshot);
+
+		return file.getAbsolutePath();
 	}
 
 	public DAQ deserializeFromSmile(String filepath) {

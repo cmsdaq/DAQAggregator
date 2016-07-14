@@ -1,8 +1,5 @@
 package rcms.utilities.daqaggregator.data;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-
 import rcms.utilities.daqaggregator.mappers.Derivable;
 
 /**
@@ -12,8 +9,8 @@ import rcms.utilities.daqaggregator.mappers.Derivable;
  * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
  */
 
-@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
-public class BUSummary implements Derivable{
+
+public class BUSummary implements Derivable {
 
 	// ----------------------------------------
 	// fields set at beginning of session
@@ -21,6 +18,8 @@ public class BUSummary implements Derivable{
 
 	/** parent */
 	private DAQ daq;
+
+	private final String id = "busummary";
 
 	// ----------------------------------------
 	// fields updated periodically
@@ -95,11 +94,11 @@ public class BUSummary implements Derivable{
 		int priority = 0;
 
 		/* Averages */
-		long rate = 0;
 		double eventSizeMean = 0;
 		double eventSizeStddev = 0;
 
 		/* sums */
+		long rate = 0;
 		float ramDiskTotal = 0;
 		float ramDiskUsage = 0;
 		long throughput = 0;
@@ -155,9 +154,8 @@ public class BUSummary implements Derivable{
 			
 		}
 
-		/* avarage values */
+		/* average values */
 		if ( numberOfBus > 0 ) {
-			rate = rate / numberOfBus;
 			eventSizeMean = eventSizeMean / numberOfBus;
 			eventSizeStddev = Math.sqrt(eventSizeStddev);
 		}
@@ -370,6 +368,10 @@ public class BUSummary implements Derivable{
 
 	public void setFuOutputBandwidthInMB(double fuOutputBandwidthInMB) {
 		this.fuOutputBandwidthInMB = fuOutputBandwidthInMB;
+	}
+
+	public String getId() {
+		return id;
 	}
 
 }

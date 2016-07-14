@@ -2,8 +2,6 @@ package rcms.utilities.daqaggregator.data;
 
 import java.util.Comparator;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import rcms.utilities.daqaggregator.mappers.FlashlistType;
@@ -16,7 +14,6 @@ import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
  * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
  *
  */
-@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
 public class BU implements FlashlistUpdatable {
 
 	// ----------------------------------------

@@ -2,12 +2,7 @@ package rcms.utilities.daqaggregator.data;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import rcms.utilities.daqaggregator.mappers.Derivable;
@@ -21,7 +16,6 @@ import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
  * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
  */
 
-@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
 public class TTCPartition implements FlashlistUpdatable, Derivable {
 
 	// ----------------------------------------
@@ -33,10 +27,8 @@ public class TTCPartition implements FlashlistUpdatable, Derivable {
 	private boolean masked;
 
 	/** can be null */
-	@JsonBackReference(value = "fmm-ttcp")
 	private FMM fmm;
 
-	@JsonBackReference(value = "subsystem-ttcp")
 	private SubSystem subsystem;
 
 	// ----------------------------------------
@@ -49,7 +41,6 @@ public class TTCPartition implements FlashlistUpdatable, Derivable {
 
 	private float percentBusy;
 
-	@JsonManagedReference(value = "ttcp-fed")
 	private List<FED> feds = new ArrayList<>();
 
 	public String getTtsState() {
@@ -132,7 +123,7 @@ public class TTCPartition implements FlashlistUpdatable, Derivable {
 			String warningKey = "outputFractionWarning";
 			String ttsStateKey = "outputState";
 			String output = "A";
-			if (fmm.takeB)
+			if (fmm.isTakeB())
 				output = "B";
 
 			this.percentBusy = (float) flashlistRow.get(busyKey + output).asDouble() * 100;

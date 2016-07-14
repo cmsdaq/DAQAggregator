@@ -3,10 +3,7 @@ package rcms.utilities.daqaggregator.data;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import rcms.utilities.daqaggregator.mappers.FlashlistType;
@@ -18,7 +15,6 @@ import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
  * @author Andre Georg Holzner (andre.georg.holzner@cern.ch)
  * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
  */
-@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
 public class FED implements FlashlistUpdatable {
 
 	// ----------------------------------------
@@ -29,14 +25,11 @@ public class FED implements FlashlistUpdatable {
 	private int id;
 
 	/** the parent FRL */
-	@JsonBackReference(value = "frl-fed")
 	private FRL frl;
 
 	/** can be null */
-	@JsonBackReference(value = "fmm-fed")
 	private FMM fmm;
 
-	@JsonBackReference(value = "ttcp-fed")
 	private TTCPartition ttcp;
 
 	/** which FRL input: 0 or 1 */
@@ -65,7 +58,7 @@ public class FED implements FlashlistUpdatable {
 
 	private long numSCRCerrors;
 
-	private long numFRCerrors;
+	private long numFCRCerrors;
 
 	private long numTriggers;
 
@@ -85,7 +78,9 @@ public class FED implements FlashlistUpdatable {
 	private int ruFedDataCorruption;
 	private int ruFedOutOfSync;
 
-	private boolean ruFedWitioutFragments;
+	private boolean ruFedWithoutFragments;
+	
+	private double frl_AccSlinkFullSec;
 
 	@JsonIgnore
 	private String timestamp;
@@ -171,10 +166,10 @@ public class FED implements FlashlistUpdatable {
 			// TODO or WrongFEDIdDetected
 			this.srcIdReceived = flashlistRow.get("WrongFEDId").asInt();
 			this.numSCRCerrors = flashlistRow.get("LinkCRCError").asInt();
-			this.numFRCerrors = flashlistRow.get("FEDCRCError").asInt();
+			this.numFCRCerrors = flashlistRow.get("FEDCRCError").asInt();
 			this.numTriggers = flashlistRow.get("TriggerNumber").asInt();
-			this.eventCounter = flashlistRow.get("EventCounter").asInt();
-
+			this.eventCounter = flashlistRow.get("EventCounter").asLong();
+			
 			/*
 			 * converting accumulated backpressure from flashlist - subtract
 			 * last from current based on timestamp
@@ -191,13 +186,21 @@ public class FED implements FlashlistUpdatable {
 			this.timestamp = flashlistRow.get("timestamp").asText();
 
 		} else if (flashlistType == FlashlistType.FEROL_CONFIGURATION) {
-
+			
 			if (this.frlIO == 0)
 				this.frlMasked = flashlistRow.get("enableStream0").asBoolean();
 
 			else if (this.frlIO == 1)
 				this.frlMasked = flashlistRow.get("enableStream1").asBoolean();
-		} else if (flashlistType == FlashlistType.RU) {
+		} else if (flashlistType == FlashlistType.FRL_MONITORING) {
+			
+			if (this.frlIO == 0)
+				this.frl_AccSlinkFullSec = flashlistRow.get("AccSlinkFullSec_L0").asDouble();
+					
+			else if (this.frlIO == 1)
+				this.frl_AccSlinkFullSec = flashlistRow.get("AccSlinkFullSec_L1").asDouble();
+				
+		}else if (flashlistType == FlashlistType.RU) {
 
 			int myPositionInErrorArray = -1;
 			int currentPosition = 0;
@@ -216,7 +219,7 @@ public class FED implements FlashlistUpdatable {
 
 			for (JsonNode fedIdWithError : flashlistRow.get("fedIdsWithoutFragments")) {
 				if (srcIdExpected == fedIdWithError.asInt()) {
-					ruFedWitioutFragments = true;
+					ruFedWithoutFragments = true;
 					break;
 				}
 			}
@@ -232,7 +235,7 @@ public class FED implements FlashlistUpdatable {
 		ruFedOutOfSync = 0;
 
 		ruFedInError = false;
-		ruFedWitioutFragments = false;
+		ruFedWithoutFragments = false;
 
 	}
 
@@ -284,12 +287,12 @@ public class FED implements FlashlistUpdatable {
 		this.numSCRCerrors = numSCRCerrors;
 	}
 
-	public long getNumFRCerrors() {
-		return numFRCerrors;
+	public long getNumFCRCerrors() {
+		return numFCRCerrors;
 	}
 
-	public void setNumFRCerrors(long numFRCerrors) {
-		this.numFRCerrors = numFRCerrors;
+	public void setNumFCRCerrors(long numFCRCerrors) {
+		this.numFCRCerrors = numFCRCerrors;
 	}
 
 	public long getNumTriggers() {
@@ -436,12 +439,20 @@ public class FED implements FlashlistUpdatable {
 		this.ruFedOutOfSync = ruFedOutOfSync;
 	}
 
-	public boolean isRuFedWitioutFragments() {
-		return ruFedWitioutFragments;
+	public boolean isRuFedWithoutFragments() {
+		return ruFedWithoutFragments;
 	}
 
-	public void setRuFedWitioutFragments(boolean ruFedWitioutFragments) {
-		this.ruFedWitioutFragments = ruFedWitioutFragments;
+	public void setRuFedWithoutFragments(boolean ruFedWithoutFragments) {
+		this.ruFedWithoutFragments = ruFedWithoutFragments;
+	}
+
+	public double getFrl_AccSlinkFullSec() {
+		return frl_AccSlinkFullSec;
+	}
+
+	public void setFrl_AccSlinkFullSec(double frl_AccSlinkFullSec) {
+		this.frl_AccSlinkFullSec = frl_AccSlinkFullSec;
 	}
 
 	public TTCPartition getTtcp() {
@@ -452,6 +463,8 @@ public class FED implements FlashlistUpdatable {
 		this.ttcp = ttcp;
 	}
 
+	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -461,11 +474,13 @@ public class FED implements FlashlistUpdatable {
 		result = prime * result + (fmmMasked ? 1231 : 1237);
 		result = prime * result + frlIO;
 		result = prime * result + (frlMasked ? 1231 : 1237);
+		long temp;
+		temp = Double.doubleToLongBits(frl_AccSlinkFullSec);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
 		result = prime * result + (hasSLINK ? 1231 : 1237);
 		result = prime * result + (hasTTS ? 1231 : 1237);
 		result = prime * result + id;
-		result = prime * result + ((mainFeds == null) ? 0 : mainFeds.hashCode());
-		result = prime * result + (int) (numFRCerrors ^ (numFRCerrors >>> 32));
+		result = prime * result + (int) (numFCRCerrors ^ (numFCRCerrors >>> 32));
 		result = prime * result + (int) (numSCRCerrors ^ (numSCRCerrors >>> 32));
 		result = prime * result + (int) (numTriggers ^ (numTriggers >>> 32));
 		result = prime * result + Float.floatToIntBits(percentBackpressure);
@@ -476,7 +491,7 @@ public class FED implements FlashlistUpdatable {
 		result = prime * result + ruFedDataCorruption;
 		result = prime * result + (ruFedInError ? 1231 : 1237);
 		result = prime * result + ruFedOutOfSync;
-		result = prime * result + (ruFedWitioutFragments ? 1231 : 1237);
+		result = prime * result + (ruFedWithoutFragments ? 1231 : 1237);
 		result = prime * result + srcIdExpected;
 		result = prime * result + srcIdReceived;
 		result = prime * result + ((ttsState == null) ? 0 : ttsState.hashCode());
@@ -502,18 +517,15 @@ public class FED implements FlashlistUpdatable {
 			return false;
 		if (frlMasked != other.frlMasked)
 			return false;
+		if (Double.doubleToLongBits(frl_AccSlinkFullSec) != Double.doubleToLongBits(other.frl_AccSlinkFullSec))
+			return false;
 		if (hasSLINK != other.hasSLINK)
 			return false;
 		if (hasTTS != other.hasTTS)
 			return false;
 		if (id != other.id)
 			return false;
-		if (mainFeds == null) {
-			if (other.mainFeds != null)
-				return false;
-		} else if (!mainFeds.equals(other.mainFeds))
-			return false;
-		if (numFRCerrors != other.numFRCerrors)
+		if (numFCRCerrors != other.numFCRCerrors)
 			return false;
 		if (numSCRCerrors != other.numSCRCerrors)
 			return false;
@@ -535,7 +547,7 @@ public class FED implements FlashlistUpdatable {
 			return false;
 		if (ruFedOutOfSync != other.ruFedOutOfSync)
 			return false;
-		if (ruFedWitioutFragments != other.ruFedWitioutFragments)
+		if (ruFedWithoutFragments != other.ruFedWithoutFragments)
 			return false;
 		if (srcIdExpected != other.srcIdExpected)
 			return false;

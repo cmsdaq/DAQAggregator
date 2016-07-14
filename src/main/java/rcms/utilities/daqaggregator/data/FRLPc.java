@@ -3,10 +3,6 @@ package rcms.utilities.daqaggregator.data;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import rcms.utilities.daqaggregator.mappers.Derivable;
@@ -20,7 +16,6 @@ import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
  * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
  */
 
-@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
 public class FRLPc implements FlashlistUpdatable, Derivable {
 
 	// ----------------------------------------
@@ -31,8 +26,6 @@ public class FRLPc implements FlashlistUpdatable, Derivable {
 
 	private boolean masked;
 
-	@JsonIgnore
-	@JsonBackReference(value = "frl-frlpc")
 	private List<FRL> frls = new ArrayList<>();
 
 	// ----------------------------------------

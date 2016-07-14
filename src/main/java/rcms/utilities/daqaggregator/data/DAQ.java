@@ -1,12 +1,8 @@
 package rcms.utilities.daqaggregator.data;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import rcms.utilities.daqaggregator.mappers.FlashlistType;
@@ -19,42 +15,20 @@ import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
  * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
  * 
  */
-@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
-@JsonPropertyOrder({ "allFeds", "frlPcs", "subSystems", "fedBuilders", "fmmApplications" })
 public class DAQ implements FlashlistUpdatable {
 
-
+	private final String id = "daq";
 	// ----------------------------------------
 	// fields set at beginning of session
 	// ----------------------------------------
-	private Set<SubSystem> subSystems;
-
-	private List<FRLPc> frlPcs;
-
-	private List<BU> bus;
-
-	private List<FMMApplication> fmmApplications;
 
 	private int sessionId;
 
 	private String dpsetPath;
 
-	private FEDBuilderSummary fedBuilderSummary;
-
-	private BUSummary buSummary;
-
-	private Set<FED> allFeds;
-
-	// TODO: fed builders not in the structure, but addes tmprlly?
-	private final List<FEDBuilder> fedBuilders = new ArrayList<>();
-
 	// ----------------------------------------
 	// fields updated periodically
 	// ----------------------------------------
-
-	public List<FEDBuilder> getFedBuilders() {
-		return fedBuilders;
-	}
 
 	private int runNumber;
 
@@ -66,6 +40,124 @@ public class DAQ implements FlashlistUpdatable {
 	private String levelZeroState;
 	private String lhcMachineMode;
 	private String lhcBeamMode;
+
+	private BUSummary buSummary;
+	private FEDBuilderSummary fedBuilderSummary;
+	private List<SubSystem> subSystems;
+	private List<TTCPartition> ttcPartitions;
+	private List<BU> bus;
+	private List<RU> rus;
+	private List<FEDBuilder> fedBuilders;
+	private List<FMMApplication> fmmApplications;
+	private List<FMM> fmms;
+	private List<FRLPc> frlPcs;
+	private List<FRL> frls;
+	private List<SubFEDBuilder> subFEDBuilders;
+	private Collection<FED> feds;
+
+	public BUSummary getBuSummary() {
+		return buSummary;
+	}
+
+	public void setBuSummary(BUSummary buSummary) {
+		this.buSummary = buSummary;
+	}
+
+	public FEDBuilderSummary getFedBuilderSummary() {
+		return fedBuilderSummary;
+	}
+
+	public void setFedBuilderSummary(FEDBuilderSummary fedBuilderSummary) {
+		this.fedBuilderSummary = fedBuilderSummary;
+	}
+
+	public List<SubSystem> getSubSystems() {
+		return subSystems;
+	}
+
+	public void setSubSystems(List<SubSystem> subSystems) {
+		this.subSystems = subSystems;
+	}
+
+	public List<TTCPartition> getTtcPartitions() {
+		return ttcPartitions;
+	}
+
+	public void setTtcPartitions(List<TTCPartition> ttcPartitions) {
+		this.ttcPartitions = ttcPartitions;
+	}
+
+	public List<BU> getBus() {
+		return bus;
+	}
+
+	public void setBus(List<BU> bus) {
+		this.bus = bus;
+	}
+
+	public List<RU> getRus() {
+		return rus;
+	}
+
+	public void setRus(List<RU> rus) {
+		this.rus = rus;
+	}
+
+	public List<FEDBuilder> getFedBuilders() {
+		return fedBuilders;
+	}
+
+	public void setFedBuilders(List<FEDBuilder> fedBuilders) {
+		this.fedBuilders = fedBuilders;
+	}
+
+	public List<FMMApplication> getFmmApplications() {
+		return fmmApplications;
+	}
+
+	public void setFmmApplications(List<FMMApplication> fmmApplications) {
+		this.fmmApplications = fmmApplications;
+	}
+
+	public List<FMM> getFmms() {
+		return fmms;
+	}
+
+	public void setFmms(List<FMM> fmms) {
+		this.fmms = fmms;
+	}
+
+	public List<FRLPc> getFrlPcs() {
+		return frlPcs;
+	}
+
+	public void setFrlPcs(List<FRLPc> frlPcs) {
+		this.frlPcs = frlPcs;
+	}
+
+	public List<FRL> getFrls() {
+		return frls;
+	}
+
+	public void setFrls(List<FRL> frls) {
+		this.frls = frls;
+	}
+
+	public List<SubFEDBuilder> getSubFEDBuilders() {
+		return subFEDBuilders;
+	}
+
+	public void setSubFEDBuilders(List<SubFEDBuilder> subFEDBuilders) {
+		this.subFEDBuilders = subFEDBuilders;
+	}
+
+	public Collection<FED> getFeds() {
+		return feds;
+	}
+
+	public void setFeds(Collection<FED> feds) {
+		this.feds = feds;
+	}
 
 	public int getRunNumber() {
 		return runNumber;
@@ -91,18 +183,6 @@ public class DAQ implements FlashlistUpdatable {
 		this.daqState = daqState;
 	}
 
-	public List<FRLPc> getFrlPcs() {
-		return frlPcs;
-	}
-
-	public List<BU> getBus() {
-		return bus;
-	}
-
-	public List<FMMApplication> getFmmApplications() {
-		return fmmApplications;
-	}
-
 	public int getSessionId() {
 		return sessionId;
 	}
@@ -111,40 +191,12 @@ public class DAQ implements FlashlistUpdatable {
 		return dpsetPath;
 	}
 
-	public FEDBuilderSummary getFedBuilderSummary() {
-		return fedBuilderSummary;
-	}
-
-	public BUSummary getBuSummary() {
-		return buSummary;
-	}
-
-	public void setFrlPcs(List<FRLPc> frlPcs) {
-		this.frlPcs = frlPcs;
-	}
-
-	public void setBus(List<BU> bus) {
-		this.bus = bus;
-	}
-
-	public void setFmmApplications(List<FMMApplication> fmmApplications) {
-		this.fmmApplications = fmmApplications;
-	}
-
 	public void setSessionId(int sessionId) {
 		this.sessionId = sessionId;
 	}
 
 	public void setDpsetPath(String dpsetPath) {
 		this.dpsetPath = dpsetPath;
-	}
-
-	public void setFedBuilderSummary(FEDBuilderSummary fedBuilderSummary) {
-		this.fedBuilderSummary = fedBuilderSummary;
-	}
-
-	public void setBuSummary(BUSummary buSummary) {
-		this.buSummary = buSummary;
 	}
 
 	@Override
@@ -183,32 +235,15 @@ public class DAQ implements FlashlistUpdatable {
 		this.lhcBeamMode = lhcBeamMode;
 	}
 
-	public Set<SubSystem> getSubSystems() {
-		return subSystems;
-	}
-
-	public void setSubSystems(Set<SubSystem> subSystems) {
-		this.subSystems = subSystems;
-	}
-
 	@Override
 	public void clean() {
 		// nothing to do
-	}
-
-	public Set<FED> getAllFeds() {
-		return allFeds;
-	}
-
-	public void setAllFeds(Set<FED> allFeds) {
-		this.allFeds = allFeds;
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((allFeds == null) ? 0 : allFeds.hashCode());
 		result = prime * result + ((buSummary == null) ? 0 : buSummary.hashCode());
 		result = prime * result + ((bus == null) ? 0 : bus.hashCode());
 		result = prime * result + ((daqState == null) ? 0 : daqState.hashCode());
@@ -236,11 +271,6 @@ public class DAQ implements FlashlistUpdatable {
 		if (getClass() != obj.getClass())
 			return false;
 		DAQ other = (DAQ) obj;
-		if (allFeds == null) {
-			if (other.allFeds != null)
-				return false;
-		} else if (!allFeds.equals(other.allFeds))
-			return false;
 		if (buSummary == null) {
 			if (other.buSummary != null)
 				return false;
@@ -308,6 +338,10 @@ public class DAQ implements FlashlistUpdatable {
 		} else if (!subSystems.equals(other.subSystems))
 			return false;
 		return true;
+	}
+
+	public String getId() {
+		return id;
 	}
 
 }

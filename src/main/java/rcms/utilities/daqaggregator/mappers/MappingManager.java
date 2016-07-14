@@ -1,7 +1,6 @@
 package rcms.utilities.daqaggregator.mappers;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -10,7 +9,6 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import rcms.utilities.daqaggregator.data.DAQ;
-import rcms.utilities.daqaggregator.data.FEDBuilder;
 import rcms.utilities.daqaggregator.data.SubFEDBuilder;
 import rcms.utilities.hwcfg.HardwareConfigurationException;
 import rcms.utilities.hwcfg.dp.DAQPartition;

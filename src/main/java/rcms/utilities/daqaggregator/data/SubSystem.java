@@ -3,7 +3,6 @@ package rcms.utilities.daqaggregator.data;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import rcms.utilities.daqaggregator.mappers.FlashlistType;
@@ -15,7 +14,6 @@ public class SubSystem implements FlashlistUpdatable {
 
 	private String status;
 
-	@JsonManagedReference(value = "subsystem-ttcp")
 	private Set<TTCPartition> ttcPartitions = new HashSet<>();
 
 	public String getName() {
@@ -88,7 +86,7 @@ public class SubSystem implements FlashlistUpdatable {
 		if (ttcPartitions == null) {
 			if (other.ttcPartitions != null)
 				return false;
-		} else if (!ttcPartitions.equals(other.ttcPartitions)){
+		} else if (!ttcPartitions.equals(other.ttcPartitions)) {
 			System.out.println(ttcPartitions);
 			System.out.println(other.ttcPartitions);
 			ttcPartitions.equals(other.ttcPartitions);

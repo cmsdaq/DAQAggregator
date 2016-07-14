@@ -6,13 +6,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Vector;
 import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
 
 import rcms.utilities.daqaggregator.data.DAQ;
 import rcms.utilities.daqaggregator.data.FED;
@@ -74,10 +71,10 @@ public class RelationMapper implements Serializable {
 
 	private void buildRelations() {
 		objectMapper.daq.setBus(new ArrayList<>(objectMapper.bus.values()));
-		objectMapper.daq.setSubSystems(new HashSet<>(objectMapper.subSystems.values()));
+		objectMapper.daq.setSubSystems(new ArrayList<>(objectMapper.subSystems.values()));
 		objectMapper.daq.setFrlPcs(new ArrayList<FRLPc>(objectMapper.frlPcs.values()));
 		objectMapper.daq.setFmmApplications(new ArrayList<FMMApplication>(objectMapper.fmmApplications.values()));
-		objectMapper.daq.getFedBuilders().addAll(objectMapper.fedBuilders.values());
+		objectMapper.daq.setFedBuilders(new ArrayList<>(objectMapper.fedBuilders.values()));
 
 		/* building FMM-FED */
 		int ignoredFeds = 0;
@@ -194,14 +191,14 @@ public class RelationMapper implements Serializable {
 		}
 
 		/* building FRLPc - FRL */
-		// for (Entry<Integer, Set<Integer>> relation : frlPcToFrl.entrySet()) {
-		// FRLPc frlPc = objectMapper.frlPcs.get(relation.getKey());
-		// for (int frlId : relation.getValue()) {
-		// FRL frl = objectMapper.frls.get(frlId);
-		// frlPc.getFrls().add(frl);
-		// frl.setFrlPc(frlPc);
-		// }
-		// }
+		for (Entry<Integer, Set<Integer>> relation : frlPcToFrl.entrySet()) {
+			FRLPc frlPc = objectMapper.frlPcs.get(relation.getKey());
+			for (int frlId : relation.getValue()) {
+				FRL frl = objectMapper.frls.get(frlId);
+				frlPc.getFrls().add(frl);
+				frl.setFrlPc(frlPc);
+			}
+		}
 
 		/* building Subsystsem - TTCP */
 		int ignoredTTCP = 0;

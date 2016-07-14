@@ -1,8 +1,5 @@
 package rcms.utilities.daqaggregator.data;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-
 import rcms.utilities.daqaggregator.mappers.Derivable;
 
 /**
@@ -12,12 +9,13 @@ import rcms.utilities.daqaggregator.mappers.Derivable;
  * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
  */
 
-@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
-public class FEDBuilderSummary implements Derivable{
+public class FEDBuilderSummary implements Derivable {
 
 	// ----------------------------------------
 	// fields set at beginning of session
 	// ----------------------------------------
+
+	private final String id = "fedbuildersummary";
 
 	/** parent */
 	private DAQ daq;
@@ -228,5 +226,9 @@ public class FEDBuilderSummary implements Derivable{
 		if (Float.floatToIntBits(throughput) != Float.floatToIntBits(other.throughput))
 			return false;
 		return true;
+	}
+
+	public String getId() {
+		return id;
 	}
 }
