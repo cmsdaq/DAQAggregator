@@ -192,7 +192,15 @@ public class FED implements FlashlistUpdatable {
 
 			else if (this.frlIO == 1)
 				this.frlMasked = flashlistRow.get("enableStream1").asBoolean();
-		} else if (flashlistType == FlashlistType.RU) {
+		} else if (flashlistType == FlashlistType.FRL_MONITORING) {
+			
+			if (this.frlIO == 0)
+				this.frl_AccSlinkFullSec = flashlistRow.get("AccSlinkFullSec_L0").asDouble();
+					
+			else if (this.frlIO == 1)
+				this.frl_AccSlinkFullSec = flashlistRow.get("AccSlinkFullSec_L1").asDouble();
+				
+		}else if (flashlistType == FlashlistType.RU) {
 
 			int myPositionInErrorArray = -1;
 			int currentPosition = 0;
@@ -455,6 +463,8 @@ public class FED implements FlashlistUpdatable {
 		this.ttcp = ttcp;
 	}
 
+	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -464,10 +474,12 @@ public class FED implements FlashlistUpdatable {
 		result = prime * result + (fmmMasked ? 1231 : 1237);
 		result = prime * result + frlIO;
 		result = prime * result + (frlMasked ? 1231 : 1237);
+		long temp;
+		temp = Double.doubleToLongBits(frl_AccSlinkFullSec);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
 		result = prime * result + (hasSLINK ? 1231 : 1237);
 		result = prime * result + (hasTTS ? 1231 : 1237);
 		result = prime * result + id;
-		result = prime * result + ((mainFeds == null) ? 0 : mainFeds.hashCode());
 		result = prime * result + (int) (numFCRCerrors ^ (numFCRCerrors >>> 32));
 		result = prime * result + (int) (numSCRCerrors ^ (numSCRCerrors >>> 32));
 		result = prime * result + (int) (numTriggers ^ (numTriggers >>> 32));
@@ -505,16 +517,13 @@ public class FED implements FlashlistUpdatable {
 			return false;
 		if (frlMasked != other.frlMasked)
 			return false;
+		if (Double.doubleToLongBits(frl_AccSlinkFullSec) != Double.doubleToLongBits(other.frl_AccSlinkFullSec))
+			return false;
 		if (hasSLINK != other.hasSLINK)
 			return false;
 		if (hasTTS != other.hasTTS)
 			return false;
 		if (id != other.id)
-			return false;
-		if (mainFeds == null) {
-			if (other.mainFeds != null)
-				return false;
-		} else if (!mainFeds.equals(other.mainFeds))
 			return false;
 		if (numFCRCerrors != other.numFCRCerrors)
 			return false;

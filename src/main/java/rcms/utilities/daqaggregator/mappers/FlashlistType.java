@@ -15,7 +15,7 @@ public enum FlashlistType {
 	FEROL_MONITORING("ferolMonitoring", true, false),
 	FEROL_STATUS("ferolStatus", true, true),
 	FEROL_TCP_STREAM("ferolTcpStream", true, false),
-	FRL_MONITORING("frlMonitoring", true, false),
+	FRL_MONITORING("frlMonitoring", true, true),
 	HOST_INFO("hostInfo", true, false),
 	LEVEL_ZERO_FM_DYNAMIC("levelZeroFM_dynamic", false, true),
 	LEVEL_ZERO_FM_STATIC("levelZeroFM_static", true, false),

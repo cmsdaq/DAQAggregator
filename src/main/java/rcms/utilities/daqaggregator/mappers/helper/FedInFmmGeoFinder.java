@@ -1,8 +1,22 @@
 package rcms.utilities.daqaggregator.mappers.helper;
 
-import rcms.utilities.daqaggregator.data.FED;
+import java.util.HashMap;
+import java.util.Map;
 
-public class FedInFmmGeoFinder implements FedGeoFinder{
+import com.fasterxml.jackson.databind.JsonNode;
+
+import rcms.utilities.daqaggregator.data.FED;
+import rcms.utilities.daqaggregator.mappers.Flashlist;
+
+/**
+ * FED geolocation finder in FMM tree
+ * 
+ * For more information see {@link ThreeElementGeoMatcher} documentation
+ * 
+ * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
+ *
+ */
+public class FedInFmmGeoFinder extends ThreeElementGeoMatcher<FED> {
 
 	@Override
 	public String getHostname(FED fed) {
@@ -25,6 +39,21 @@ public class FedInFmmGeoFinder implements FedGeoFinder{
 	@Override
 	public Integer getIO(FED fed) {
 		return fed.getFmmIO();
+	}
+
+	@Override
+	public String getFlashlistHostnameKey() {
+		return "hostname";
+	}
+
+	@Override
+	public String getFlashlistGeoslotKey() {
+		return "geoslot";
+	}
+
+	@Override
+	public String getFlashlistIoKey() {
+		return "io";
 	}
 
 }
