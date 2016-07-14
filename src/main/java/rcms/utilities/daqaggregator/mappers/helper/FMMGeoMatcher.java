@@ -4,7 +4,6 @@ import rcms.utilities.daqaggregator.data.FMM;
 
 public class FMMGeoMatcher extends TwoElementGeoMatcher<FMM> {
 
-
 	@Override
 	public String getHostname(FMM fmm) {
 		try {
