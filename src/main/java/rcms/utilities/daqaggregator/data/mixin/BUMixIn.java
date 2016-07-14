@@ -2,7 +2,6 @@ package rcms.utilities.daqaggregator.data.mixin;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import rcms.utilities.daqaggregator.data.DAQ;
 
@@ -12,7 +11,7 @@ import rcms.utilities.daqaggregator.data.DAQ;
  * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
  *
  */
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "hostname")
+@JsonIdentityInfo(generator = IdGenerators.ObjectUniqueIntIdGenerator.class, property = "@id")
 public interface BUMixIn {
 
 	@JsonIdentityReference(alwaysAsId = true)
