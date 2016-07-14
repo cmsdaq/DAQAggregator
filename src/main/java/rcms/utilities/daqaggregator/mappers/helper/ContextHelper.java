@@ -1,5 +1,11 @@
 package rcms.utilities.daqaggregator.mappers.helper;
 
+/**
+ * This class strips urls to hostname e.g. http://bu-0000:9999 -> bu-0000.cms
+ * 
+ * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
+ *
+ */
 public class ContextHelper {
 
 	public static String getHostnameFromContext(String context) {

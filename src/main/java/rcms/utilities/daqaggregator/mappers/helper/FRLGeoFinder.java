@@ -2,12 +2,12 @@ package rcms.utilities.daqaggregator.mappers.helper;
 
 import rcms.utilities.daqaggregator.data.FRL;
 
-public class FRLGeoFinder implements HostnameGeoslotFinder<FRL> {
+public class FRLGeoFinder extends TwoElementGeoMacher<FRL> {
 
 	@Override
 	public String getHostname(FRL object) {
 		try {
-			return object.getSubFedbuilder().getFrlPc().getHostname();
+			return object.getFrlPc().getHostname();
 		} catch (NullPointerException e) {
 			return null;
 		}
@@ -27,5 +27,5 @@ public class FRLGeoFinder implements HostnameGeoslotFinder<FRL> {
 	public String getFlashlistGeoslotKey() {
 		return "slotNumber";
 	}
-	
+
 }

@@ -2,7 +2,7 @@ package rcms.utilities.daqaggregator.mappers.helper;
 
 import rcms.utilities.daqaggregator.data.TTCPartition;
 
-public class TTCPartitionGeoFinder implements HostnameGeoslotFinder<TTCPartition> {
+public class TTCPartitionGeoFinder extends TwoElementGeoMacher<TTCPartition> {
 
 	@Override
 	public String getHostname(TTCPartition ttcp) {
