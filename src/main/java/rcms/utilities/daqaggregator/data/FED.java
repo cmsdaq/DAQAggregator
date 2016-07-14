@@ -79,6 +79,8 @@ public class FED implements FlashlistUpdatable {
 	private int ruFedOutOfSync;
 
 	private boolean ruFedWithoutFragments;
+	
+	private double frl_AccSlinkFullSec;
 
 	@JsonIgnore
 	private String timestamp;
@@ -166,8 +168,8 @@ public class FED implements FlashlistUpdatable {
 			this.numSCRCerrors = flashlistRow.get("LinkCRCError").asInt();
 			this.numFCRCerrors = flashlistRow.get("FEDCRCError").asInt();
 			this.numTriggers = flashlistRow.get("TriggerNumber").asInt();
-			this.eventCounter = flashlistRow.get("EventCounter").asInt();
-
+			this.eventCounter = flashlistRow.get("EventCounter").asLong();
+			
 			/*
 			 * converting accumulated backpressure from flashlist - subtract
 			 * last from current based on timestamp
@@ -184,7 +186,7 @@ public class FED implements FlashlistUpdatable {
 			this.timestamp = flashlistRow.get("timestamp").asText();
 
 		} else if (flashlistType == FlashlistType.FEROL_CONFIGURATION) {
-
+			
 			if (this.frlIO == 0)
 				this.frlMasked = flashlistRow.get("enableStream0").asBoolean();
 
@@ -435,6 +437,14 @@ public class FED implements FlashlistUpdatable {
 
 	public void setRuFedWithoutFragments(boolean ruFedWithoutFragments) {
 		this.ruFedWithoutFragments = ruFedWithoutFragments;
+	}
+
+	public double getFrl_AccSlinkFullSec() {
+		return frl_AccSlinkFullSec;
+	}
+
+	public void setFrl_AccSlinkFullSec(double frl_AccSlinkFullSec) {
+		this.frl_AccSlinkFullSec = frl_AccSlinkFullSec;
 	}
 
 	public TTCPartition getTtcp() {
