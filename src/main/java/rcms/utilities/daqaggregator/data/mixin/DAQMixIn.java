@@ -5,7 +5,6 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import rcms.utilities.daqaggregator.data.BU;
 import rcms.utilities.daqaggregator.data.BUSummary;
@@ -21,7 +20,7 @@ import rcms.utilities.daqaggregator.data.SubSystem;
  * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
  *
  */
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+@JsonIdentityInfo(generator = IdGenerators.ObjectUniqueIntIdGenerator.class, property = "@id")
 @JsonPropertyOrder({ "sessionId", "runNumber", "lhcMachineMode", "lhcBeamMode", "daqState", "levelZeroState",
 		"dpsetPath", "lastUpdate", "buSummary", "fedBuilderSummary", "subSystems", "ttcPartitions", "bus", "rus",
 		"fmmApplications", "fmms", "fedBuilders", "subFEDBuilders", "frlPcs", "frls", "feds" })
