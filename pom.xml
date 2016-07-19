@@ -3,9 +3,17 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>ch.cern</groupId>
 	<artifactId>DAQAggregator</artifactId>
-	<version>1.0.0</version>
+	<version>1.1.2</version>
 
-
+	<repositories>
+		<repository>
+			<id>snapshots</id>
+			<url>http://dev-daq-expert.cern.ch/artifactory/libs-release-local</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
 	<build>
 		<plugins>
 			<plugin>
@@ -71,6 +79,11 @@
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.11</version>
+		</dependency>
+		<dependency>
+			<groupId>ch.cern</groupId>
+			<artifactId>hwdb</artifactId>
+			<version>1.0</version>
 		</dependency>
 
 	</dependencies>

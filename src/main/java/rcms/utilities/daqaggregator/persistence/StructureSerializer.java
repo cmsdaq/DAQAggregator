@@ -107,6 +107,8 @@ public class StructureSerializer {
 		/* read from smile */
 		ObjectMapper mapper = new ObjectMapper(factory);
 
+		addMixins(mapper);
+		
 		ObjectInputStream in = null;
 		FileInputStream fileIn = null;
 		try {
