@@ -30,9 +30,12 @@ public class PersistorManager {
 
 	private ObjectMapper objectMapper = new ObjectMapper();
 
+	private SnapshotFormat format;
+
 	/** Constructor */
-	public PersistorManager(String persistenceDir) {
+	public PersistorManager(String persistenceDir, SnapshotFormat format) {
 		this.persistenceDir = persistenceDir;
+		this.format = format;
 		instance = this;
 	}
 
@@ -51,12 +54,17 @@ public class PersistorManager {
 			String isoDate = objectMapper.writeValueAsString(new Date(daq.getLastUpdate()));
 
 			StructureSerializer persistor = new StructureSerializer();
-			String filename = persistor.serializeToJSON(daq, isoDate, persistenceDir);
-			// persistor.serializeToJava(daq, isoDate, persistenceDir);
-			// persistor.serializeToBSON(daq, isoDate, persistenceDir);
-			// String filename = persistor.serializeToSmile(daq, isoDate,
-			// persistenceDir);
-
+			String filename = null;
+			switch (format) {
+			case SMILE:
+				filename = persistor.serializeToSmile(daq, isoDate, persistenceDir);
+				break;
+			case JSON:
+				filename = persistor.serializeToJSON(daq, isoDate, persistenceDir);
+				break;
+			default:
+				logger.warn("Format of snapshot not available");
+			}
 			logger.info("Successfully persisted in " + persistenceDir + " as file " + filename);
 			return filename;
 		} catch (IOException e) {

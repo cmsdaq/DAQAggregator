@@ -19,6 +19,7 @@ import rcms.utilities.daqaggregator.mappers.FlashlistManager;
 import rcms.utilities.daqaggregator.mappers.MappingManager;
 import rcms.utilities.daqaggregator.mappers.PostProcessor;
 import rcms.utilities.daqaggregator.persistence.PersistorManager;
+import rcms.utilities.daqaggregator.persistence.SnapshotFormat;
 import rcms.utilities.hwcfg.HWCfgConnector;
 import rcms.utilities.hwcfg.HWCfgDescriptor;
 import rcms.utilities.hwcfg.dp.DAQPartition;
@@ -49,6 +50,7 @@ public class DAQAggregator {
 	protected static String PROPERTYNAME_PROXY_PORT = "socksproxy.port";
 
 	protected static String PERSISTENCE_DIR = "persistence.dir";
+	protected static String PERSISTENCE_FORMAT = "persistence.format";
 
 	protected static DBConnectorIF _dbconn = null;
 	protected static HWCfgConnector _hwconn = null;
@@ -94,7 +96,14 @@ public class DAQAggregator {
 				persistenceDir = "/tmp/snapshots/";
 			}
 
-			PersistorManager persistorManager = new PersistorManager(persistenceDir);
+			String formatProperty = daqAggregatorProperties.getProperty(PERSISTENCE_FORMAT);
+			SnapshotFormat format = SnapshotFormat.SMILE;
+			if (SnapshotFormat.JSON.name().equalsIgnoreCase(formatProperty))
+				format = SnapshotFormat.JSON;
+			else if (SnapshotFormat.SMILE.name().equalsIgnoreCase(formatProperty))
+				format = SnapshotFormat.SMILE;
+
+			PersistorManager persistorManager = new PersistorManager(persistenceDir, format);
 
 			FlashlistManager flashlistManager = null;
 
