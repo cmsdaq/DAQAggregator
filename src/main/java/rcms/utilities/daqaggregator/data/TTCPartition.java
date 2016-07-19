@@ -35,10 +35,17 @@ public class TTCPartition implements FlashlistUpdatable, Derivable {
 	// fields updated periodically
 	// ----------------------------------------
 
+	// @ top level FMM
 	private String ttsState;
+	
+	//TODO: ttsState @ trigger (now)
+	
+	//TODO: ttsState @ PI (in future)
 
+	// @ top level FMM
 	private float percentWarning;
 
+	// @ top level FMM
 	private float percentBusy;
 
 	private List<FED> feds = new ArrayList<>();
