@@ -20,7 +20,7 @@ import rcms.utilities.daqaggregator.data.SubSystem;
  * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
  *
  */
-@JsonIdentityInfo(generator = IdGenerators.ObjectUniqueIntIdGenerator.class, property = "@id")
+@JsonIdentityInfo(generator = IdGenerators.DAQIdGenerator.class, property = "@id")
 @JsonPropertyOrder({ "sessionId", "runNumber", "lhcMachineMode", "lhcBeamMode", "daqState", "levelZeroState",
 		"dpsetPath", "lastUpdate", "buSummary", "fedBuilderSummary", "subSystems", "ttcPartitions", "bus", "rus",
 		"fmmApplications", "fmms", "fedBuilders", "subFEDBuilders", "frlPcs", "frls", "feds" })

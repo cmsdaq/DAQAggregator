@@ -108,7 +108,6 @@ public class FlashlistDispatcher {
 			break;
 		case FRL_MONITORING:
 			// TODO: future - use frlpc.context for mapping
-			printTypesInfo(flashlist);
 			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().frlPcByHostname, "context");
 			dispatchRowsByGeo(flashlist, mappingManager.getObjectMapper().fedsById.values(), new FedInFrlGeoFinder("io"));
 			break;
@@ -123,10 +122,10 @@ public class FlashlistDispatcher {
 
 	}
 
-	private void printTypesInfo(Flashlist flashlist) {
+	private void printFlashListTypeInfo(Flashlist flashlist) {
 		com.fasterxml.jackson.databind.ObjectMapper om = new com.fasterxml.jackson.databind.ObjectMapper();
 		try {
-			logger.warn("FlashlistType========  "+om.writeValueAsString(flashlist.getDefinitionNode()));
+			logger.info("Flashlist schema:  "+om.writeValueAsString(flashlist.getDefinitionNode()));
 		} catch (JsonProcessingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

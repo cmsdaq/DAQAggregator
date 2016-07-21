@@ -168,7 +168,8 @@ public class IdGenerators {
 	           
 	            StringBuilder sb = new StringBuilder(prefix.length() + buHostname.length());
 	           
-	            sb.append(prefix + buHostname);
+	            sb.append(prefix);
+	            sb.append(buHostname);
 	           
 	            return sb.toString();
 	        }
@@ -219,7 +220,8 @@ public class IdGenerators {
 	           
 	            StringBuilder sb = new StringBuilder(prefix.length() + ruHostname.length());
 	           
-	            sb.append(prefix + ruHostname);
+	            sb.append(prefix);
+	            sb.append(ruHostname);
 	           
 	            return sb.toString();
 	        }
@@ -270,7 +272,8 @@ public class IdGenerators {
 	           
 	            StringBuilder sb = new StringBuilder(prefix.length() + frlpcHostname.length());
 	           
-	            sb.append(prefix + frlpcHostname);
+	            sb.append(prefix);
+	            sb.append(frlpcHostname);
 	           
 	            return sb.toString();
 	        }
@@ -321,7 +324,8 @@ public class IdGenerators {
 	           
 	            StringBuilder sb = new StringBuilder(prefix.length() + fedHwcfgDBid.length());
 	           
-	            sb.append(prefix + fedHwcfgDBid);
+	            sb.append(prefix);
+	            sb.append(fedHwcfgDBid);
 	           
 	            return sb.toString();
 	        }
@@ -372,7 +376,8 @@ public class IdGenerators {
 	           
 	            StringBuilder sb = new StringBuilder(prefix.length() + subsysName.length());
 	           
-	            sb.append(prefix + subsysName);
+	            sb.append(prefix);
+	            sb.append(subsysName);
 	           
 	            return sb.toString();
 	        }
@@ -423,7 +428,8 @@ public class IdGenerators {
 	           
 	            StringBuilder sb = new StringBuilder(prefix.length() + ttcpName.length());
 	           
-	            sb.append(prefix + ttcpName);
+	            sb.append(prefix);
+	            sb.append(ttcpName);
 	           
 	            return sb.toString();
 	        }
@@ -474,7 +480,8 @@ public class IdGenerators {
 	           
 	            StringBuilder sb = new StringBuilder(prefix.length() + fedbuilderName.length());
 	           
-	            sb.append(prefix + fedbuilderName);
+	            sb.append(prefix);
+	            sb.append(fedbuilderName);
 	           
 	            return sb.toString();
 	        }
@@ -525,7 +532,8 @@ public class IdGenerators {
 	           
 	            StringBuilder sb = new StringBuilder(prefix.length() + fmmappHostname.length());
 	           
-	            sb.append(prefix + fmmappHostname);
+	            sb.append(prefix);
+	            sb.append(fmmappHostname);
 	           
 	            return sb.toString();
 	        }
@@ -533,7 +541,6 @@ public class IdGenerators {
 	 
 	 public final static class FMMIdGenerator extends Base<String> {
 	        private static final String prefix = "FMM_";
-	        private static final String delimiter = "$";
 	       
 	        private static final long serialVersionUID = 1L;
 
@@ -571,16 +578,18 @@ public class IdGenerators {
 	                return null;
 	            }
 	           
+	            
 	            FMM fmm = (FMM) forPojo;
-
-	            String fmmGeoslot = String.valueOf(fmm.getGeoslot());
-	            String fmmappHostname = fmm.getFmmApplication().getHostname();
+	            
+	            String fmmHwcfgDBId = fmm.getId();
+	            
+	            StringBuilder sb = new StringBuilder(prefix.length() + fmmHwcfgDBId.length());
 	           
-	            StringBuilder sb = new StringBuilder(prefix.length() + fmmGeoslot.length() + delimiter.length() + fmmappHostname.length());
-	           
-	            sb.append(prefix + fmmGeoslot + delimiter + fmmappHostname);
-	           
+	            sb.append(prefix);
+	            sb.append(fmmHwcfgDBId);
+	            
 	            return sb.toString();
+	            
 	        }
 	    }
 	 
@@ -631,7 +640,10 @@ public class IdGenerators {
 	           
 	            StringBuilder sb = new StringBuilder(prefix.length() + ttcpName.length() + delimiter.length() + frlpcHostname.length());
 	           
-	            sb.append(prefix + ttcpName + delimiter + frlpcHostname);
+	            sb.append(prefix);
+	            sb.append(ttcpName);
+	            sb.append(delimiter);
+	            sb.append(frlpcHostname);
 	           
 	            return sb.toString();
 	        }
@@ -680,12 +692,17 @@ public class IdGenerators {
 	            FRL frl = (FRL) forPojo;
 
 	            String frlGeoslot = String.valueOf(frl.getGeoSlot());
-	            String frlpcHostname = frl.getSubFedbuilder().getFrlPc().getHostname();
-	           
+	            
+	            String frlpcHostname = frl.getFrlPc().getHostname();
+	            
 	            StringBuilder sb = new StringBuilder(prefix.length() + frlGeoslot.length() + delimiter.length() + frlpcHostname.length());
 	           
-	            sb.append(prefix + frlpcHostname + delimiter + frlpcHostname);
-	           
+	            sb.append(prefix);
+	            sb.append(frlGeoslot);
+	            sb.append(delimiter);
+	            sb.append(frlpcHostname);
+	            
+	            
 	            return sb.toString();
 	        }
 	    }

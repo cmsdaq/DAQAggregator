@@ -13,7 +13,7 @@ import rcms.utilities.daqaggregator.data.FRL;
  * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
  *
  */
-@JsonIdentityInfo(generator = IdGenerators.ObjectUniqueIntIdGenerator.class, property = "@id")
+@JsonIdentityInfo(generator = IdGenerators.FRLPcIdGenerator.class, property = "@id")
 public interface FRLPcMixIn {
 
 	@JsonIdentityReference(alwaysAsId = true)

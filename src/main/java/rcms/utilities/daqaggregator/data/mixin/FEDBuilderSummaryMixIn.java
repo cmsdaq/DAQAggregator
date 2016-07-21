@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
  * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
  *
  */
-@JsonIdentityInfo(generator = IdGenerators.ObjectUniqueIntIdGenerator.class, property = "@id")
+@JsonIdentityInfo(generator = IdGenerators.FEDBuilderSummaryIdGenerator.class, property = "@id")
 public interface FEDBuilderSummaryMixIn {
 
 	// nothing to alter

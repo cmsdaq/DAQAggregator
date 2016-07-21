@@ -13,7 +13,7 @@ import rcms.utilities.daqaggregator.data.SubFEDBuilder;
  * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
  *
  */
-@JsonIdentityInfo(generator = IdGenerators.ObjectUniqueIntIdGenerator.class, property = "@id")
+@JsonIdentityInfo(generator = IdGenerators.FEDBuilderIdGenerator.class, property = "@id")
 public interface FEDBuilderMixIn {
 
 	@JsonIdentityReference(alwaysAsId = true)

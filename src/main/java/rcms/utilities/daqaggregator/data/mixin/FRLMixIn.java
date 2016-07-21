@@ -15,7 +15,7 @@ import rcms.utilities.daqaggregator.data.SubFEDBuilder;
  * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
  *
  */
-@JsonIdentityInfo(generator = IdGenerators.ObjectUniqueIntIdGenerator.class, property = "@id")
+@JsonIdentityInfo(generator = IdGenerators.FRLIdGenerator.class, property = "@id")
 public interface FRLMixIn {
 
 	@JsonIdentityReference(alwaysAsId = true)

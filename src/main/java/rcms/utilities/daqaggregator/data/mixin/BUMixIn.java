@@ -11,7 +11,7 @@ import rcms.utilities.daqaggregator.data.DAQ;
  * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
  *
  */
-@JsonIdentityInfo(generator = IdGenerators.ObjectUniqueIntIdGenerator.class, property = "@id")
+@JsonIdentityInfo(generator = IdGenerators.BUIdGenerator.class, property = "@id")
 public interface BUMixIn {
 
 	@JsonIdentityReference(alwaysAsId = true)

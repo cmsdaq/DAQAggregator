@@ -15,7 +15,7 @@ import rcms.utilities.daqaggregator.data.SubSystem;
  * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
  *
  */
-@JsonIdentityInfo(generator = IdGenerators.ObjectUniqueIntIdGenerator.class, property = "@id")
+@JsonIdentityInfo(generator = IdGenerators.TTCPartitionIdGenerator.class, property = "@id")
 public interface TTCPartitionMixIn {
 
 	@JsonIdentityReference(alwaysAsId = true)

@@ -14,7 +14,7 @@ import rcms.utilities.daqaggregator.data.FMM;
  * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
  *
  */
-@JsonIdentityInfo(generator = IdGenerators.ObjectUniqueIntIdGenerator.class, property = "@id")
+@JsonIdentityInfo(generator = IdGenerators.FMMApplicationIdGenerator.class, property = "@id")
 public interface FMMApplicationMixIn {
 
 	@JsonIdentityReference(alwaysAsId = true)
