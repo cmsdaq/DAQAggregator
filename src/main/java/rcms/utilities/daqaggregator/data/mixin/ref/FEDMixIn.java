@@ -1,7 +1,8 @@
-package rcms.utilities.daqaggregator.data.mixin;
+package rcms.utilities.daqaggregator.data.mixin.ref;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import rcms.utilities.daqaggregator.data.FMM;
 import rcms.utilities.daqaggregator.data.FRL;
@@ -16,12 +17,15 @@ import rcms.utilities.daqaggregator.data.TTCPartition;
 @JsonIdentityInfo(generator = IdGenerators.FEDIdGenerator.class, property = "@id")
 public interface FEDMixIn {
 
+	@JsonProperty("ref_frl")
 	@JsonIdentityReference(alwaysAsId = true)
 	public FRL getFrl();
 
+	@JsonProperty("ref_fmm")
 	@JsonIdentityReference(alwaysAsId = true)
 	public FMM getFmm();
 
+	@JsonProperty("ref_ttcp")
 	@JsonIdentityReference(alwaysAsId = true)
 	public TTCPartition getTtcp();
 

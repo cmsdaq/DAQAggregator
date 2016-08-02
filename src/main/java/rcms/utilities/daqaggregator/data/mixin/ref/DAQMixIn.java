@@ -1,4 +1,4 @@
-package rcms.utilities.daqaggregator.data.mixin;
+package rcms.utilities.daqaggregator.data.mixin.ref;
 
 import java.util.List;
 import java.util.Set;

@@ -23,4 +23,15 @@ public class ContextHelper {
 		}
 		return hostname;
 	}
+	
+	/** Useful in removing network or other suffix (e.g. '.cms') from a hostname.
+	 * Returns hostname argument as is, if it does not end with the suffix passed.*/
+	public static String removeSuffixFromHostname(String hostname, String suffix){
+		if (hostname.endsWith(suffix)){
+			return hostname.substring(0, hostname.length()-suffix.length());
+		}else{
+			return hostname;
+		}
+	
+	}
 }

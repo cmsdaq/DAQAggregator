@@ -117,25 +117,33 @@ public class MappingManager implements Serializable {
 						if (!ttcPartitionToFrlPCs.get(ttcpName).contains(frlPc)) {
 							ttcPartitionToFrlPCs.get(ttcpName).add(frlPc);
 							SubFEDBuilder subFedBuilder = new SubFEDBuilder();
-							subFedBuilders.put(subFedBuilder.hashCode(), subFedBuilder);
+							//int id = subFedBuilder.hashCode()+(new java.util.Random()).nextInt(1000);
+							
+							int ttcpHashCode = fed.getTTCPartition().hashCode();
+							int frlPcHashCode = frl.getFRLCrate().hashCode();
+							
+							String sfbCustomHashCode = new String(String.valueOf(ttcpHashCode)+"$"+String.valueOf(frlPcHashCode));
+							int sfbId = sfbCustomHashCode.hashCode(); //replaces use of empty object hashcode as key
+							
+							subFedBuilders.put(sfbId, subFedBuilder);
 
 							/* FEDBuilder - SubFEDBuilder */
 							if (!fedBuilderToSubFedBuilder.containsKey(fb.hashCode())) {
 								fedBuilderToSubFedBuilder.put(fb.hashCode(), new HashSet<Integer>());
 							}
-							fedBuilderToSubFedBuilder.get(fb.hashCode()).add(subFedBuilder.hashCode());
+							fedBuilderToSubFedBuilder.get(fb.hashCode()).add(sfbId);
 
 							/* SubFEDBuilder - FRL */
 							if (!subFedBuilderToFrl.containsKey(fb.hashCode())) {
-								subFedBuilderToFrl.put(subFedBuilder.hashCode(), new HashSet<Integer>());
+								subFedBuilderToFrl.put(sfbId, new HashSet<Integer>());
 							}
-							subFedBuilderToFrl.get(subFedBuilder.hashCode()).add(frl.hashCode());
+							subFedBuilderToFrl.get(sfbId).add(frl.hashCode());
 
 							/* SubFedBuilder - TTCPartition */
-							subFedBuilderToTTCP.put(subFedBuilder.hashCode(), fed.getTTCPartition().hashCode());
+							subFedBuilderToTTCP.put(sfbId, fed.getTTCPartition().hashCode());
 
 							/* SubFedBuilder - FRLPc */
-							subFedBuilderToFrlPc.put(subFedBuilder.hashCode(), frlPc.hashCode());
+							subFedBuilderToFrlPc.put(sfbId, frlPc.hashCode());
 
 						}
 					}

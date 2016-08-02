@@ -1,4 +1,4 @@
-package rcms.utilities.daqaggregator.data.mixin;
+package rcms.utilities.daqaggregator.data.mixin.ref;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
@@ -15,6 +15,7 @@ import rcms.utilities.daqaggregator.data.FEDBuilder;
 @JsonIdentityInfo(generator = IdGenerators.RUIdGenerator.class, property = "@id")
 public interface RUMixIn {
 
+	@JsonProperty("ref_fedBuilder")
 	@JsonIdentityReference(alwaysAsId = true)
 	abstract FEDBuilder getFedBuilder();
 	

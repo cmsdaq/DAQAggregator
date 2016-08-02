@@ -53,6 +53,23 @@ public class StructureSerializer {
 	private static final Logger logger = Logger.getLogger(StructureSerializer.class);
 
 	
+	private void addRefMixins(ObjectMapper objectMapper){
+		objectMapper.addMixIn(BU.class, rcms.utilities.daqaggregator.data.mixin.ref.BUMixIn.class);
+		objectMapper.addMixIn(BUSummary.class, rcms.utilities.daqaggregator.data.mixin.ref.BUSummaryMixIn.class);
+		objectMapper.addMixIn(DAQ.class, rcms.utilities.daqaggregator.data.mixin.ref.DAQMixIn.class);
+		objectMapper.addMixIn(FED.class, rcms.utilities.daqaggregator.data.mixin.ref.FEDMixIn.class);
+		objectMapper.addMixIn(FEDBuilder.class, rcms.utilities.daqaggregator.data.mixin.ref.FEDBuilderMixIn.class);
+		objectMapper.addMixIn(FEDBuilderSummary.class, rcms.utilities.daqaggregator.data.mixin.ref.FEDBuilderSummaryMixIn.class);
+		objectMapper.addMixIn(FMM.class, rcms.utilities.daqaggregator.data.mixin.ref.FMMMixIn.class);
+		objectMapper.addMixIn(FMMApplication.class, rcms.utilities.daqaggregator.data.mixin.ref.FMMApplicationMixIn.class);
+		objectMapper.addMixIn(FRL.class, rcms.utilities.daqaggregator.data.mixin.ref.FRLMixIn.class);
+		objectMapper.addMixIn(FRLPc.class, rcms.utilities.daqaggregator.data.mixin.ref.FRLPcMixIn.class);
+		objectMapper.addMixIn(RU.class, rcms.utilities.daqaggregator.data.mixin.ref.RUMixIn.class);
+		objectMapper.addMixIn(SubFEDBuilder.class, rcms.utilities.daqaggregator.data.mixin.ref.SubFEDBuilderMixIn.class);
+		objectMapper.addMixIn(SubSystem.class, rcms.utilities.daqaggregator.data.mixin.ref.SubSystemMixIn.class);
+		objectMapper.addMixIn(TTCPartition.class, rcms.utilities.daqaggregator.data.mixin.ref.TTCPartitionMixIn.class);
+	}
+	
 	private void addMixins(ObjectMapper objectMapper){
 		objectMapper.addMixIn(BU.class, BUMixIn.class);
 		objectMapper.addMixIn(BUSummary.class, BUSummaryMixIn.class);
@@ -93,6 +110,17 @@ public class StructureSerializer {
 		return file.getAbsolutePath();
 	}
 
+	public String serializeToRefJSON(DAQ daqSnapshot, String name, String folder)
+			throws JsonGenerationException, JsonMappingException, IOException {
+		File file = new File(folder + name + ".json");
+		ObjectMapper mapper = new ObjectMapper();
+
+		addRefMixins(mapper);
+		mapper.writerWithDefaultPrettyPrinter().writeValue(file, daqSnapshot);
+
+		return file.getAbsolutePath();
+	}
+	
 	public DAQ deserializeFromSmile(String filepath) {
 		return mapperDeserialiser(filepath, new SmileFactory());
 	}
@@ -106,6 +134,7 @@ public class StructureSerializer {
 		DAQ daq = null;
 		/* read from smile */
 		ObjectMapper mapper = new ObjectMapper(factory);
+		addMixins(mapper);
 
 		addMixins(mapper);
 		
