@@ -277,6 +277,7 @@ public class ObjectMapper {
 		for (rcms.utilities.hwcfg.eq.FED hwfed : getHardwareFeds(daqPartition)) {
 			if (hwfed.getFMM() != null) {
 				result.add(hwfed.getFMM());
+				
 			}
 		}
 
@@ -296,14 +297,14 @@ public class ObjectMapper {
 				//
 				if (hwfed != null) {
 					result.add(hwfed);
-					Set<rcms.utilities.hwcfg.eq.FED> dependants = getDependantFeds(hwfed);
+					Set<rcms.utilities.hwcfg.eq.FED> dependants = getDependentFeds(hwfed);
 					result.addAll(dependants);
 				}
 		}
 		return result;
 	}
 
-	public Set<rcms.utilities.hwcfg.eq.FED> getDependantFeds(rcms.utilities.hwcfg.eq.FED fed) {
+	public Set<rcms.utilities.hwcfg.eq.FED> getDependentFeds(rcms.utilities.hwcfg.eq.FED fed) {
 		Set<rcms.utilities.hwcfg.eq.FED> result = new HashSet<>();
 
 		if (fed.getDependentFEDs() == null || fed.getDependentFEDs().size() == 0)
@@ -311,7 +312,7 @@ public class ObjectMapper {
 		else {
 			for (rcms.utilities.hwcfg.eq.FED dependent : fed.getDependentFEDs()) {
 				result.add(dependent);
-				result.addAll(getDependantFeds(dependent));
+				result.addAll(getDependentFeds(dependent));
 			}
 
 			logger.debug("Found " + result.size() + " dependent feds");

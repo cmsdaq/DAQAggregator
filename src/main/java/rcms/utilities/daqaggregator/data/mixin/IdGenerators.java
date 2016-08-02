@@ -20,6 +20,10 @@ import rcms.utilities.daqaggregator.data.SubFEDBuilder;
 import rcms.utilities.daqaggregator.data.SubSystem;
 import rcms.utilities.daqaggregator.data.TTCPartition;
 
+import rcms.utilities.hwcfg.eq.FRLCrate;
+
+import rcms.utilities.daqaggregator.mappers.helper.ContextHelper;
+
 /**
  * Contains id generators required for serialization.
  * 
@@ -56,6 +60,7 @@ public class IdGenerators {
 
 		@Override
 		public abstract T generateId(Object forPojo);
+		
 	}
 
 	/**
@@ -165,6 +170,7 @@ public class IdGenerators {
 	            BU bu = (BU) forPojo;
 
 	            String buHostname = bu.getHostname();
+	            buHostname = ContextHelper.removeSuffixFromHostname(buHostname, ".cms");
 	           
 	            StringBuilder sb = new StringBuilder(prefix.length() + buHostname.length());
 	           
@@ -173,6 +179,7 @@ public class IdGenerators {
 	           
 	            return sb.toString();
 	        }
+
 	    }
 	 
 	 public final static class RUIdGenerator extends Base<String> {
@@ -217,7 +224,8 @@ public class IdGenerators {
 	            RU ru = (RU) forPojo;
 
 	            String ruHostname = ru.getHostname();
-	           
+	            ruHostname = ContextHelper.removeSuffixFromHostname(ruHostname, ".cms");
+	            
 	            StringBuilder sb = new StringBuilder(prefix.length() + ruHostname.length());
 	           
 	            sb.append(prefix);
@@ -225,8 +233,7 @@ public class IdGenerators {
 	           
 	            return sb.toString();
 	        }
-	    }
-	 
+	 }
 	 public final static class FRLPcIdGenerator extends Base<String> {
 	        private static final String prefix = "FRLPC_";
 	       
@@ -269,6 +276,7 @@ public class IdGenerators {
 	            FRLPc frlpc = (FRLPc) forPojo;
 
 	            String frlpcHostname = frlpc.getHostname();
+	            frlpcHostname = ContextHelper.removeSuffixFromHostname(frlpcHostname, ".cms");
 	           
 	            StringBuilder sb = new StringBuilder(prefix.length() + frlpcHostname.length());
 	           
@@ -529,7 +537,8 @@ public class IdGenerators {
 	            FMMApplication fmmapp = (FMMApplication) forPojo;
 
 	            String fmmappHostname = fmmapp.getHostname();
-	           
+	            fmmappHostname = ContextHelper.removeSuffixFromHostname(fmmappHostname, ".cms");
+	            
 	            StringBuilder sb = new StringBuilder(prefix.length() + fmmappHostname.length());
 	           
 	            sb.append(prefix);
@@ -637,7 +646,8 @@ public class IdGenerators {
 
 	            String ttcpName = sfb.getTtcPartition().getName();
 	            String frlpcHostname = sfb.getFrlPc().getHostname();
-	           
+	            frlpcHostname = ContextHelper.removeSuffixFromHostname(frlpcHostname, ".cms");
+
 	            StringBuilder sb = new StringBuilder(prefix.length() + ttcpName.length() + delimiter.length() + frlpcHostname.length());
 	           
 	            sb.append(prefix);
@@ -694,6 +704,7 @@ public class IdGenerators {
 	            String frlGeoslot = String.valueOf(frl.getGeoSlot());
 	            
 	            String frlpcHostname = frl.getFrlPc().getHostname();
+	            frlpcHostname = ContextHelper.removeSuffixFromHostname(frlpcHostname, ".cms");
 	            
 	            StringBuilder sb = new StringBuilder(prefix.length() + frlGeoslot.length() + delimiter.length() + frlpcHostname.length());
 	           

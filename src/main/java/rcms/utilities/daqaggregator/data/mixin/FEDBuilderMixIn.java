@@ -5,6 +5,9 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 
+import rcms.utilities.daqaggregator.data.DAQ;
+import rcms.utilities.daqaggregator.data.FED;
+import rcms.utilities.daqaggregator.data.RU;
 import rcms.utilities.daqaggregator.data.SubFEDBuilder;
 
 /**
@@ -18,5 +21,12 @@ public interface FEDBuilderMixIn {
 
 	@JsonIdentityReference(alwaysAsId = true)
 	public List<SubFEDBuilder> getSubFedbuilders();
+	
+	@JsonIdentityReference(alwaysAsId = true)
+	public RU getRu();
+	
+	@JsonIdentityReference(alwaysAsId = true)
+	public DAQ getDaq();
+	
 
 }

@@ -1,6 +1,9 @@
 package rcms.utilities.daqaggregator.data.mixin;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+
+import rcms.utilities.daqaggregator.data.DAQ;
 
 /**
  * Class configuring json serialization
@@ -11,6 +14,6 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 @JsonIdentityInfo(generator = IdGenerators.FEDBuilderSummaryIdGenerator.class, property = "@id")
 public interface FEDBuilderSummaryMixIn {
 
-	// nothing to alter
-
+	@JsonIdentityReference(alwaysAsId = true)
+	abstract DAQ getDaq();
 }
