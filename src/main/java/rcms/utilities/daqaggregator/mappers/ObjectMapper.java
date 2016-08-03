@@ -29,6 +29,7 @@ import rcms.utilities.hwcfg.HardwareConfigurationException;
 import rcms.utilities.hwcfg.dp.DAQPartition;
 import rcms.utilities.hwcfg.dp.DPGenericHost;
 import rcms.utilities.hwcfg.eq.FMMFMMLink;
+
 import rcms.utilities.hwcfg.eq.FMMTriggerLink;
 import rcms.utilities.hwcfg.fb.FBI;
 
@@ -99,6 +100,7 @@ public class ObjectMapper {
 		for (rcms.utilities.hwcfg.fb.FEDBuilder hwfedBuilder : getHardwareFedBuilders(daqPartition)) {
 			FEDBuilder fedbuilder = new FEDBuilder();
 			fedbuilder.setName(hwfedBuilder.getName());
+			fedbuilder.setDaq(daq);
 			fedBuilders.put(hwfedBuilder.hashCode(), fedbuilder);
 		}
 
@@ -106,6 +108,7 @@ public class ObjectMapper {
 		frls = new HashMap<>();
 		for (rcms.utilities.hwcfg.eq.FRL hwfrl : getHardwareFrls(daqPartition)) {
 			FRL frl = new FRL();
+			frl.setId(String.valueOf(hwfrl.getId()));
 			frl.setGeoSlot(hwfrl.getGeoSlot());
 			frl.setType(FRLType.getByName(hwfrl.getFRLMode()));
 			frls.put(hwfrl.hashCode(), frl);
@@ -135,6 +138,7 @@ public class ObjectMapper {
 		fmms = new HashMap<>();
 		for (rcms.utilities.hwcfg.eq.FMM hwfmm : getHardwareFmms(daqPartition)) {
 			FMM fmm = new FMM();
+			fmm.setId(String.valueOf(hwfmm.getId()));
 			fmm.setGeoslot(hwfmm.getGeoSlot());
 			fmm.setFmmType(FMMType.valueOf(hwfmm.getFMMType().name()));
 			fmm.setServiceName(hwfmm.getServiceName());
@@ -236,6 +240,7 @@ public class ObjectMapper {
 				busById.put((int) host.getId(), bu);
 				busByHostname.put(host.getHostName(), bu);
 				bu.setHostname(host.getHostName());
+				bu.setDaq(daq);
 				result.put(host.hashCode(), bu);
 			}
 		}
@@ -272,6 +277,7 @@ public class ObjectMapper {
 		for (rcms.utilities.hwcfg.eq.FED hwfed : getHardwareFeds(daqPartition)) {
 			if (hwfed.getFMM() != null) {
 				result.add(hwfed.getFMM());
+				
 			}
 		}
 
@@ -291,14 +297,14 @@ public class ObjectMapper {
 				//
 				if (hwfed != null) {
 					result.add(hwfed);
-					Set<rcms.utilities.hwcfg.eq.FED> dependants = getDependantFeds(hwfed);
+					Set<rcms.utilities.hwcfg.eq.FED> dependants = getDependentFeds(hwfed);
 					result.addAll(dependants);
 				}
 		}
 		return result;
 	}
 
-	public Set<rcms.utilities.hwcfg.eq.FED> getDependantFeds(rcms.utilities.hwcfg.eq.FED fed) {
+	public Set<rcms.utilities.hwcfg.eq.FED> getDependentFeds(rcms.utilities.hwcfg.eq.FED fed) {
 		Set<rcms.utilities.hwcfg.eq.FED> result = new HashSet<>();
 
 		if (fed.getDependentFEDs() == null || fed.getDependentFEDs().size() == 0)
@@ -306,7 +312,7 @@ public class ObjectMapper {
 		else {
 			for (rcms.utilities.hwcfg.eq.FED dependent : fed.getDependentFEDs()) {
 				result.add(dependent);
-				result.addAll(getDependantFeds(dependent));
+				result.addAll(getDependentFeds(dependent));
 			}
 
 			logger.debug("Found " + result.size() + " dependent feds");

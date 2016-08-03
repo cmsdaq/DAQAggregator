@@ -41,6 +41,9 @@ public class FED implements FlashlistUpdatable {
 
 	/** important for pseudofeds */
 	private List<FED> mainFeds = new ArrayList<FED>();
+	
+	/** important for pseudofeds */
+	private List<FED> dependentFeds = new ArrayList<FED>();
 
 	// ----------------------------------------
 	// fields updated periodically
@@ -326,7 +329,11 @@ public class FED implements FlashlistUpdatable {
 	public List<FED> getMainFeds() {
 		return mainFeds;
 	}
-
+	
+	public List<FED> getDependentFeds() {
+		return dependentFeds;
+	}
+	
 	public void setFrl(FRL frl) {
 		this.frl = frl;
 	}
@@ -349,6 +356,10 @@ public class FED implements FlashlistUpdatable {
 
 	public void setMainFeds(List<FED> mainFeds) {
 		this.mainFeds = mainFeds;
+	}
+	
+	public void setDependentFeds(List<FED> dependentFeds) {
+		this.dependentFeds = dependentFeds;
 	}
 
 	public int getId() {

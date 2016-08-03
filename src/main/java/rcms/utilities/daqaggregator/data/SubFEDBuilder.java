@@ -13,7 +13,6 @@ import java.util.List;
  */
 public class SubFEDBuilder {
 
-	private String id;
 	
 	// ----------------------------------------
 	// fields set at beginning of session
@@ -144,14 +143,6 @@ public class SubFEDBuilder {
 	public String toString() {
 		return "SubFEDBuilder [ttcPartition=" + ttcPartition + ", frlPc=" + frlPc
 				+ ", frls=" + frls + ", minTrig=" + minTrig + ", maxTrig=" + maxTrig + "]";
-	}
-
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
 	}
 
 }
