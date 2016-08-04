@@ -54,13 +54,13 @@ public class FEDBuilder {
 		this.ru = ru;
 	}
 
+	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result + ((ru == null) ? 0 : ru.hashCode());
-		result = prime * result + ((subFedbuilders == null) ? 0 : subFedbuilders.hashCode());
 		return result;
 	}
 
@@ -77,16 +77,6 @@ public class FEDBuilder {
 			if (other.name != null)
 				return false;
 		} else if (!name.equals(other.name))
-			return false;
-		if (ru == null) {
-			if (other.ru != null)
-				return false;
-		} else if (!ru.equals(other.ru))
-			return false;
-		if (subFedbuilders == null) {
-			if (other.subFedbuilders != null)
-				return false;
-		} else if (!subFedbuilders.equals(other.subFedbuilders))
 			return false;
 		return true;
 	}

@@ -409,7 +409,6 @@ public class RU implements FlashlistUpdatable, Derivable {
 		result = prime * result + ((errorMsg == null) ? 0 : errorMsg.hashCode());
 		result = prime * result + (int) (eventCount ^ (eventCount >>> 32));
 		result = prime * result + eventsInRU;
-		result = prime * result + ((fedBuilder == null) ? 0 : fedBuilder.hashCode());
 		result = prime * result + ((fragmentRatePerBU == null) ? 0 : fragmentRatePerBU.hashCode());
 		result = prime * result + fragmentsInRU;
 		result = prime * result + ((hostname == null) ? 0 : hostname.hashCode());
@@ -456,11 +455,6 @@ public class RU implements FlashlistUpdatable, Derivable {
 		if (eventCount != other.eventCount)
 			return false;
 		if (eventsInRU != other.eventsInRU)
-			return false;
-		if (fedBuilder == null) {
-			if (other.fedBuilder != null)
-				return false;
-		} else if (!fedBuilder.equals(other.fedBuilder))
 			return false;
 		if (fragmentRatePerBU == null) {
 			if (other.fragmentRatePerBU != null)
@@ -521,5 +515,4 @@ public class RU implements FlashlistUpdatable, Derivable {
 	}
 
 	
-
 }
