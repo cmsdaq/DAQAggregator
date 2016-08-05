@@ -443,7 +443,6 @@ public class BU implements FlashlistUpdatable {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + currentLumisection;
-		result = prime * result + ((daq == null) ? 0 : daq.hashCode());
 		result = prime * result + ((errorMsg == null) ? 0 : errorMsg.hashCode());
 		result = prime * result + eventSizeMean;
 		result = prime * result + eventSizeStddev;
@@ -494,11 +493,6 @@ public class BU implements FlashlistUpdatable {
 			return false;
 		BU other = (BU) obj;
 		if (currentLumisection != other.currentLumisection)
-			return false;
-		if (daq == null) {
-			if (other.daq != null)
-				return false;
-		} else if (!daq.equals(other.daq))
 			return false;
 		if (errorMsg == null) {
 			if (other.errorMsg != null)
