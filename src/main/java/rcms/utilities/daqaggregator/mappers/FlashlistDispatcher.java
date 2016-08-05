@@ -54,7 +54,7 @@ public class FlashlistDispatcher {
 			dispatchRowsByGeo(flashlist, mappingManager.getObjectMapper().frls.values(), new FRLGeoFinder());
 			break;
 		case EVM:
-			if (flashlist.getRowsNode().isArray()) {
+			if (flashlist.getRowsNode().isArray() && flashlist.getRowsNode().size() > 0) {
 				int runNumber = flashlist.getRowsNode().get(0).get("runNumber").asInt();
 				mappingManager.getObjectMapper().daq.setRunNumber(runNumber);
 				logger.debug("Successfully got runnumber: " + runNumber);
@@ -146,7 +146,7 @@ public class FlashlistDispatcher {
 						fedToFlashlistRow.put(fed, row);
 
 					} else {
-						logger.info(
+						logger.debug(
 								"FED with problem indicated by flashlist RU.fedIdsWithErrors could not be found by id "
 										+ fedId);
 					}
@@ -158,7 +158,7 @@ public class FlashlistDispatcher {
 						fedToFlashlistRow.put(fed, row);
 
 					} else {
-						logger.info(
+						logger.debug(
 								"FED with problem indicated by flashlist RU.fedIdsWithoutFragments could not be found by id "
 										+ fedId);
 					}
@@ -167,7 +167,7 @@ public class FlashlistDispatcher {
 			}
 
 		}
-		logger.info("There are " + fedToFlashlistRow.size() + " FEDs with problems (according to RU flashlist)");
+		logger.debug("There are " + fedToFlashlistRow.size() + " FEDs with problems (according to RU flashlist)");
 		for (Entry<FED, JsonNode> entry : fedToFlashlistRow.entrySet()) {
 			FED fed = entry.getKey();
 			fed.updateFromFlashlist(flashlist.getFlashlistType(), entry.getValue());
@@ -194,7 +194,7 @@ public class FlashlistDispatcher {
 
 		/* Object T will receive row JsonNode */
 		Map<T, JsonNode> dispatchMap = matcher.match(flashlist, collection);
-		logger.info("Elements matched by geolocation: " + dispatchMap.size() + "/" + collection.size());
+		logger.debug("Elements matched by geolocation: " + dispatchMap.size() + "/" + collection.size());
 
 		for (Entry<T, JsonNode> match : dispatchMap.entrySet()) {
 			match.getKey().updateFromFlashlist(flashlistType, match.getValue());

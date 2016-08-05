@@ -124,7 +124,7 @@ public class FlashlistManager {
 
 		long stopTime = System.currentTimeMillis();
 		int time = (int) (stopTime - startTime);
-		logger.info("Reading all flashlists finished in " + time + "ms");
+		logger.debug("Reading all flashlists finished in " + time + "ms");
 	}
 
 	private void mapFlashlists() {
@@ -139,7 +139,7 @@ public class FlashlistManager {
 		}
 		long stopTime = System.currentTimeMillis();
 		int time = (int) (stopTime - startTime);
-		logger.info("Mapping all flashlists finished in " + time + "ms");
+		logger.debug("Mapping all flashlists finished in " + time + "ms");
 	}
 
 	private void cleanStructure() {

@@ -61,7 +61,7 @@ public class PostProcessor {
 			states.put(sub.getStatus(), states.get(sub.getStatus()) + 1);
 		}
 
-		logger.info("DAQ state: " + daqStatus + ", LHC beam mode: " + lhcBeamMode + ", LHC machine mode: "
+		logger.debug("DAQ state: " + daqStatus + ", LHC beam mode: " + lhcBeamMode + ", LHC machine mode: "
 				+ lhcMachineMode + ", L0 state: " + levelZeroState + ", Subsystems states: " + states);
 
 	}
@@ -79,7 +79,7 @@ public class PostProcessor {
 				fmmappCrashed++;
 		}
 
-		logger.info("Crashed: FRLPc " + frlPcsCrashed + "/" + daq.getFrlPcs().size() + ", FMMApplications "
+		logger.debug("Crashed: FRLPc " + frlPcsCrashed + "/" + daq.getFrlPcs().size() + ", FMMApplications "
 				+ fmmappCrashed + "/" + daq.getFmmApplications().size());
 	}
 
@@ -104,7 +104,7 @@ public class PostProcessor {
 				}
 			}
 		}
-		logger.info("FED raport: [" + fedsFmmMasked + "|" + fedsFrlMasked + "|" + fedsInError + "|"
+		logger.debug("FED raport: [" + fedsFmmMasked + "|" + fedsFrlMasked + "|" + fedsInError + "|"
 				+ fedsFragmentMissing + "]/" + feds + ", [fmm masked|frl masked|in error|missing fragments]/all FEDS");
 	}
 
@@ -146,7 +146,7 @@ public class PostProcessor {
 			}
 		}
 
-		logger.info(
+		logger.debug(
 				"RU raport: [" + enabledRus + "|" + masked + "|" + evms + "]/" + all + " [enabled|masked|evms]/all");
 
 	}
@@ -170,7 +170,7 @@ public class PostProcessor {
 			}
 		}
 
-		logger.info("TTCP derived values report: [" + masked + "|" + withoutFMM + "]/" + all
+		logger.debug("TTCP derived values report: [" + masked + "|" + withoutFMM + "]/" + all
 				+ " [masked|missing FMM]/all TTCPs");
 
 	}
@@ -187,7 +187,7 @@ public class PostProcessor {
 
 		}
 
-		logger.info("FRLPc raport: " + masked + "/" + all + " masked/all");
+		logger.debug("FRLPc raport: " + masked + "/" + all + " masked/all");
 
 	}
 

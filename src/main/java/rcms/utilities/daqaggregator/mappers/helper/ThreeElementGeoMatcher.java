@@ -83,7 +83,7 @@ public abstract class ThreeElementGeoMatcher<E> extends Matcher<E> {
 				ios += ioMap.size();
 			}
 		}
-		logger.info(flashlist.getRowsNode().size() + " flashlist rows mapped by hostname:geoslot:io "
+		logger.debug(flashlist.getRowsNode().size() + " flashlist rows mapped by hostname:geoslot:io "
 				+ flashlistMap.size() + ":" + geoslots + ":" + ios);
 
 		for (E findable : collection) {
