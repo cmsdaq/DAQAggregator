@@ -121,8 +121,9 @@ public class MappingManager implements Serializable {
 							
 							int ttcpHashCode = fed.getTTCPartition().hashCode();
 							int frlPcHashCode = frl.getFRLCrate().hashCode();
+							int fedHashCode = fed.hashCode();
 							
-							String sfbCustomHashCode = new String(String.valueOf(ttcpHashCode)+"$"+String.valueOf(frlPcHashCode));
+							String sfbCustomHashCode = new String(String.valueOf(ttcpHashCode)+"$"+String.valueOf(frlPcHashCode)+"$"+String.valueOf(fedHashCode));
 							int sfbId = sfbCustomHashCode.hashCode(); //replaces use of empty object hashcode as key
 							
 							subFedBuilders.put(sfbId, subFedBuilder);
