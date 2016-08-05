@@ -134,7 +134,7 @@ public class MappingManager implements Serializable {
 							fedBuilderToSubFedBuilder.get(fb.hashCode()).add(sfbId);
 
 							/* SubFEDBuilder - FRL */
-							if (!subFedBuilderToFrl.containsKey(fb.hashCode())) {
+							if (!subFedBuilderToFrl.containsKey(sfbId)) {
 								subFedBuilderToFrl.put(sfbId, new HashSet<Integer>());
 							}
 							subFedBuilderToFrl.get(sfbId).add(frl.hashCode());

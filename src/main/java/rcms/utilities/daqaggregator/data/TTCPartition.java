@@ -30,6 +30,8 @@ public class TTCPartition implements FlashlistUpdatable, Derivable {
 	private FMM fmm;
 
 	private SubSystem subsystem;
+	
+	private int ttcpNr;
 
 	// ----------------------------------------
 	// fields updated periodically
@@ -141,6 +143,14 @@ public class TTCPartition implements FlashlistUpdatable, Derivable {
 		this.subsystem = subsystem;
 	}
 
+	public int getTtcpNr() {
+		return ttcpNr;
+	}
+
+	public void setTtcpNr(int ttcpNr) {
+		this.ttcpNr = ttcpNr;
+	}
+
 	public List<FED> getFeds() {
 		return feds;
 	}
@@ -148,6 +158,7 @@ public class TTCPartition implements FlashlistUpdatable, Derivable {
 	public void setFeds(List<FED> feds) {
 		this.feds = feds;
 	}
+
 
 
 	@Override
@@ -159,6 +170,7 @@ public class TTCPartition implements FlashlistUpdatable, Derivable {
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		result = prime * result + Float.floatToIntBits(percentBusy);
 		result = prime * result + Float.floatToIntBits(percentWarning);
+		result = prime * result + ttcpNr;
 		result = prime * result + ((ttsState == null) ? 0 : ttsState.hashCode());
 		return result;
 	}
@@ -187,6 +199,8 @@ public class TTCPartition implements FlashlistUpdatable, Derivable {
 		if (Float.floatToIntBits(percentBusy) != Float.floatToIntBits(other.percentBusy))
 			return false;
 		if (Float.floatToIntBits(percentWarning) != Float.floatToIntBits(other.percentWarning))
+			return false;
+		if (ttcpNr != other.ttcpNr)
 			return false;
 		if (ttsState == null) {
 			if (other.ttsState != null)

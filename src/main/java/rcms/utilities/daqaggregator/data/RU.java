@@ -381,7 +381,6 @@ public class RU implements FlashlistUpdatable, Derivable {
 				this.retryRatePerBU.add(flashlist_tempArray.get(j).asDouble());
 			}
 			
-			
 			// values set only when RU is of type EVM
 			if (flashlistType == FlashlistType.EVM){
 				this.allocateRate = flashlistRow.get("allocateRate").asInt();

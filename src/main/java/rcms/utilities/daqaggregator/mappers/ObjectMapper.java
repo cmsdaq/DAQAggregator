@@ -413,6 +413,7 @@ public class ObjectMapper {
 
 			TTCPartition ttcPartition = new TTCPartition();
 			ttcPartition.setName(hwttcPartition.getName());
+			ttcPartition.setTtcpNr(hwttcPartition.getTTCPNr());
 			ttcpartitionsById.put((int) hwttcPartition.getId(), ttcPartition);
 			// ttcpById.put(hwttcPartition.getId(), value)
 			// TODO: get masked info
