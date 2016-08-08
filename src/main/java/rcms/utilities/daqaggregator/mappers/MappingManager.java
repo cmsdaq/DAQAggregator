@@ -104,6 +104,11 @@ public class MappingManager implements Serializable {
 
 						String ttcpName = fed.getTTCPartition().getName();
 						String frlPc = frl.getFRLCrate().getHostName();
+						
+						String fedBuilderName = fb.getName();
+						
+						String sfbMappingId = new String(String.valueOf(ttcpName)+"$"+String.valueOf(frlPc)+"$"+String.valueOf(fedBuilderName));
+						int sfbId = sfbMappingId.hashCode(); //replaces use of empty object hashcode as key
 
 						/* a new TTC partition in this fedbuilder */
 						if (!ttcPartitionToFrlPCs.containsKey(ttcpName)) {
@@ -119,13 +124,6 @@ public class MappingManager implements Serializable {
 							SubFEDBuilder subFedBuilder = new SubFEDBuilder();
 							//int id = subFedBuilder.hashCode()+(new java.util.Random()).nextInt(1000);
 							
-							int ttcpHashCode = fed.getTTCPartition().hashCode();
-							int frlPcHashCode = frl.getFRLCrate().hashCode();
-							int fedHashCode = fed.hashCode();
-							
-							String sfbCustomHashCode = new String(String.valueOf(ttcpHashCode)+"$"+String.valueOf(frlPcHashCode)+"$"+String.valueOf(fedHashCode));
-							int sfbId = sfbCustomHashCode.hashCode(); //replaces use of empty object hashcode as key
-							
 							subFedBuilders.put(sfbId, subFedBuilder);
 
 							/* FEDBuilder - SubFEDBuilder */
@@ -138,8 +136,7 @@ public class MappingManager implements Serializable {
 							if (!subFedBuilderToFrl.containsKey(sfbId)) {
 								subFedBuilderToFrl.put(sfbId, new HashSet<Integer>());
 							}
-							subFedBuilderToFrl.get(sfbId).add(frl.hashCode());
-
+							
 							/* SubFedBuilder - TTCPartition */
 							subFedBuilderToTTCP.put(sfbId, fed.getTTCPartition().hashCode());
 
@@ -147,6 +144,12 @@ public class MappingManager implements Serializable {
 							subFedBuilderToFrlPc.put(sfbId, frlPc.hashCode());
 
 						}
+						
+						/*If no new subFEDBuilder is created, attach this frl to the one existing
+						 */
+						subFedBuilderToFrl.get(sfbId).add(frl.hashCode());
+						
+						
 					}
 
 				} catch (HardwareConfigurationException e) {
