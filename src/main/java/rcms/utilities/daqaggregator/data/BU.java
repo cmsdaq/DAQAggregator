@@ -129,7 +129,7 @@ public class BU implements FlashlistUpdatable {
 			this.numFUsCrashed = flashlistRow.get("fuSlotsQuarantined").asInt();
 			this.numFUsStale = flashlistRow.get("fuSlotsStale").asInt();
 			this.numFUsCloud = flashlistRow.get("fuSlotsCloud").asInt();
-			this.ramDiskUsage = flashlistRow.get("ramDiskUsed").asDouble();
+			this.ramDiskUsage = flashlistRow.get("ramDiskUsed").asDouble()*100;
 			this.ramDiskTotal = flashlistRow.get("ramDiskSizeInGB").asDouble();
 			this.numFiles = flashlistRow.get("nbFilesWritten").asInt();
 			this.numLumisectionsWithFiles = flashlistRow.get("nbLumiSections").asInt();

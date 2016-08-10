@@ -166,8 +166,14 @@ public class FED implements FlashlistUpdatable {
 			this.fmmMasked = !flashlistRow.get("isActive").asBoolean();
 
 		} else if (flashlistType == FlashlistType.FEROL_INPUT_STREAM) {
-			// TODO or WrongFEDIdDetected
-			this.srcIdReceived = flashlistRow.get("WrongFEDId").asInt();
+			
+			if (flashlistRow.get("WrongFEDIdDetected").asInt() == 0){
+				//srcIdExpected already filled at mapping from corresponding hwfed
+				this.srcIdReceived = this.srcIdExpected;
+			}else{
+				this.srcIdReceived = flashlistRow.get("WrongFEDId").asInt();
+			}
+			
 			this.numSCRCerrors = flashlistRow.get("LinkCRCError").asInt();
 			this.numFCRCerrors = flashlistRow.get("FEDCRCError").asInt();
 			this.numTriggers = flashlistRow.get("TriggerNumber").asInt();

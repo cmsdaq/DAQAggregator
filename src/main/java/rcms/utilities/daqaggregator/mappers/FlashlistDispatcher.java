@@ -15,6 +15,7 @@ import rcms.utilities.daqaggregator.data.RU;
 import rcms.utilities.daqaggregator.mappers.helper.ContextHelper;
 import rcms.utilities.daqaggregator.mappers.helper.FMMGeoMatcher;
 import rcms.utilities.daqaggregator.mappers.helper.FRLGeoFinder;
+import rcms.utilities.daqaggregator.mappers.helper.FedFromFerolInputStreamGeoFinder;
 import rcms.utilities.daqaggregator.mappers.helper.FedInFmmGeoFinder;
 import rcms.utilities.daqaggregator.mappers.helper.FedInFrlGeoFinder;
 import rcms.utilities.daqaggregator.mappers.helper.Matcher;
@@ -45,7 +46,7 @@ public class FlashlistDispatcher {
 			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().busByHostname, "context");
 			break;
 		case FEROL_INPUT_STREAM:
-			dispatchRowsByGeo(flashlist, mappingManager.getObjectMapper().fedsById.values(), new FedInFrlGeoFinder("streamNumber"));
+			dispatchRowsByGeo(flashlist, mappingManager.getObjectMapper().fedsById.values(), new FedFromFerolInputStreamGeoFinder("streamNumber"));
 			break;
 		case FMM_INPUT:
 			dispatchRowsByGeo(flashlist, mappingManager.getObjectMapper().fedsById.values(), new FedInFmmGeoFinder());
