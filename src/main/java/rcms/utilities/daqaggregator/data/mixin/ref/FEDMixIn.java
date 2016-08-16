@@ -1,9 +1,12 @@
 package rcms.utilities.daqaggregator.data.mixin.ref;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import rcms.utilities.daqaggregator.data.FED;
 import rcms.utilities.daqaggregator.data.FMM;
 import rcms.utilities.daqaggregator.data.FRL;
 import rcms.utilities.daqaggregator.data.TTCPartition;
@@ -29,4 +32,7 @@ public interface FEDMixIn {
 	@JsonIdentityReference(alwaysAsId = true)
 	public TTCPartition getTtcp();
 
+	@JsonProperty("ref_dependentFeds")
+	@JsonIdentityReference(alwaysAsId = true)
+	abstract List<FED> getDependentFeds();
 }
