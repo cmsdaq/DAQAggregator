@@ -88,6 +88,8 @@ public class StructureSerializer {
 	}
 
 
+	/**
+	 * Output to SMILE format (.smile suffix)*/
 	public String serializeToSmile(DAQ daq, String name, String folder)
 			throws JsonGenerationException, JsonMappingException, IOException {
 		File file = new File(folder + name + ".smile");
@@ -99,6 +101,8 @@ public class StructureSerializer {
 		return file.getAbsolutePath();
 	}
 
+	/**
+	 * Output to JSON (prettyprinted) format (.json suffix)*/
 	public String serializeToJSON(DAQ daqSnapshot, String name, String folder)
 			throws JsonGenerationException, JsonMappingException, IOException {
 		File file = new File(folder + name + ".json");
@@ -110,6 +114,9 @@ public class StructureSerializer {
 		return file.getAbsolutePath();
 	}
 
+	/**
+	 * Output to JSON (prettyprinted) format, where all reference attribute names are prepended with "ref_"
+	 * for compatibility with some parsers (.json suffix)*/
 	public String serializeToRefJSON(DAQ daqSnapshot, String name, String folder)
 			throws JsonGenerationException, JsonMappingException, IOException {
 		File file = new File(folder + name + ".json");
@@ -117,6 +124,33 @@ public class StructureSerializer {
 
 		addRefMixins(mapper);
 		mapper.writerWithDefaultPrettyPrinter().writeValue(file, daqSnapshot);
+
+		return file.getAbsolutePath();
+	}
+	
+	/**
+	 * Output to JSON (minified) format (.json suffix)*/
+	public String serializeToJSONUgly(DAQ daqSnapshot, String name, String folder)
+			throws JsonGenerationException, JsonMappingException, IOException {
+		File file = new File(folder + name + ".json");
+		ObjectMapper mapper = new ObjectMapper();
+
+		addMixins(mapper);
+		mapper.writeValue(file, daqSnapshot);
+
+		return file.getAbsolutePath();
+	}
+
+	/**
+	 * Output to JSON (minified) format, where all reference attribute names are prepended with "ref_"
+	 * for compatibility with some parsers (.json suffix)*/
+	public String serializeToRefJSONUgly(DAQ daqSnapshot, String name, String folder)
+			throws JsonGenerationException, JsonMappingException, IOException {
+		File file = new File(folder + name + ".json");
+		ObjectMapper mapper = new ObjectMapper();
+
+		addRefMixins(mapper);
+		mapper.writeValue(file, daqSnapshot);
 
 		return file.getAbsolutePath();
 	}
