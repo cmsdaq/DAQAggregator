@@ -38,11 +38,8 @@ public class FED implements FlashlistUpdatable {
 	private int fmmIO;
 
 	private int srcIdExpected;
-
-	/** important for pseudofeds */
-	private List<FED> mainFeds = new ArrayList<FED>();
 	
-	/** important for pseudofeds */
+	/** pseudofeds */
 	private List<FED> dependentFeds = new ArrayList<FED>();
 
 	// ----------------------------------------
@@ -331,10 +328,6 @@ public class FED implements FlashlistUpdatable {
 	public int getSrcIdExpected() {
 		return srcIdExpected;
 	}
-
-	public List<FED> getMainFeds() {
-		return mainFeds;
-	}
 	
 	public List<FED> getDependentFeds() {
 		return dependentFeds;
@@ -358,10 +351,6 @@ public class FED implements FlashlistUpdatable {
 
 	public void setSrcIdExpected(int srcIdExpected) {
 		this.srcIdExpected = srcIdExpected;
-	}
-
-	public void setMainFeds(List<FED> mainFeds) {
-		this.mainFeds = mainFeds;
 	}
 	
 	public void setDependentFeds(List<FED> dependentFeds) {
@@ -582,7 +571,5 @@ public class FED implements FlashlistUpdatable {
 	public String toString() {
 		return "FED [id=" + id + ", ttsState=" + ttsState + ", frlMasked=" + frlMasked + "]";
 	}
-
-	// ----------------------------------------------------------------------
 
 }

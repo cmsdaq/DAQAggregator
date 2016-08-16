@@ -27,6 +27,9 @@ public class SubFEDBuilder {
 	private FRLPc frlPc;
 
 	private final List<FRL> frls = new ArrayList<FRL>();
+	
+	/** only filled with pseudofeds, if applicable, but never with normal feds (these are reachable through the FRL(s)) */
+	private final List<FED> feds = new ArrayList<FED>();
 
 	// ----------------------------------------
 	// fields updated periodically
@@ -77,6 +80,11 @@ public class SubFEDBuilder {
 	public void setFrlPc(FRLPc frlPc) {
 		this.frlPc = frlPc;
 	}
+	
+
+	public List<FED> getFeds() {
+		return feds;
+	}
 
 	public void calculateDerived() {
 
@@ -100,6 +108,8 @@ public class SubFEDBuilder {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + ((fedBuilder == null) ? 0 : fedBuilder.hashCode());
+		result = prime * result + ((feds == null) ? 0 : feds.hashCode());
 		result = prime * result + ((frlPc == null) ? 0 : frlPc.hashCode());
 		result = prime * result + ((frls == null) ? 0 : frls.hashCode());
 		result = prime * result + (int) (maxTrig ^ (maxTrig >>> 32));
@@ -117,6 +127,16 @@ public class SubFEDBuilder {
 		if (getClass() != obj.getClass())
 			return false;
 		SubFEDBuilder other = (SubFEDBuilder) obj;
+		if (fedBuilder == null) {
+			if (other.fedBuilder != null)
+				return false;
+		} else if (!fedBuilder.equals(other.fedBuilder))
+			return false;
+		if (feds == null) {
+			if (other.feds != null)
+				return false;
+		} else if (!feds.equals(other.feds))
+			return false;
 		if (frlPc == null) {
 			if (other.frlPc != null)
 				return false;
@@ -141,8 +161,10 @@ public class SubFEDBuilder {
 
 	@Override
 	public String toString() {
-		return "SubFEDBuilder [ttcPartition=" + ttcPartition + ", frlPc=" + frlPc
-				+ ", frls=" + frls + ", minTrig=" + minTrig + ", maxTrig=" + maxTrig + "]";
+		return "SubFEDBuilder [fedBuilder=" + fedBuilder + ", ttcPartition=" + ttcPartition + ", frlPc=" + frlPc
+				+ ", frls=" + frls + ", (pseudo)feds=" + feds + ", minTrig=" + minTrig + ", maxTrig=" + maxTrig + "]";
 	}
+	
 
+	
 }
