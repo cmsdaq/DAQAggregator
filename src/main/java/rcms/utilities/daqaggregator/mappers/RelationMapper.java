@@ -1,6 +1,7 @@
 package rcms.utilities.daqaggregator.mappers;
 
 import java.io.Serializable;
+import java.sql.PseudoColumnUsage;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -99,7 +100,7 @@ public class RelationMapper implements Serializable {
 			for (int fedId : relation.getValue()) {
 				FED fed = objectMapper.feds.get(fedId);
 				frl.getFeds().put(fed.getFrlIO(), fed); // TODO: check if
-														// correct
+				// correct
 				fed.setFrl(frl);
 			}
 		}
@@ -216,6 +217,14 @@ public class RelationMapper implements Serializable {
 		}
 		logger.warn("Ignored ttcp in subsystems " + ignoredTTCP);
 
+		/* building FEDs - pseudoFEDs */
+		for (Entry<Integer, FED> fedEntry : objectMapper.fedsByExpectedId.entrySet()){
+			if (objectMapper.pseudoFedsToMainFeds.containsKey(fedEntry.getKey())){
+				for (Integer mainFedSrcId : objectMapper.pseudoFedsToMainFeds.get(fedEntry.getKey())){
+					objectMapper.fedsByExpectedId.get(mainFedSrcId).getDependentFeds().add(fedEntry.getValue());
+				}
+			}
+		}
 	}
 
 	public void mapAllRelations(DAQPartition daqPartition) {
@@ -279,7 +288,7 @@ public class RelationMapper implements Serializable {
 		// Find the PI connected to this partition
 		for (FMMTriggerLink ftl : dp.getDAQPartitionSet().getEquipmentSet().getFMMTriggerLinks())
 			if (ftl.getTriggerId() == trigger.getId() && ftl.getLPMNr() == ici.getPMNr()
-					&& ftl.getiCINr() == ici.getICINr()) {
+			&& ftl.getiCINr() == ici.getICINr()) {
 				pi = dp.getDAQPartitionSet().getEquipmentSet().getFMMs().get(ftl.getFMMId());
 			}
 

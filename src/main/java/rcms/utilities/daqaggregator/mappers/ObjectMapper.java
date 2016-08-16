@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -65,11 +66,15 @@ public class ObjectMapper {
 	public Map<Integer, FED> ttcpById;
 	public Map<Integer, TTCPartition> ttcpartitionsById;
 
+	public Map<Integer, Set<Integer>> pseudoFedsToMainFeds;
+
 	public Map<String, FRLPc> frlPcByHostname;
 	public Map<String, FMMApplication> fmmApplicationByHostname;
 	public Map<String, RU> rusByHostname;
 	public Map<String, BU> busByHostname;
 	public Map<String, SubSystem> subsystemByName;
+
+	private boolean pseudoFedLinksStored = true;
 
 	public void mapAllObjects(DAQPartition daqPartition) {
 
@@ -116,7 +121,9 @@ public class ObjectMapper {
 
 		/* map FEDs */
 		feds = new HashMap<>();
+		pseudoFedsToMainFeds = new HashMap<>();
 		for (rcms.utilities.hwcfg.eq.FED hwfed : getHardwareFeds(daqPartition)) {
+			indexDependentFeds(hwfed);
 			FED fed = new FED();
 			fed.setId((int) hwfed.getId());
 			fedsById.put(fed.getId(), fed);
@@ -203,8 +210,8 @@ public class ObjectMapper {
 		StringBuilder sb = new StringBuilder();
 
 		int objectsMapped = subSystems.size() + rus.size() + bus.size() + feds.size() + frls.size() + fmms.size()
-				+ ttcPartitions.size() + fedBuilders.size() + subFedBuilders.size() + fmmApplications.size()
-				+ frlPcs.size();
+		+ ttcPartitions.size() + fedBuilders.size() + subFedBuilders.size() + fmmApplications.size()
+		+ frlPcs.size();
 
 		int bFmms = 0;
 		for (FMM fmm : fmms.values()) {
@@ -277,7 +284,7 @@ public class ObjectMapper {
 		for (rcms.utilities.hwcfg.eq.FED hwfed : getHardwareFeds(daqPartition)) {
 			if (hwfed.getFMM() != null) {
 				result.add(hwfed.getFMM());
-				
+
 			}
 		}
 
@@ -297,8 +304,9 @@ public class ObjectMapper {
 				//
 				if (hwfed != null) {
 					result.add(hwfed);
-					Set<rcms.utilities.hwcfg.eq.FED> dependants = getDependentFeds(hwfed);
-					result.addAll(dependants);
+					Set<rcms.utilities.hwcfg.eq.FED> dependents = getDependentFeds(hwfed);
+
+					result.addAll(dependents);
 				}
 		}
 		return result;
@@ -311,12 +319,32 @@ public class ObjectMapper {
 			return result;
 		else {
 			for (rcms.utilities.hwcfg.eq.FED dependent : fed.getDependentFEDs()) {
+
 				result.add(dependent);
 				result.addAll(getDependentFeds(dependent));
 			}
 
 			logger.debug("Found " + result.size() + " dependent feds");
 			return result;
+		}
+	}
+
+	private void indexDependentFeds(rcms.utilities.hwcfg.eq.FED fed){
+		if (fed.getDependentFEDs() == null || fed.getDependentFEDs().size() == 0)
+			return;
+		else {
+			for (rcms.utilities.hwcfg.eq.FED dependent : fed.getDependentFEDs()) {
+
+				//stores links between pseudofeds and their parents to be used in relation mapping
+				int expectedSrcId = dependent.getSrcId();
+				if (!pseudoFedsToMainFeds.containsKey(expectedSrcId)){
+					Set<Integer> mainFeds = new HashSet<Integer>();
+					mainFeds.add(fed.getSrcId());
+					pseudoFedsToMainFeds.put(expectedSrcId, mainFeds);
+				}else{
+					pseudoFedsToMainFeds.get(expectedSrcId).add(fed.getSrcId());
+				}
+			}
 		}
 	}
 
