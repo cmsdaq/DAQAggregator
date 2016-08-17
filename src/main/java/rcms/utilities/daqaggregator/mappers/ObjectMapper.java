@@ -66,15 +66,11 @@ public class ObjectMapper {
 	public Map<Integer, FED> ttcpById;
 	public Map<Integer, TTCPartition> ttcpartitionsById;
 
-	public Map<Integer, Set<Integer>> pseudoFedsToMainFeds;
-
 	public Map<String, FRLPc> frlPcByHostname;
 	public Map<String, FMMApplication> fmmApplicationByHostname;
 	public Map<String, RU> rusByHostname;
 	public Map<String, BU> busByHostname;
 	public Map<String, SubSystem> subsystemByName;
-
-	private boolean pseudoFedLinksStored = true;
 
 	public void mapAllObjects(DAQPartition daqPartition) {
 
@@ -121,9 +117,7 @@ public class ObjectMapper {
 
 		/* map FEDs */
 		feds = new HashMap<>();
-		pseudoFedsToMainFeds = new HashMap<>();
 		for (rcms.utilities.hwcfg.eq.FED hwfed : getHardwareFeds(daqPartition)) {
-			indexDependentFeds(hwfed);
 			FED fed = new FED();
 			fed.setId((int) hwfed.getId());
 			fedsById.put(fed.getId(), fed);
@@ -301,7 +295,6 @@ public class ObjectMapper {
 		Set<rcms.utilities.hwcfg.eq.FED> result = new HashSet<>();
 		for (rcms.utilities.hwcfg.eq.FRL hwfrl : getHardwareFrls(daqPartition)) {
 			for (rcms.utilities.hwcfg.eq.FED hwfed : hwfrl.getFEDs().values())
-				//
 				if (hwfed != null) {
 					result.add(hwfed);
 					Set<rcms.utilities.hwcfg.eq.FED> dependents = getDependentFeds(hwfed);
@@ -326,25 +319,6 @@ public class ObjectMapper {
 
 			logger.debug("Found " + result.size() + " dependent feds");
 			return result;
-		}
-	}
-
-	private void indexDependentFeds(rcms.utilities.hwcfg.eq.FED fed){
-		if (fed.getDependentFEDs() == null || fed.getDependentFEDs().size() == 0)
-			return;
-		else {
-			for (rcms.utilities.hwcfg.eq.FED dependent : fed.getDependentFEDs()) {
-
-				//stores links between pseudofeds and their parents to be used in relation mapping
-				int expectedSrcId = dependent.getSrcId();
-				if (!pseudoFedsToMainFeds.containsKey(expectedSrcId)){
-					Set<Integer> mainFeds = new HashSet<Integer>();
-					mainFeds.add(fed.getSrcId());
-					pseudoFedsToMainFeds.put(expectedSrcId, mainFeds);
-				}else{
-					pseudoFedsToMainFeds.get(expectedSrcId).add(fed.getSrcId());
-				}
-			}
 		}
 	}
 

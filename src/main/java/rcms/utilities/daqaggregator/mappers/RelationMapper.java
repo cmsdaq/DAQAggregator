@@ -1,11 +1,11 @@
 package rcms.utilities.daqaggregator.mappers;
 
 import java.io.Serializable;
-import java.sql.PseudoColumnUsage;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -54,6 +54,7 @@ public class RelationMapper implements Serializable {
 	public Map<Integer, Set<Integer>> fmmApplicationToFmm;
 	public Map<Integer, Set<Integer>> frlPcToFrl;
 	public Map<Integer, Set<Integer>> subsystemToTTCP;
+	public Map<Integer, Set<Integer>> pseudoFedsToMainFeds;
 
 	public RelationMapper(ObjectMapper objectMapper) {
 		this.objectMapper = objectMapper;
@@ -68,7 +69,9 @@ public class RelationMapper implements Serializable {
 		ruToFedBuilder = mapRelationsRuToFedBuilder(daqPartition);
 		frlPcToFrl = mapRelationsFrlPcToFrl(daqPartition);
 		subsystemToTTCP = mapRelationsSubsystemToTTCP(daqPartition);
+		pseudoFedsToMainFeds = mapRelationsPseudoFedsToMainFeds(daqPartition);
 	}
+
 
 	private void buildRelations() {
 		objectMapper.daq.setBus(new ArrayList<>(objectMapper.bus.values()));
@@ -219,19 +222,66 @@ public class RelationMapper implements Serializable {
 
 		/* building FEDs - pseudoFEDs */
 		for (Entry<Integer, FED> fedEntry : objectMapper.fedsByExpectedId.entrySet()){
-			if (objectMapper.pseudoFedsToMainFeds.containsKey(fedEntry.getKey())){
-				for (Integer mainFedSrcId : objectMapper.pseudoFedsToMainFeds.get(fedEntry.getKey())){
+			//case this fedEntry is a pseudofed, exposed through another fed (mainFed/parent)
+			if (pseudoFedsToMainFeds.containsKey(fedEntry.getKey())){
+				for (Integer mainFedSrcId : pseudoFedsToMainFeds.get(fedEntry.getKey())){
 					objectMapper.fedsByExpectedId.get(mainFedSrcId).getDependentFeds().add(fedEntry.getValue());
 				}
 			}
 		}
+		
+		/* building SubFEDBuilder - FED (only for pseudofeds) */
+		for (Entry<Integer, Set<Integer>> relation : fedBuilderToSubFedBuilder.entrySet()) {
+			FEDBuilder fedBuilder = objectMapper.fedBuilders.get(relation.getKey());
+			for (int subFedBuilderId : relation.getValue()) {
+				SubFEDBuilder subFedBuilder = objectMapper.subFedBuilders.get(subFedBuilderId);
+				List<FRL> frls = subFedBuilder.getFrls();
+				for (FRL frl : frls){
+					Map<Integer, FED> feds = frl.getFeds();
+					for (FED fed : feds.values()){
+						//loop over (pseudo)feds
+					}
+				}
+			}
+		}
+	
+		
 	}
+	
 
 	public void mapAllRelations(DAQPartition daqPartition) {
 
 		fetchRelations(daqPartition);
 		buildRelations();
 
+	}
+	
+	/**
+	 * Retrieve FED-mainFED relations
+	 * 
+	 * @return map representing pseudoFED-mainFED one to many relation
+	 */
+	private Map<Integer, Set<Integer>> mapRelationsPseudoFedsToMainFeds(DAQPartition daqPartition) {
+		Map<Integer, Set<Integer>> result = new HashMap<>();
+		for (rcms.utilities.hwcfg.eq.FED hwfed : objectMapper.getHardwareFeds(daqPartition)) {
+			if (hwfed.getDependentFEDs() == null || hwfed.getDependentFEDs().size() == 0)
+				continue;
+			else {
+				for (rcms.utilities.hwcfg.eq.FED dependent : hwfed.getDependentFEDs()) {
+
+					//stores links between pseudofeds and their parent feds to be used in relation mapping
+					int expectedSrcId = dependent.getSrcId();
+					if (!result.containsKey(expectedSrcId)){
+						Set<Integer> mainFeds = new HashSet<Integer>();
+						mainFeds.add(hwfed.getSrcId());
+						result.put(expectedSrcId, mainFeds);
+					}else{
+						result.get(expectedSrcId).add(hwfed.getSrcId());
+					}
+				}
+			}
+		}
+		return result;
 	}
 
 	/**
