@@ -27,8 +27,5 @@ public interface FMMMixIn {
 
 	@JsonIdentityReference(alwaysAsId = true)
 	abstract List<FED> getFeds();
-	
-	@JsonIgnore
-	abstract boolean isTakeB();
 
 }
