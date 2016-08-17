@@ -27,6 +27,7 @@ public class TTCPartition implements FlashlistUpdatable, Derivable {
 	private boolean masked;
 
 	/** can be null */
+	/** this is only a link to the TTCPartition's top level FMM and there might be more FMMs */
 	private FMM fmm;
 
 	private SubSystem subsystem;

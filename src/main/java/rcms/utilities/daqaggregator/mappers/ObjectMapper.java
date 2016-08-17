@@ -278,6 +278,8 @@ public class ObjectMapper {
 		for (rcms.utilities.hwcfg.eq.FED hwfed : getHardwareFeds(daqPartition)) {
 			if (hwfed.getFMM() != null) {
 				result.add(hwfed.getFMM());
+				
+				//also retrieve second-level FMMs linked to this FMM
 				for (rcms.utilities.hwcfg.eq.FMMFMMLink ffl: daqPartition.getDAQPartitionSet().getEquipmentSet().getFMMFMMLinks()){
 					if (ffl.getSourceFMMId() == hwfed.getFMM().getId()){
 						rcms.utilities.hwcfg.eq.FMM targetFMM = daqPartition.getDAQPartitionSet().getEquipmentSet().getFMMs().get(ffl.getTargetFMMId());
