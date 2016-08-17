@@ -278,7 +278,14 @@ public class ObjectMapper {
 		for (rcms.utilities.hwcfg.eq.FED hwfed : getHardwareFeds(daqPartition)) {
 			if (hwfed.getFMM() != null) {
 				result.add(hwfed.getFMM());
-
+				for (rcms.utilities.hwcfg.eq.FMMFMMLink ffl: daqPartition.getDAQPartitionSet().getEquipmentSet().getFMMFMMLinks()){
+					if (ffl.getSourceFMMId() == hwfed.getFMM().getId()){
+						rcms.utilities.hwcfg.eq.FMM targetFMM = daqPartition.getDAQPartitionSet().getEquipmentSet().getFMMs().get(ffl.getTargetFMMId());
+						if (targetFMM.getFMMType().equals(rcms.utilities.hwcfg.eq.FMM.FMMType.fmm)){
+							result.add(targetFMM);
+						}
+					}
+				}
 			}
 		}
 

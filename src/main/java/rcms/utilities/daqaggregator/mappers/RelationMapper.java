@@ -238,8 +238,44 @@ public class RelationMapper implements Serializable {
 				List<FRL> frls = subFedBuilder.getFrls();
 				for (FRL frl : frls){
 					Map<Integer, FED> feds = frl.getFeds();
+					
+					/*Multiple references to the same pseudofed may be found across multiple feds,
+					 * but should be processed only once in this fedbuilder's context*/
+					Set<Integer> encounteredPseudofeds = new HashSet<Integer>();
+					
 					for (FED fed : feds.values()){
-						//loop over (pseudo)feds
+						//loop over dependent feds, if available
+						for (FED pseudofed : fed.getDependentFeds()){
+							
+							if (encounteredPseudofeds.contains(pseudofed.getSrcIdExpected())){
+								continue;
+							}else{
+								encounteredPseudofeds.add(pseudofed.getSrcIdExpected());
+							}
+							
+							if (pseudofed.getTtcp().getName().equals(fed.getTtcp().getName())){
+								objectMapper.subFedBuilders.get(subFedBuilderId).getFeds().add(pseudofed);
+							} else if (isExistTtcpCompatibleSubfedbuilder(fedBuilder, pseudofed.getTtcp())){
+								int sfbId = getTtcpCompatibleSubfedbuilderId(fedBuilder, pseudofed.getTtcp());
+								objectMapper.subFedBuilders.get(sfbId).getFeds().add(pseudofed);
+							}else{
+								//no frl in this case, careful with keys!!
+								String frlPc = "nullFrlPc";
+								String sfbMappingId = new String(String.valueOf(pseudofed.getTtcp().getName())+"$"+String.valueOf(frlPc)+"$"+String.valueOf(fedBuilder.getName()));
+								int sfbId = sfbMappingId.hashCode();
+								
+								SubFEDBuilder newSubFedBuilder = new SubFEDBuilder();
+								
+								newSubFedBuilder.getFeds().add(pseudofed);
+								newSubFedBuilder.setFedBuilder(fedBuilder);
+								newSubFedBuilder.setTtcPartition(pseudofed.getTtcp());
+								
+								fedBuilder.getSubFedbuilders().add(newSubFedBuilder);
+								
+								objectMapper.subFedBuilders.put(sfbId, newSubFedBuilder);
+								
+							}
+						}
 					}
 				}
 			}
@@ -248,6 +284,27 @@ public class RelationMapper implements Serializable {
 		
 	}
 	
+
+	private int getTtcpCompatibleSubfedbuilderId(FEDBuilder fedBuilder, TTCPartition ttcp) {
+		for (SubFEDBuilder sfb : fedBuilder.getSubFedbuilders()){
+			if (sfb.getTtcPartition().getName().equals(ttcp.getName())){
+				String frlPc = (sfb.getFrlPc()==null) ? "nullFrlPc" : sfb.getFrlPc().getHostname();
+				String sfbMappingId = new String(String.valueOf(ttcp.getName())+"$"+String.valueOf(frlPc)+"$"+String.valueOf(fedBuilder.getName()));
+				int sfbId = sfbMappingId.hashCode();
+				return sfbId;
+			}
+		}
+		return -1; //if called in pair wth isExistTtcpCompatibleSubfedbuilder(args), this should never be reached
+	}
+
+	private boolean isExistTtcpCompatibleSubfedbuilder(FEDBuilder fedBuilder, TTCPartition ttcp) {
+		for (SubFEDBuilder sfb : fedBuilder.getSubFedbuilders()){
+			if (sfb.getTtcPartition().getName().equals(ttcp.getName())){
+				return true;
+			}
+		}
+		return false;
+	}
 
 	public void mapAllRelations(DAQPartition daqPartition) {
 
@@ -412,13 +469,13 @@ public class RelationMapper implements Serializable {
 		Set<rcms.utilities.hwcfg.eq.FMM> fmms = objectMapper.getHardwareFmms(daqPartition);
 		for (rcms.utilities.hwcfg.eq.FMM hwfmm : fmms) {
 			String fmmPc = hwfmm.getFMMCrate().getHostName();
-
-			if (result.containsKey(fmmPc.hashCode())) {
-				result.get(fmmPc.hashCode()).add(hwfmm.hashCode());
-			} else {
+			if (!result.containsKey(fmmPc.hashCode())) {
 				result.put(fmmPc.hashCode(), new HashSet<Integer>());
 			}
+			result.get(fmmPc.hashCode()).add(hwfmm.hashCode());
 		}
+		
+		
 
 		return result;
 	}

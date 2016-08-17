@@ -97,7 +97,7 @@ public class TTCPartition implements FlashlistUpdatable, Derivable {
 	public void calculateDerivedValues() {
 		int maskedFeds = 0;
 		int all = 0;
-		for (FED fed : fmm.getFeds()) {
+		for (FED fed : feds) {
 			all++;
 			if (fed.isFmmMasked()) {
 				maskedFeds++;
