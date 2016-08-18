@@ -160,7 +160,7 @@ public class FED implements FlashlistUpdatable {
 			this.percentWarning = (float) (flashlistRow.get("fractionWarning").asDouble() * 100);
 			this.percentBusy = (float) (flashlistRow.get("fractionBusy").asDouble() * 100);
 			this.ttsState = flashlistRow.get("inputState").asText();
-			this.fmmMasked = !flashlistRow.get("isActive").asBoolean();
+			//this.fmmMasked = !flashlistRow.get("isActive").asBoolean(); //covered
 
 		} else if (flashlistType == FlashlistType.FEROL_INPUT_STREAM) {
 			
@@ -193,11 +193,13 @@ public class FED implements FlashlistUpdatable {
 
 		} else if (flashlistType == FlashlistType.FEROL_CONFIGURATION) {
 			
+			/*
 			if (this.frlIO == 0)
 				this.frlMasked = !flashlistRow.get("enableStream0").asBoolean();
 
 			else if (this.frlIO == 1)
 				this.frlMasked = !flashlistRow.get("enableStream1").asBoolean();
+				*/ //covered
 		} else if (flashlistType == FlashlistType.FRL_MONITORING) {
 			
 			if (this.frlIO == 0)
