@@ -54,7 +54,6 @@ public class FlashlistManager {
 		for (String lasUrl : lasUrls) {
 			try {
 				List<String> resultLines = Connector.get().retrieveLines(lasUrl + "/retrieveCatalog?fmt=plain");
-
 				for (String line : resultLines) {
 					if (line.startsWith("urn:")) {
 						flashlists.add(new Flashlist(lasUrl, line, sessionId));

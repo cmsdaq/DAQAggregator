@@ -269,11 +269,11 @@ public class RelationMapper implements Serializable {
 								newSubFedBuilder.getFeds().add(pseudofed);
 								newSubFedBuilder.setFedBuilder(fedBuilder);
 								newSubFedBuilder.setTtcPartition(pseudofed.getTtcp());
-								
+
 								fedBuilder.getSubFedbuilders().add(newSubFedBuilder);
 								
 								objectMapper.subFedBuilders.put(sfbId, newSubFedBuilder);
-								
+
 							}
 						}
 					}

@@ -16,6 +16,8 @@ public class Flashlist {
 	private final String address;
 
 	private final String name;
+	
+	private final String sessionIdColumnName;
 
 	private JsonNode rowsNode;
 
@@ -31,10 +33,15 @@ public class Flashlist {
 		this.name = name;
 		this.sessionId = sessionId;
 		this.flashlistType = FlashlistType.inferTypeByName(name);
+		this.sessionIdColumnName = this.flashlistType.getSessionIdColumnName();
 	}
 
 	public String getName() {
 		return name;
+	}
+	
+	public String getSessionIdColumnName() {
+		return sessionIdColumnName;
 	}
 
 	public JsonNode getRowsNode() {
@@ -57,10 +64,12 @@ public class Flashlist {
 
 		int timeResult;
 		String requestAddress = address + "/retrieveCollection?flash=" + name + "&fmt=json";
-
+		
 		if (flashlistType.isSessionContext()) {
-			requestAddress = requestAddress + "&sessionid=" + sessionId;
+			//requestAddress = requestAddress + "&sessionid=" + sessionId;
+			requestAddress = requestAddress + "&"+sessionIdColumnName + "=" + sessionId;
 		}
+		logger.debug("Reading flashlist from endpoint: "+requestAddress);
 
 		long startTime = System.currentTimeMillis();
 
