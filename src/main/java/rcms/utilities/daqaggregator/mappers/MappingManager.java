@@ -74,7 +74,7 @@ public class MappingManager implements Serializable {
 	}
 
 	/**
-	 * This function maps subFedBuilders and all realations to subFedBuilders.
+	 * This function maps subFedBuilders and all relations to subFedBuilders.
 	 * Needs refactoring (ObjectMapper & RelationMapper).
 	 * 
 	 * @return

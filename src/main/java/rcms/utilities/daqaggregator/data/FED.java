@@ -38,11 +38,8 @@ public class FED implements FlashlistUpdatable {
 	private int fmmIO;
 
 	private int srcIdExpected;
-
-	/** important for pseudofeds */
-	private List<FED> mainFeds = new ArrayList<FED>();
 	
-	/** important for pseudofeds */
+	/** pseudofeds */
 	private List<FED> dependentFeds = new ArrayList<FED>();
 
 	// ----------------------------------------
@@ -163,11 +160,17 @@ public class FED implements FlashlistUpdatable {
 			this.percentWarning = (float) (flashlistRow.get("fractionWarning").asDouble() * 100);
 			this.percentBusy = (float) (flashlistRow.get("fractionBusy").asDouble() * 100);
 			this.ttsState = flashlistRow.get("inputState").asText();
-			this.fmmMasked = !flashlistRow.get("isActive").asBoolean();
+			//this.fmmMasked = !flashlistRow.get("isActive").asBoolean(); //covered
 
 		} else if (flashlistType == FlashlistType.FEROL_INPUT_STREAM) {
-			// TODO or WrongFEDIdDetected
-			this.srcIdReceived = flashlistRow.get("WrongFEDId").asInt();
+			
+			if (flashlistRow.get("WrongFEDIdDetected").asInt() == 0){
+				//srcIdExpected already filled at mapping from corresponding hwfed
+				this.srcIdReceived = this.srcIdExpected;
+			}else{
+				this.srcIdReceived = flashlistRow.get("WrongFEDId").asInt();
+			}
+			
 			this.numSCRCerrors = flashlistRow.get("LinkCRCError").asInt();
 			this.numFCRCerrors = flashlistRow.get("FEDCRCError").asInt();
 			this.numTriggers = flashlistRow.get("TriggerNumber").asInt();
@@ -190,11 +193,13 @@ public class FED implements FlashlistUpdatable {
 
 		} else if (flashlistType == FlashlistType.FEROL_CONFIGURATION) {
 			
+			/*
 			if (this.frlIO == 0)
-				this.frlMasked = flashlistRow.get("enableStream0").asBoolean();
+				this.frlMasked = !flashlistRow.get("enableStream0").asBoolean();
 
 			else if (this.frlIO == 1)
-				this.frlMasked = flashlistRow.get("enableStream1").asBoolean();
+				this.frlMasked = !flashlistRow.get("enableStream1").asBoolean();
+				*/ //covered
 		} else if (flashlistType == FlashlistType.FRL_MONITORING) {
 			
 			if (this.frlIO == 0)
@@ -325,10 +330,6 @@ public class FED implements FlashlistUpdatable {
 	public int getSrcIdExpected() {
 		return srcIdExpected;
 	}
-
-	public List<FED> getMainFeds() {
-		return mainFeds;
-	}
 	
 	public List<FED> getDependentFeds() {
 		return dependentFeds;
@@ -352,10 +353,6 @@ public class FED implements FlashlistUpdatable {
 
 	public void setSrcIdExpected(int srcIdExpected) {
 		this.srcIdExpected = srcIdExpected;
-	}
-
-	public void setMainFeds(List<FED> mainFeds) {
-		this.mainFeds = mainFeds;
 	}
 	
 	public void setDependentFeds(List<FED> dependentFeds) {
@@ -576,7 +573,5 @@ public class FED implements FlashlistUpdatable {
 	public String toString() {
 		return "FED [id=" + id + ", ttsState=" + ttsState + ", frlMasked=" + frlMasked + "]";
 	}
-
-	// ----------------------------------------------------------------------
 
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -203,8 +204,8 @@ public class ObjectMapper {
 		StringBuilder sb = new StringBuilder();
 
 		int objectsMapped = subSystems.size() + rus.size() + bus.size() + feds.size() + frls.size() + fmms.size()
-				+ ttcPartitions.size() + fedBuilders.size() + subFedBuilders.size() + fmmApplications.size()
-				+ frlPcs.size();
+		+ ttcPartitions.size() + fedBuilders.size() + subFedBuilders.size() + fmmApplications.size()
+		+ frlPcs.size();
 
 		int bFmms = 0;
 		for (FMM fmm : fmms.values()) {
@@ -278,6 +279,15 @@ public class ObjectMapper {
 			if (hwfed.getFMM() != null) {
 				result.add(hwfed.getFMM());
 				
+				//also retrieve second-level FMMs linked to this FMM
+				for (rcms.utilities.hwcfg.eq.FMMFMMLink ffl: daqPartition.getDAQPartitionSet().getEquipmentSet().getFMMFMMLinks()){
+					if (ffl.getSourceFMMId() == hwfed.getFMM().getId()){
+						rcms.utilities.hwcfg.eq.FMM targetFMM = daqPartition.getDAQPartitionSet().getEquipmentSet().getFMMs().get(ffl.getTargetFMMId());
+						if (targetFMM.getFMMType().equals(rcms.utilities.hwcfg.eq.FMM.FMMType.fmm)){
+							result.add(targetFMM);
+						}
+					}
+				}
 			}
 		}
 
@@ -294,11 +304,11 @@ public class ObjectMapper {
 		Set<rcms.utilities.hwcfg.eq.FED> result = new HashSet<>();
 		for (rcms.utilities.hwcfg.eq.FRL hwfrl : getHardwareFrls(daqPartition)) {
 			for (rcms.utilities.hwcfg.eq.FED hwfed : hwfrl.getFEDs().values())
-				//
 				if (hwfed != null) {
 					result.add(hwfed);
-					Set<rcms.utilities.hwcfg.eq.FED> dependants = getDependentFeds(hwfed);
-					result.addAll(dependants);
+					Set<rcms.utilities.hwcfg.eq.FED> dependents = getDependentFeds(hwfed);
+
+					result.addAll(dependents);
 				}
 		}
 		return result;
@@ -311,6 +321,7 @@ public class ObjectMapper {
 			return result;
 		else {
 			for (rcms.utilities.hwcfg.eq.FED dependent : fed.getDependentFEDs()) {
+
 				result.add(dependent);
 				result.addAll(getDependentFeds(dependent));
 			}

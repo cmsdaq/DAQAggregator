@@ -4,26 +4,26 @@ import org.apache.log4j.Logger;
 
 public enum FlashlistType {
 
-	BU("BU", true, true),
-	EVM("EVM", true, true),
-	FMM_INPUT("FMMInput", true, true),
-	FMM_INPUT_DETAIL("FMMInputDetail", true, false),
-	FMM_STATUS("FMMStatus", true, true),
-	RU("RU", true, true),
-	FEROL_CONFIGURATION("ferolConfiguration", true, true),
-	FEROL_INPUT_STREAM("ferolInputStream", true, true),
-	FEROL_MONITORING("ferolMonitoring", true, false),
-	FEROL_STATUS("ferolStatus", true, true),
-	FEROL_TCP_STREAM("ferolTcpStream", true, false),
-	FRL_MONITORING("frlMonitoring", true, true),
-	HOST_INFO("hostInfo", true, false),
-	LEVEL_ZERO_FM_DYNAMIC("levelZeroFM_dynamic", false, true),
-	LEVEL_ZERO_FM_STATIC("levelZeroFM_static", true, false),
-	LEVEL_ZERO_FM_SUBSYS("levelZeroFM_subsys", false, true),
-	JOB_CONTROL("jobcontrol", false, true),
-	DISK_INFO("diskInfo", true, false),
-	FMM_PARTITION_DEAD_TIME("FMMPartitionDeadTime", true, false),
-	FMM_FED_DEAD_TIME("FMMFEDDeadTime", true, false);
+	BU("BU", true, true, "sessionid"),
+	EVM("EVM", true, true, "sessionid"),
+	FMM_INPUT("FMMInput", true, true, "sessionid"),
+	FMM_INPUT_DETAIL("FMMInputDetail", true, false, "sessionid"),
+	FMM_STATUS("FMMStatus", true, true, "sessionid"),
+	RU("RU", true, true, "sessionid"),
+	FEROL_CONFIGURATION("ferolConfiguration", true, true, "sessionid"),
+	FEROL_INPUT_STREAM("ferolInputStream", true, true, "sessionid"),
+	FEROL_MONITORING("ferolMonitoring", true, false, "sessionid"),
+	FEROL_STATUS("ferolStatus", true, true, "sessionid"),
+	FEROL_TCP_STREAM("ferolTcpStream", true, false, "sessionid"),
+	FRL_MONITORING("frlMonitoring", true, true, "sessionid"),
+	HOST_INFO("hostInfo", true, false, "sessionid"),
+	LEVEL_ZERO_FM_DYNAMIC("levelZeroFM_dynamic", false, true, "SID"),
+	LEVEL_ZERO_FM_STATIC("levelZeroFM_static", true, true, "SID"),
+	LEVEL_ZERO_FM_SUBSYS("levelZeroFM_subsys", false, true, "SID"),
+	JOB_CONTROL("jobcontrol", false, true, "sessionid"),
+	DISK_INFO("diskInfo", true, false, "sessionid"),
+	FMM_PARTITION_DEAD_TIME("FMMPartitionDeadTime", true, false, ""), //no session ID field found in LAS
+	FMM_FED_DEAD_TIME("FMMFEDDeadTime", true, false, ""); //no session ID field found in LAS
 
 	private static Logger logger = Logger.getLogger(FlashlistType.class);
 
@@ -36,11 +36,14 @@ public enum FlashlistType {
 	private final boolean sessionContext;
 
 	private final boolean download;
+	
+	private final String sessionIdColumnName;
 
-	private FlashlistType(String name, boolean sessionContext, boolean download) {
+	private FlashlistType(String name, boolean sessionContext, boolean download, String sessionIdColumnName) {
 		this.name = name;
 		this.sessionContext = sessionContext;
 		this.download = download;
+		this.sessionIdColumnName = sessionIdColumnName;
 	}
 
 	private static String message = " flashlist type infered from name ";
@@ -139,6 +142,10 @@ public enum FlashlistType {
 
 	public boolean isDownload() {
 		return download;
+	}
+	
+	public String getSessionIdColumnName(){
+		return sessionIdColumnName;
 	}
 
 }

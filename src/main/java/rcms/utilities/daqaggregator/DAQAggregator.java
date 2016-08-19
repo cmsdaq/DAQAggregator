@@ -96,12 +96,21 @@ public class DAQAggregator {
 				persistenceDir = "/tmp/snapshots/";
 			}
 
+			
 			String formatProperty = daqAggregatorProperties.getProperty(PERSISTENCE_FORMAT);
+			
+			/**will output to SMILE by default, if no other valid format option is found in properties file*/
 			SnapshotFormat format = SnapshotFormat.SMILE;
 			if (SnapshotFormat.JSON.name().equalsIgnoreCase(formatProperty))
 				format = SnapshotFormat.JSON;
 			else if (SnapshotFormat.SMILE.name().equalsIgnoreCase(formatProperty))
 				format = SnapshotFormat.SMILE;
+			else if (SnapshotFormat.JSONREFPREFIXED.name().equalsIgnoreCase(formatProperty))
+				format = SnapshotFormat.JSONREFPREFIXED;
+			else if (SnapshotFormat.JSONUGLY.name().equalsIgnoreCase(formatProperty))
+				format = SnapshotFormat.JSONUGLY;
+			else if (SnapshotFormat.JSONREFPREFIXEDUGLY.name().equalsIgnoreCase(formatProperty))
+				format = SnapshotFormat.JSONREFPREFIXEDUGLY;
 
 			PersistorManager persistorManager = new PersistorManager(persistenceDir, format);
 

@@ -10,10 +10,10 @@ public class RefPrefix {
 	
 	public static void main(String[] args) {
 		StructureSerializer serializer = new StructureSerializer();
-		DAQ daq = serializer.deserializeFromJSON("/afs/cern.ch/user/m/mvougiou/Desktop/tmp/snapshots/1469177290765.json");
+		DAQ daq = serializer.deserializeFromJSON("/afs/cern.ch/user/m/mvougiou/Desktop/tmp/snapshots/1470665696624.json");
 		
 		try {
-			serializer.serializeToRefJSON(daq, "1469177290765.ref", "/afs/cern.ch/user/m/mvougiou/Desktop/tmp/snapshots/");
+			serializer.serializeToRefJSON(daq, "1470665696624.ref", "/afs/cern.ch/user/m/mvougiou/Desktop/tmp/snapshots/");
 		} catch (JsonGenerationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
