@@ -22,8 +22,8 @@ public enum FlashlistType {
 	LEVEL_ZERO_FM_SUBSYS("levelZeroFM_subsys", false, true, "SID"),
 	JOB_CONTROL("jobcontrol", false, true, "sessionid"),
 	DISK_INFO("diskInfo", true, false, "sessionid"),
-	FMM_PARTITION_DEAD_TIME("FMMPartitionDeadTime", true, false, ""), //no session ID field found in LAS
-	FMM_FED_DEAD_TIME("FMMFEDDeadTime", true, false, ""); //no session ID field found in LAS
+	FMM_PARTITION_DEAD_TIME("FMMPartitionDeadTime", false, false, ""),
+	FMM_FED_DEAD_TIME("FMMFEDDeadTime", false, false, "");
 
 	private static Logger logger = Logger.getLogger(FlashlistType.class);
 
