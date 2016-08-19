@@ -236,12 +236,13 @@ public class RelationMapper implements Serializable {
 			for (int subFedBuilderId : relation.getValue()) {
 				SubFEDBuilder subFedBuilder = objectMapper.subFedBuilders.get(subFedBuilderId);
 				List<FRL> frls = subFedBuilder.getFrls();
+				
+				/*Multiple references to the same pseudofed may be found across multiple feds,
+				 * but should be processed only once in this fedbuilder-subfedbuilder context*/
+				Set<Integer> encounteredPseudofeds = new HashSet<Integer>();
+				
 				for (FRL frl : frls){
 					Map<Integer, FED> feds = frl.getFeds();
-					
-					/*Multiple references to the same pseudofed may be found across multiple feds,
-					 * but should be processed only once in this fedbuilder's context*/
-					Set<Integer> encounteredPseudofeds = new HashSet<Integer>();
 					
 					for (FED fed : feds.values()){
 						//loop over dependent feds, if available
@@ -259,7 +260,7 @@ public class RelationMapper implements Serializable {
 								int sfbId = getTtcpCompatibleSubfedbuilderId(fedBuilder, pseudofed.getTtcp());
 								objectMapper.subFedBuilders.get(sfbId).getFeds().add(pseudofed);
 							}else{
-								//no frl in this case, careful with keys!!
+								//no frl in this case
 								String frlPc = "nullFrlPc";
 								String sfbMappingId = new String(String.valueOf(pseudofed.getTtcp().getName())+"$"+String.valueOf(frlPc)+"$"+String.valueOf(fedBuilder.getName()));
 								int sfbId = sfbMappingId.hashCode();
@@ -271,9 +272,8 @@ public class RelationMapper implements Serializable {
 								newSubFedBuilder.setTtcPartition(pseudofed.getTtcp());
 
 								fedBuilder.getSubFedbuilders().add(newSubFedBuilder);
-								
-								objectMapper.subFedBuilders.put(sfbId, newSubFedBuilder);
 
+								objectMapper.subFedBuilders.put(sfbId, newSubFedBuilder);
 							}
 						}
 					}
