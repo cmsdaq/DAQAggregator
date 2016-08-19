@@ -13,8 +13,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import rcms.utilities.daqaggregator.data.FED;
 import rcms.utilities.daqaggregator.data.RU;
 import rcms.utilities.daqaggregator.mappers.helper.ContextHelper;
+import rcms.utilities.daqaggregator.mappers.helper.FEDEnableMaskParser;
 import rcms.utilities.daqaggregator.mappers.helper.FMMGeoMatcher;
 import rcms.utilities.daqaggregator.mappers.helper.FRLGeoFinder;
+import rcms.utilities.daqaggregator.mappers.helper.FedFromFerolInputStreamGeoFinder;
 import rcms.utilities.daqaggregator.mappers.helper.FedInFmmGeoFinder;
 import rcms.utilities.daqaggregator.mappers.helper.FedInFrlGeoFinder;
 import rcms.utilities.daqaggregator.mappers.helper.Matcher;
@@ -45,7 +47,7 @@ public class FlashlistDispatcher {
 			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().busByHostname, "context");
 			break;
 		case FEROL_INPUT_STREAM:
-			dispatchRowsByGeo(flashlist, mappingManager.getObjectMapper().fedsById.values(), new FedInFrlGeoFinder("streamNumber"));
+			dispatchRowsByGeo(flashlist, mappingManager.getObjectMapper().fedsById.values(), new FedFromFerolInputStreamGeoFinder("streamNumber"));
 			break;
 		case FMM_INPUT:
 			dispatchRowsByGeo(flashlist, mappingManager.getObjectMapper().fedsById.values(), new FedInFmmGeoFinder());
@@ -54,7 +56,7 @@ public class FlashlistDispatcher {
 			dispatchRowsByGeo(flashlist, mappingManager.getObjectMapper().frls.values(), new FRLGeoFinder());
 			break;
 		case EVM:
-			if (flashlist.getRowsNode().isArray()) {
+			if (flashlist.getRowsNode().isArray() && flashlist.getRowsNode().size() > 0) {
 				int runNumber = flashlist.getRowsNode().get(0).get("runNumber").asInt();
 				mappingManager.getObjectMapper().daq.setRunNumber(runNumber);
 				logger.debug("Successfully got runnumber: " + runNumber);
@@ -69,11 +71,36 @@ public class FlashlistDispatcher {
 
 			}
 			break;
-
+		case LEVEL_ZERO_FM_STATIC:
+			String fedEnMask = flashlist.getRowsNode().get(0).get("FED_ENABLE_MASK").asText();
+			FEDEnableMaskParser parser = new FEDEnableMaskParser(fedEnMask);
+			Map<Integer, String> maskedFlagsByFed = parser.getFedByExpectedIdToMaskingFlags();
+			
+			int notFound = 0;
+			int total = 0;
+			
+			for (Entry<Integer, FED> fedEntry: mappingManager.getObjectMapper().fedsByExpectedId.entrySet()){
+				total++;
+				if (maskedFlagsByFed.containsKey(fedEntry.getKey())){
+				String [] maskingFlags = maskedFlagsByFed.get(fedEntry.getKey()).split("-"); //string from map contains two dash-separated flags as substrings
+				//System.out.println(maskedFlagsByFed.get(fedEntry.getKey()));
+				//System.out.println(maskingFlags[0]);
+				//System.out.println(maskingFlags[1]);
+				//System.exit(0);
+				
+				fedEntry.getValue().setFmmMasked(Boolean.parseBoolean(maskingFlags[0]));
+				fedEntry.getValue().setFrlMasked(Boolean.parseBoolean(maskingFlags[1]));
+				}else{
+					notFound++;
+				}
+			}
+			break;
 		case JOB_CONTROL:
 			// TODO: dispatch by context (in the future) (multiple context by
 			// hostname)
-			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().frlPcByHostname, "hostname");
+			dispatchRowsByHostname(flashlist, mappingManager.
+					getObjectMapper().
+					frlPcByHostname, "hostname");
 			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().fmmApplicationByHostname, "hostname");
 			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().rusByHostname, "hostname");
 			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().busByHostname, "hostname");
@@ -108,7 +135,6 @@ public class FlashlistDispatcher {
 			break;
 		case FRL_MONITORING:
 			// TODO: future - use frlpc.context for mapping
-			printTypesInfo(flashlist);
 			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().frlPcByHostname, "context");
 			dispatchRowsByGeo(flashlist, mappingManager.getObjectMapper().fedsById.values(), new FedInFrlGeoFinder("io"));
 			break;
@@ -123,10 +149,10 @@ public class FlashlistDispatcher {
 
 	}
 
-	private void printTypesInfo(Flashlist flashlist) {
+	private void printFlashListTypeInfo(Flashlist flashlist) {
 		com.fasterxml.jackson.databind.ObjectMapper om = new com.fasterxml.jackson.databind.ObjectMapper();
 		try {
-			logger.warn("FlashlistType========  "+om.writeValueAsString(flashlist.getDefinitionNode()));
+			logger.info("Flashlist schema:  "+om.writeValueAsString(flashlist.getDefinitionNode()));
 		} catch (JsonProcessingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -147,7 +173,7 @@ public class FlashlistDispatcher {
 						fedToFlashlistRow.put(fed, row);
 
 					} else {
-						logger.info(
+						logger.debug(
 								"FED with problem indicated by flashlist RU.fedIdsWithErrors could not be found by id "
 										+ fedId);
 					}
@@ -159,7 +185,7 @@ public class FlashlistDispatcher {
 						fedToFlashlistRow.put(fed, row);
 
 					} else {
-						logger.info(
+						logger.debug(
 								"FED with problem indicated by flashlist RU.fedIdsWithoutFragments could not be found by id "
 										+ fedId);
 					}
@@ -168,7 +194,7 @@ public class FlashlistDispatcher {
 			}
 
 		}
-		logger.info("There are " + fedToFlashlistRow.size() + " FEDs with problems (according to RU flashlist)");
+		logger.debug("There are " + fedToFlashlistRow.size() + " FEDs with problems (according to RU flashlist)");
 		for (Entry<FED, JsonNode> entry : fedToFlashlistRow.entrySet()) {
 			FED fed = entry.getKey();
 			fed.updateFromFlashlist(flashlist.getFlashlistType(), entry.getValue());
@@ -195,7 +221,7 @@ public class FlashlistDispatcher {
 
 		/* Object T will receive row JsonNode */
 		Map<T, JsonNode> dispatchMap = matcher.match(flashlist, collection);
-		logger.info("Elements matched by geolocation: " + dispatchMap.size() + "/" + collection.size());
+		logger.debug("Elements matched by geolocation: " + dispatchMap.size() + "/" + collection.size());
 
 		for (Entry<T, JsonNode> match : dispatchMap.entrySet()) {
 			match.getKey().updateFromFlashlist(flashlistType, match.getValue());

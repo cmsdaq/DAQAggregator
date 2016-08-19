@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -53,6 +54,7 @@ public class RelationMapper implements Serializable {
 	public Map<Integer, Set<Integer>> fmmApplicationToFmm;
 	public Map<Integer, Set<Integer>> frlPcToFrl;
 	public Map<Integer, Set<Integer>> subsystemToTTCP;
+	public Map<Integer, Set<Integer>> pseudoFedsToMainFeds;
 
 	public RelationMapper(ObjectMapper objectMapper) {
 		this.objectMapper = objectMapper;
@@ -67,7 +69,9 @@ public class RelationMapper implements Serializable {
 		ruToFedBuilder = mapRelationsRuToFedBuilder(daqPartition);
 		frlPcToFrl = mapRelationsFrlPcToFrl(daqPartition);
 		subsystemToTTCP = mapRelationsSubsystemToTTCP(daqPartition);
+		pseudoFedsToMainFeds = mapRelationsPseudoFedsToMainFeds(daqPartition);
 	}
+
 
 	private void buildRelations() {
 		objectMapper.daq.setBus(new ArrayList<>(objectMapper.bus.values()));
@@ -99,7 +103,7 @@ public class RelationMapper implements Serializable {
 			for (int fedId : relation.getValue()) {
 				FED fed = objectMapper.feds.get(fedId);
 				frl.getFeds().put(fed.getFrlIO(), fed); // TODO: check if
-														// correct
+				// correct
 				fed.setFrl(frl);
 			}
 		}
@@ -216,6 +220,90 @@ public class RelationMapper implements Serializable {
 		}
 		logger.warn("Ignored ttcp in subsystems " + ignoredTTCP);
 
+		/* building FEDs - pseudoFEDs */
+		for (Entry<Integer, FED> fedEntry : objectMapper.fedsByExpectedId.entrySet()){
+			//case this fedEntry is a pseudofed, exposed through another fed (mainFed/parent)
+			if (pseudoFedsToMainFeds.containsKey(fedEntry.getKey())){
+				for (Integer mainFedSrcId : pseudoFedsToMainFeds.get(fedEntry.getKey())){
+					objectMapper.fedsByExpectedId.get(mainFedSrcId).getDependentFeds().add(fedEntry.getValue());
+				}
+			}
+		}
+		
+		/* building SubFEDBuilder - FED (only for pseudofeds) */
+		for (Entry<Integer, Set<Integer>> relation : fedBuilderToSubFedBuilder.entrySet()) {
+			FEDBuilder fedBuilder = objectMapper.fedBuilders.get(relation.getKey());
+			for (int subFedBuilderId : relation.getValue()) {
+				SubFEDBuilder subFedBuilder = objectMapper.subFedBuilders.get(subFedBuilderId);
+				List<FRL> frls = subFedBuilder.getFrls();
+				for (FRL frl : frls){
+					Map<Integer, FED> feds = frl.getFeds();
+					
+					/*Multiple references to the same pseudofed may be found across multiple feds,
+					 * but should be processed only once in this fedbuilder's context*/
+					Set<Integer> encounteredPseudofeds = new HashSet<Integer>();
+					
+					for (FED fed : feds.values()){
+						//loop over dependent feds, if available
+						for (FED pseudofed : fed.getDependentFeds()){
+							
+							if (encounteredPseudofeds.contains(pseudofed.getSrcIdExpected())){
+								continue;
+							}else{
+								encounteredPseudofeds.add(pseudofed.getSrcIdExpected());
+							}
+							
+							if (pseudofed.getTtcp().getName().equals(fed.getTtcp().getName())){
+								objectMapper.subFedBuilders.get(subFedBuilderId).getFeds().add(pseudofed);
+							} else if (isExistTtcpCompatibleSubfedbuilder(fedBuilder, pseudofed.getTtcp())){
+								int sfbId = getTtcpCompatibleSubfedbuilderId(fedBuilder, pseudofed.getTtcp());
+								objectMapper.subFedBuilders.get(sfbId).getFeds().add(pseudofed);
+							}else{
+								//no frl in this case, careful with keys!!
+								String frlPc = "nullFrlPc";
+								String sfbMappingId = new String(String.valueOf(pseudofed.getTtcp().getName())+"$"+String.valueOf(frlPc)+"$"+String.valueOf(fedBuilder.getName()));
+								int sfbId = sfbMappingId.hashCode();
+								
+								SubFEDBuilder newSubFedBuilder = new SubFEDBuilder();
+								
+								newSubFedBuilder.getFeds().add(pseudofed);
+								newSubFedBuilder.setFedBuilder(fedBuilder);
+								newSubFedBuilder.setTtcPartition(pseudofed.getTtcp());
+
+								fedBuilder.getSubFedbuilders().add(newSubFedBuilder);
+								
+								objectMapper.subFedBuilders.put(sfbId, newSubFedBuilder);
+
+							}
+						}
+					}
+				}
+			}
+		}
+	
+		
+	}
+	
+
+	private int getTtcpCompatibleSubfedbuilderId(FEDBuilder fedBuilder, TTCPartition ttcp) {
+		for (SubFEDBuilder sfb : fedBuilder.getSubFedbuilders()){
+			if (sfb.getTtcPartition().getName().equals(ttcp.getName())){
+				String frlPc = (sfb.getFrlPc()==null) ? "nullFrlPc" : sfb.getFrlPc().getHostname();
+				String sfbMappingId = new String(String.valueOf(ttcp.getName())+"$"+String.valueOf(frlPc)+"$"+String.valueOf(fedBuilder.getName()));
+				int sfbId = sfbMappingId.hashCode();
+				return sfbId;
+			}
+		}
+		return -1; //if called in pair wth isExistTtcpCompatibleSubfedbuilder(args), this should never be reached
+	}
+
+	private boolean isExistTtcpCompatibleSubfedbuilder(FEDBuilder fedBuilder, TTCPartition ttcp) {
+		for (SubFEDBuilder sfb : fedBuilder.getSubFedbuilders()){
+			if (sfb.getTtcPartition().getName().equals(ttcp.getName())){
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public void mapAllRelations(DAQPartition daqPartition) {
@@ -223,6 +311,34 @@ public class RelationMapper implements Serializable {
 		fetchRelations(daqPartition);
 		buildRelations();
 
+	}
+	
+	/**
+	 * Retrieve FED-mainFED relations
+	 * 
+	 * @return map representing pseudoFED-mainFED one to many relation
+	 */
+	private Map<Integer, Set<Integer>> mapRelationsPseudoFedsToMainFeds(DAQPartition daqPartition) {
+		Map<Integer, Set<Integer>> result = new HashMap<>();
+		for (rcms.utilities.hwcfg.eq.FED hwfed : objectMapper.getHardwareFeds(daqPartition)) {
+			if (hwfed.getDependentFEDs() == null || hwfed.getDependentFEDs().size() == 0)
+				continue;
+			else {
+				for (rcms.utilities.hwcfg.eq.FED dependent : hwfed.getDependentFEDs()) {
+
+					//stores links between pseudofeds and their parent feds to be used in relation mapping
+					int expectedSrcId = dependent.getSrcId();
+					if (!result.containsKey(expectedSrcId)){
+						Set<Integer> mainFeds = new HashSet<Integer>();
+						mainFeds.add(hwfed.getSrcId());
+						result.put(expectedSrcId, mainFeds);
+					}else{
+						result.get(expectedSrcId).add(hwfed.getSrcId());
+					}
+				}
+			}
+		}
+		return result;
 	}
 
 	/**
@@ -279,7 +395,7 @@ public class RelationMapper implements Serializable {
 		// Find the PI connected to this partition
 		for (FMMTriggerLink ftl : dp.getDAQPartitionSet().getEquipmentSet().getFMMTriggerLinks())
 			if (ftl.getTriggerId() == trigger.getId() && ftl.getLPMNr() == ici.getPMNr()
-					&& ftl.getiCINr() == ici.getICINr()) {
+			&& ftl.getiCINr() == ici.getICINr()) {
 				pi = dp.getDAQPartitionSet().getEquipmentSet().getFMMs().get(ftl.getFMMId());
 			}
 
@@ -353,13 +469,13 @@ public class RelationMapper implements Serializable {
 		Set<rcms.utilities.hwcfg.eq.FMM> fmms = objectMapper.getHardwareFmms(daqPartition);
 		for (rcms.utilities.hwcfg.eq.FMM hwfmm : fmms) {
 			String fmmPc = hwfmm.getFMMCrate().getHostName();
-
-			if (result.containsKey(fmmPc.hashCode())) {
-				result.get(fmmPc.hashCode()).add(hwfmm.hashCode());
-			} else {
+			if (!result.containsKey(fmmPc.hashCode())) {
 				result.put(fmmPc.hashCode(), new HashSet<Integer>());
 			}
+			result.get(fmmPc.hashCode()).add(hwfmm.hashCode());
 		}
+		
+		
 
 		return result;
 	}

@@ -1,10 +1,12 @@
-package rcms.utilities.daqaggregator.data.mixin;
+package rcms.utilities.daqaggregator.data.mixin.ref;
+
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import rcms.utilities.daqaggregator.data.FEDBuilder;
+import rcms.utilities.daqaggregator.data.FRL;
 
 /**
  * Class configuring json serialization
@@ -12,13 +14,10 @@ import rcms.utilities.daqaggregator.data.FEDBuilder;
  * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
  *
  */
-@JsonIdentityInfo(generator = IdGenerators.RUIdGenerator.class, property = "@id")
-public interface RUMixIn {
+@JsonIdentityInfo(generator = IdGenerators.FRLPcIdGenerator.class, property = "@id")
+public interface FRLPcMixIn {
 
+	@JsonProperty("ref_frls")
 	@JsonIdentityReference(alwaysAsId = true)
-	abstract FEDBuilder getFedBuilder();
-	
-	@JsonProperty("isEVM")
-	abstract boolean isEVM();
-
+	abstract List<FRL> getFrls();
 }

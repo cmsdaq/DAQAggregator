@@ -51,7 +51,7 @@ public class Level0DataRetriever  {
 		{
 			String lasUrl = _lasBaseURLge + "levelZeroFM_static" + lasTrailer;
 			Map<String, String> l0data = new HashMap<String, String>();
-			logger.info("LASURL = " + lasUrl);
+			logger.debug("LASURL = " + lasUrl);
 			String fields[] = { "FMURL", "HWCFG_KEY", "SID", "timestamp" };
 			readInfospaceByFilter(lasUrl, _fmURLFilter1, _fmURLFilter2, l0data, fields);
 			if ( ! l0data.isEmpty() ) {
@@ -110,11 +110,11 @@ public class Level0DataRetriever  {
 
 					String fmURL = values[fieldMap.get("FMURL")];
 
-					logger.info("  checking fm url " + fmURL + "  with filters '"+fmURLFilter1+"' and '"+fmURLFilter2+"'");
+					logger.debug("  checking fm url " + fmURL + "  with filters '"+fmURLFilter1+"' and '"+fmURLFilter2+"'");
 
 					if (fmURL.contains(fmURLFilter1) && fmURL.contains(fmURLFilter2)) {
 
-						logger.info("    URL contains filters '" + fmURLFilter1 + "' and '" + fmURLFilter2 + "'.");
+						logger.debug("    URL contains filters '" + fmURLFilter1 + "' and '" + fmURLFilter2 + "'.");
 
 
 						String timestamp = values[fieldMap.get("timestamp")];

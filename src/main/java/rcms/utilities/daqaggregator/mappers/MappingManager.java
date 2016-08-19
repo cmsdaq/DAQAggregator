@@ -74,7 +74,7 @@ public class MappingManager implements Serializable {
 	}
 
 	/**
-	 * This function maps subFedBuilders and all realations to subFedBuilders.
+	 * This function maps subFedBuilders and all relations to subFedBuilders.
 	 * Needs refactoring (ObjectMapper & RelationMapper).
 	 * 
 	 * @return
@@ -104,6 +104,11 @@ public class MappingManager implements Serializable {
 
 						String ttcpName = fed.getTTCPartition().getName();
 						String frlPc = frl.getFRLCrate().getHostName();
+						
+						String fedBuilderName = fb.getName();
+						
+						String sfbMappingId = new String(String.valueOf(ttcpName)+"$"+String.valueOf(frlPc)+"$"+String.valueOf(fedBuilderName));
+						int sfbId = sfbMappingId.hashCode(); //replaces use of empty object hashcode as key
 
 						/* a new TTC partition in this fedbuilder */
 						if (!ttcPartitionToFrlPCs.containsKey(ttcpName)) {
@@ -117,27 +122,34 @@ public class MappingManager implements Serializable {
 						if (!ttcPartitionToFrlPCs.get(ttcpName).contains(frlPc)) {
 							ttcPartitionToFrlPCs.get(ttcpName).add(frlPc);
 							SubFEDBuilder subFedBuilder = new SubFEDBuilder();
-							subFedBuilders.put(subFedBuilder.hashCode(), subFedBuilder);
+							//int id = subFedBuilder.hashCode()+(new java.util.Random()).nextInt(1000);
+							
+							subFedBuilders.put(sfbId, subFedBuilder);
 
 							/* FEDBuilder - SubFEDBuilder */
 							if (!fedBuilderToSubFedBuilder.containsKey(fb.hashCode())) {
 								fedBuilderToSubFedBuilder.put(fb.hashCode(), new HashSet<Integer>());
 							}
-							fedBuilderToSubFedBuilder.get(fb.hashCode()).add(subFedBuilder.hashCode());
+							fedBuilderToSubFedBuilder.get(fb.hashCode()).add(sfbId);
 
 							/* SubFEDBuilder - FRL */
-							if (!subFedBuilderToFrl.containsKey(fb.hashCode())) {
-								subFedBuilderToFrl.put(subFedBuilder.hashCode(), new HashSet<Integer>());
+							if (!subFedBuilderToFrl.containsKey(sfbId)) {
+								subFedBuilderToFrl.put(sfbId, new HashSet<Integer>());
 							}
-							subFedBuilderToFrl.get(subFedBuilder.hashCode()).add(frl.hashCode());
-
+							
 							/* SubFedBuilder - TTCPartition */
-							subFedBuilderToTTCP.put(subFedBuilder.hashCode(), fed.getTTCPartition().hashCode());
+							subFedBuilderToTTCP.put(sfbId, fed.getTTCPartition().hashCode());
 
 							/* SubFedBuilder - FRLPc */
-							subFedBuilderToFrlPc.put(subFedBuilder.hashCode(), frlPc.hashCode());
+							subFedBuilderToFrlPc.put(sfbId, frlPc.hashCode());
 
 						}
+						
+						/*If no new subFEDBuilder is created, attach this frl to the one existing
+						 */
+						subFedBuilderToFrl.get(sfbId).add(frl.hashCode());
+						
+						
 					}
 
 				} catch (HardwareConfigurationException e) {

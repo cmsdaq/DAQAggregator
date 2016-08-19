@@ -93,6 +93,12 @@ public class BU implements FlashlistUpdatable {
 
 	private int nbTotalResources;
 
+	private int requestRate;
+
+	private double requestRetryRate;
+
+	private int slowestRUtid;
+
 	// ----------------------------------------------------------------------
 
 	/**
@@ -110,7 +116,7 @@ public class BU implements FlashlistUpdatable {
 			this.stateName = flashlistRow.get("stateName").asText();
 			this.errorMsg = flashlistRow.get("errorMsg").asText();
 			this.rate = flashlistRow.get("eventRate").asInt();
-			this.throughput = flashlistRow.get("bandwidth").asInt();
+			this.throughput = flashlistRow.get("throughput").asInt();
 			this.eventSizeMean = flashlistRow.get("eventSize").asInt();
 			this.eventSizeStddev = flashlistRow.get("eventSizeStdDev").asInt();
 			this.numEvents = flashlistRow.get("nbEventsBuilt").asLong();
@@ -123,7 +129,7 @@ public class BU implements FlashlistUpdatable {
 			this.numFUsCrashed = flashlistRow.get("fuSlotsQuarantined").asInt();
 			this.numFUsStale = flashlistRow.get("fuSlotsStale").asInt();
 			this.numFUsCloud = flashlistRow.get("fuSlotsCloud").asInt();
-			this.ramDiskUsage = flashlistRow.get("ramDiskUsed").asDouble();
+			this.ramDiskUsage = flashlistRow.get("ramDiskUsed").asDouble()*100;
 			this.ramDiskTotal = flashlistRow.get("ramDiskSizeInGB").asDouble();
 			this.numFiles = flashlistRow.get("nbFilesWritten").asInt();
 			this.numLumisectionsWithFiles = flashlistRow.get("nbLumiSections").asInt();
@@ -131,8 +137,11 @@ public class BU implements FlashlistUpdatable {
 			this.numLumisectionsForHLT = flashlistRow.get("queuedLumiSections").asInt();
 			this.numLumisectionsOutHLT = flashlistRow.get("queuedLumiSectionsOnFUs").asInt();
 			this.fuOutputBandwidthInMB = flashlistRow.get("fuOutputBandwidthInMB").asDouble();
+			this.requestRate = flashlistRow.get("requestRate").asInt();
+			this.requestRetryRate = flashlistRow.get("requestRetryRate").asDouble();
 
-			this.fragmentCount = flashlistRow.get("fragmentCount").asInt();
+			this.fragmentCount = flashlistRow.get("fragmentRate").asInt();
+			this.slowestRUtid = flashlistRow.get("slowestRUtid").asInt();
 			this.nbCorruptedEvents = flashlistRow.get("nbCorruptedEvents").asInt();
 			this.nbEventsMissingData = flashlistRow.get("nbEventsMissingData").asInt();
 			this.nbEventsWithCRCerrors = flashlistRow.get("nbEventsWithCRCerrors").asInt();
@@ -405,6 +414,30 @@ public class BU implements FlashlistUpdatable {
 		this.nbTotalResources = nbTotalResources;
 	}
 
+	public int getRequestRate() {
+		return requestRate;
+	}
+
+	public void setRequestRate(int requestRate) {
+		this.requestRate = requestRate;
+	}
+
+	public double getRequestRetryRate() {
+		return requestRetryRate;
+	}
+
+	public void setRequestRetryRate(double requestRetryRate) {
+		this.requestRetryRate = requestRetryRate;
+	}
+
+	public int getSlowestRUtid() {
+		return slowestRUtid;
+	}
+
+	public void setSlowestRUtid(int slowestRUtid) {
+		this.slowestRUtid = slowestRUtid;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -441,6 +474,10 @@ public class BU implements FlashlistUpdatable {
 		temp = Double.doubleToLongBits(ramDiskUsage);
 		result = prime * result + (int) (temp ^ (temp >>> 32));
 		result = prime * result + (int) (rate ^ (rate >>> 32));
+		result = prime * result + requestRate;
+		temp = Double.doubleToLongBits(requestRetryRate);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		result = prime * result + slowestRUtid;
 		result = prime * result + ((stateName == null) ? 0 : stateName.hashCode());
 		result = prime * result + (int) (throughput ^ (throughput >>> 32));
 		return result;
@@ -517,6 +554,12 @@ public class BU implements FlashlistUpdatable {
 			return false;
 		if (rate != other.rate)
 			return false;
+		if (requestRate != other.requestRate)
+			return false;
+		if (Double.doubleToLongBits(requestRetryRate) != Double.doubleToLongBits(other.requestRetryRate))
+			return false;
+		if (slowestRUtid != other.slowestRUtid)
+			return false;
 		if (stateName == null) {
 			if (other.stateName != null)
 				return false;
@@ -526,6 +569,9 @@ public class BU implements FlashlistUpdatable {
 			return false;
 		return true;
 	}
+
+	
+	
 
 	// ----------------------------------------------------------------------
 

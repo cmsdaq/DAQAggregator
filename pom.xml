@@ -3,8 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>ch.cern</groupId>
 	<artifactId>DAQAggregator</artifactId>
-	<version>1.1.4</version>
-
+	<version>1.2.2</version>
 	<repositories>
 		<repository>
 			<id>libs-release-local</id>
@@ -100,6 +99,14 @@
 			<artifactId>oracle6</artifactId>
 			<version>1.0</version>
 		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.apache.axis/axis -->
+		<dependency>
+			<groupId>org.apache.axis</groupId>
+			<artifactId>axis</artifactId>
+			<version>1.4</version>
+		</dependency>
+
 
 	</dependencies>
 </project>

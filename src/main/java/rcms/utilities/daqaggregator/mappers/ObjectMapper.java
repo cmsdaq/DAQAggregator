@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -29,6 +30,7 @@ import rcms.utilities.hwcfg.HardwareConfigurationException;
 import rcms.utilities.hwcfg.dp.DAQPartition;
 import rcms.utilities.hwcfg.dp.DPGenericHost;
 import rcms.utilities.hwcfg.eq.FMMFMMLink;
+
 import rcms.utilities.hwcfg.eq.FMMTriggerLink;
 import rcms.utilities.hwcfg.fb.FBI;
 
@@ -99,6 +101,7 @@ public class ObjectMapper {
 		for (rcms.utilities.hwcfg.fb.FEDBuilder hwfedBuilder : getHardwareFedBuilders(daqPartition)) {
 			FEDBuilder fedbuilder = new FEDBuilder();
 			fedbuilder.setName(hwfedBuilder.getName());
+			fedbuilder.setDaq(daq);
 			fedBuilders.put(hwfedBuilder.hashCode(), fedbuilder);
 		}
 
@@ -106,6 +109,7 @@ public class ObjectMapper {
 		frls = new HashMap<>();
 		for (rcms.utilities.hwcfg.eq.FRL hwfrl : getHardwareFrls(daqPartition)) {
 			FRL frl = new FRL();
+			frl.setId(String.valueOf(hwfrl.getId()));
 			frl.setGeoSlot(hwfrl.getGeoSlot());
 			frl.setType(FRLType.getByName(hwfrl.getFRLMode()));
 			frls.put(hwfrl.hashCode(), frl);
@@ -135,6 +139,7 @@ public class ObjectMapper {
 		fmms = new HashMap<>();
 		for (rcms.utilities.hwcfg.eq.FMM hwfmm : getHardwareFmms(daqPartition)) {
 			FMM fmm = new FMM();
+			fmm.setId(String.valueOf(hwfmm.getId()));
 			fmm.setGeoslot(hwfmm.getGeoSlot());
 			fmm.setFmmType(FMMType.valueOf(hwfmm.getFMMType().name()));
 			fmm.setServiceName(hwfmm.getServiceName());
@@ -199,8 +204,8 @@ public class ObjectMapper {
 		StringBuilder sb = new StringBuilder();
 
 		int objectsMapped = subSystems.size() + rus.size() + bus.size() + feds.size() + frls.size() + fmms.size()
-				+ ttcPartitions.size() + fedBuilders.size() + subFedBuilders.size() + fmmApplications.size()
-				+ frlPcs.size();
+		+ ttcPartitions.size() + fedBuilders.size() + subFedBuilders.size() + fmmApplications.size()
+		+ frlPcs.size();
 
 		int bFmms = 0;
 		for (FMM fmm : fmms.values()) {
@@ -236,6 +241,7 @@ public class ObjectMapper {
 				busById.put((int) host.getId(), bu);
 				busByHostname.put(host.getHostName(), bu);
 				bu.setHostname(host.getHostName());
+				bu.setDaq(daq);
 				result.put(host.hashCode(), bu);
 			}
 		}
@@ -272,6 +278,16 @@ public class ObjectMapper {
 		for (rcms.utilities.hwcfg.eq.FED hwfed : getHardwareFeds(daqPartition)) {
 			if (hwfed.getFMM() != null) {
 				result.add(hwfed.getFMM());
+				
+				//also retrieve second-level FMMs linked to this FMM
+				for (rcms.utilities.hwcfg.eq.FMMFMMLink ffl: daqPartition.getDAQPartitionSet().getEquipmentSet().getFMMFMMLinks()){
+					if (ffl.getSourceFMMId() == hwfed.getFMM().getId()){
+						rcms.utilities.hwcfg.eq.FMM targetFMM = daqPartition.getDAQPartitionSet().getEquipmentSet().getFMMs().get(ffl.getTargetFMMId());
+						if (targetFMM.getFMMType().equals(rcms.utilities.hwcfg.eq.FMM.FMMType.fmm)){
+							result.add(targetFMM);
+						}
+					}
+				}
 			}
 		}
 
@@ -288,25 +304,26 @@ public class ObjectMapper {
 		Set<rcms.utilities.hwcfg.eq.FED> result = new HashSet<>();
 		for (rcms.utilities.hwcfg.eq.FRL hwfrl : getHardwareFrls(daqPartition)) {
 			for (rcms.utilities.hwcfg.eq.FED hwfed : hwfrl.getFEDs().values())
-				//
 				if (hwfed != null) {
 					result.add(hwfed);
-					Set<rcms.utilities.hwcfg.eq.FED> dependants = getDependantFeds(hwfed);
-					result.addAll(dependants);
+					Set<rcms.utilities.hwcfg.eq.FED> dependents = getDependentFeds(hwfed);
+
+					result.addAll(dependents);
 				}
 		}
 		return result;
 	}
 
-	public Set<rcms.utilities.hwcfg.eq.FED> getDependantFeds(rcms.utilities.hwcfg.eq.FED fed) {
+	public Set<rcms.utilities.hwcfg.eq.FED> getDependentFeds(rcms.utilities.hwcfg.eq.FED fed) {
 		Set<rcms.utilities.hwcfg.eq.FED> result = new HashSet<>();
 
 		if (fed.getDependentFEDs() == null || fed.getDependentFEDs().size() == 0)
 			return result;
 		else {
 			for (rcms.utilities.hwcfg.eq.FED dependent : fed.getDependentFEDs()) {
+
 				result.add(dependent);
-				result.addAll(getDependantFeds(dependent));
+				result.addAll(getDependentFeds(dependent));
 			}
 
 			logger.debug("Found " + result.size() + " dependent feds");
@@ -407,6 +424,7 @@ public class ObjectMapper {
 
 			TTCPartition ttcPartition = new TTCPartition();
 			ttcPartition.setName(hwttcPartition.getName());
+			ttcPartition.setTtcpNr(hwttcPartition.getTTCPNr());
 			ttcpartitionsById.put((int) hwttcPartition.getId(), ttcPartition);
 			// ttcpById.put(hwttcPartition.getId(), value)
 			// TODO: get masked info

@@ -96,12 +96,21 @@ public class DAQAggregator {
 				persistenceDir = "/tmp/snapshots/";
 			}
 
+			
 			String formatProperty = daqAggregatorProperties.getProperty(PERSISTENCE_FORMAT);
+			
+			/**will output to SMILE by default, if no other valid format option is found in properties file*/
 			SnapshotFormat format = SnapshotFormat.SMILE;
 			if (SnapshotFormat.JSON.name().equalsIgnoreCase(formatProperty))
 				format = SnapshotFormat.JSON;
 			else if (SnapshotFormat.SMILE.name().equalsIgnoreCase(formatProperty))
 				format = SnapshotFormat.SMILE;
+			else if (SnapshotFormat.JSONREFPREFIXED.name().equalsIgnoreCase(formatProperty))
+				format = SnapshotFormat.JSONREFPREFIXED;
+			else if (SnapshotFormat.JSONUGLY.name().equalsIgnoreCase(formatProperty))
+				format = SnapshotFormat.JSONUGLY;
+			else if (SnapshotFormat.JSONREFPREFIXEDUGLY.name().equalsIgnoreCase(formatProperty))
+				format = SnapshotFormat.JSONREFPREFIXEDUGLY;
 
 			PersistorManager persistorManager = new PersistorManager(persistenceDir, format);
 
@@ -115,6 +124,7 @@ public class DAQAggregator {
 					autoDetectSession(daqAggregatorProperties.getProperty(PROPERTYNAME_SESSION_LASURL_GE),
 							daqAggregatorProperties.getProperty(PROPERTYNAME_SESSION_L0FILTER1),
 							daqAggregatorProperties.getProperty(PROPERTYNAME_SESSION_L0FILTER2));
+					
 
 					if (_dpsetPathChanged || _sidChanged) {
 						logger.info("Session has changed.");
@@ -142,12 +152,12 @@ public class DAQAggregator {
 
 					// FIXME: the timer should be used here as sleep time !=
 					// period time
-					logger.info("sleeping for 2 seconds ....\n");
+					logger.debug("sleeping for 2 seconds ....\n");
 					Thread.sleep(2000);
 				} catch (Exception e) {
 					logger.error("Error in main loop:", e);
-					logger.info("Going to sleep for 10 seconds before trying again...\n");
-					Thread.sleep(10000);
+					logger.info("Going to sleep for 30 seconds before trying again...\n");
+					Thread.sleep(30000);
 				}
 
 			}
@@ -174,8 +184,16 @@ public class DAQAggregator {
 
 	}
 
+	/**
+	 * 
+	 * @param lasBaseURLge
+	 * @param l0_filter1
+	 * @param l0_filter2
+	 * @throws IOException
+	 */
 	protected static void autoDetectSession(String lasBaseURLge, String l0_filter1, String l0_filter2)
 			throws IOException {
+		
 
 		logger.debug("Auto-detecting session ...");
 		String php = "";
@@ -186,6 +204,7 @@ public class DAQAggregator {
 		final String newDpsetPath = l0r.getDPsetPath();
 		if (newDpsetPath == null) {
 			logger.info("  No active session found for " + l0_filter1 + " and " + l0_filter2);
+			throw new RuntimeException("No active session found!");
 		} else if (_dpsetPath == null || !_dpsetPath.equals(newDpsetPath)) {
 			logger.info("  Detected new HWCFG_KEY: old: " + _dpsetPath + "; new: " + newDpsetPath);
 			_dpsetPath = newDpsetPath;
@@ -199,6 +218,7 @@ public class DAQAggregator {
 			_sid = l0r.getSID();
 			_sidChanged = true;
 		}
+		
 	}
 
 	protected static Properties loadPropertiesFile(String propertiesFile) {

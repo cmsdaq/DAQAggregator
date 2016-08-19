@@ -11,7 +11,7 @@ import rcms.utilities.daqaggregator.data.DAQ;
  * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
  *
  */
-@JsonIdentityInfo(generator = IdGenerators.ObjectUniqueIntIdGenerator.class, property = "@id")
+@JsonIdentityInfo(generator = IdGenerators.BUSummaryIdGenerator.class, property = "@id")
 public interface BUSummaryMixIn {
 
 	@JsonIdentityReference(alwaysAsId = true)
