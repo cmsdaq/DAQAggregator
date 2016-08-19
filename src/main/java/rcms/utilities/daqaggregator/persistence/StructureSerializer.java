@@ -73,27 +73,66 @@ public class StructureSerializer {
 
 		Date current = new Date(daqSnapshot.getLastUpdate());
 		createTimeDirs(baseDir, current);
-		ObjectMapper mapper = null;
-		String extension = null;
+		ObjectMapper mapper = format.getMapper();
+		String extension = format.getExtension();
+		boolean prettyPrint = format.isPrettyPrint();
 
 		switch (format) {
 		case SMILE:
-			mapper = new ObjectMapper(new SmileFactory());
-			extension = ".smile";
+			addMixins(mapper);
 			break;
 		case JSON:
-			mapper = new ObjectMapper();
-			extension = ".json";
+			addMixins(mapper);
+			break;
+		case JSONREFPREFIXED:
+			addRefMixins(mapper);
+			break;
+		case JSONUGLY:
+			addMixins(mapper);
+			break;
+		case JSONREFPREFIXEDUGLY:
+			addRefMixins(mapper);
 			break;
 		default:
 			logger.warn("Format of snapshot not available");
 		}
-		addMixins(mapper);
 
 		String snapshotFilename = current.getTime() + extension;
 		File file = new File(getTimeDir(baseDir, current) + snapshotFilename);
 
-		mapper.writerWithDefaultPrettyPrinter().writeValue(file, daqSnapshot);
+		if (prettyPrint)
+			mapper.writerWithDefaultPrettyPrinter().writeValue(file, daqSnapshot);
+		else
+			mapper.writeValue(file, daqSnapshot);
+
+		return file.getAbsolutePath();
+	}
+
+	/**
+	 * Output to JSON (minified) format (.json suffix)
+	 */
+	public String serializeToJSONUgly(DAQ daqSnapshot, String name, String folder)
+			throws JsonGenerationException, JsonMappingException, IOException {
+		File file = new File(folder + name + ".json");
+		ObjectMapper mapper = new ObjectMapper();
+
+		addMixins(mapper);
+		mapper.writeValue(file, daqSnapshot);
+
+		return file.getAbsolutePath();
+	}
+
+	/**
+	 * Output to JSON (minified) format, where all reference attribute names are
+	 * prepended with "ref_" for compatibility with some parsers (.json suffix)
+	 */
+	public String serializeToRefJSONUgly(DAQ daqSnapshot, String name, String folder)
+			throws JsonGenerationException, JsonMappingException, IOException {
+		File file = new File(folder + name + ".json");
+		ObjectMapper mapper = new ObjectMapper();
+
+		addRefMixins(mapper);
+		mapper.writeValue(file, daqSnapshot);
 
 		return file.getAbsolutePath();
 	}
@@ -155,8 +194,6 @@ public class StructureSerializer {
 		DAQ daq = null;
 		/* read from smile */
 		ObjectMapper mapper = new ObjectMapper(factory);
-		addMixins(mapper);
-
 		addMixins(mapper);
 
 		ObjectInputStream in = null;

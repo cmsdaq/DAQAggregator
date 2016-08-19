@@ -27,6 +27,7 @@ public class TTCPartition implements FlashlistUpdatable, Derivable {
 	private boolean masked;
 
 	/** can be null */
+	/** this is only a link to the TTCPartition's top level FMM and there might be more FMMs */
 	private FMM fmm;
 
 	private SubSystem subsystem;
@@ -104,7 +105,7 @@ public class TTCPartition implements FlashlistUpdatable, Derivable {
 	public void calculateDerivedValues() {
 		int maskedFeds = 0;
 		int all = 0;
-		for (FED fed : fmm.getFeds()) {
+		for (FED fed : feds) {
 			all++;
 			if (fed.isFmmMasked()) {
 				maskedFeds++;

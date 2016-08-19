@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import rcms.utilities.daqaggregator.data.FED;
 import rcms.utilities.daqaggregator.data.FEDBuilder;
 import rcms.utilities.daqaggregator.data.FRL;
 import rcms.utilities.daqaggregator.data.FRLPc;
@@ -35,5 +36,9 @@ public interface SubFEDBuilderMixIn {
 	@JsonProperty("ref_frls")
 	@JsonIdentityReference(alwaysAsId = true)
 	abstract List<FRL> getFrls();
+	
+	@JsonProperty("ref_feds")
+	@JsonIdentityReference(alwaysAsId = true)
+	abstract List<FED> getFeds();
 
 }

@@ -20,8 +20,8 @@ public class PersistorManager {
 	protected final String persistenceDir;
 
 	private final SnapshotFormat format;
-	
-	protected final StructureSerializer persistor ;
+
+	protected final StructureSerializer persistor;
 
 	/** Constructor */
 	public PersistorManager(String persistenceDir, SnapshotFormat format) {

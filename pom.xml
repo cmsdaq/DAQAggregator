@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>ch.cern</groupId>
 	<artifactId>DAQAggregator</artifactId>
-	<version>1.1.7</version>
+	<version>1.2.2</version>
 
 	<repositories>
 		<repository>
@@ -87,7 +87,7 @@
 			<artifactId>junit</artifactId>
 			<version>4.11</version>
 		</dependency>
-		
+
 		<!-- Hardware database is downloaded from internal repository -->
 		<dependency>
 			<groupId>ch.cern</groupId>
@@ -100,6 +100,14 @@
 			<artifactId>oracle6</artifactId>
 			<version>1.0</version>
 		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.apache.axis/axis -->
+		<dependency>
+			<groupId>org.apache.axis</groupId>
+			<artifactId>axis</artifactId>
+			<version>1.4</version>
+		</dependency>
+
 
 	</dependencies>
 </project>

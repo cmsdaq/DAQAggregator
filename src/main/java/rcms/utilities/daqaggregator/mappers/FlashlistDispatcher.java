@@ -13,8 +13,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import rcms.utilities.daqaggregator.data.FED;
 import rcms.utilities.daqaggregator.data.RU;
 import rcms.utilities.daqaggregator.mappers.helper.ContextHelper;
+import rcms.utilities.daqaggregator.mappers.helper.FEDEnableMaskParser;
 import rcms.utilities.daqaggregator.mappers.helper.FMMGeoMatcher;
 import rcms.utilities.daqaggregator.mappers.helper.FRLGeoFinder;
+import rcms.utilities.daqaggregator.mappers.helper.FedFromFerolInputStreamGeoFinder;
 import rcms.utilities.daqaggregator.mappers.helper.FedInFmmGeoFinder;
 import rcms.utilities.daqaggregator.mappers.helper.FedInFrlGeoFinder;
 import rcms.utilities.daqaggregator.mappers.helper.Matcher;
@@ -45,7 +47,7 @@ public class FlashlistDispatcher {
 			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().busByHostname, "context");
 			break;
 		case FEROL_INPUT_STREAM:
-			dispatchRowsByGeo(flashlist, mappingManager.getObjectMapper().fedsById.values(), new FedInFrlGeoFinder("streamNumber"));
+			dispatchRowsByGeo(flashlist, mappingManager.getObjectMapper().fedsById.values(), new FedFromFerolInputStreamGeoFinder("streamNumber"));
 			break;
 		case FMM_INPUT:
 			dispatchRowsByGeo(flashlist, mappingManager.getObjectMapper().fedsById.values(), new FedInFmmGeoFinder());
@@ -69,11 +71,36 @@ public class FlashlistDispatcher {
 
 			}
 			break;
-
+		case LEVEL_ZERO_FM_STATIC:
+			String fedEnMask = flashlist.getRowsNode().get(0).get("FED_ENABLE_MASK").asText();
+			FEDEnableMaskParser parser = new FEDEnableMaskParser(fedEnMask);
+			Map<Integer, String> maskedFlagsByFed = parser.getFedByExpectedIdToMaskingFlags();
+			
+			int notFound = 0;
+			int total = 0;
+			
+			for (Entry<Integer, FED> fedEntry: mappingManager.getObjectMapper().fedsByExpectedId.entrySet()){
+				total++;
+				if (maskedFlagsByFed.containsKey(fedEntry.getKey())){
+				String [] maskingFlags = maskedFlagsByFed.get(fedEntry.getKey()).split("-"); //string from map contains two dash-separated flags as substrings
+				//System.out.println(maskedFlagsByFed.get(fedEntry.getKey()));
+				//System.out.println(maskingFlags[0]);
+				//System.out.println(maskingFlags[1]);
+				//System.exit(0);
+				
+				fedEntry.getValue().setFmmMasked(Boolean.parseBoolean(maskingFlags[0]));
+				fedEntry.getValue().setFrlMasked(Boolean.parseBoolean(maskingFlags[1]));
+				}else{
+					notFound++;
+				}
+			}
+			break;
 		case JOB_CONTROL:
 			// TODO: dispatch by context (in the future) (multiple context by
 			// hostname)
-			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().frlPcByHostname, "hostname");
+			dispatchRowsByHostname(flashlist, mappingManager.
+					getObjectMapper().
+					frlPcByHostname, "hostname");
 			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().fmmApplicationByHostname, "hostname");
 			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().rusByHostname, "hostname");
 			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().busByHostname, "hostname");

@@ -159,7 +159,7 @@ public class BUSummary implements Derivable {
 			eventSizeMean = eventSizeMean / numberOfBus;
 			eventSizeStddev = Math.sqrt(eventSizeStddev);
 		}
-		ramDiskUsage = ramDiskTotal>0 ? ramDiskUsage/ramDiskTotal*100 : 0;
+		ramDiskUsage = ramDiskTotal>0 ? ramDiskUsage/ramDiskTotal : 0;
 
 		this.setNumEvents(numEvents);
 		this.setNumEventsInBU(numEventsInBU);
