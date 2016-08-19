@@ -56,7 +56,7 @@ public class FlashlistDispatcher {
 			dispatchRowsByGeo(flashlist, mappingManager.getObjectMapper().frls.values(), new FRLGeoFinder());
 			break;
 		case EVM:
-			if (flashlist.getRowsNode().isArray()) {
+			if (flashlist.getRowsNode().isArray() && flashlist.getRowsNode().size() > 0) {
 				int runNumber = flashlist.getRowsNode().get(0).get("runNumber").asInt();
 				mappingManager.getObjectMapper().daq.setRunNumber(runNumber);
 				logger.debug("Successfully got runnumber: " + runNumber);
@@ -72,27 +72,30 @@ public class FlashlistDispatcher {
 			}
 			break;
 		case LEVEL_ZERO_FM_STATIC:
-			String fedEnMask = flashlist.getRowsNode().get(0).get("FED_ENABLE_MASK").asText();
-			FEDEnableMaskParser parser = new FEDEnableMaskParser(fedEnMask);
-			Map<Integer, String> maskedFlagsByFed = parser.getFedByExpectedIdToMaskingFlags();
-			
-			int notFound = 0;
-			int total = 0;
-			
-			for (Entry<Integer, FED> fedEntry: mappingManager.getObjectMapper().fedsByExpectedId.entrySet()){
-				total++;
-				if (maskedFlagsByFed.containsKey(fedEntry.getKey())){
-				String [] maskingFlags = maskedFlagsByFed.get(fedEntry.getKey()).split("-"); //string from map contains two dash-separated flags as substrings
-				//System.out.println(maskedFlagsByFed.get(fedEntry.getKey()));
-				//System.out.println(maskingFlags[0]);
-				//System.out.println(maskingFlags[1]);
-				//System.exit(0);
-				
-				fedEntry.getValue().setFmmMasked(Boolean.parseBoolean(maskingFlags[0]));
-				fedEntry.getValue().setFrlMasked(Boolean.parseBoolean(maskingFlags[1]));
-				}else{
-					notFound++;
+			if (flashlist.getRowsNode().isArray() && flashlist.getRowsNode().size() > 0) {
+				String fedEnMask = flashlist.getRowsNode().get(0).get("FED_ENABLE_MASK").asText();
+				FEDEnableMaskParser parser = new FEDEnableMaskParser(fedEnMask);
+				Map<Integer, String> maskedFlagsByFed = parser.getFedByExpectedIdToMaskingFlags();
+
+				int notFound = 0;
+				int total = 0;
+
+				for (Entry<Integer, FED> fedEntry: mappingManager.getObjectMapper().fedsByExpectedId.entrySet()){
+					total++;
+					if (maskedFlagsByFed.containsKey(fedEntry.getKey())){
+						String [] maskingFlags = maskedFlagsByFed.get(fedEntry.getKey()).split("-"); //string from map contains two dash-separated flags as substrings
+
+						fedEntry.getValue().setFmmMasked(Boolean.parseBoolean(maskingFlags[0]));
+						fedEntry.getValue().setFrlMasked(Boolean.parseBoolean(maskingFlags[1]));
+
+					}else{
+						notFound++;
+					}
 				}
+				logger.debug("Could not find "+notFound+" out of "+total+" FEDs in the FED_ENABLE_MASK and mask flags were not set");
+				logger.debug("Successfully got FED_ENABLE_MASK info for " + (total-notFound)+" FEDs");
+			}else{
+				logger.error("FED_ENABLE_MASK problem " + flashlist.getRowsNode());
 			}
 			break;
 		case JOB_CONTROL:
@@ -118,7 +121,7 @@ public class FlashlistDispatcher {
 
 				if (mappingManager.getObjectMapper().subsystemByName.containsKey(subsystemName)) {
 					mappingManager.getObjectMapper().subsystemByName.get(subsystemName)
-							.updateFromFlashlist(flashlist.getFlashlistType(), rowNode);
+					.updateFromFlashlist(flashlist.getFlashlistType(), rowNode);
 				}
 
 			}
@@ -157,7 +160,7 @@ public class FlashlistDispatcher {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	private void dispatchRowsByFedIdsWithErrors(Flashlist flashlist, Map<Integer, FED> fedsByExpectedId) {
@@ -304,7 +307,7 @@ public class FlashlistDispatcher {
 				} else {
 					logger.debug("No DAQ object " + flashlist.getFlashlistType() + " with flashlist id " + objectId
 							+ ", ignoring "); // TODO: print class name of
-												// object being ignored
+					// object being ignored
 					failed++;
 				}
 			} catch (NumberFormatException e) {
