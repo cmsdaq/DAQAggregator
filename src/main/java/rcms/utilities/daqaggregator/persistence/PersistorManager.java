@@ -1,6 +1,10 @@
 package rcms.utilities.daqaggregator.persistence;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Calendar;
+import java.util.Date;
 
 import org.apache.log4j.Logger;
 
@@ -56,8 +60,18 @@ public class PersistorManager {
 	public String persistSnapshot(DAQ daq) {
 
 		try {
-			String filename = null;
-			filename = persistor.serialize(daq, persistenceDir, format);
+
+			Date current = new Date(daq.getLastUpdate());
+			createTimeDirs(persistenceDir, current);
+			String extension = format.getExtension();
+
+			String snapshotFilename = current.getTime() + extension;
+			File file = new File(getTimeDir(persistenceDir, current) + snapshotFilename);
+
+			FileOutputStream fos = new FileOutputStream(file);
+
+			persistor.serialize(daq, fos, format);
+			String filename = file.getAbsolutePath();
 
 			logger.info("Successfully persisted in " + persistenceDir + " as file " + filename);
 			return filename;
@@ -65,6 +79,50 @@ public class PersistorManager {
 			logger.warn("Problem persisting " + e.getMessage());
 			return null;
 		}
+	}
+
+	/**
+	 * Create time-base directory structure for given date
+	 * 
+	 * @param baseDir
+	 *            base directory where time-based directory will be situated
+	 * @param date
+	 *            timestamp for which time directory will be created
+	 */
+	private void createTimeDirs(String baseDir, Date date) {
+
+		File files = new File(getTimeDir(baseDir, date));
+		if (!files.exists()) {
+			if (files.mkdirs()) {
+				logger.info("Time-based directories created successfully");
+			} else {
+				throw new RuntimeException("Failed to create following dir: " + files.getAbsolutePath());
+			}
+		}
+	}
+
+	/**
+	 * Get the directory based on given date
+	 * 
+	 * @param baseDir
+	 *            base directory where time-based directory will be situated
+	 * @param date
+	 *            timestamp for which time directory will be returned
+	 * @return absolute path to time-based directory
+	 */
+	public String getTimeDir(String baseDir, Date date) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		int year = cal.get(Calendar.YEAR);
+		int month = cal.get(Calendar.MONTH) + 1;
+		int day = cal.get(Calendar.DAY_OF_MONTH);
+		int hour = cal.get(Calendar.HOUR_OF_DAY);
+
+		logger.trace("Date: " + date);
+		logger.trace(year + ", " + month + ", " + day + ", " + hour);
+
+		String result = baseDir + year + "/" + month + "/" + day + "/" + hour + "/";
+		return result;
 	}
 
 }
