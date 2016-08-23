@@ -59,73 +59,57 @@ public class TCDSFlashlistHelpers {
 		//initialize hierarchical index
 		Map<String, Map<String, Map<Integer, Map<Integer, Map<String, String>>>>> rootToReturn = new HashMap<String, Map<String, Map<Integer, Map<Integer, Map<String, String>>>>>();
 
-		//init index by service
+		//initialize tree branches based on data combinations in the flashlist
 		for (JsonNode row : flashlist.getRowsNode()) {
 			String service = row.get("service").asText();
 
 			if (!rootToReturn.containsKey(service)){
 				rootToReturn.put(service, new HashMap<String, Map<Integer, Map<Integer, Map<String, String>>>>());
 			}
-		}
-
-		//init index by service.type
-		for (JsonNode row : flashlist.getRowsNode()) {
-			String service = row.get("service").asText();
+			
 			String type = row.get("type").asText();
-
+			
 			if (!rootToReturn.get(service).containsKey(type)){
 				rootToReturn.get(service).put(type, new HashMap<Integer, Map<Integer, Map<String, String>>>());
 			}
-		}
-
-		//init index by service.type.pm_number
-		for (JsonNode row : flashlist.getRowsNode()) {
-			String service = row.get("service").asText();
-			String type = row.get("type").asText();
+			
 			int pmNr = row.get("pm_number").asInt();
 
 			if (!rootToReturn.get(service).get(type).containsKey(pmNr)){
 				rootToReturn.get(service).get(type).put(pmNr, new HashMap<Integer, Map<String, String>>());
 			}
-		}
-
-		//init index by service.type.pm_number.id_number
-		for (JsonNode row : flashlist.getRowsNode()) {
-			String service = row.get("service").asText();
-			String type = row.get("type").asText();
-			int pmNr = row.get("pm_number").asInt();
+			
 			int idNr = row.get("id_number").asInt();
 
 			if (!rootToReturn.get(service).get(type).get(pmNr).containsKey(idNr)){
 				rootToReturn.get(service).get(type).get(pmNr).put(idNr, new HashMap<String, String>()); //innermost map contains rest attributes by name
 			}
+
 		}
 		
-		
-		
 		//populate index with tuples
-		
+
 		//list attribute names
 		List<String> fields = new ArrayList<String>();
 		for (int i=0;i<flashlist.getDefinitionNode().size();i++){
 			fields.add(flashlist.getDefinitionNode().get(i).get("key").asText());
 		}
-		
+
 		//iterate over data tuples and index them by fieldName:value in the innermost map
 		for (JsonNode row : flashlist.getRowsNode()) {
-			
+
 			//needed to insert into index as defined above
 			String service = row.get("service").asText();
 			String type = row.get("type").asText();
 			int pmNr = row.get("pm_number").asInt();
 			int idNr = row.get("id_number").asInt();
-			
+
 			for (String field : fields){
 				rootToReturn.get(service).get(type).get(pmNr).get(idNr).put(field, row.get(field).asText());
 			}
 
 		}
-		
+
 		return rootToReturn;
 	}
 
