@@ -52,22 +52,42 @@ public class FlashlistManager {
 	public void retrieveAvailableFlashlists() {
 
 		for (String lasUrl : lasUrls) {
-			try {
-				List<String> resultLines = Connector.get().retrieveLines(lasUrl + "/retrieveCatalog?fmt=plain");
-				for (String line : resultLines) {
-					if (line.startsWith("urn:")) {
-						flashlists.add(new Flashlist(lasUrl, line, sessionId));
-					}
-				}
-			} catch (IOException e) {
-				logger.error("Error retrieving flashlists from LAS " + lasUrl);
-				logger.error("Exception message: " + e.getMessage());
-				e.printStackTrace();
-			}
 
+			/*hack to filter out a single flashlist ('tcds_pm_tts_channel') from the LAS at pc-c2e11-23-01,
+			 * while in any other case (dedicated DAQAggregator LAS) all flashlists are retrieved with no exception
+			 * TODO: This is not a final solution, review flashlists
+			 */
+			if (lasUrl.equals("http://pc-c2e11-23-01.cms:9945/urn:xdaq-application:service=xmaslas2g")){
+				try {
+					List<String> resultLines = Connector.get().retrieveLines(lasUrl + "/retrieveCatalog?fmt=plain");
+					for (String line : resultLines) {
+						if (line.startsWith("urn:xdaq-flashlist:tcds_pm_tts_channel")) {
+							flashlists.add(new Flashlist(lasUrl, line, sessionId));
+						}
+					}
+				} catch (IOException e) {
+					logger.error("Error retrieving flashlists from LAS " + lasUrl);
+					logger.error("Exception message: " + e.getMessage());
+					e.printStackTrace();
+				}
+			}else{
+				try {
+					List<String> resultLines = Connector.get().retrieveLines(lasUrl + "/retrieveCatalog?fmt=plain");
+					for (String line : resultLines) {
+						if (line.startsWith("urn:")) {
+							flashlists.add(new Flashlist(lasUrl, line, sessionId));
+						}
+					}
+				} catch (IOException e) {
+					logger.error("Error retrieving flashlists from LAS " + lasUrl);
+					logger.error("Exception message: " + e.getMessage());
+					e.printStackTrace();
+				}
+			}
 		}
 		logger.info("There are " + flashlists.size() + " flashlists available");
 	}
+
 
 	/**
 	 * This method retrieves data only from necessary flashlists. After

@@ -418,9 +418,14 @@ public class ObjectMapper {
 	public Map<Integer, TTCPartition> mapTTCPartitions(DAQPartition daqPartition) {
 
 		Map<Integer, TTCPartition> result = new HashMap<>();
-		for (rcms.utilities.hwcfg.eq.FED hwfed : getHardwareFeds(daqPartition)) {
+		
+		for (rcms.utilities.hwcfg.eq.TTCPartition hwttcPartition : daqPartition.getDAQPartitionSet().getEquipmentSet()
+				.getTTCPartitions().values()){
+		
+			
+		/*for (rcms.utilities.hwcfg.eq.FED hwfed : getHardwareFeds(daqPartition)) {
 
-			rcms.utilities.hwcfg.eq.TTCPartition hwttcPartition = hwfed.getTTCPartition();
+			rcms.utilities.hwcfg.eq.TTCPartition hwttcPartition = hwfed.getTTCPartition();*/
 
 			TTCPartition ttcPartition = new TTCPartition();
 			ttcPartition.setName(hwttcPartition.getName());

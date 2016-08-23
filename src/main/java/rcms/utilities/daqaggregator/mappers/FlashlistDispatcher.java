@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import rcms.utilities.daqaggregator.data.FED;
 import rcms.utilities.daqaggregator.data.RU;
+import rcms.utilities.daqaggregator.data.TTCPartition;
 import rcms.utilities.daqaggregator.mappers.helper.ContextHelper;
 import rcms.utilities.daqaggregator.mappers.helper.FEDEnableMaskParser;
 import rcms.utilities.daqaggregator.mappers.helper.FMMGeoMatcher;
@@ -20,6 +21,7 @@ import rcms.utilities.daqaggregator.mappers.helper.FedFromFerolInputStreamGeoFin
 import rcms.utilities.daqaggregator.mappers.helper.FedInFmmGeoFinder;
 import rcms.utilities.daqaggregator.mappers.helper.FedInFrlGeoFinder;
 import rcms.utilities.daqaggregator.mappers.helper.Matcher;
+import rcms.utilities.daqaggregator.mappers.helper.TCDSFlashlistHelpers;
 import rcms.utilities.daqaggregator.mappers.helper.TTCPartitionGeoFinder;
 
 public class FlashlistDispatcher {
@@ -145,6 +147,33 @@ public class FlashlistDispatcher {
 			dispatchRowsByGeo(flashlist, mappingManager.getObjectMapper().fmms.values(), new FMMGeoMatcher());
 			dispatchRowsByGeo(flashlist, mappingManager.getObjectMapper().ttcPartitions.values(),
 					new TTCPartitionGeoFinder());
+			break;
+		case TCDS_PM_TTS_CHANNEL:
+			
+			//This will only work for CDAQ. Need to figure out how to know what PM (CPM or LPM) is used for a given run, instead of hardcoding
+			String serviceField = "cpm-pri";
+			String typeField = "tts_ici";
+			
+			Map<String, Map <String, Map<Integer, Map<Integer,Map<String,String>>>>> stpiDataFromFlashlist = TCDSFlashlistHelpers.getTreeFromFlashlist(flashlist);
+
+			//. iterate over all ttcpartitions and set tcds_pm_ttsState according to the code in 'value' flash column
+			//.. retrieve this value from map above, specifying pmNr, iciNr info, which are already stored in the ttcpartitions, in field topFMMInfo
+			//.. decode the value from map using rcms.utilities.daqaggregator.mappers.helper.TTSStateDecoder.decodeTCDSTTSState(int tts_value)
+			//.. set ttcpartition.tcds_pm_ttsState
+			for (Entry<Integer, TTCPartition> ttcpEntry : mappingManager.getObjectMapper().ttcPartitions.entrySet()){
+				TTCPartition ttcp = ttcpEntry.getValue(); //ref to ttcp object
+				if (ttcp.getTopFMMInfo().getNullCause()!=null){
+					//topFMM was null for this ttcp and ici info were not filled, therefore there are no keys to get tcds_tts_state from flashlist data
+					//in this case, the nullCause String field of associated FMMInfo is not null and contains more information on why this ttcp's topFMM was null
+					continue;
+				}
+				
+				int stateCode = Integer.parseInt(stpiDataFromFlashlist.get(serviceField).get(typeField).get(ttcp.getTopFMMInfo().getPMNr()).get(ttcp.getTopFMMInfo().getICINr()).get("value"));
+				
+				ttcp.setTcds_pm_ttsState(TCDSFlashlistHelpers.decodeTCDSTTSState(stateCode));
+			}
+			
+			
 			break;
 		default:
 			break;
