@@ -17,7 +17,6 @@ import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
  */
 public class DAQ implements FlashlistUpdatable {
 
-	private final String id = "daq";
 	// ----------------------------------------
 	// fields set at beginning of session
 	// ----------------------------------------
@@ -338,10 +337,6 @@ public class DAQ implements FlashlistUpdatable {
 		} else if (!subSystems.equals(other.subSystems))
 			return false;
 		return true;
-	}
-
-	public String getId() {
-		return id;
 	}
 
 }

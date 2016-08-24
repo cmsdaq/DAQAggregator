@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import rcms.utilities.daqaggregator.data.BU;
@@ -24,6 +25,7 @@ import rcms.utilities.daqaggregator.data.SubSystem;
 @JsonPropertyOrder({ "sessionId", "runNumber", "lhcMachineMode", "lhcBeamMode", "daqState", "levelZeroState",
 		"dpsetPath", "lastUpdate", "buSummary", "fedBuilderSummary", "subSystems", "ttcPartitions", "bus", "rus",
 		"fmmApplications", "fmms", "fedBuilders", "subFEDBuilders", "frlPcs", "frls", "feds" })
+@JsonIgnoreProperties(ignoreUnknown = true)
 public interface DAQMixIn {
 
 	// @JsonIdentityReference(alwaysAsId = true)
