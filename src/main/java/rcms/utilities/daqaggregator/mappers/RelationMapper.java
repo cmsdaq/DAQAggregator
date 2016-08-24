@@ -17,6 +17,7 @@ import rcms.utilities.daqaggregator.data.FED;
 import rcms.utilities.daqaggregator.data.FEDBuilder;
 import rcms.utilities.daqaggregator.data.FMM;
 import rcms.utilities.daqaggregator.data.FMMApplication;
+import rcms.utilities.daqaggregator.data.FMMInfo;
 import rcms.utilities.daqaggregator.data.FRL;
 import rcms.utilities.daqaggregator.data.FRLPc;
 import rcms.utilities.daqaggregator.data.RU;
@@ -171,7 +172,7 @@ public class RelationMapper implements Serializable {
 			TTCPartition ttcPartition = objectMapper.ttcPartitions.get(relation.getValue());
 			subFedBuilder.setTtcPartition(ttcPartition);
 		}
-		/* building FMM - TTCP */
+		/* building FMM - TTCP (only builds relation to topFMM) */ 
 		int ignoredttcp = 0;
 		for (Entry<Integer, Integer> relation : FMMToTTCP.entrySet()) {
 			try {
@@ -236,12 +237,13 @@ public class RelationMapper implements Serializable {
 			for (int subFedBuilderId : relation.getValue()) {
 				SubFEDBuilder subFedBuilder = objectMapper.subFedBuilders.get(subFedBuilderId);
 				List<FRL> frls = subFedBuilder.getFrls();
+				
+				/*Multiple references to the same pseudofed may be found across multiple feds,
+				 * but should be processed only once in this fedbuilder-subfedbuilder context*/
+				Set<Integer> encounteredPseudofeds = new HashSet<Integer>();
+				
 				for (FRL frl : frls){
 					Map<Integer, FED> feds = frl.getFeds();
-					
-					/*Multiple references to the same pseudofed may be found across multiple feds,
-					 * but should be processed only once in this fedbuilder's context*/
-					Set<Integer> encounteredPseudofeds = new HashSet<Integer>();
 					
 					for (FED fed : feds.values()){
 						//loop over dependent feds, if available
@@ -259,7 +261,7 @@ public class RelationMapper implements Serializable {
 								int sfbId = getTtcpCompatibleSubfedbuilderId(fedBuilder, pseudofed.getTtcp());
 								objectMapper.subFedBuilders.get(sfbId).getFeds().add(pseudofed);
 							}else{
-								//no frl in this case, careful with keys!!
+								//no frl in this case
 								String frlPc = "nullFrlPc";
 								String sfbMappingId = new String(String.valueOf(pseudofed.getTtcp().getName())+"$"+String.valueOf(frlPc)+"$"+String.valueOf(fedBuilder.getName()));
 								int sfbId = sfbMappingId.hashCode();
@@ -271,9 +273,8 @@ public class RelationMapper implements Serializable {
 								newSubFedBuilder.setTtcPartition(pseudofed.getTtcp());
 
 								fedBuilder.getSubFedbuilders().add(newSubFedBuilder);
-								
-								objectMapper.subFedBuilders.put(sfbId, newSubFedBuilder);
 
+								objectMapper.subFedBuilders.put(sfbId, newSubFedBuilder);
 							}
 						}
 					}
@@ -362,10 +363,22 @@ public class RelationMapper implements Serializable {
 		return result;
 	}
 
-	private rcms.utilities.hwcfg.eq.FMM getTopFMMForPartition(DAQPartition dp, String ttcpName) {
+	/**
+	 * Returns 2-element vector with the rcms.utilities.hwcfg.eq.FMM at first position (can be null)
+	 * and the rest info are wrapped in FMMInfo object at second position (ici/pi info if topfmm is not null, meta-info otherwise)
+	 */
+	private Object [] getTopFMMForPartition(DAQPartition dp, String ttcpName) {
 
+		Object [] ret = new Object[2];
+		
+		FMMInfo fmmInfo = new FMMInfo(); //creates info wrapper in all cases
+		
 		if ("CPM-PRI".equals(ttcpName) || "CPM-SEC".equals(ttcpName)) {
-			return null;
+			fmmInfo.setNullCause("-");
+			
+			ret[0] = null;
+			ret[1] = fmmInfo;
+			return ret;
 		}
 
 		String triggerName = "TCDS-PRI";
@@ -375,7 +388,11 @@ public class RelationMapper implements Serializable {
 			trigger = dp.getDAQPartitionSet().getEquipmentSet().getTriggerByName(triggerName);
 		} catch (HardwareConfigurationException e) {
 			e.printStackTrace();
-			return null;
+			fmmInfo.setNullCause("noTRG");
+			
+			ret[0] = null;
+			ret[1] = fmmInfo;
+			return ret;
 		}
 
 		// Find the ICI
@@ -383,12 +400,17 @@ public class RelationMapper implements Serializable {
 		try {
 			ici = trigger.getICIByTTCPName(ttcpName);
 		} catch (HardwareConfigurationException e) {
+			fmmInfo.setNullCause("noICI");
+			
+			ret[0] = null;
+			ret[1] = fmmInfo;
+			return ret;
+			
 			// for LPM/LTC partitions it is normal that some of them will have
 			// no fmm. They are unused in the CDAQ config. You will find no FEDs
 			// in these partitions =.
 			// FIXME: encode in the data model, that this partition has no FMM
 			// (and also no PI and no CI).
-			return null;
 		}
 
 		rcms.utilities.hwcfg.eq.FMM pi = null;
@@ -400,7 +422,11 @@ public class RelationMapper implements Serializable {
 			}
 
 		if (pi == null) {
-			return null;
+			fmmInfo.setNullCause("noPI");
+			
+			ret[0] = null;
+			ret[1] = fmmInfo;
+			return ret;
 		}
 
 		// Find the FMM connected to the PI
@@ -409,11 +435,25 @@ public class RelationMapper implements Serializable {
 
 				rcms.utilities.hwcfg.eq.FMM fmm = dp.getDAQPartitionSet().getEquipmentSet().getFMMs()
 						.get(fmmfmm.getSourceFMMId());
-				return fmm;
+				
+				fmmInfo.setAb((fmmfmm.getSourceFMMIO() == 20 || fmmfmm.getSourceFMMIO() == 21) ? "A" : "B");
+				fmmInfo.setPMNr(ici.getPMNr());
+				fmmInfo.setICINr(ici.getICINr());
+				
+				
+				ret[0] = fmm;
+				ret[1] = fmmInfo;
+				return ret;
 			}
 		}
-
-		return null;
+		
+		fmmInfo.setAb("");
+		fmmInfo.setPMNr(ici.getPMNr());
+		fmmInfo.setICINr(ici.getICINr());
+		
+		ret[0] = null;
+		ret[1] = fmmInfo;
+		return ret;
 	}
 
 	/**
@@ -428,10 +468,28 @@ public class RelationMapper implements Serializable {
 		for (rcms.utilities.hwcfg.eq.TTCPartition hwttcPartition : daqPartition.getDAQPartitionSet().getEquipmentSet()
 				.getTTCPartitions().values()) {
 
-			rcms.utilities.hwcfg.eq.FMM hwfmm = getTopFMMForPartition(daqPartition, hwttcPartition.getName());
+			//rcms.utilities.hwcfg.eq.FMM hwfmm = getTopFMMForPartition(daqPartition, hwttcPartition.getName());
+			
+			/*
+			 * 2-element vector with the rcms.utilities.hwcfg.eq.FMM at first position (can be null)
+			 * and the rest info wrapped in FMMInfo object at second position (ici/pi info if fmm is not null, meta-info otherwise)
+			 */
+			Object [] FMMWithInfo = getTopFMMForPartition(daqPartition, hwttcPartition.getName());
+			
+			rcms.utilities.hwcfg.eq.FMM hwfmm = (rcms.utilities.hwcfg.eq.FMM)FMMWithInfo[0];
+			FMMInfo fmmInfo = (FMMInfo)FMMWithInfo[1];
+			
+			
 			if (hwfmm != null)
 				result.put(hwfmm.hashCode(), hwttcPartition.hashCode());
 
+			/*set FMMInfo (wrapper-object of information for the topFMM) on the corresponding local TTCPartition object
+			 * 
+			 * the actual topFMM to TTCP link (if topFMM is not null) will be restored later (in buildRelations()),
+			 * but the FMMInfo makes sense to be on the TTCP even with topFMM null, to provide meta-info on why the topFMM is null
+			 */
+			objectMapper.ttcPartitions.get(hwttcPartition.hashCode()).setTopFMMInfo(fmmInfo);
+			
 		}
 		return result;
 	}
