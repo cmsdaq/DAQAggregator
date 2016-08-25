@@ -19,8 +19,6 @@ public class BUSummary implements Derivable {
 	/** parent */
 	private DAQ daq;
 
-	private final String id = "busummary";
-
 	// ----------------------------------------
 	// fields updated periodically
 	// ----------------------------------------
@@ -368,10 +366,6 @@ public class BUSummary implements Derivable {
 
 	public void setFuOutputBandwidthInMB(double fuOutputBandwidthInMB) {
 		this.fuOutputBandwidthInMB = fuOutputBandwidthInMB;
-	}
-
-	public String getId() {
-		return id;
 	}
 
 }

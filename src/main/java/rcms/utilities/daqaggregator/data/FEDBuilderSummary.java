@@ -15,8 +15,6 @@ public class FEDBuilderSummary implements Derivable {
 	// fields set at beginning of session
 	// ----------------------------------------
 
-	private final String id = "fedbuildersummary";
-
 	/** parent */
 	private DAQ daq;
 
@@ -226,9 +224,5 @@ public class FEDBuilderSummary implements Derivable {
 		if (Float.floatToIntBits(throughput) != Float.floatToIntBits(other.throughput))
 			return false;
 		return true;
-	}
-
-	public String getId() {
-		return id;
 	}
 }

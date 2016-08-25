@@ -2,6 +2,7 @@ package rcms.utilities.daqaggregator.data.mixin;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import rcms.utilities.daqaggregator.data.DAQ;
 
@@ -12,6 +13,7 @@ import rcms.utilities.daqaggregator.data.DAQ;
  *
  */
 @JsonIdentityInfo(generator = IdGenerators.BUSummaryIdGenerator.class, property = "@id")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public interface BUSummaryMixIn {
 
 	@JsonIdentityReference(alwaysAsId = true)

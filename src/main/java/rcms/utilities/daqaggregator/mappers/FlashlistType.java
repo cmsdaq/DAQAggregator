@@ -22,9 +22,10 @@ public enum FlashlistType {
 	LEVEL_ZERO_FM_SUBSYS("levelZeroFM_subsys", false, true, "SID"),
 	JOB_CONTROL("jobcontrol", false, true, "sessionid"),
 	DISK_INFO("diskInfo", true, false, "sessionid"),
-	FMM_PARTITION_DEAD_TIME("FMMPartitionDeadTime", true, false, ""), //no session ID field found in LAS
-	FMM_FED_DEAD_TIME("FMMFEDDeadTime", true, false, ""); //no session ID field found in LAS
-
+	FMM_PARTITION_DEAD_TIME("FMMPartitionDeadTime", true, false, ""),
+	FMM_FED_DEAD_TIME("FMMFEDDeadTime", true, false, ""),
+	TCDS_PM_TTS_CHANNEL("tcds_pm_tts_channel", false, true, "");
+	
 	private static Logger logger = Logger.getLogger(FlashlistType.class);
 
 	private final String name;
@@ -36,7 +37,7 @@ public enum FlashlistType {
 	private final boolean sessionContext;
 
 	private final boolean download;
-	
+
 	private final String sessionIdColumnName;
 
 	private FlashlistType(String name, boolean sessionContext, boolean download, String sessionIdColumnName) {
@@ -128,7 +129,12 @@ public enum FlashlistType {
 			logger.debug(FMM_FED_DEAD_TIME.name + message + name);
 			return FMM_FED_DEAD_TIME;
 
-		} else {
+		} else if (name.toLowerCase().contains(TCDS_PM_TTS_CHANNEL.name.toLowerCase())) {
+			logger.debug(TCDS_PM_TTS_CHANNEL.name + message + name);
+			return TCDS_PM_TTS_CHANNEL;
+
+		}
+		else {
 
 			logger.warn("Cannot infer flashlist type from name " + name);
 			return null;
@@ -143,7 +149,7 @@ public enum FlashlistType {
 	public boolean isDownload() {
 		return download;
 	}
-	
+
 	public String getSessionIdColumnName(){
 		return sessionIdColumnName;
 	}

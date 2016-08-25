@@ -4,16 +4,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.util.Calendar;
-import java.util.Date;
+import java.io.OutputStream;
 
 import org.apache.log4j.Logger;
 
-import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.smile.SmileFactory;
 
 import rcms.utilities.daqaggregator.data.BU;
 import rcms.utilities.daqaggregator.data.BUSummary;
@@ -59,22 +56,19 @@ public class StructureSerializer {
 	 * 
 	 * @param daqSnapshot
 	 *            DAQ snapshot object to be serialized
-	 * @param baseDir
-	 *            base directory where daqSnapshot will be serialized
+	 * @param outputStream
+	 *            output stream to which daqSnapshot will be serialized
 	 * @param format
 	 *            format in which daqSnapshot will be serialized
-	 * @return absolute path to serialized file
 	 * @throws IOException
 	 * @throws JsonMappingException
 	 * @throws JsonGenerationException
 	 */
-	public String serialize(DAQ daqSnapshot, String baseDir, SnapshotFormat format)
+	public void serialize(DAQ daqSnapshot, OutputStream outputStream, SnapshotFormat format)
 			throws JsonGenerationException, JsonMappingException, IOException {
 
-		Date current = new Date(daqSnapshot.getLastUpdate());
-		createTimeDirs(baseDir, current);
+
 		ObjectMapper mapper = format.getMapper();
-		String extension = format.getExtension();
 		boolean prettyPrint = format.isPrettyPrint();
 
 		switch (format) {
@@ -97,104 +91,41 @@ public class StructureSerializer {
 			logger.warn("Format of snapshot not available");
 		}
 
-		String snapshotFilename = current.getTime() + extension;
-		File file = new File(getTimeDir(baseDir, current) + snapshotFilename);
 
 		if (prettyPrint)
-			mapper.writerWithDefaultPrettyPrinter().writeValue(file, daqSnapshot);
+			mapper.writerWithDefaultPrettyPrinter().writeValue(outputStream, daqSnapshot);
 		else
-			mapper.writeValue(file, daqSnapshot);
+			mapper.writeValue(outputStream, daqSnapshot);
 
-		return file.getAbsolutePath();
 	}
+	
 
-	/**
-	 * Output to JSON (minified) format (.json suffix)
-	 */
-	public String serializeToJSONUgly(DAQ daqSnapshot, String name, String folder)
-			throws JsonGenerationException, JsonMappingException, IOException {
-		File file = new File(folder + name + ".json");
-		ObjectMapper mapper = new ObjectMapper();
+	public DAQ deserialize(String filepath, SnapshotFormat format) {
 
-		addMixins(mapper);
-		mapper.writeValue(file, daqSnapshot);
+		ObjectMapper mapper = format.getMapper();
 
-		return file.getAbsolutePath();
-	}
-
-	/**
-	 * Output to JSON (minified) format, where all reference attribute names are
-	 * prepended with "ref_" for compatibility with some parsers (.json suffix)
-	 */
-	public String serializeToRefJSONUgly(DAQ daqSnapshot, String name, String folder)
-			throws JsonGenerationException, JsonMappingException, IOException {
-		File file = new File(folder + name + ".json");
-		ObjectMapper mapper = new ObjectMapper();
-
-		addRefMixins(mapper);
-		mapper.writeValue(file, daqSnapshot);
-
-		return file.getAbsolutePath();
-	}
-
-	public DAQ deserializeFromSmile(String filepath) {
-		return mapperDeserialiser(filepath, new SmileFactory());
-	}
-
-	public DAQ deserializeFromJSON(String filepath) {
-		return mapperDeserialiser(filepath, new JsonFactory());
-	}
-
-	/**
-	 * Create time-base directory structure for given date
-	 * 
-	 * @param baseDir
-	 *            base directory where time-based directory will be situated
-	 * @param date
-	 *            timestamp for which time directory will be created
-	 */
-	private void createTimeDirs(String baseDir, Date date) {
-
-		File files = new File(getTimeDir(baseDir, date));
-		if (!files.exists()) {
-			if (files.mkdirs()) {
-				logger.info("Time-based directories created successfully");
-			} else {
-				throw new RuntimeException("Failed to create following dir: " + files.getAbsolutePath());
-			}
+		switch (format) {
+		case SMILE:
+			addMixins(mapper);
+			break;
+		case JSON:
+			addMixins(mapper);
+			break;
+		case JSONREFPREFIXED:
+			addRefMixins(mapper);
+			break;
+		case JSONUGLY:
+			addMixins(mapper);
+			break;
+		case JSONREFPREFIXEDUGLY:
+			addRefMixins(mapper);
+			break;
+		default:
+			logger.warn("Format of snapshot not available");
 		}
-	}
-
-	/**
-	 * Get the directory based on given date
-	 * 
-	 * @param baseDir
-	 *            base directory where time-based directory will be situated
-	 * @param date
-	 *            timestamp for which time directory will be returned
-	 * @return absolute path to time-based directory
-	 */
-	public String getTimeDir(String baseDir, Date date) {
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(date);
-		int year = cal.get(Calendar.YEAR);
-		int month = cal.get(Calendar.MONTH) + 1;
-		int day = cal.get(Calendar.DAY_OF_MONTH);
-		int hour = cal.get(Calendar.HOUR_OF_DAY);
-
-		logger.trace("Date: " + date);
-		logger.trace(year + ", " + month + ", " + day + ", " + hour);
-
-		String result = baseDir + year + "/" + month + "/" + day + "/" + hour + "/";
-		return result;
-	}
-
-	private DAQ mapperDeserialiser(String filepath, JsonFactory factory) {
-
+		
+		
 		DAQ daq = null;
-		/* read from smile */
-		ObjectMapper mapper = new ObjectMapper(factory);
-		addMixins(mapper);
 
 		ObjectInputStream in = null;
 		FileInputStream fileIn = null;
@@ -218,6 +149,7 @@ public class StructureSerializer {
 				}
 		}
 	}
+
 
 	/**
 	 * Add mixin objects to object mapper
@@ -266,15 +198,5 @@ public class StructureSerializer {
 		objectMapper.addMixIn(TTCPartition.class, TTCPartitionMixIn.class);
 	}
 
-	@Deprecated
-	public String serializeToRefJSON(DAQ daqSnapshot, String name, String folder)
-			throws JsonGenerationException, JsonMappingException, IOException {
-		File file = new File(folder + name + ".json");
-		ObjectMapper mapper = new ObjectMapper();
 
-		addRefMixins(mapper);
-		mapper.writerWithDefaultPrettyPrinter().writeValue(file, daqSnapshot);
-
-		return file.getAbsolutePath();
-	}
 }

@@ -29,6 +29,11 @@ public class TTCPartition implements FlashlistUpdatable, Derivable {
 	/** can be null */
 	/** this is only a link to the TTCPartition's top level FMM and there might be more FMMs */
 	private FMM fmm;
+	
+	/** Info for the topFMM, or meta-info in case topFMM is null*/
+	private FMMInfo topFMMInfo;
+	
+	private String tcds_pm_ttsState;
 
 	private SubSystem subsystem;
 	
@@ -52,6 +57,15 @@ public class TTCPartition implements FlashlistUpdatable, Derivable {
 	private float percentBusy;
 
 	private List<FED> feds = new ArrayList<>();
+	
+
+	public String getTcds_pm_ttsState() {
+		return tcds_pm_ttsState;
+	}
+
+	public void setTcds_pm_ttsState(String tcds_pm_ttsState) {
+		this.tcds_pm_ttsState = tcds_pm_ttsState;
+	}
 
 	public String getTtsState() {
 		return ttsState;
@@ -99,6 +113,14 @@ public class TTCPartition implements FlashlistUpdatable, Derivable {
 
 	public void setFmm(FMM fmm) {
 		this.fmm = fmm;
+	}
+
+	public FMMInfo getTopFMMInfo() {
+		return topFMMInfo;
+	}
+
+	public void setTopFMMInfo(FMMInfo topFMMInfo) {
+		this.topFMMInfo = topFMMInfo;
 	}
 
 	@Override
@@ -180,6 +202,7 @@ public class TTCPartition implements FlashlistUpdatable, Derivable {
 		result = prime * result + Float.floatToIntBits(percentWarning);
 		result = prime * result + ttcpNr;
 		result = prime * result + ((ttsState == null) ? 0 : ttsState.hashCode());
+		result = prime * result + ((tcds_pm_ttsState == null) ? 0 : tcds_pm_ttsState.hashCode());
 		return result;
 	}
 
@@ -214,6 +237,11 @@ public class TTCPartition implements FlashlistUpdatable, Derivable {
 			if (other.ttsState != null)
 				return false;
 		} else if (!ttsState.equals(other.ttsState))
+			return false;
+		if (tcds_pm_ttsState == null) {
+			if (other.tcds_pm_ttsState != null)
+				return false;
+		} else if (!tcds_pm_ttsState.equals(other.tcds_pm_ttsState))
 			return false;
 		return true;
 	}

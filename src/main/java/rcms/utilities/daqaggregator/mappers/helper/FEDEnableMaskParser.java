@@ -13,7 +13,7 @@ import java.util.Map;
 public class FEDEnableMaskParser {
 	
 	/**Key is the srcExpectedId of a FED
-	 * Value contains is a string that contains two dash-separated substrings, each to be parsed as boolean,
+	 * Value is a string that contains two dash-separated substrings, each to be parsed as boolean,
 	 * the first of which is the flag for the fmmmasked and the second is the flag for the frlmasked
 	 * */
 	
@@ -37,7 +37,9 @@ public class FEDEnableMaskParser {
 			Integer fedSrcId = Integer.parseInt(splitEntry[0]);
 			Integer maskSum = Integer.parseInt(splitEntry[1]);
 			
-			int [] lowerBits = {0,0,0,0};
+			int [] lowerBits = {0,0,0,0}; //only the 4 lower bits are used to convey the masking flags information
+			
+			//maskSum in binary format (stringified)
 			String binaryMaskSum = Integer.toString(maskSum, 2);
 
 			//String padding
