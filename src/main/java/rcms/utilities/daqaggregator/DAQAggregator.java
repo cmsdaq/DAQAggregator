@@ -51,6 +51,7 @@ public class DAQAggregator {
 
 	protected static String PERSISTENCE_DIR = "persistence.dir";
 	protected static String PERSISTENCE_FORMAT = "persistence.format";
+	protected static String PERSISTENCE_MODE = "persistence.mode";
 
 	protected static DBConnectorIF _dbconn = null;
 	protected static HWCfgConnector _hwconn = null;
@@ -97,9 +98,20 @@ public class DAQAggregator {
 			}
 
 			
-			String formatProperty = daqAggregatorProperties.getProperty(PERSISTENCE_FORMAT);
+			boolean flashlistPersistenceMode = false;
+			String modeProperty = daqAggregatorProperties.getProperty(PERSISTENCE_MODE);
+			if (modeProperty != null && modeProperty.equals("flashlist")) {
+				logger.info("Flashlists will be persisted");
+				flashlistPersistenceMode = true;
+			}
+			logger.info("Persist flashlists? " + flashlistPersistenceMode);
+
 			
-			/**will output to SMILE by default, if no other valid format option is found in properties file*/
+			/**
+			 * will output to SMILE by default, if no other valid format option
+			 * is found in properties file
+			 */
+			String formatProperty = daqAggregatorProperties.getProperty(PERSISTENCE_FORMAT);
 			SnapshotFormat format = SnapshotFormat.SMILE;
 			if (SnapshotFormat.JSON.name().equalsIgnoreCase(formatProperty))
 				format = SnapshotFormat.JSON;
@@ -124,7 +136,6 @@ public class DAQAggregator {
 					autoDetectSession(daqAggregatorProperties.getProperty(PROPERTYNAME_SESSION_LASURL_GE),
 							daqAggregatorProperties.getProperty(PROPERTYNAME_SESSION_L0FILTER1),
 							daqAggregatorProperties.getProperty(PROPERTYNAME_SESSION_L0FILTER2));
-					
 
 					if (_dpsetPathChanged || _sidChanged) {
 						logger.info("Session has changed.");
@@ -145,7 +156,14 @@ public class DAQAggregator {
 					}
 
 					if (flashlistManager != null) {
-						prepareAndPersistSnapshot(daq, flashlistManager, persistorManager);
+
+						/* MODE SNAPSHOTS: persisting snapshots only */
+						if (!flashlistPersistenceMode)
+							prepareAndPersistSnapshot(daq, flashlistManager, persistorManager);
+
+						/* MODE FLASHLISTS: persisting flashlists only */
+						else
+							persistorManager.persistFlashlists(flashlistManager);
 					} else {
 						logger.warn("Flashlist manager not initialized, session id not available");
 					}
@@ -170,9 +188,10 @@ public class DAQAggregator {
 
 	}
 
-	protected static String prepareAndPersistSnapshot(DAQ daq, FlashlistManager flashlistManager,
+	protected static void prepareAndPersistSnapshot(DAQ daq, FlashlistManager flashlistManager,
 			PersistorManager persistorManager) {
-		flashlistManager.readFlashlists();
+		flashlistManager.readAndMapFlashlists();
+
 		daq.setLastUpdate(System.currentTimeMillis());
 
 		// postprocess daq (derived values, summary classes)
@@ -180,8 +199,7 @@ public class DAQAggregator {
 		postProcessor.postProcess();
 
 		// serialize snapshot
-		return persistorManager.persistSnapshot(daq);
-
+		persistorManager.persistSnapshot(daq);
 	}
 
 	/**
@@ -193,7 +211,6 @@ public class DAQAggregator {
 	 */
 	protected static void autoDetectSession(String lasBaseURLge, String l0_filter1, String l0_filter2)
 			throws IOException {
-		
 
 		logger.debug("Auto-detecting session ...");
 		String php = "";
@@ -218,7 +235,7 @@ public class DAQAggregator {
 			_sid = l0r.getSID();
 			_sidChanged = true;
 		}
-		
+
 	}
 
 	protected static Properties loadPropertiesFile(String propertiesFile) {

@@ -93,12 +93,12 @@ public class FlashlistManager {
 	 * This method retrieves data only from necessary flashlists. After
 	 * retrieving it passes flashlist to dispatcher {@link FlashlistDispatcher}
 	 */
-	public void readFlashlists() {
+	public void readAndMapFlashlists() {
 
 		long startTime = System.currentTimeMillis();
 
 		MappingReporter.get().clear();
-		downloadFlashlists();
+		downloadFlashlists(false);
 		cleanStructure();
 		mapFlashlists();
 
@@ -108,14 +108,14 @@ public class FlashlistManager {
 
 	}
 
-	private void downloadFlashlists() {
+	public void downloadFlashlists(boolean downloadAll) {
 
 		Collection<Future<?>> futures = new LinkedList<Future<?>>();
 		long startTime = System.currentTimeMillis();
 		for (final Flashlist flashlist : flashlists) {
 
 			/* read only this flashlists */
-			if (flashlist.getFlashlistType().isDownload()) {
+			if (flashlist.getFlashlistType().isDownload() || downloadAll) {
 				Runnable task = new Runnable() {
 					public void run() {
 						try {
@@ -167,5 +167,9 @@ public class FlashlistManager {
 			fed.clean();
 		}
 
+	}
+
+	public Set<Flashlist> getFlashlists() {
+		return flashlists;
 	}
 }

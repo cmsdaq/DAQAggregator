@@ -1,6 +1,7 @@
 package rcms.utilities.daqaggregator.mappers;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -11,27 +12,42 @@ import rcms.utilities.daqaggregator.Connector;
 
 public class Flashlist {
 
-	private final int sessionId;
+	// TODO: final
+	private int sessionId;
 
-	private final String address;
+	// TODO: final
+	private String address;
 
-	private final String name;
-	
-	private final String sessionIdColumnName;
+	// TODO: final
+	private String name;
+
+	// TODO: final
+	private String sessionIdColumnName;
+
+	// TODO: final
+	private FlashlistType flashlistType;
 
 	private JsonNode rowsNode;
 
 	private JsonNode definitionNode;
 
-	private final FlashlistType flashlistType;
+	protected Date retrievalDate;
 
 	private static final Logger logger = Logger.getLogger(Flashlist.class);
+	
+	public Flashlist(){
+		
+	}
 
 	public Flashlist(String address, String name, int sessionId) {
 		super();
 		this.address = address;
 		this.name = name;
 		this.sessionId = sessionId;
+		inferType();
+	}
+
+	public void inferType() {
 		this.flashlistType = FlashlistType.inferTypeByName(name);
 		this.sessionIdColumnName = this.flashlistType.getSessionIdColumnName();
 	}
@@ -39,7 +55,7 @@ public class Flashlist {
 	public String getName() {
 		return name;
 	}
-	
+
 	public String getSessionIdColumnName() {
 		return sessionIdColumnName;
 	}
@@ -64,16 +80,16 @@ public class Flashlist {
 
 		int timeResult;
 		String requestAddress = address + "/retrieveCollection?flash=" + name + "&fmt=json";
-		
+
 		if (flashlistType.isSessionContext()) {
-			//requestAddress = requestAddress + "&sessionid=" + sessionId;
-			requestAddress = requestAddress + "&"+sessionIdColumnName + "=" + sessionId;
+			// requestAddress = requestAddress + "&sessionid=" + sessionId;
+			requestAddress = requestAddress + "&" + sessionIdColumnName + "=" + sessionId;
 		}
-		logger.debug("Reading flashlist from endpoint: "+requestAddress);
+		logger.debug("Reading flashlist from endpoint: " + requestAddress);
 
 		long startTime = System.currentTimeMillis();
-
 		List<String> result = Connector.get().retrieveLines(requestAddress);
+		retrievalDate = new Date();
 
 		com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
 		JsonNode rootNode = mapper.readValue(result.get(0), JsonNode.class);
@@ -90,6 +106,21 @@ public class Flashlist {
 
 	public FlashlistType getFlashlistType() {
 		return flashlistType;
+	}
+
+	public Date getRetrievalDate() {
+		return retrievalDate;
+	}
+
+	@Override
+	public String toString() {
+		return "Flashlist [sessionId=" + sessionId + ", address=" + address + ", name=" + name
+				+ ", sessionIdColumnName=" + sessionIdColumnName + ", rowsNode=" + rowsNode + ", definitionNode="
+				+ definitionNode + ", flashlistType=" + flashlistType + ", retrievalDate=" + retrievalDate + "]";
+	}
+
+	public String getAddress() {
+		return address;
 	}
 
 }

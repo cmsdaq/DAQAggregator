@@ -8,7 +8,13 @@ import java.util.Date;
 
 import org.apache.log4j.Logger;
 
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import rcms.utilities.daqaggregator.data.DAQ;
+import rcms.utilities.daqaggregator.mappers.Flashlist;
+import rcms.utilities.daqaggregator.mappers.FlashlistManager;
 
 /**
  * This class manages persistence
@@ -79,6 +85,51 @@ public class PersistorManager {
 			logger.warn("Problem persisting " + e.getMessage());
 			return null;
 		}
+	}
+
+	/**
+	 * 
+	 * @param flashlist
+	 *            flashlist to be persisted
+	 * @throws IOException
+	 * @throws JsonMappingException
+	 * @throws JsonGenerationException
+	 */
+	public String persistFlashlist(Flashlist flashlist, String base)
+			throws JsonGenerationException, JsonMappingException, IOException {
+		String flashlistBase = base + flashlist.getName() + "/";
+		logger.debug("Persisting flashlist " + flashlist.getName() + " retrieved on " + flashlist.getRetrievalDate());
+		createTimeDirs(flashlistBase, flashlist.getRetrievalDate());
+
+		String flashlistFilename = flashlist.getRetrievalDate().getTime() + format.getExtension();
+		File file = new File(getTimeDir(flashlistBase, flashlist.getRetrievalDate()) + flashlistFilename);
+
+		ObjectMapper mapper = format.getMapper();
+
+		//mapper.addMixIn(Flashlist.class, rcms.utilities.daqaggregator.FlashlistMixin.class);
+
+		FileOutputStream fos = new FileOutputStream(file);
+		mapper.writerWithDefaultPrettyPrinter().writeValue(fos, flashlist);
+		return file.getAbsolutePath();
+	}
+
+	public void persistFlashlists(FlashlistManager flashlistManager) {
+
+		flashlistManager.downloadFlashlists(true);
+		int success = 0, fail = 0;
+
+		for (Flashlist flashlist : flashlistManager.getFlashlists()) {
+
+			try {
+				persistFlashlist(flashlist, persistenceDir);
+				success++;
+			} catch (IOException e) {
+				fail++;
+				e.printStackTrace();
+			}
+
+		}
+		logger.info("Persisted " + success + " flashlists sucessfully, " + fail + " failures");
 	}
 
 	/**
