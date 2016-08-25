@@ -47,65 +47,41 @@ public class FlashlistManager {
 	}
 
 	/**
-	 * Retrieve list of available flashlists
-	 */
-	public void retrieveAvailableFlashlists() {
-
-		for (String lasUrl : lasUrls) {
-
-			/*hack to filter out a single flashlist ('tcds_pm_tts_channel') from the LAS at pc-c2e11-23-01,
-			 * while in any other case (dedicated DAQAggregator LAS) all flashlists are retrieved with no exception
-			 * TODO: This is not a final solution, review flashlists
-			 */
-			if (lasUrl.equals("http://pc-c2e11-23-01.cms:9945/urn:xdaq-application:service=xmaslas2g")){
-				try {
-					List<String> resultLines = Connector.get().retrieveLines(lasUrl + "/retrieveCatalog?fmt=plain");
-					for (String line : resultLines) {
-						if (line.startsWith("urn:xdaq-flashlist:tcds_pm_tts_channel")) {
-							flashlists.add(new Flashlist(lasUrl, line, sessionId));
-						}
-					}
-				} catch (IOException e) {
-					logger.error("Error retrieving flashlists from LAS " + lasUrl);
-					logger.error("Exception message: " + e.getMessage());
-					e.printStackTrace();
-				}
-			}else{
-				try {
-					List<String> resultLines = Connector.get().retrieveLines(lasUrl + "/retrieveCatalog?fmt=plain");
-					for (String line : resultLines) {
-						if (line.startsWith("urn:")) {
-							flashlists.add(new Flashlist(lasUrl, line, sessionId));
-						}
-					}
-				} catch (IOException e) {
-					logger.error("Error retrieving flashlists from LAS " + lasUrl);
-					logger.error("Exception message: " + e.getMessage());
-					e.printStackTrace();
-				}
-			}
-		}
-		logger.info("There are " + flashlists.size() + " flashlists available");
-	}
-
-
-	/**
 	 * This method retrieves data only from necessary flashlists. After
 	 * retrieving it passes flashlist to dispatcher {@link FlashlistDispatcher}
 	 */
-	public void readAndMapFlashlists() {
+	public void downloadAndMapFlashlists() {
 
 		long startTime = System.currentTimeMillis();
 
-		MappingReporter.get().clear();
 		downloadFlashlists(false);
-		cleanStructure();
+
 		mapFlashlists();
 
 		long stopTime = System.currentTimeMillis();
 		int time = (int) (stopTime - startTime);
 		logger.info("Reading and mapping all flashlists finished in " + time + "ms");
 
+	}
+
+	/**
+	 * Map flashlists to Snapshot object
+	 */
+	public void mapFlashlists() {
+
+		long startTime = System.currentTimeMillis();
+		MappingReporter.get().clear();
+		cleanStructure();
+		for (Flashlist flashlist : flashlists) {
+
+			if (flashlist.getFlashlistType().isDownload()) {
+				FlashlistDispatcher dispatcher = new FlashlistDispatcher();
+				dispatcher.dispatch(flashlist, mappingManager);
+			}
+		}
+		long stopTime = System.currentTimeMillis();
+		int time = (int) (stopTime - startTime);
+		logger.debug("Mapping all flashlists finished in " + time + "ms");
 	}
 
 	public void downloadFlashlists(boolean downloadAll) {
@@ -146,23 +122,53 @@ public class FlashlistManager {
 		logger.debug("Reading all flashlists finished in " + time + "ms");
 	}
 
-	private void mapFlashlists() {
+	/**
+	 * Retrieve list of available flashlists
+	 */
+	public void retrieveAvailableFlashlists() {
 
-		long startTime = System.currentTimeMillis();
-		for (Flashlist flashlist : flashlists) {
+		for (String lasUrl : lasUrls) {
 
-			if (flashlist.getFlashlistType().isDownload()) {
-				FlashlistDispatcher dispatcher = new FlashlistDispatcher();
-				dispatcher.dispatch(flashlist, mappingManager);
+			/*
+			 * hack to filter out a single flashlist ('tcds_pm_tts_channel')
+			 * from the LAS at pc-c2e11-23-01, while in any other case
+			 * (dedicated DAQAggregator LAS) all flashlists are retrieved with
+			 * no exception TODO: This is not a final solution, review
+			 * flashlists
+			 */
+			if (lasUrl.equals("http://pc-c2e11-23-01.cms:9945/urn:xdaq-application:service=xmaslas2g")) {
+				try {
+					List<String> resultLines = Connector.get().retrieveLines(lasUrl + "/retrieveCatalog?fmt=plain");
+					for (String line : resultLines) {
+						if (line.startsWith("urn:xdaq-flashlist:tcds_pm_tts_channel")) {
+							flashlists.add(new Flashlist(lasUrl, line, sessionId));
+						}
+					}
+				} catch (IOException e) {
+					logger.error("Error retrieving flashlists from LAS " + lasUrl);
+					logger.error("Exception message: " + e.getMessage());
+					e.printStackTrace();
+				}
+			} else {
+				try {
+					List<String> resultLines = Connector.get().retrieveLines(lasUrl + "/retrieveCatalog?fmt=plain");
+					for (String line : resultLines) {
+						if (line.startsWith("urn:")) {
+							flashlists.add(new Flashlist(lasUrl, line, sessionId));
+						}
+					}
+				} catch (IOException e) {
+					logger.error("Error retrieving flashlists from LAS " + lasUrl);
+					logger.error("Exception message: " + e.getMessage());
+					e.printStackTrace();
+				}
 			}
 		}
-		long stopTime = System.currentTimeMillis();
-		int time = (int) (stopTime - startTime);
-		logger.debug("Mapping all flashlists finished in " + time + "ms");
+		logger.info("There are " + flashlists.size() + " flashlists available");
 	}
 
 	private void cleanStructure() {
-		//TODO: clean other objects if necessary
+		// TODO: clean other objects if necessary
 		for (FED fed : mappingManager.getObjectMapper().feds.values()) {
 			fed.clean();
 		}

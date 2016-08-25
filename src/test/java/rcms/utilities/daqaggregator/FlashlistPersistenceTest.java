@@ -19,7 +19,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
 import rcms.utilities.daqaggregator.mappers.Flashlist;
 import rcms.utilities.daqaggregator.persistence.PersistorManager;
-import rcms.utilities.daqaggregator.persistence.SnapshotFormat;
+import rcms.utilities.daqaggregator.persistence.PersistenceFormat;
 
 public class FlashlistPersistenceTest {
 
@@ -33,7 +33,7 @@ public class FlashlistPersistenceTest {
 		rowsNode.add(JsonNodeFactory.instance.textNode("a"));
 		flashlist.setRowsNode(rowsNode);
 
-		PersistorManager persistorManager = new PersistorManager("", SnapshotFormat.JSON);
+		PersistorManager persistorManager = new PersistorManager("", "", null, PersistenceFormat.JSON);
 		String path = persistorManager.persistFlashlist(flashlist, "/tmp/flashlist-test/");
 
 		System.out.println("Persisted here: " + path);

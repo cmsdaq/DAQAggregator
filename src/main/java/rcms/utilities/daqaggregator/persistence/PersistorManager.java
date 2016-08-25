@@ -27,17 +27,22 @@ public class PersistorManager {
 	private static final Logger logger = Logger.getLogger(PersistorManager.class);
 
 	/** Persistence directory to work with */
-	protected final String persistenceDir;
+	protected final String snapshotPersistenceDir;
+	protected final String flashlistPersistenceDir;
 
-	private final SnapshotFormat format;
+	private final PersistenceFormat snapshotFormat;
+	private final PersistenceFormat flashlistFormat;
 
 	protected final StructureSerializer persistor;
 
 	/** Constructor */
-	public PersistorManager(String persistenceDir, SnapshotFormat format) {
+	public PersistorManager(String snapshotPersistenceDir, String flashlistPersistenceDir,
+			PersistenceFormat snapshotFormat, PersistenceFormat flashlistFormat) {
 
-		this.persistenceDir = persistenceDir;
-		this.format = format;
+		this.snapshotPersistenceDir = snapshotPersistenceDir;
+		this.flashlistPersistenceDir = flashlistPersistenceDir;
+		this.snapshotFormat = snapshotFormat;
+		this.flashlistFormat = flashlistFormat;
 		this.persistor = new StructureSerializer();
 		instance = this;
 	}
@@ -68,18 +73,18 @@ public class PersistorManager {
 		try {
 
 			Date current = new Date(daq.getLastUpdate());
-			createTimeDirs(persistenceDir, current);
-			String extension = format.getExtension();
+			createTimeDirs(snapshotPersistenceDir, current);
+			String extension = snapshotFormat.getExtension();
 
 			String snapshotFilename = current.getTime() + extension;
-			File file = new File(getTimeDir(persistenceDir, current) + snapshotFilename);
+			File file = new File(getTimeDir(snapshotPersistenceDir, current) + snapshotFilename);
 
 			FileOutputStream fos = new FileOutputStream(file);
 
-			persistor.serialize(daq, fos, format);
+			persistor.serialize(daq, fos, snapshotFormat);
 			String filename = file.getAbsolutePath();
 
-			logger.info("Successfully persisted in " + persistenceDir + " as file " + filename);
+			logger.info("Successfully persisted in " + snapshotPersistenceDir + " as file " + filename);
 			return filename;
 		} catch (IOException e) {
 			logger.warn("Problem persisting " + e.getMessage());
@@ -101,12 +106,13 @@ public class PersistorManager {
 		logger.debug("Persisting flashlist " + flashlist.getName() + " retrieved on " + flashlist.getRetrievalDate());
 		createTimeDirs(flashlistBase, flashlist.getRetrievalDate());
 
-		String flashlistFilename = flashlist.getRetrievalDate().getTime() + format.getExtension();
+		String flashlistFilename = flashlist.getRetrievalDate().getTime() + flashlistFormat.getExtension();
 		File file = new File(getTimeDir(flashlistBase, flashlist.getRetrievalDate()) + flashlistFilename);
 
-		ObjectMapper mapper = format.getMapper();
+		ObjectMapper mapper = flashlistFormat.getMapper();
 
-		//mapper.addMixIn(Flashlist.class, rcms.utilities.daqaggregator.FlashlistMixin.class);
+		// mapper.addMixIn(Flashlist.class,
+		// rcms.utilities.daqaggregator.FlashlistMixin.class);
 
 		FileOutputStream fos = new FileOutputStream(file);
 		mapper.writerWithDefaultPrettyPrinter().writeValue(fos, flashlist);
@@ -115,13 +121,12 @@ public class PersistorManager {
 
 	public void persistFlashlists(FlashlistManager flashlistManager) {
 
-		flashlistManager.downloadFlashlists(true);
 		int success = 0, fail = 0;
 
 		for (Flashlist flashlist : flashlistManager.getFlashlists()) {
 
 			try {
-				persistFlashlist(flashlist, persistenceDir);
+				persistFlashlist(flashlist, flashlistPersistenceDir);
 				success++;
 			} catch (IOException e) {
 				fail++;

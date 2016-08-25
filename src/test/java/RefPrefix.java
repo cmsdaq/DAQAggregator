@@ -6,7 +6,7 @@ import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
 import rcms.utilities.daqaggregator.data.DAQ;
-import rcms.utilities.daqaggregator.persistence.SnapshotFormat;
+import rcms.utilities.daqaggregator.persistence.PersistenceFormat;
 import rcms.utilities.daqaggregator.persistence.StructureSerializer;
 
 public class RefPrefix {
@@ -14,14 +14,14 @@ public class RefPrefix {
 	public static void main(String[] args) {
 		StructureSerializer serializer = new StructureSerializer();
 		DAQ daq = serializer.deserialize("/afs/cern.ch/user/m/mvougiou/Desktop/tmp/snapshots/1470665696624.json",
-				SnapshotFormat.JSON);
+				PersistenceFormat.JSON);
 
 		try {
 			File file = new File("/afs/cern.ch/user/m/mvougiou/Desktop/tmp/snapshots/");
 
 			FileOutputStream fos = new FileOutputStream(file);
 			serializer.serialize(daq, fos ,
-					SnapshotFormat.JSONREFPREFIXED);
+					PersistenceFormat.JSONREFPREFIXED);
 		} catch (JsonGenerationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

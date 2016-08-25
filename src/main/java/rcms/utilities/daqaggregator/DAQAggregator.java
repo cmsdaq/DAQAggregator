@@ -18,40 +18,14 @@ import rcms.utilities.daqaggregator.data.DAQ;
 import rcms.utilities.daqaggregator.mappers.FlashlistManager;
 import rcms.utilities.daqaggregator.mappers.MappingManager;
 import rcms.utilities.daqaggregator.mappers.PostProcessor;
+import rcms.utilities.daqaggregator.persistence.PersistenceFormat;
 import rcms.utilities.daqaggregator.persistence.PersistorManager;
-import rcms.utilities.daqaggregator.persistence.SnapshotFormat;
 import rcms.utilities.hwcfg.HWCfgConnector;
 import rcms.utilities.hwcfg.HWCfgDescriptor;
 import rcms.utilities.hwcfg.dp.DAQPartition;
 import rcms.utilities.hwcfg.dp.DAQPartitionSet;
 
 public class DAQAggregator {
-
-	// settings concerning session definition
-	protected static String PROPERTYNAME_SESSION_LASURL_GE = "session.lasURLgeneral";
-	protected static String PROPERTYNAME_SESSION_L0FILTER1 = "session.l0filter1";
-	protected static String PROPERTYNAME_SESSION_L0FILTER2 = "session.l0filter2";
-
-	// settings for monitoring
-	protected static String PROPERTYNAME_MONITOR_SETUPNAME = "monitor.setupName";
-	protected static String PROPERTYNAME_MONITOR_URLS = "monitor.lasURLs";
-
-	// settings concerning HWCFG DB
-	protected static String PROPERTYNAME_HWCFGDB_DBURL = "hwcfgdb.dburl";
-	protected static String PROPERTYNAME_HWCFGDB_HOST = "hwcfgdb.host";
-	protected static String PROPERTYNAME_HWCFGDB_PORT = "hwcfgdb.port";
-	protected static String PROPERTYNAME_HWCFGDB_SID = "hwcfgdb.sid";
-	protected static String PROPERTYNAME_HWCFGDB_LOGIN = "hwcfgdb.login";
-	protected static String PROPERTYNAME_HWCFGDB_PWD = "hwcfgdb.pwd";
-
-	// settings concerning SOCKS proxy
-	protected static String PROPERTYNAME_PROXY_ENABLE = "socksproxy.enableproxy"; // optional
-	protected static String PROPERTYNAME_PROXY_HOST = "socksproy.host";
-	protected static String PROPERTYNAME_PROXY_PORT = "socksproxy.port";
-
-	protected static String PERSISTENCE_DIR = "persistence.dir";
-	protected static String PERSISTENCE_FORMAT = "persistence.format";
-	protected static String PERSISTENCE_MODE = "persistence.mode";
 
 	protected static DBConnectorIF _dbconn = null;
 	protected static HWCfgConnector _hwconn = null;
@@ -69,20 +43,22 @@ public class DAQAggregator {
 		if (args.length > 0)
 			propertiesFile = args[0];
 		logger.info("DAQAggregator started with properties file '" + propertiesFile + "'");
-		Properties daqAggregatorProperties = loadPropertiesFile(propertiesFile);
-		work(daqAggregatorProperties);
+
+		Application.initialize(propertiesFile);
+		work();
 
 	}
 
-	public static void work(Properties daqAggregatorProperties) {
+	public static void work() {
 
 		try {
 
-			setUpDBConnection(daqAggregatorProperties);
-			setUpSOCKSProxy(daqAggregatorProperties);
+			setUpDBConnection();
+			setUpSOCKSProxy();
 
 			logger.debug("Read the following LAS URLs:");
-			String[] lasURLs = daqAggregatorProperties.getProperty(PROPERTYNAME_MONITOR_URLS).split(" +");
+			String[] lasURLs = Application.get().getProp().getProperty(Application.PROPERTYNAME_MONITOR_URLS)
+					.split(" +");
 			for (String lasUrl : lasURLs)
 				logger.debug("   '" + lasUrl + "'");
 
@@ -92,39 +68,28 @@ public class DAQAggregator {
 			DAQ daq = null;
 			Set<String> flashlistUrls = new HashSet<String>(Arrays.asList(lasURLs));
 
-			String persistenceDir = daqAggregatorProperties.getProperty(PERSISTENCE_DIR);
-			if (persistenceDir == null) {
-				persistenceDir = "/tmp/snapshots/";
-			}
+			String snapshotPersistenceDir = Application.get().getProp()
+					.getProperty(Application.PERSISTENCE_SNAPSHOT_DIR);
+			String flashlistPersistenceDir = Application.get().getProp()
+					.getProperty(Application.PERSISTENCE_FLASHLIST_DIR);
 
-			
-			boolean flashlistPersistenceMode = false;
-			String modeProperty = daqAggregatorProperties.getProperty(PERSISTENCE_MODE);
-			if (modeProperty != null && modeProperty.equals("flashlist")) {
-				logger.info("Flashlists will be persisted");
-				flashlistPersistenceMode = true;
-			}
-			logger.info("Persist flashlists? " + flashlistPersistenceMode);
-
-			
-			/**
-			 * will output to SMILE by default, if no other valid format option
-			 * is found in properties file
+			/*
+			 * Run mode from properties file
 			 */
-			String formatProperty = daqAggregatorProperties.getProperty(PERSISTENCE_FORMAT);
-			SnapshotFormat format = SnapshotFormat.SMILE;
-			if (SnapshotFormat.JSON.name().equalsIgnoreCase(formatProperty))
-				format = SnapshotFormat.JSON;
-			else if (SnapshotFormat.SMILE.name().equalsIgnoreCase(formatProperty))
-				format = SnapshotFormat.SMILE;
-			else if (SnapshotFormat.JSONREFPREFIXED.name().equalsIgnoreCase(formatProperty))
-				format = SnapshotFormat.JSONREFPREFIXED;
-			else if (SnapshotFormat.JSONUGLY.name().equalsIgnoreCase(formatProperty))
-				format = SnapshotFormat.JSONUGLY;
-			else if (SnapshotFormat.JSONREFPREFIXEDUGLY.name().equalsIgnoreCase(formatProperty))
-				format = SnapshotFormat.JSONREFPREFIXEDUGLY;
+			String runModeValue = Application.get().getProp().getProperty(Application.PERSISTENCE_MODE);
+			PersistMode runMode = PersistMode.decode(runModeValue);
+			logger.info("Run mode:" + runMode);
 
-			PersistorManager persistorManager = new PersistorManager(persistenceDir, format);
+			/*
+			 * Format of snapshot from properties file
+			 */
+			PersistenceFormat flashlistFormat = PersistenceFormat
+					.decode(Application.get().getProp().getProperty(Application.PERSISTENCE_FLASHLIST_FORMAT));
+			PersistenceFormat snapshotFormat = PersistenceFormat
+					.decode(Application.get().getProp().getProperty(Application.PERSISTENCE_SNAPSHOT_FORMAT));
+
+			PersistorManager persistorManager = new PersistorManager(snapshotPersistenceDir, flashlistPersistenceDir,
+					snapshotFormat, flashlistFormat);
 
 			FlashlistManager flashlistManager = null;
 
@@ -133,9 +98,10 @@ public class DAQAggregator {
 				try {
 					_dpsetPathChanged = false;
 					_sidChanged = false;
-					autoDetectSession(daqAggregatorProperties.getProperty(PROPERTYNAME_SESSION_LASURL_GE),
-							daqAggregatorProperties.getProperty(PROPERTYNAME_SESSION_L0FILTER1),
-							daqAggregatorProperties.getProperty(PROPERTYNAME_SESSION_L0FILTER2));
+					autoDetectSession(
+							Application.get().getProp().getProperty(Application.PROPERTYNAME_SESSION_LASURL_GE),
+							Application.get().getProp().getProperty(Application.PROPERTYNAME_SESSION_L0FILTER1),
+							Application.get().getProp().getProperty(Application.PROPERTYNAME_SESSION_L0FILTER2));
 
 					if (_dpsetPathChanged || _sidChanged) {
 						logger.info("Session has changed.");
@@ -157,13 +123,26 @@ public class DAQAggregator {
 
 					if (flashlistManager != null) {
 
-						/* MODE SNAPSHOTS: persisting snapshots only */
-						if (!flashlistPersistenceMode)
-							prepareAndPersistSnapshot(daq, flashlistManager, persistorManager);
-
-						/* MODE FLASHLISTS: persisting flashlists only */
-						else
+						switch (runMode) {
+						case SNAPSHOT:
+							flashlistManager.downloadAndMapFlashlists();
+							finalizeSnapshot(daq);
+							persistorManager.persistSnapshot(daq);
+							break;
+						case FLASHLIST:
+							flashlistManager.downloadFlashlists(true);
 							persistorManager.persistFlashlists(flashlistManager);
+							break;
+						case ALL:
+							flashlistManager.downloadFlashlists(true);
+							flashlistManager.mapFlashlists();
+							finalizeSnapshot(daq);
+							persistorManager.persistSnapshot(daq);
+							persistorManager.persistFlashlists(flashlistManager);
+							break;
+						case CONVERT:
+							break;
+						}
 					} else {
 						logger.warn("Flashlist manager not initialized, session id not available");
 					}
@@ -184,22 +163,11 @@ public class DAQAggregator {
 		}
 	}
 
-	private static void prepareDAQStructure() {
-
-	}
-
-	protected static void prepareAndPersistSnapshot(DAQ daq, FlashlistManager flashlistManager,
-			PersistorManager persistorManager) {
-		flashlistManager.readAndMapFlashlists();
-
+	protected static void finalizeSnapshot(DAQ daq) {
 		daq.setLastUpdate(System.currentTimeMillis());
-
 		// postprocess daq (derived values, summary classes)
 		PostProcessor postProcessor = new PostProcessor(daq);
 		postProcessor.postProcess();
-
-		// serialize snapshot
-		persistorManager.persistSnapshot(daq);
 	}
 
 	/**
@@ -268,17 +236,18 @@ public class DAQAggregator {
 	/*
 	 * FIXME: handling exceptions of type Exception may mask bugs, fix
 	 */
-	protected static void setUpDBConnection(Properties jdaqMonitorProperties) throws Exception {
+	protected static void setUpDBConnection() throws Exception {
 
 		String _dbType = "ORACLE";
-		String _dbURL = jdaqMonitorProperties.getProperty(PROPERTYNAME_HWCFGDB_DBURL);
+		String _dbURL = Application.get().getProp().getProperty(Application.PROPERTYNAME_HWCFGDB_DBURL);
 		if (_dbURL == null || _dbURL.isEmpty()) {
-			_dbURL = "jdbc:oracle:thin:@" + jdaqMonitorProperties.getProperty(PROPERTYNAME_HWCFGDB_HOST) + ":"
-					+ jdaqMonitorProperties.getProperty(PROPERTYNAME_HWCFGDB_PORT) + "/"
-					+ jdaqMonitorProperties.getProperty(PROPERTYNAME_HWCFGDB_SID);
+			_dbURL = "jdbc:oracle:thin:@"
+					+ Application.get().getProp().getProperty(Application.PROPERTYNAME_HWCFGDB_HOST) + ":"
+					+ Application.get().getProp().getProperty(Application.PROPERTYNAME_HWCFGDB_PORT) + "/"
+					+ Application.get().getProp().getProperty(Application.PROPERTYNAME_HWCFGDB_SID);
 		}
-		String _dbUser = jdaqMonitorProperties.getProperty(PROPERTYNAME_HWCFGDB_LOGIN);
-		String _dbPasswd = jdaqMonitorProperties.getProperty(PROPERTYNAME_HWCFGDB_PWD);
+		String _dbUser = Application.get().getProp().getProperty(Application.PROPERTYNAME_HWCFGDB_LOGIN);
+		String _dbPasswd = Application.get().getProp().getProperty(Application.PROPERTYNAME_HWCFGDB_PWD);
 
 		if (_dbType.equals("ORACLE"))
 			_dbconn = new DBConnectorOracle(_dbURL, _dbUser, _dbPasswd);
@@ -292,17 +261,20 @@ public class DAQAggregator {
 	/*
 	 * FIXME: handling exceptions of type Exception may mask bugs, fix
 	 */
-	protected static void setUpSOCKSProxy(Properties jdaqMonitorProperties) throws Exception {
+	protected static void setUpSOCKSProxy() throws Exception {
 
-		if (jdaqMonitorProperties.containsKey(PROPERTYNAME_PROXY_ENABLE)
-				&& jdaqMonitorProperties.get(PROPERTYNAME_PROXY_ENABLE).toString().toLowerCase().equals("true")) {
+		if (Application.get().getProp().containsKey(Application.PROPERTYNAME_PROXY_ENABLE) && Application.get()
+				.getProp().getProperty(Application.PROPERTYNAME_PROXY_ENABLE).toString().toLowerCase().equals("true")) {
 			logger.info("Setting up SOCKS proxy ...");
 
 			Properties sysProperties = System.getProperties();
 
 			// Specify proxy settings
-			sysProperties.put("socksProxyHost", jdaqMonitorProperties.get(PROPERTYNAME_PROXY_HOST));
-			sysProperties.put("socksProxyPort", jdaqMonitorProperties.get(PROPERTYNAME_PROXY_PORT));
+			sysProperties.put("socksProxyHost",
+					Application.get().getProp().getProperty(Application.PROPERTYNAME_PROXY_HOST));
+			sysProperties.put("socksProxyPort",
+					Application.get().getProp().getProperty(Application.PROPERTYNAME_PROXY_PORT));
+
 			sysProperties.put("proxySet", "true");
 		}
 	}
@@ -311,36 +283,4 @@ public class DAQAggregator {
 		_dbconn.closeConnection();
 	}
 
-	/**
-	 * TODO: this is tmp method for running daqaggregator as server with raw and
-	 * reason streams on timeline, this will be separate projects in future.
-	 */
-	public void run() {
-		String propFileName = "DAQAggregator.properties";
-		logger.info("DAQAggregator started with properties file '" + propFileName + "'");
-
-		Properties prop = new Properties();
-		InputStream inputStream = null;
-
-		try {
-			inputStream = getClass().getClassLoader().getResourceAsStream(propFileName);
-			if (inputStream != null) {
-				prop.load(inputStream);
-			} else {
-				throw new FileNotFoundException("property file '" + propFileName + "' not found in the classpath");
-			}
-		} catch (FileNotFoundException e) {
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				inputStream.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-
-		work(prop);
-	}
 }

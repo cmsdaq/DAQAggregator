@@ -64,7 +64,7 @@ public class StructureSerializer {
 	 * @throws JsonMappingException
 	 * @throws JsonGenerationException
 	 */
-	public void serialize(DAQ daqSnapshot, OutputStream outputStream, SnapshotFormat format)
+	public void serialize(DAQ daqSnapshot, OutputStream outputStream, PersistenceFormat format)
 			throws JsonGenerationException, JsonMappingException, IOException {
 
 
@@ -100,7 +100,7 @@ public class StructureSerializer {
 	}
 	
 
-	public DAQ deserialize(String filepath, SnapshotFormat format) {
+	public DAQ deserialize(String filepath, PersistenceFormat format) {
 
 		ObjectMapper mapper = format.getMapper();
 
