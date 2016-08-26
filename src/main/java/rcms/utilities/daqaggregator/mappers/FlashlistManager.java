@@ -3,9 +3,12 @@ package rcms.utilities.daqaggregator.mappers;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -13,7 +16,10 @@ import java.util.concurrent.Future;
 
 import org.apache.log4j.Logger;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import rcms.utilities.daqaggregator.Connector;
+import rcms.utilities.daqaggregator.RunMode;
 import rcms.utilities.daqaggregator.data.FED;
 
 public class FlashlistManager {
@@ -21,7 +27,7 @@ public class FlashlistManager {
 	/**
 	 * Loaded flashlists
 	 */
-	private final Set<Flashlist> flashlists;
+	protected final Set<Flashlist> flashlists;
 
 	/**
 	 * Live Access Service urls
@@ -29,20 +35,20 @@ public class FlashlistManager {
 	private final Set<String> lasUrls;
 
 	// TODO: refactor this field
-	private final MappingManager mappingManager;
+	private MappingManager mappingManager;
 
 	// TODO: refactor this field
-	private final int sessionId;
+	protected int sessionId;
 
 	private static final Logger logger = Logger.getLogger(FlashlistManager.class);
 
 	private final ExecutorService executor;
 
-	public FlashlistManager(Set<String> lasUrls, MappingManager mappingManager, int sessionId) {
+	private String lastDetectedSession = "";
+
+	public FlashlistManager(Set<String> lasUrls) {
 		this.flashlists = new HashSet<Flashlist>();
 		this.lasUrls = lasUrls;
-		this.mappingManager = mappingManager;
-		this.sessionId = sessionId;
 		this.executor = Executors.newFixedThreadPool(10);
 	}
 
@@ -177,5 +183,66 @@ public class FlashlistManager {
 
 	public Set<Flashlist> getFlashlists() {
 		return flashlists;
+	}
+
+	public MappingManager getMappingManager() {
+		return mappingManager;
+	}
+
+	public void setMappingManager(MappingManager mappingManager) {
+		this.mappingManager = mappingManager;
+	}
+
+	public int getSessionId() {
+		return sessionId;
+	}
+
+	public void setSessionId(int sessionId) {
+		this.sessionId = sessionId;
+	}
+
+	public Entry<String, Integer> detectSession(RunMode runMode, String filter1, String filter2) throws IOException {
+		retrieveAvailableFlashlists();
+		downloadFlashlists(false);
+		for (Flashlist flashlist : flashlists) {
+			if (flashlist.getFlashlistType() == FlashlistType.LEVEL_ZERO_FM_STATIC) {
+
+				if (flashlist.getRowsNode().isArray()) {
+					Iterator<JsonNode> rowIterator = flashlist.getRowsNode().iterator();
+					while (rowIterator.hasNext()) {
+						JsonNode row = rowIterator.next();
+						logger.debug(row);
+						String timestamp = row.get("timestamp").asText();
+						String hwcfgKey = row.get("HWCFG_KEY").asText();
+						String fmUrl = row.get("FMURL").asText();
+						int sid = row.get("SID").asInt();
+
+						logger.info(timestamp + ", " + hwcfgKey + ", " + sid + ", " + fmUrl);
+
+						if (fmUrl.contains(filter1) && fmUrl.contains(filter2)) {
+
+							if (lastDetectedSession.equals("") || timestamp.compareTo(lastDetectedSession) < 0) {
+								lastDetectedSession = timestamp;
+
+								String dpsetPath = hwcfgKey.split(":")[0];
+
+								Entry<String, Integer> result = new SimpleEntry<>(dpsetPath, sid);
+								return result;
+							} else {
+
+								logger.info("timestamp not new..");
+							}
+						} else {
+							logger.info("filters not there..");
+						}
+
+					}
+
+				} else {
+					logger.warn("Problem accessing rows in " + FlashlistType.LEVEL_ZERO_FM_STATIC);
+				}
+			}
+		}
+		return null;
 	}
 }

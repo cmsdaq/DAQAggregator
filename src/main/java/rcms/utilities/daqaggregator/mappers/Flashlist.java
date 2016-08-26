@@ -122,5 +122,6 @@ public class Flashlist {
 	public String getAddress() {
 		return address;
 	}
+	
 
 }

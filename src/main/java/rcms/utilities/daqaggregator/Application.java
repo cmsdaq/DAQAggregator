@@ -35,6 +35,8 @@ public class Application {
 	protected static String PERSISTENCE_FLASHLIST_FORMAT = "persistence.flashlist.format";
 	protected static String PERSISTENCE_SNAPSHOT_FORMAT = "persistence.snapshot.format";
 	protected static String PERSISTENCE_MODE = "persistence.mode";
+	
+	protected static String RUN_MODE = "run.mode";
 
 	private final Properties prop;
 
@@ -51,6 +53,8 @@ public class Application {
 
 		if (!instance.prop.containsKey(PERSISTENCE_MODE))
 			throw new RuntimeException(message + PERSISTENCE_MODE);
+		if (!instance.prop.containsKey(RUN_MODE))
+			throw new RuntimeException(message + RUN_MODE);
 	}
 
 	private Application(String propertiesFile) {

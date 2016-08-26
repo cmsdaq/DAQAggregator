@@ -43,7 +43,9 @@ public class Level0DataRetriever  {
 		return _sid;
 	}
 
-	
+	/*
+	 * * prepare to download the flashlist levelZeroFM_static
+	 */
 	protected void retrieveMonitorData() throws IOException {
 
 		String lasTrailer = "&fmt=plain&delimiter=" + _delimiter ;
@@ -62,6 +64,12 @@ public class Level0DataRetriever  {
 	}
 
 	
+	/*
+	 * * download the flashlist
+	 * * put the data to hashmap ("FMURL", "HWCFG_KEY", "SID", "timestamp" )
+	 * * get row only if FMURL contains filter1 && filter2
+	 * * if timestamp > last timestamp
+	 */
 	protected void readInfospaceByFilter(
 			String isbUrl,
 			String fmURLFilter1,

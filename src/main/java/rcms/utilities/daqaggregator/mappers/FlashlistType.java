@@ -28,7 +28,7 @@ public enum FlashlistType {
 	
 	private static Logger logger = Logger.getLogger(FlashlistType.class);
 
-	private final String name;
+	private final String flashlistName;
 
 	/**
 	 * Retrieval of flashlist is in session context. Note that not every
@@ -41,7 +41,7 @@ public enum FlashlistType {
 	private final String sessionIdColumnName;
 
 	private FlashlistType(String name, boolean sessionContext, boolean download, String sessionIdColumnName) {
-		this.name = name;
+		this.flashlistName = name;
 		this.sessionContext = sessionContext;
 		this.download = download;
 		this.sessionIdColumnName = sessionIdColumnName;
@@ -50,87 +50,87 @@ public enum FlashlistType {
 	private static String message = " flashlist type infered from name ";
 
 	public static FlashlistType inferTypeByName(String name) {
-		if (name.toLowerCase().contains(BU.name.toLowerCase())) {
-			logger.debug(BU.name + message + name);
+		if (name.toLowerCase().contains(BU.flashlistName.toLowerCase())) {
+			logger.debug(BU.flashlistName + message + name);
 			return BU;
-		} else if (name.toLowerCase().contains(RU.name.toLowerCase())) {
-			logger.debug(RU.name + message + name);
+		} else if (name.toLowerCase().contains(RU.flashlistName.toLowerCase())) {
+			logger.debug(RU.flashlistName + message + name);
 			return RU;
 
-		} else if (name.toLowerCase().contains(FMM_INPUT_DETAIL.name.toLowerCase())) {
-			logger.debug(FMM_INPUT_DETAIL.name + message + name);
+		} else if (name.toLowerCase().contains(FMM_INPUT_DETAIL.flashlistName.toLowerCase())) {
+			logger.debug(FMM_INPUT_DETAIL.flashlistName + message + name);
 			return FMM_INPUT_DETAIL;
 
-		} else if (name.toLowerCase().contains(FMM_INPUT.name.toLowerCase())) {
-			logger.debug(FMM_INPUT.name + message + name);
+		} else if (name.toLowerCase().contains(FMM_INPUT.flashlistName.toLowerCase())) {
+			logger.debug(FMM_INPUT.flashlistName + message + name);
 			return FMM_INPUT;
 
-		} else if (name.toLowerCase().contains(EVM.name.toLowerCase())) {
-			logger.debug(EVM.name + message + name);
+		} else if (name.toLowerCase().contains(EVM.flashlistName.toLowerCase())) {
+			logger.debug(EVM.flashlistName + message + name);
 			return EVM;
 
-		} else if (name.toLowerCase().contains(FMM_STATUS.name.toLowerCase())) {
-			logger.debug(FMM_STATUS.name + message + name);
+		} else if (name.toLowerCase().contains(FMM_STATUS.flashlistName.toLowerCase())) {
+			logger.debug(FMM_STATUS.flashlistName + message + name);
 			return FMM_STATUS;
 
-		} else if (name.toLowerCase().contains(FEROL_CONFIGURATION.name.toLowerCase())) {
-			logger.debug(FEROL_CONFIGURATION.name + message + name);
+		} else if (name.toLowerCase().contains(FEROL_CONFIGURATION.flashlistName.toLowerCase())) {
+			logger.debug(FEROL_CONFIGURATION.flashlistName + message + name);
 			return FEROL_CONFIGURATION;
 
-		} else if (name.toLowerCase().contains(FEROL_INPUT_STREAM.name.toLowerCase())) {
-			logger.debug(FEROL_INPUT_STREAM.name + message + name);
+		} else if (name.toLowerCase().contains(FEROL_INPUT_STREAM.flashlistName.toLowerCase())) {
+			logger.debug(FEROL_INPUT_STREAM.flashlistName + message + name);
 			return FEROL_INPUT_STREAM;
 
-		} else if (name.toLowerCase().contains(FEROL_MONITORING.name.toLowerCase())) {
-			logger.debug(FEROL_MONITORING.name + message + name);
+		} else if (name.toLowerCase().contains(FEROL_MONITORING.flashlistName.toLowerCase())) {
+			logger.debug(FEROL_MONITORING.flashlistName + message + name);
 			return FEROL_MONITORING;
 
-		} else if (name.toLowerCase().contains(FEROL_STATUS.name.toLowerCase())) {
-			logger.debug(FEROL_STATUS.name + message + name);
+		} else if (name.toLowerCase().contains(FEROL_STATUS.flashlistName.toLowerCase())) {
+			logger.debug(FEROL_STATUS.flashlistName + message + name);
 			return FEROL_STATUS;
 
-		} else if (name.toLowerCase().contains(FEROL_TCP_STREAM.name.toLowerCase())) {
-			logger.debug(FEROL_TCP_STREAM.name + message + name);
+		} else if (name.toLowerCase().contains(FEROL_TCP_STREAM.flashlistName.toLowerCase())) {
+			logger.debug(FEROL_TCP_STREAM.flashlistName + message + name);
 			return FEROL_TCP_STREAM;
 
-		} else if (name.toLowerCase().contains(FRL_MONITORING.name.toLowerCase())) {
-			logger.debug(FRL_MONITORING.name + message + name);
+		} else if (name.toLowerCase().contains(FRL_MONITORING.flashlistName.toLowerCase())) {
+			logger.debug(FRL_MONITORING.flashlistName + message + name);
 			return FRL_MONITORING;
 
-		} else if (name.toLowerCase().contains(HOST_INFO.name.toLowerCase())) {
-			logger.debug(HOST_INFO.name + message + name);
+		} else if (name.toLowerCase().contains(HOST_INFO.flashlistName.toLowerCase())) {
+			logger.debug(HOST_INFO.flashlistName + message + name);
 			return HOST_INFO;
 
-		} else if (name.toLowerCase().contains(LEVEL_ZERO_FM_DYNAMIC.name.toLowerCase())) {
-			logger.debug(LEVEL_ZERO_FM_DYNAMIC.name + message + name);
+		} else if (name.toLowerCase().contains(LEVEL_ZERO_FM_DYNAMIC.flashlistName.toLowerCase())) {
+			logger.debug(LEVEL_ZERO_FM_DYNAMIC.flashlistName + message + name);
 			return LEVEL_ZERO_FM_DYNAMIC;
 
-		} else if (name.toLowerCase().contains(LEVEL_ZERO_FM_STATIC.name.toLowerCase())) {
-			logger.debug(LEVEL_ZERO_FM_STATIC.name + message + name);
+		} else if (name.toLowerCase().contains(LEVEL_ZERO_FM_STATIC.flashlistName.toLowerCase())) {
+			logger.debug(LEVEL_ZERO_FM_STATIC.flashlistName + message + name);
 			return LEVEL_ZERO_FM_STATIC;
 
-		} else if (name.toLowerCase().contains(LEVEL_ZERO_FM_SUBSYS.name.toLowerCase())) {
-			logger.debug(LEVEL_ZERO_FM_SUBSYS.name + message + name);
+		} else if (name.toLowerCase().contains(LEVEL_ZERO_FM_SUBSYS.flashlistName.toLowerCase())) {
+			logger.debug(LEVEL_ZERO_FM_SUBSYS.flashlistName + message + name);
 			return LEVEL_ZERO_FM_SUBSYS;
 
-		} else if (name.toLowerCase().contains(JOB_CONTROL.name.toLowerCase())) {
-			logger.debug(JOB_CONTROL.name + message + name);
+		} else if (name.toLowerCase().contains(JOB_CONTROL.flashlistName.toLowerCase())) {
+			logger.debug(JOB_CONTROL.flashlistName + message + name);
 			return JOB_CONTROL;
 
-		} else if (name.toLowerCase().contains(DISK_INFO.name.toLowerCase())) {
-			logger.debug(DISK_INFO.name + message + name);
+		} else if (name.toLowerCase().contains(DISK_INFO.flashlistName.toLowerCase())) {
+			logger.debug(DISK_INFO.flashlistName + message + name);
 			return DISK_INFO;
 
-		} else if (name.toLowerCase().contains(FMM_PARTITION_DEAD_TIME.name.toLowerCase())) {
-			logger.debug(FMM_PARTITION_DEAD_TIME.name + message + name);
+		} else if (name.toLowerCase().contains(FMM_PARTITION_DEAD_TIME.flashlistName.toLowerCase())) {
+			logger.debug(FMM_PARTITION_DEAD_TIME.flashlistName + message + name);
 			return FMM_PARTITION_DEAD_TIME;
 
-		} else if (name.toLowerCase().contains(FMM_FED_DEAD_TIME.name.toLowerCase())) {
-			logger.debug(FMM_FED_DEAD_TIME.name + message + name);
+		} else if (name.toLowerCase().contains(FMM_FED_DEAD_TIME.flashlistName.toLowerCase())) {
+			logger.debug(FMM_FED_DEAD_TIME.flashlistName + message + name);
 			return FMM_FED_DEAD_TIME;
 
-		} else if (name.toLowerCase().contains(TCDS_PM_TTS_CHANNEL.name.toLowerCase())) {
-			logger.debug(TCDS_PM_TTS_CHANNEL.name + message + name);
+		} else if (name.toLowerCase().contains(TCDS_PM_TTS_CHANNEL.flashlistName.toLowerCase())) {
+			logger.debug(TCDS_PM_TTS_CHANNEL.flashlistName + message + name);
 			return TCDS_PM_TTS_CHANNEL;
 
 		}
@@ -152,6 +152,10 @@ public enum FlashlistType {
 
 	public String getSessionIdColumnName(){
 		return sessionIdColumnName;
+	}
+
+	public String getFlashlistName() {
+		return flashlistName;
 	}
 
 }
