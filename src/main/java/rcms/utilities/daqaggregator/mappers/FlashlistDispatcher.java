@@ -130,7 +130,9 @@ public class FlashlistDispatcher {
 			break;
 		case LEVEL_ZERO_FM_DYNAMIC:
 			for (JsonNode rowNode : flashlist.getRowsNode()) {
-				mappingManager.getObjectMapper().daq.updateFromFlashlist(flashlist.getFlashlistType(), rowNode);
+				if (rowNode.get("FMURL").asText().contains("toppro")) {
+					mappingManager.getObjectMapper().daq.updateFromFlashlist(flashlist.getFlashlistType(), rowNode);
+				}
 			}
 			break;
 		case FEROL_CONFIGURATION:
