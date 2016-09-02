@@ -45,7 +45,7 @@ public class ObjectMapper {
 	private static final Logger logger = Logger.getLogger(ObjectMapper.class);
 
 	/** DAQ structure root object */
-	protected DAQ daq;
+	public DAQ daq;
 
 	public Map<Integer, SubFEDBuilder> subFedBuilders;
 	public Map<Integer, FEDBuilder> fedBuilders;

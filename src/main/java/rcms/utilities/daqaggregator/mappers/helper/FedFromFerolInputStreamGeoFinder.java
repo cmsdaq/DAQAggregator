@@ -6,7 +6,7 @@ import java.util.Map;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import rcms.utilities.daqaggregator.data.FED;
-import rcms.utilities.daqaggregator.mappers.Flashlist;
+import rcms.utilities.daqaggregator.datasource.Flashlist;
 
 /**
  * FED geolocation finder to be used with the FEROL INPUT STREAM flashlist

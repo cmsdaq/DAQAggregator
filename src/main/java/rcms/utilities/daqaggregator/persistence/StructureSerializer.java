@@ -40,6 +40,7 @@ import rcms.utilities.daqaggregator.data.mixin.RUMixIn;
 import rcms.utilities.daqaggregator.data.mixin.SubFEDBuilderMixIn;
 import rcms.utilities.daqaggregator.data.mixin.SubSystemMixIn;
 import rcms.utilities.daqaggregator.data.mixin.TTCPartitionMixIn;
+import rcms.utilities.daqaggregator.datasource.Flashlist;
 
 /**
  * Persists DAQ structure in multiple formats format
@@ -64,9 +65,8 @@ public class StructureSerializer {
 	 * @throws JsonMappingException
 	 * @throws JsonGenerationException
 	 */
-	public void serialize(DAQ daqSnapshot, OutputStream outputStream, SnapshotFormat format)
+	public void serialize(DAQ daqSnapshot, OutputStream outputStream, PersistenceFormat format)
 			throws JsonGenerationException, JsonMappingException, IOException {
-
 
 		ObjectMapper mapper = format.getMapper();
 		boolean prettyPrint = format.isPrettyPrint();
@@ -91,16 +91,43 @@ public class StructureSerializer {
 			logger.warn("Format of snapshot not available");
 		}
 
-
 		if (prettyPrint)
 			mapper.writerWithDefaultPrettyPrinter().writeValue(outputStream, daqSnapshot);
 		else
 			mapper.writeValue(outputStream, daqSnapshot);
 
 	}
-	
 
-	public DAQ deserialize(String filepath, SnapshotFormat format) {
+	public Flashlist deserializeFlashlist(File file, PersistenceFormat format) {
+		ObjectMapper mapper = format.getMapper();
+
+		Flashlist flashlist = null;
+
+		ObjectInputStream in = null;
+		FileInputStream fileIn = null;
+		try {
+			logger.debug("Deserialize file: " + file.getAbsolutePath());
+			flashlist = mapper.readValue(file, Flashlist.class);
+			return flashlist;
+		} catch (IOException i) {
+			logger.error("File incompatible: " + file.getAbsolutePath());
+			i.printStackTrace();
+			return null;
+		} finally {
+			if (in != null)
+				try {
+					in.close();
+				} catch (IOException e1) {
+				}
+			if (fileIn != null)
+				try {
+					fileIn.close();
+				} catch (IOException e1) {
+				}
+		}
+	}
+
+	public DAQ deserialize(String filepath, PersistenceFormat format) {
 
 		ObjectMapper mapper = format.getMapper();
 
@@ -123,8 +150,7 @@ public class StructureSerializer {
 		default:
 			logger.warn("Format of snapshot not available");
 		}
-		
-		
+
 		DAQ daq = null;
 
 		ObjectInputStream in = null;
@@ -149,7 +175,6 @@ public class StructureSerializer {
 				}
 		}
 	}
-
 
 	/**
 	 * Add mixin objects to object mapper
@@ -197,6 +222,5 @@ public class StructureSerializer {
 		objectMapper.addMixIn(SubSystem.class, SubSystemMixIn.class);
 		objectMapper.addMixIn(TTCPartition.class, TTCPartitionMixIn.class);
 	}
-
 
 }

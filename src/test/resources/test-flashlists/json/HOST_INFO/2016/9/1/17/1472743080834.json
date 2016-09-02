@@ -1,0 +1,21 @@
+{
+  "address" : "http://pc-c2e11-29-01.cms:9941/urn:xdaq-application:service=xmaslas2g",
+  "name" : "urn:xdaq-flashlist:hostInfo",
+  "sessionIdColumnName" : "sessionid",
+  "flashlistType" : "HOST_INFO",
+  "rowsNode" : [ ],
+  "definitionNode" : [ {
+    "key" : "context",
+    "type" : "string"
+  }, {
+    "key" : "cpuUsage",
+    "type" : "double"
+  }, {
+    "key" : "sessionid",
+    "type" : "string"
+  }, {
+    "key" : "timestamp",
+    "type" : "time"
+  } ],
+  "retrievalDate" : 1472743080834
+}

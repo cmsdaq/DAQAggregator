@@ -1,0 +1,286 @@
+{
+  "address" : "http://pc-c2e11-29-01.cms:9941/urn:xdaq-application:service=xmaslas2g",
+  "name" : "urn:xdaq-flashlist:levelZeroFM_subsys",
+  "sessionIdColumnName" : "SID",
+  "flashlistType" : "LEVEL_ZERO_FM_SUBSYS",
+  "rowsNode" : [ {
+    "ACTION_MSG" : "",
+    "COMPLETION" : "0.0",
+    "ERROR_MSG" : "",
+    "FEDS" : "0&0%1&0%2&0%3&0%4&0%5&0%6&0%7&0%8&0%9&0%10&0%11&0%12&0%13&0%14&0%15&0%16&0%17&0%18&0%19&0%20&0%21&0%22&0%23&0%24&0%25&0%26&0%27&0%28&0%29&0%30&0%31&0%32&0%33&0%34&0%35&0%36&0%37&0%38&0%39&0%",
+    "FMURL" : "http://cmsrc-top.cms:10000/urn:rcms-fm:fullpath=/toppro/PublicGlobal/levelZeroFMwithAutomator,group=levelZeroFM,owner=toppro",
+    "INOUT" : "Out",
+    "RUN_KEY" : "",
+    "RUN_KEYS" : "[]",
+    "SID" : "283746",
+    "STATE" : "Faulty",
+    "SUBSYS" : "PIXEL",
+    "timestamp" : "Thu, Sep 01 2016 15:18:08 GMT",
+    "URL" : "http://cmsrc-pixel.cms:17000/rcms/gui/servlet/RunningConfigurationServlet"
+  }, {
+    "ACTION_MSG" : "",
+    "COMPLETION" : "0.0",
+    "ERROR_MSG" : "",
+    "FEDS" : "40&3%",
+    "FMURL" : "http://cmsrc-top.cms:10000/urn:rcms-fm:fullpath=/toppro/PublicGlobal/levelZeroFMwithAutomator,group=levelZeroFM,owner=toppro",
+    "INOUT" : "In",
+    "RUN_KEY" : "",
+    "RUN_KEYS" : "[]",
+    "SID" : "283746",
+    "STATE" : "Configured",
+    "SUBSYS" : "PIXEL_UP",
+    "timestamp" : "Thu, Sep 01 2016 15:18:08 GMT",
+    "URL" : "http://cmsrc-pixeldev.cms:37000/rcms/gui/servlet/RunningConfigurationServlet"
+  }, {
+    "ACTION_MSG" : "Configured",
+    "COMPLETION" : "0.0",
+    "ERROR_MSG" : "",
+    "FEDS" : "50&3%51&3%52&3%53&3%54&3%55&3%56&3%57&3%58&3%60&3%61&3%62&3%63&3%64&3%65&3%66&3%67&3%68&3%69&3%70&3%71&3%72&3%73&3%74&3%75&3%76&3%77&3%78&3%79&3%80&3%81&3%82&3%83&3%84&3%85&3%86&3%87&3%88&3%89&3%90&3%91&3%92&3%93&3%94&3%95&3%96&3%97&3%98&3%99&3%100&3%101&3%102&3%104&3%105&3%106&3%107&3%108&3%109&3%110&3%111&3%112&3%113&3%114&3%115&3%116&3%117&3%118&3%119&3%120&3%121&3%122&3%123&3%124&3%125&3%126&3%127&3%128&3%129&3%130&3%131&3%132&3%133&3%134&3%135&3%136&3%137&3%138&3%139&3%140&3%141&3%142&3%143&3%144&3%145&3%146&3%147&3%148&3%149&3%150&3%151&3%152&3%153&3%154&3%155&3%156&3%157&3%158&3%159&3%160&3%161&3%162&3%163&3%164&3%165&3%166&3%167&3%168&3%169&3%170&3%171&3%172&3%173&3%174&3%175&3%176&3%177&3%178&3%179&3%180&3%181&3%182&3%183&3%184&3%185&3%186&3%187&3%188&3%189&3%190&3%191&3%192&3%193&3%194&3%195&3%196&3%197&3%198&3%199&3%200&3%201&3%202&3%203&3%204&3%205&3%206&3%207&3%208&3%209&3%210&3%211&3%212&3%213&3%214&3%215&3%216&3%217&3%218&3%219&3%220&3%221&3%222&3%223&3%224&3%225&3%226&3%227&3%228&3%229&3%230&3%231&3%232&3%233&3%234&3%235&3%236&3%237&3%238&3%239&3%240&3%241&3%242&3%243&3%244&3%245&3%246&3%247&3%248&3%249&3%250&3%251&3%252&3%253&3%254&3%255&3%256&3%257&3%258&3%259&3%260&3%261&3%262&3%263&3%264&3%265&3%266&3%267&3%268&3%269&3%270&3%271&3%272&3%273&3%274&3%275&3%276&3%277&3%278&3%279&3%280&3%281&3%282&3%283&3%284&3%285&3%286&3%287&3%288&3%289&3%290&3%291&3%292&3%293&3%294&3%295&3%296&3%297&3%298&3%299&3%300&3%301&3%302&3%303&3%304&3%305&3%306&3%307&3%308&3%309&3%310&3%311&3%312&3%313&3%314&3%315&3%316&3%317&3%318&3%319&3%320&3%321&3%322&3%323&3%324&3%325&3%326&3%327&3%328&3%329&3%330&3%331&3%332&3%333&3%334&3%335&3%336&3%337&3%338&3%339&3%340&3%341&3%342&3%343&3%344&3%345&3%346&3%347&3%348&3%349&3%350&3%351&3%352&3%353&3%354&3%355&3%356&3%357&3%358&3%359&3%360&3%361&3%362&3%363&3%364&3%365&3%366&3%367&3%368&3%369&3%370&3%371&3%372&3%373&3%374&3%375&3%376&3%377&3%378&3%379&3%380&3%381&3%382&3%383&3%384&3%385&3%386&3%387&3%389&3%390&3%391&3%392&3%393&3%394&3%395&3%396&3%397&3%398&3%399&3%400&3%401&3%402&3%403&3%404&3%405&3%406&3%407&3%408&3%409&3%410&3%411&3%412&3%413&3%414&3%415&3%416&3%417&3%418&3%419&3%420&3%421&3%422&3%423&3%424&3%425&3%426&3%427&3%428&3%429&3%430&3%431&3%432&3%433&3%434&3%435&3%436&3%437&3%438&3%439&3%440&3%441&3%442&3%443&3%444&3%445&3%446&3%447&3%448&3%449&3%450&3%451&3%452&3%453&3%454&3%455&3%456&3%457&3%458&3%459&3%460&3%461&3%462&3%463&3%464&3%465&3%466&3%467&3%468&3%469&3%470&3%471&3%472&3%473&3%474&3%475&3%476&3%477&3%478&3%479&3%480&3%481&3%482&3%483&3%484&3%485&3%486&3%487&3%488&3%489&3%",
+    "FMURL" : "http://cmsrc-top.cms:10000/urn:rcms-fm:fullpath=/toppro/PublicGlobal/levelZeroFMwithAutomator,group=levelZeroFM,owner=toppro",
+    "INOUT" : "In",
+    "RUN_KEY" : "DEFAULT",
+    "RUN_KEYS" : "[VR, ZS, DEFAULT]",
+    "SID" : "283746",
+    "STATE" : "Configured",
+    "SUBSYS" : "TRACKER",
+    "timestamp" : "Thu, Sep 01 2016 15:18:08 GMT",
+    "URL" : "http://cmsrc-tracker.cms:18000/rcms/gui/servlet/RunningConfigurationServlet"
+  }, {
+    "ACTION_MSG" : "",
+    "COMPLETION" : "0.0",
+    "ERROR_MSG" : "",
+    "FEDS" : "520&0%522&0%523&0%524&0%525&0%528&0%529&0%530&0%531&0%532&0%534&0%535&0%537&0%539&0%540&0%541&0%542&0%545&0%546&0%547&0%548&0%549&0%551&0%553&0%554&0%555&0%556&0%557&0%560&0%561&0%563&0%564&0%565&0%566&0%568&0%570&0%571&0%572&0%573&0%574&0%",
+    "FMURL" : "http://cmsrc-top.cms:10000/urn:rcms-fm:fullpath=/toppro/PublicGlobal/levelZeroFMwithAutomator,group=levelZeroFM,owner=toppro",
+    "INOUT" : "Out",
+    "RUN_KEY" : "N/A",
+    "RUN_KEYS" : "[GR_Phys:HighGain, GR_Phys:HighGain-LTC, GR_Phys:LowGain, GR_Phys:LowGain-LTC, GR_Phys:HighGain-TCDS, GR_Phys:LowGain-TCDS]",
+    "SID" : "283746",
+    "STATE" : "Faulty",
+    "SUBSYS" : "ES",
+    "timestamp" : "Thu, Sep 01 2016 15:18:08 GMT",
+    "URL" : "http://cmsrc-es.cms:21000/rcms/gui/servlet/RunningConfigurationServlet"
+  }, {
+    "ACTION_MSG" : "",
+    "COMPLETION" : "0.0",
+    "ERROR_MSG" : "",
+    "FEDS" : "601&0%602&0%603&0%604&0%605&0%606&0%607&0%608&0%609&0%610&0%611&0%612&0%613&0%614&0%615&0%616&0%617&0%618&0%619&0%620&0%621&0%622&0%623&0%624&0%625&0%626&0%627&0%628&0%629&0%630&0%631&0%632&0%633&0%634&0%635&0%636&0%637&0%638&0%639&0%640&0%641&0%642&0%643&0%644&0%645&0%646&0%647&0%648&0%649&0%650&0%651&0%652&0%653&0%654&0%661&5%662&5%663&5%664&5%",
+    "FMURL" : "http://cmsrc-top.cms:10000/urn:rcms-fm:fullpath=/toppro/PublicGlobal/levelZeroFMwithAutomator,group=levelZeroFM,owner=toppro",
+    "INOUT" : "Out",
+    "RUN_KEY" : "",
+    "RUN_KEYS" : "[:GapFlag, :Cosmics-ZS, :SelectiveReadout, :SelectiveReadout_test, :SelectiveReadout-NoLaser, :FullReadout, :FullReadout-NoLaser, :ZeroSuppression, :ZeroSuppression-NoLaser, :Beam-SR-HighLaser, Beam-NoTrigger, :TPGPatternGenerator, :TCC_Patterns, :TCC_Patterns_LTC, :DelayScan-SR, Cosmics-SR, Cosmic-ZS-test_tcds, Cosmics-SR-NoLaser, ForceZeroSupression, Cosmics-SR-TP, NoFE:TPGPatternGenerator, AlmostEmpty]",
+    "SID" : "283746",
+    "STATE" : "Faulty",
+    "SUBSYS" : "ECAL",
+    "timestamp" : "Thu, Sep 01 2016 15:18:08 GMT",
+    "URL" : "http://cmsrc-ecal.cms:15000/rcms/gui/servlet/RunningConfigurationServlet"
+  }, {
+    "ACTION_MSG" : "... reached the \"Configured\" state in about 0 sec.",
+    "COMPLETION" : "0.0",
+    "ERROR_MSG" : "",
+    "FEDS" : "700&3%701&3%702&3%703&3%704&3%705&3%706&3%707&3%708&3%709&3%710&3%711&3%712&3%713&3%714&3%715&3%716&3%717&3%724&3%725&3%726&3%727&3%728&3%729&3%730&3%731&3%1100&3%1102&3%1104&3%1106&3%1108&3%1110&3%1112&3%1114&3%1116&3%",
+    "FMURL" : "http://cmsrc-top.cms:10000/urn:rcms-fm:fullpath=/toppro/PublicGlobal/levelZeroFMwithAutomator,group=levelZeroFM,owner=toppro",
+    "INOUT" : "In",
+    "RUN_KEY" : "",
+    "RUN_KEYS" : "[]",
+    "SID" : "283746",
+    "STATE" : "Configured",
+    "SUBSYS" : "HCAL",
+    "timestamp" : "Thu, Sep 01 2016 15:18:08 GMT",
+    "URL" : "http://cmsrc-hcal.cms:16000/rcms/gui/servlet/RunningConfigurationServlet"
+  }, {
+    "ACTION_MSG" : "... reached the \"Configured\" state in about 0 sec.",
+    "COMPLETION" : "0.0",
+    "ERROR_MSG" : "",
+    "FEDS" : "1118&3%1120&3%1122&3%1132&3%",
+    "FMURL" : "http://cmsrc-top.cms:10000/urn:rcms-fm:fullpath=/toppro/PublicGlobal/levelZeroFMwithAutomator,group=levelZeroFM,owner=toppro",
+    "INOUT" : "In",
+    "RUN_KEY" : "",
+    "RUN_KEYS" : "[noZS, ZS, test-ZS]",
+    "SID" : "283746",
+    "STATE" : "Configured",
+    "SUBSYS" : "HF",
+    "timestamp" : "Thu, Sep 01 2016 15:18:08 GMT",
+    "URL" : "http://cmsrc-hcal.cms:16000/rcms/gui/servlet/RunningConfigurationServlet"
+  }, {
+    "ACTION_MSG" : "  ",
+    "COMPLETION" : "0.0",
+    "ERROR_MSG" : "",
+    "FEDS" : "770&3%771&3%772&3%773&3%774&3%1390&3%1391&3%1393&3%1394&3%1395&3%",
+    "FMURL" : "http://cmsrc-top.cms:10000/urn:rcms-fm:fullpath=/toppro/PublicGlobal/levelZeroFMwithAutomator,group=levelZeroFM,owner=toppro",
+    "INOUT" : "In",
+    "RUN_KEY" : "",
+    "RUN_KEYS" : "[]",
+    "SID" : "283746",
+    "STATE" : "Configured",
+    "SUBSYS" : "DT",
+    "timestamp" : "Thu, Sep 01 2016 15:18:08 GMT",
+    "URL" : "http://cmsrc-dt.cms:13000/rcms/gui/servlet/RunningConfigurationServlet"
+  }, {
+    "ACTION_MSG" : "",
+    "COMPLETION" : "0.0",
+    "ERROR_MSG" : "",
+    "FEDS" : "760&3%831&3%832&3%833&3%834&3%835&3%836&3%837&3%838&3%839&3%841&3%842&3%843&3%844&3%845&3%846&3%847&3%848&3%849&3%851&3%852&3%853&3%854&3%855&3%856&3%857&3%858&3%859&3%861&3%862&3%863&3%864&3%865&3%866&3%867&3%868&3%869&3%890&7%891&7%892&7%893&7%894&7%895&7%896&7%897&7%898&7%899&7%900&7%901&7%",
+    "FMURL" : "http://cmsrc-top.cms:10000/urn:rcms-fm:fullpath=/toppro/PublicGlobal/levelZeroFMwithAutomator,group=levelZeroFM,owner=toppro",
+    "INOUT" : "In",
+    "RUN_KEY" : "",
+    "RUN_KEYS" : "[]",
+    "SID" : "283746",
+    "STATE" : "Configured",
+    "SUBSYS" : "CSC",
+    "timestamp" : "Thu, Sep 01 2016 15:18:08 GMT",
+    "URL" : "http://cmsrc-csc.cms:12000/rcms/gui/servlet/RunningConfigurationServlet"
+  }, {
+    "ACTION_MSG" : "",
+    "COMPLETION" : "0.0",
+    "ERROR_MSG" : "",
+    "FEDS" : "790&11%791&11%792&11%793&7%",
+    "FMURL" : "http://cmsrc-top.cms:10000/urn:rcms-fm:fullpath=/toppro/PublicGlobal/levelZeroFMwithAutomator,group=levelZeroFM,owner=toppro",
+    "INOUT" : "In",
+    "RUN_KEY" : "",
+    "RUN_KEYS" : "[]",
+    "SID" : "283746",
+    "STATE" : "Configured",
+    "SUBSYS" : "RPC",
+    "timestamp" : "Thu, Sep 01 2016 15:18:08 GMT",
+    "URL" : "http://cmsrc-rpc.cms:14000/rcms/gui/servlet/RunningConfigurationServlet"
+  }, {
+    "ACTION_MSG" : "",
+    "COMPLETION" : "0.0",
+    "ERROR_MSG" : "",
+    "FEDS" : "577&0%578&3%579&3%580&3%581&3%",
+    "FMURL" : "http://cmsrc-top.cms:10000/urn:rcms-fm:fullpath=/toppro/PublicGlobal/levelZeroFMwithAutomator,group=levelZeroFM,owner=toppro",
+    "INOUT" : "In",
+    "RUN_KEY" : "",
+    "RUN_KEYS" : "[]",
+    "SID" : "283746",
+    "STATE" : "Configured",
+    "SUBSYS" : "CTPPS_TOT",
+    "timestamp" : "Thu, Sep 01 2016 15:18:08 GMT",
+    "URL" : "http://cmsrc-totem.cms:28000/rcms/gui/servlet/RunningConfigurationServlet"
+  }, {
+    "ACTION_MSG" : "Tasks completed.",
+    "COMPLETION" : "0.0",
+    "ERROR_MSG" : "",
+    "FEDS" : "1024&3%",
+    "FMURL" : "http://cmsrc-top.cms:10000/urn:rcms-fm:fullpath=/toppro/PublicGlobal/levelZeroFMwithAutomator,group=levelZeroFM,owner=toppro",
+    "INOUT" : "In",
+    "RUN_KEY" : "BxInfoFromDip",
+    "RUN_KEYS" : "[BxInfoFromDip, NoBxInfoFromDip]",
+    "SID" : "283746",
+    "STATE" : "Configured",
+    "SUBSYS" : "TCDS",
+    "timestamp" : "Thu, Sep 01 2016 15:18:08 GMT",
+    "URL" : "http://cmsrc-top.cms:10000/rcms/gui/servlet/RunningConfigurationServlet"
+  }, {
+    "ACTION_MSG" : "Done.",
+    "COMPLETION" : "0.0",
+    "ERROR_MSG" : "",
+    "FEDS" : "1354&3%1356&3%1358&3%1360&3%1376&3%1377&3%1380&3%1381&3%1384&3%1385&3%1402&3%1404&3%",
+    "FMURL" : "http://cmsrc-top.cms:10000/urn:rcms-fm:fullpath=/toppro/PublicGlobal/levelZeroFMwithAutomator,group=levelZeroFM,owner=toppro",
+    "INOUT" : "In",
+    "RUN_KEY" : "Automatic",
+    "RUN_KEYS" : "[Automatic, ExpertMode]",
+    "SID" : "283746",
+    "STATE" : "Configured",
+    "SUBSYS" : "TRG",
+    "timestamp" : "Thu, Sep 01 2016 15:18:08 GMT",
+    "URL" : "http://cmsrc-trigger.cms:19000/rcms/gui/servlet/RunningConfigurationServlet"
+  }, {
+    "ACTION_MSG" : "Configured.",
+    "COMPLETION" : "0.0",
+    "ERROR_MSG" : "",
+    "FEDS" : "735&3%",
+    "FMURL" : "http://cmsrc-top.cms:10000/urn:rcms-fm:fullpath=/toppro/PublicGlobal/levelZeroFMwithAutomator,group=levelZeroFM,owner=toppro",
+    "INOUT" : "In",
+    "RUN_KEY" : "",
+    "RUN_KEYS" : "[]",
+    "SID" : "283746",
+    "STATE" : "Configured",
+    "SUBSYS" : "SCAL",
+    "timestamp" : "Thu, Sep 01 2016 15:18:08 GMT",
+    "URL" : "http://cmsrc-scal.cms:24000/rcms/gui/servlet/RunningConfigurationServlet"
+  }, {
+    "ACTION_MSG" : "",
+    "COMPLETION" : "0.0",
+    "ERROR_MSG" : "",
+    "FEDS" : "",
+    "FMURL" : "http://cmsrc-top.cms:10000/urn:rcms-fm:fullpath=/toppro/PublicGlobal/levelZeroFMwithAutomator,group=levelZeroFM,owner=toppro",
+    "INOUT" : "In",
+    "RUN_KEY" : "TIER0_TRANSFER_ON",
+    "RUN_KEYS" : "[TIER0_TRANSFER_EXPERT, TIER0_TRANSFER_ON, TIER0_TRANSFER_OFF]",
+    "SID" : "283746",
+    "STATE" : "Configured",
+    "SUBSYS" : "DAQ",
+    "timestamp" : "Thu, Sep 01 2016 15:18:08 GMT",
+    "URL" : "http://cmsrc-daq.cms:11000/rcms/gui/servlet/RunningConfigurationServlet"
+  }, {
+    "ACTION_MSG" : "",
+    "COMPLETION" : "0.0",
+    "ERROR_MSG" : "",
+    "FEDS" : "",
+    "FMURL" : "http://cmsrc-top.cms:10000/urn:rcms-fm:fullpath=/toppro/PublicGlobal/levelZeroFMwithAutomator,group=levelZeroFM,owner=toppro",
+    "INOUT" : "In",
+    "RUN_KEY" : "pp_run",
+    "RUN_KEYS" : "[pp_run, pp_run_stage1, cosmic_run, cosmic_run_stage1, hi_run, hpu_run]",
+    "SID" : "283746",
+    "STATE" : "Configured",
+    "SUBSYS" : "DQM",
+    "timestamp" : "Thu, Sep 01 2016 15:18:08 GMT",
+    "URL" : "http://cmsrc-dqm.cms:22000/rcms/gui/servlet/RunningConfigurationServlet"
+  }, {
+    "ACTION_MSG" : "DCS_LHC_FLAGS at 2016-09-01 16:17:13 CEST: LHC_RAMPING:false   ES_HV_ON:N/A   TK_HV_ON:true   PIX_HV_ON:N/A   PHYSICS_DECLARED:false",
+    "COMPLETION" : "0.0",
+    "ERROR_MSG" : "",
+    "FEDS" : "",
+    "FMURL" : "http://cmsrc-top.cms:10000/urn:rcms-fm:fullpath=/toppro/PublicGlobal/levelZeroFMwithAutomator,group=levelZeroFM,owner=toppro",
+    "INOUT" : "In",
+    "RUN_KEY" : "N/A",
+    "RUN_KEYS" : "[]",
+    "SID" : "283746",
+    "STATE" : "Connected",
+    "SUBSYS" : "DCS",
+    "timestamp" : "Thu, Sep 01 2016 15:18:08 GMT",
+    "URL" : "http://cmsrc-top.cms:10000/rcms/gui/servlet/RunningConfigurationServlet"
+  } ],
+  "definitionNode" : [ {
+    "key" : "ACTION_MSG",
+    "type" : "string"
+  }, {
+    "key" : "COMPLETION",
+    "type" : "string"
+  }, {
+    "key" : "ERROR_MSG",
+    "type" : "string"
+  }, {
+    "key" : "FEDS",
+    "type" : "string"
+  }, {
+    "key" : "FMURL",
+    "type" : "string"
+  }, {
+    "key" : "INOUT",
+    "type" : "string"
+  }, {
+    "key" : "RUN_KEY",
+    "type" : "string"
+  }, {
+    "key" : "RUN_KEYS",
+    "type" : "string"
+  }, {
+    "key" : "SID",
+    "type" : "string"
+  }, {
+    "key" : "STATE",
+    "type" : "string"
+  }, {
+    "key" : "SUBSYS",
+    "type" : "string"
+  }, {
+    "key" : "timestamp",
+    "type" : "time"
+  }, {
+    "key" : "URL",
+    "type" : "string"
+  } ],
+  "retrievalDate" : 1472743088565
+}
