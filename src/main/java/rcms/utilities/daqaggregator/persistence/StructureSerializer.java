@@ -40,7 +40,7 @@ import rcms.utilities.daqaggregator.data.mixin.RUMixIn;
 import rcms.utilities.daqaggregator.data.mixin.SubFEDBuilderMixIn;
 import rcms.utilities.daqaggregator.data.mixin.SubSystemMixIn;
 import rcms.utilities.daqaggregator.data.mixin.TTCPartitionMixIn;
-import rcms.utilities.daqaggregator.mappers.Flashlist;
+import rcms.utilities.daqaggregator.datasource.Flashlist;
 
 /**
  * Persists DAQ structure in multiple formats format
@@ -106,6 +106,7 @@ public class StructureSerializer {
 		ObjectInputStream in = null;
 		FileInputStream fileIn = null;
 		try {
+			logger.debug("Deserialize file: " + file.getAbsolutePath());
 			flashlist = mapper.readValue(file, Flashlist.class);
 			return flashlist;
 		} catch (IOException i) {

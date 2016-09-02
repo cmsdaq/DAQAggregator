@@ -1,4 +1,4 @@
-package rcms.utilities.daqaggregator.mappers;
+package rcms.utilities.daqaggregator.datasource;
 
 import org.apache.log4j.Logger;
 
@@ -18,7 +18,7 @@ public enum FlashlistType {
 	FRL_MONITORING("frlMonitoring", true, true, "sessionid"),
 	HOST_INFO("hostInfo", true, false, "sessionid"),
 	LEVEL_ZERO_FM_DYNAMIC("levelZeroFM_dynamic", false, true, "SID"),
-	LEVEL_ZERO_FM_STATIC("levelZeroFM_static", true, true, "SID"),
+	LEVEL_ZERO_FM_STATIC("levelZeroFM_static", false, true, "SID"),
 	LEVEL_ZERO_FM_SUBSYS("levelZeroFM_subsys", false, true, "SID"),
 	JOB_CONTROL("jobcontrol", false, true, "sessionid"),
 	DISK_INFO("diskInfo", true, false, "sessionid"),

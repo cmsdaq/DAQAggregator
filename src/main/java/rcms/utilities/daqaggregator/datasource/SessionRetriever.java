@@ -10,6 +10,9 @@ import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import rcms.utilities.daqaggregator.DAQAggregatorException;
+import rcms.utilities.daqaggregator.DAQAggregatorExceptionCode;
+
 /**
  * Retrieves session information from flashlist LEVEL_ZERO_STATIC
  * 
@@ -55,7 +58,8 @@ public class SessionRetriever {
 		if (flashlist.getFlashlistType() != FlashlistType.LEVEL_ZERO_FM_STATIC)
 			throw new RuntimeException(EXCEPTION_WRONG_FLASHLIST_MESSAGE);
 		if (flashlist.getRowsNode() == null || flashlist.getRowsNode().size() == 0)
-			throw new RuntimeException(EXCEPTION_NO_DATA_MESSAGE);
+			throw new DAQAggregatorException(DAQAggregatorExceptionCode.SessionCannotBeRetrieved,
+					EXCEPTION_NO_DATA_MESSAGE);
 
 		Iterator<JsonNode> rowIterator = flashlist.getRowsNode().iterator();
 		Triple<String, Integer, Long> result = null;
@@ -74,7 +78,7 @@ public class SessionRetriever {
 				int sid = row.get(SID_COLUMN_NAME).asInt();
 				String hwcfgKey = row.get(HWKEY_COLUMN_NAME).asText();
 
-				logger.info(timestamp + ", " + hwcfgKey + ", " + sid + ", " + fmUrl);
+				logger.debug(timestamp + ", " + hwcfgKey + ", " + sid + ", " + fmUrl);
 
 				String dpsetPath = hwcfgKey.split(":")[0];
 				result = Triple.of(dpsetPath, sid, timestamp);
@@ -86,7 +90,7 @@ public class SessionRetriever {
 			throw new RuntimeException(EXCEPTION_MISSING_ROW_MESSAGE);
 		}
 		if (result != null) {
-			logger.info("Result of " + result);
+			logger.debug("Result of " + result);
 		} else {
 			throw new RuntimeException(EXCEPTION_OTHER_PROBLEM_MESSAGE);
 		}
@@ -97,7 +101,7 @@ public class SessionRetriever {
 	private long parseTimestamp(String timestampString) {
 		try {
 			Date date = df2.parse(timestampString);
-			logger.info("Parsed date: " + date + ", from string: " + timestampString);
+			logger.debug("Parsed date: " + date + ", from string: " + timestampString);
 			return date.getTime();
 		} catch (ParseException e) {
 			throw new RuntimeException(EXCEPTION_PARSING_DATE_PROBLEM_MESSAGE);

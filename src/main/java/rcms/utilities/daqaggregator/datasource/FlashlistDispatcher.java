@@ -1,4 +1,4 @@
-package rcms.utilities.daqaggregator.mappers;
+package rcms.utilities.daqaggregator.datasource;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -13,6 +13,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import rcms.utilities.daqaggregator.data.FED;
 import rcms.utilities.daqaggregator.data.RU;
 import rcms.utilities.daqaggregator.data.TTCPartition;
+import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
+import rcms.utilities.daqaggregator.mappers.MappingManager;
+import rcms.utilities.daqaggregator.mappers.MappingReporter;
 import rcms.utilities.daqaggregator.mappers.helper.ContextHelper;
 import rcms.utilities.daqaggregator.mappers.helper.FEDEnableMaskParser;
 import rcms.utilities.daqaggregator.mappers.helper.FMMGeoMatcher;
@@ -49,7 +52,8 @@ public class FlashlistDispatcher {
 			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().busByHostname, "context");
 			break;
 		case FEROL_INPUT_STREAM:
-			dispatchRowsByGeo(flashlist, mappingManager.getObjectMapper().fedsById.values(), new FedFromFerolInputStreamGeoFinder("streamNumber"));
+			dispatchRowsByGeo(flashlist, mappingManager.getObjectMapper().fedsById.values(),
+					new FedFromFerolInputStreamGeoFinder("streamNumber"));
 			break;
 		case FMM_INPUT:
 			dispatchRowsByGeo(flashlist, mappingManager.getObjectMapper().fedsById.values(), new FedInFmmGeoFinder());
@@ -59,19 +63,24 @@ public class FlashlistDispatcher {
 			break;
 		case EVM:
 			if (flashlist.getRowsNode().isArray() && flashlist.getRowsNode().size() > 0) {
+				
 				int runNumber = flashlist.getRowsNode().get(0).get("runNumber").asInt();
 				mappingManager.getObjectMapper().daq.setRunNumber(runNumber);
 				logger.debug("Successfully got runnumber: " + runNumber);
+				
+				for (RU ru : mappingManager.getObjectMapper().rus.values()) {
+					if (ru.isEVM())
+						ru.updateFromFlashlist(flashlist.getFlashlistType(), flashlist.getRowsNode().get(0));
+					// additional check hostname
+
+				}
+				
 			} else {
-				logger.error("runnumber problem " + flashlist.getRowsNode());
+				logger.error("run-number problem while dispatching EVM flashlist, here is EVM flashlist row: "
+						+ flashlist.getRowsNode());
 			}
 
-			for (RU ru : mappingManager.getObjectMapper().rus.values()) {
-				if (ru.isEVM())
-					ru.updateFromFlashlist(flashlist.getFlashlistType(), flashlist.getRowsNode().get(0));
-				// additional check hostname
-
-			}
+			
 			break;
 		case LEVEL_ZERO_FM_STATIC:
 			if (flashlist.getRowsNode().isArray() && flashlist.getRowsNode().size() > 0) {
@@ -82,30 +91,37 @@ public class FlashlistDispatcher {
 				int notFound = 0;
 				int total = 0;
 
-				for (Entry<Integer, FED> fedEntry: mappingManager.getObjectMapper().fedsByExpectedId.entrySet()){
+				for (Entry<Integer, FED> fedEntry : mappingManager.getObjectMapper().fedsByExpectedId.entrySet()) {
 					total++;
-					if (maskedFlagsByFed.containsKey(fedEntry.getKey())){
-						String [] maskingFlags = maskedFlagsByFed.get(fedEntry.getKey()).split("-"); //string from map contains two dash-separated flags as substrings
+					if (maskedFlagsByFed.containsKey(fedEntry.getKey())) {
+						String[] maskingFlags = maskedFlagsByFed.get(fedEntry.getKey()).split("-"); // string
+																									// from
+																									// map
+																									// contains
+																									// two
+																									// dash-separated
+																									// flags
+																									// as
+																									// substrings
 
 						fedEntry.getValue().setFmmMasked(Boolean.parseBoolean(maskingFlags[0]));
 						fedEntry.getValue().setFrlMasked(Boolean.parseBoolean(maskingFlags[1]));
 
-					}else{
+					} else {
 						notFound++;
 					}
 				}
-				logger.debug("Could not find "+notFound+" out of "+total+" FEDs in the FED_ENABLE_MASK and mask flags were not set");
-				logger.debug("Successfully got FED_ENABLE_MASK info for " + (total-notFound)+" FEDs");
-			}else{
+				logger.debug("Could not find " + notFound + " out of " + total
+						+ " FEDs in the FED_ENABLE_MASK and mask flags were not set");
+				logger.debug("Successfully got FED_ENABLE_MASK info for " + (total - notFound) + " FEDs");
+			} else {
 				logger.error("FED_ENABLE_MASK problem " + flashlist.getRowsNode());
 			}
 			break;
 		case JOB_CONTROL:
 			// TODO: dispatch by context (in the future) (multiple context by
 			// hostname)
-			dispatchRowsByHostname(flashlist, mappingManager.
-					getObjectMapper().
-					frlPcByHostname, "hostname");
+			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().frlPcByHostname, "hostname");
 			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().fmmApplicationByHostname, "hostname");
 			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().rusByHostname, "hostname");
 			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().busByHostname, "hostname");
@@ -123,7 +139,7 @@ public class FlashlistDispatcher {
 
 				if (mappingManager.getObjectMapper().subsystemByName.containsKey(subsystemName)) {
 					mappingManager.getObjectMapper().subsystemByName.get(subsystemName)
-					.updateFromFlashlist(flashlist.getFlashlistType(), rowNode);
+							.updateFromFlashlist(flashlist.getFlashlistType(), rowNode);
 				}
 
 			}
@@ -136,12 +152,14 @@ public class FlashlistDispatcher {
 		case FEROL_CONFIGURATION:
 			// TODO: future - use frlpc.context for mapping
 			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().frlPcByHostname, "context");
-			dispatchRowsByGeo(flashlist, mappingManager.getObjectMapper().fedsById.values(), new FedInFrlGeoFinder("io"));
+			dispatchRowsByGeo(flashlist, mappingManager.getObjectMapper().fedsById.values(),
+					new FedInFrlGeoFinder("io"));
 			break;
 		case FRL_MONITORING:
 			// TODO: future - use frlpc.context for mapping
 			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().frlPcByHostname, "context");
-			dispatchRowsByGeo(flashlist, mappingManager.getObjectMapper().fedsById.values(), new FedInFrlGeoFinder("io"));
+			dispatchRowsByGeo(flashlist, mappingManager.getObjectMapper().fedsById.values(),
+					new FedInFrlGeoFinder("io"));
 			break;
 		case FMM_STATUS:
 			dispatchRowsByGeo(flashlist, mappingManager.getObjectMapper().fmms.values(), new FMMGeoMatcher());
@@ -149,31 +167,42 @@ public class FlashlistDispatcher {
 					new TTCPartitionGeoFinder());
 			break;
 		case TCDS_PM_TTS_CHANNEL:
-			
-			//This will only work for CDAQ. Need to figure out how to know what PM (CPM or LPM) is used for a given run, instead of hardcoding
+
+			// This will only work for CDAQ. Need to figure out how to know what
+			// PM (CPM or LPM) is used for a given run, instead of hardcoding
 			String serviceField = "cpm-pri";
 			String typeField = "tts_ici";
-			
-			Map<String, Map <String, Map<Integer, Map<Integer,Map<String,String>>>>> stpiDataFromFlashlist = TCDSFlashlistHelpers.getTreeFromFlashlist(flashlist);
 
-			//. iterate over all ttcpartitions and set tcds_pm_ttsState according to the code in 'value' flash column
-			//.. retrieve this value from map above, specifying pmNr, iciNr info, which are already stored in the ttcpartitions, in field topFMMInfo
-			//.. decode the value from map using rcms.utilities.daqaggregator.mappers.helper.TTSStateDecoder.decodeTCDSTTSState(int tts_value)
-			//.. set ttcpartition.tcds_pm_ttsState
-			for (Entry<Integer, TTCPartition> ttcpEntry : mappingManager.getObjectMapper().ttcPartitions.entrySet()){
-				TTCPartition ttcp = ttcpEntry.getValue(); //ref to ttcp object
-				if (ttcp.getTopFMMInfo().getNullCause()!=null){
-					//topFMM was null for this ttcp and ici info were not filled, therefore there are no keys to get tcds_tts_state from flashlist data
-					//in this case, the nullCause String field of associated FMMInfo is not null and contains more information on why this ttcp's topFMM was null
+			Map<String, Map<String, Map<Integer, Map<Integer, Map<String, String>>>>> stpiDataFromFlashlist = TCDSFlashlistHelpers
+					.getTreeFromFlashlist(flashlist);
+
+			// . iterate over all ttcpartitions and set tcds_pm_ttsState
+			// according to the code in 'value' flash column
+			// .. retrieve this value from map above, specifying pmNr, iciNr
+			// info, which are already stored in the ttcpartitions, in field
+			// topFMMInfo
+			// .. decode the value from map using
+			// rcms.utilities.daqaggregator.mappers.helper.TTSStateDecoder.decodeTCDSTTSState(int
+			// tts_value)
+			// .. set ttcpartition.tcds_pm_ttsState
+			for (Entry<Integer, TTCPartition> ttcpEntry : mappingManager.getObjectMapper().ttcPartitions.entrySet()) {
+				TTCPartition ttcp = ttcpEntry.getValue(); // ref to ttcp object
+				if (ttcp.getTopFMMInfo().getNullCause() != null) {
+					// topFMM was null for this ttcp and ici info were not
+					// filled, therefore there are no keys to get tcds_tts_state
+					// from flashlist data
+					// in this case, the nullCause String field of associated
+					// FMMInfo is not null and contains more information on why
+					// this ttcp's topFMM was null
 					continue;
 				}
-				
-				int stateCode = Integer.parseInt(stpiDataFromFlashlist.get(serviceField).get(typeField).get(ttcp.getTopFMMInfo().getPMNr()).get(ttcp.getTopFMMInfo().getICINr()).get("value"));
-				
+
+				int stateCode = Integer.parseInt(stpiDataFromFlashlist.get(serviceField).get(typeField)
+						.get(ttcp.getTopFMMInfo().getPMNr()).get(ttcp.getTopFMMInfo().getICINr()).get("value"));
+
 				ttcp.setTcds_pm_ttsState(TCDSFlashlistHelpers.decodeTCDSTTSState(stateCode));
 			}
-			
-			
+
 			break;
 		default:
 			break;
@@ -184,7 +213,7 @@ public class FlashlistDispatcher {
 	private void printFlashListTypeInfo(Flashlist flashlist) {
 		com.fasterxml.jackson.databind.ObjectMapper om = new com.fasterxml.jackson.databind.ObjectMapper();
 		try {
-			logger.info("Flashlist schema:  "+om.writeValueAsString(flashlist.getDefinitionNode()));
+			logger.info("Flashlist schema:  " + om.writeValueAsString(flashlist.getDefinitionNode()));
 		} catch (JsonProcessingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

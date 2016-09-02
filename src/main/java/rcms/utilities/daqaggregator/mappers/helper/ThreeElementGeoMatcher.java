@@ -8,7 +8,7 @@ import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import rcms.utilities.daqaggregator.mappers.Flashlist;
+import rcms.utilities.daqaggregator.datasource.Flashlist;
 
 /**
  * FED can be identified by its geolocation which consists of 3 elements:

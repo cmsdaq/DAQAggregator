@@ -1,4 +1,4 @@
-package rcms.utilities.daqaggregator.mappers;
+package rcms.utilities.daqaggregator.datasource;
 
 import java.io.IOException;
 import java.util.Date;
@@ -7,8 +7,6 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.databind.JsonNode;
-
-import rcms.utilities.daqaggregator.Connector;
 
 public class Flashlist {
 
@@ -34,9 +32,12 @@ public class Flashlist {
 	protected Date retrievalDate;
 
 	private static final Logger logger = Logger.getLogger(Flashlist.class);
-	
-	public Flashlist(){
-		
+
+	public Flashlist() {
+	}
+
+	public Flashlist(FlashlistType flashlistType) {
+		this.flashlistType = flashlistType;
 	}
 
 	public Flashlist(String address, String name, int sessionId) {
@@ -76,8 +77,9 @@ public class Flashlist {
 		this.definitionNode = definitionNode;
 	}
 
-	public void initialize() throws IOException {
+	public int initialize(Date date) throws IOException {
 
+		retrievalDate = date;
 		int timeResult;
 		String requestAddress = address + "/retrieveCollection?flash=" + name + "&fmt=json";
 
@@ -89,7 +91,6 @@ public class Flashlist {
 
 		long startTime = System.currentTimeMillis();
 		List<String> result = Connector.get().retrieveLines(requestAddress);
-		retrievalDate = new Date();
 
 		com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
 		JsonNode rootNode = mapper.readValue(result.get(0), JsonNode.class);
@@ -102,6 +103,7 @@ public class Flashlist {
 		if (definitionNode.size() == 0 || rowsNode.size() == 0)
 			logger.warn("Reading " + name + " finished in " + timeResult + "ms, fetched " + rowsNode.size()
 					+ " rows and " + definitionNode.size() + " columns");
+		return timeResult;
 	}
 
 	public FlashlistType getFlashlistType() {
@@ -122,6 +124,5 @@ public class Flashlist {
 	public String getAddress() {
 		return address;
 	}
-	
 
 }

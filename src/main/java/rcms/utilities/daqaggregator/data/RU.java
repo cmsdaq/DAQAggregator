@@ -6,8 +6,8 @@ import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import rcms.utilities.daqaggregator.datasource.FlashlistType;
 import rcms.utilities.daqaggregator.mappers.Derivable;
-import rcms.utilities.daqaggregator.mappers.FlashlistType;
 import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
 
 /**
@@ -321,7 +321,7 @@ public class RU implements FlashlistUpdatable, Derivable {
 	 */
 	@Override
 	public void updateFromFlashlist(FlashlistType flashlistType, JsonNode flashlistRow) {
-
+		
 		/* ignore data from RU flashlist for EVM */
 		if (isEVM && flashlistType == FlashlistType.RU)
 			return;

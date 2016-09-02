@@ -1,4 +1,4 @@
-package rcms.utilities.daqaggregator;
+package rcms.utilities.daqaggregator.datasource;
 
 import java.io.BufferedReader;
 import java.io.IOException;
