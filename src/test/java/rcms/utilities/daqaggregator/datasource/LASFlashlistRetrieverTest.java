@@ -22,7 +22,7 @@ public class LASFlashlistRetrieverTest {
 
 	@BeforeClass
 	public static void prepare() {
-		Application.initialize("DAQAggregator.test.properties");
+		Application.initialize("DAQAggregator.properties");
 
 		ProxyManager.get().startProxy();
 		String mainUrl = Application.get().getProp().get(Application.PROPERTYNAME_SESSION_LASURL_GE).toString();

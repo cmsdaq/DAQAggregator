@@ -45,7 +45,7 @@ public class MonitorManagerTest {
 		SessionRetriever sessionRetriever = new SessionRetriever("toppro", "toppro");
 		HardwareConnector hardwareConnector = new HardwareConnector();
 
-		Application.initialize("DAQAggregator.test.properties");
+		Application.initialize("DAQAggregator.properties");
 		String url = Application.get().getProp().getProperty(Application.PROPERTYNAME_HWCFGDB_DBURL);
 		String host = Application.get().getProp().getProperty(Application.PROPERTYNAME_HWCFGDB_HOST);
 		String port = Application.get().getProp().getProperty(Application.PROPERTYNAME_HWCFGDB_PORT);
