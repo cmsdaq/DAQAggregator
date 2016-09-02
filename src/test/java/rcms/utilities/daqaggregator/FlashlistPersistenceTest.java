@@ -17,8 +17,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
-import rcms.utilities.daqaggregator.mappers.Flashlist;
 import rcms.utilities.daqaggregator.persistence.PersistorManager;
+import rcms.utilities.daqaggregator.datasource.Flashlist;
 import rcms.utilities.daqaggregator.persistence.PersistenceFormat;
 
 public class FlashlistPersistenceTest {

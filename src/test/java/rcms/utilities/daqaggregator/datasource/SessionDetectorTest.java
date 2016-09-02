@@ -3,6 +3,7 @@ package rcms.utilities.daqaggregator.datasource;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.Assert;
@@ -93,8 +94,13 @@ public class SessionDetectorTest {
 		}
 
 		@Override
-		public Set<Flashlist> retrieveAllFlashlists() {
+		public Map<FlashlistType, Flashlist> retrieveAllFlashlists() {
 			return null;
+		}
+
+		@Override
+		public void retrieveAvailableFlashlists(int sessionId) {
+
 		}
 
 	}
