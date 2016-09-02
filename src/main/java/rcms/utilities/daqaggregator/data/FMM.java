@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import rcms.utilities.daqaggregator.mappers.FlashlistType;
+import rcms.utilities.daqaggregator.datasource.FlashlistType;
 import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
 
 /**

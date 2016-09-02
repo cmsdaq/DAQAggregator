@@ -7,7 +7,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import rcms.utilities.daqaggregator.mappers.Flashlist;
+import rcms.utilities.daqaggregator.datasource.Flashlist;
 
 public class TCDSFlashlistHelpers {
 

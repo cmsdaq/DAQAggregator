@@ -8,7 +8,7 @@ import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import rcms.utilities.daqaggregator.mappers.Flashlist;
+import rcms.utilities.daqaggregator.datasource.Flashlist;
 
 /**
  * Some objects in DAQ snapshot structure can be identified by 2 elements

@@ -2,6 +2,9 @@ package rcms.utilities.daqaggregator.mappers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import rcms.utilities.daqaggregator.datasource.FlashlistDispatcher;
+import rcms.utilities.daqaggregator.datasource.FlashlistType;
+
 public interface FlashlistUpdatable {
 
 	/**

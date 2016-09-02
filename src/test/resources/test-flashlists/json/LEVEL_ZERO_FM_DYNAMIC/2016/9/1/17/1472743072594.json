@@ -1,0 +1,198 @@
+{
+  "address" : "http://pc-c2e11-29-01.cms:9941/urn:xdaq-application:service=xmaslas2g",
+  "name" : "urn:xdaq-flashlist:levelZeroFM_dynamic",
+  "sessionIdColumnName" : "SID",
+  "flashlistType" : "LEVEL_ZERO_FM_DYNAMIC",
+  "rowsNode" : [ {
+    "CLOCK_SOURCE" : "LHC",
+    "DCS_FLAG_ES_HV_ON" : "N/A",
+    "DCS_FLAG_LHC_RAMPING" : "false",
+    "DCS_FLAG_PHYSICS_DECLARED" : "false",
+    "DCS_FLAG_PIX_HV_ON" : "N/A",
+    "DCS_FLAG_TK_HV_ON" : "true",
+    "DCS_PARTITION_STATUS_BPIX" : "ON",
+    "DCS_PARTITION_STATUS_CSC+" : "ON",
+    "DCS_PARTITION_STATUS_CSC-" : "ON",
+    "DCS_PARTITION_STATUS_DT+" : "N/A",
+    "DCS_PARTITION_STATUS_DT-" : "N/A",
+    "DCS_PARTITION_STATUS_DT0" : "STANDBY",
+    "DCS_PARTITION_STATUS_EB+" : "LV_ON_HV_OFF",
+    "DCS_PARTITION_STATUS_EB-" : "LV_ON_HV_OFF",
+    "DCS_PARTITION_STATUS_EE+" : "LV_ON_HV_OFF",
+    "DCS_PARTITION_STATUS_EE-" : "LV_ON_HV_OFF",
+    "DCS_PARTITION_STATUS_ES+" : "STANDBY",
+    "DCS_PARTITION_STATUS_ES-" : "STANDBY",
+    "DCS_PARTITION_STATUS_FPIX" : "ON",
+    "DCS_PARTITION_STATUS_HEHBa" : "STANDBY",
+    "DCS_PARTITION_STATUS_HEHBb" : "STANDBY",
+    "DCS_PARTITION_STATUS_HEHBc" : "STANDBY",
+    "DCS_PARTITION_STATUS_HF" : "ON",
+    "DCS_PARTITION_STATUS_HO" : "ON",
+    "DCS_PARTITION_STATUS_RPC" : "STANDBY",
+    "DCS_PARTITION_STATUS_TEC+" : "ON",
+    "DCS_PARTITION_STATUS_TEC-" : "ON",
+    "DCS_PARTITION_STATUS_TIBTID" : "ON",
+    "DCS_PARTITION_STATUS_TOB" : "ON",
+    "FMURL" : "http://cmsrc-top.cms:10000/urn:rcms-fm:fullpath=/toppro/PublicGlobal/levelZeroFMwithAutomator,group=levelZeroFM,owner=toppro",
+    "HFLUMI_DAQ_STATE" : "deprecated",
+    "L1_HLT_TRIGGER_MODE" : "collisions2016HighParkedZeroBias",
+    "L1_HLT_TRIGGER_MODE_ID" : "l1_hlt_collisions2016HighParkedZeroBias/v1",
+    "L1_KEY" : "collisions2016_TSC/v132",
+    "LHC_BEAM_MODE" : "STABLE BEAMS",
+    "LHC_CLOCK_STABLE" : "true",
+    "LHC_MACHINE_MODE" : "PROTON PHYSICS",
+    "POSTFORCE_DCS_FLAG_ES_HV_ON" : "N/A",
+    "POSTFORCE_DCS_FLAG_LHC_RAMPING" : "false",
+    "POSTFORCE_DCS_FLAG_PHYSICS_DECLARED" : "false",
+    "POSTFORCE_DCS_FLAG_PIX_HV_ON" : "N/A",
+    "POSTFORCE_DCS_FLAG_TK_HV_ON" : "true",
+    "RUN_NUMBER" : "279862",
+    "SID" : "283746",
+    "STATE" : "Configured",
+    "timestamp" : "Thu, Sep 01 2016 15:17:57 GMT",
+    "TTC_MI_KEY" : "deprecated"
+  } ],
+  "definitionNode" : [ {
+    "key" : "CLOCK_SOURCE",
+    "type" : "string"
+  }, {
+    "key" : "DCS_FLAG_ES_HV_ON",
+    "type" : "string"
+  }, {
+    "key" : "DCS_FLAG_LHC_RAMPING",
+    "type" : "string"
+  }, {
+    "key" : "DCS_FLAG_PHYSICS_DECLARED",
+    "type" : "string"
+  }, {
+    "key" : "DCS_FLAG_PIX_HV_ON",
+    "type" : "string"
+  }, {
+    "key" : "DCS_FLAG_TK_HV_ON",
+    "type" : "string"
+  }, {
+    "key" : "DCS_PARTITION_STATUS_BPIX",
+    "type" : "string"
+  }, {
+    "key" : "DCS_PARTITION_STATUS_CSC+",
+    "type" : "string"
+  }, {
+    "key" : "DCS_PARTITION_STATUS_CSC-",
+    "type" : "string"
+  }, {
+    "key" : "DCS_PARTITION_STATUS_DT+",
+    "type" : "string"
+  }, {
+    "key" : "DCS_PARTITION_STATUS_DT-",
+    "type" : "string"
+  }, {
+    "key" : "DCS_PARTITION_STATUS_DT0",
+    "type" : "string"
+  }, {
+    "key" : "DCS_PARTITION_STATUS_EB+",
+    "type" : "string"
+  }, {
+    "key" : "DCS_PARTITION_STATUS_EB-",
+    "type" : "string"
+  }, {
+    "key" : "DCS_PARTITION_STATUS_EE+",
+    "type" : "string"
+  }, {
+    "key" : "DCS_PARTITION_STATUS_EE-",
+    "type" : "string"
+  }, {
+    "key" : "DCS_PARTITION_STATUS_ES+",
+    "type" : "string"
+  }, {
+    "key" : "DCS_PARTITION_STATUS_ES-",
+    "type" : "string"
+  }, {
+    "key" : "DCS_PARTITION_STATUS_FPIX",
+    "type" : "string"
+  }, {
+    "key" : "DCS_PARTITION_STATUS_HEHBa",
+    "type" : "string"
+  }, {
+    "key" : "DCS_PARTITION_STATUS_HEHBb",
+    "type" : "string"
+  }, {
+    "key" : "DCS_PARTITION_STATUS_HEHBc",
+    "type" : "string"
+  }, {
+    "key" : "DCS_PARTITION_STATUS_HF",
+    "type" : "string"
+  }, {
+    "key" : "DCS_PARTITION_STATUS_HO",
+    "type" : "string"
+  }, {
+    "key" : "DCS_PARTITION_STATUS_RPC",
+    "type" : "string"
+  }, {
+    "key" : "DCS_PARTITION_STATUS_TEC+",
+    "type" : "string"
+  }, {
+    "key" : "DCS_PARTITION_STATUS_TEC-",
+    "type" : "string"
+  }, {
+    "key" : "DCS_PARTITION_STATUS_TIBTID",
+    "type" : "string"
+  }, {
+    "key" : "DCS_PARTITION_STATUS_TOB",
+    "type" : "string"
+  }, {
+    "key" : "FMURL",
+    "type" : "string"
+  }, {
+    "key" : "HFLUMI_DAQ_STATE",
+    "type" : "string"
+  }, {
+    "key" : "L1_HLT_TRIGGER_MODE",
+    "type" : "string"
+  }, {
+    "key" : "L1_HLT_TRIGGER_MODE_ID",
+    "type" : "string"
+  }, {
+    "key" : "L1_KEY",
+    "type" : "string"
+  }, {
+    "key" : "LHC_BEAM_MODE",
+    "type" : "string"
+  }, {
+    "key" : "LHC_CLOCK_STABLE",
+    "type" : "string"
+  }, {
+    "key" : "LHC_MACHINE_MODE",
+    "type" : "string"
+  }, {
+    "key" : "POSTFORCE_DCS_FLAG_ES_HV_ON",
+    "type" : "string"
+  }, {
+    "key" : "POSTFORCE_DCS_FLAG_LHC_RAMPING",
+    "type" : "string"
+  }, {
+    "key" : "POSTFORCE_DCS_FLAG_PHYSICS_DECLARED",
+    "type" : "string"
+  }, {
+    "key" : "POSTFORCE_DCS_FLAG_PIX_HV_ON",
+    "type" : "string"
+  }, {
+    "key" : "POSTFORCE_DCS_FLAG_TK_HV_ON",
+    "type" : "string"
+  }, {
+    "key" : "RUN_NUMBER",
+    "type" : "string"
+  }, {
+    "key" : "SID",
+    "type" : "string"
+  }, {
+    "key" : "STATE",
+    "type" : "string"
+  }, {
+    "key" : "timestamp",
+    "type" : "time"
+  }, {
+    "key" : "TTC_MI_KEY",
+    "type" : "string"
+  } ],
+  "retrievalDate" : 1472743072594
+}

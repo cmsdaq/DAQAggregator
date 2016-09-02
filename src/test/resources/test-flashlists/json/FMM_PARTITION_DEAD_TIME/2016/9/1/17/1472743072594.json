@@ -1,0 +1,39 @@
+{
+  "address" : "http://pc-c2e11-29-01.cms:9942/urn:xdaq-application:service=xmaslas2g",
+  "name" : "urn:xdaq-flashlist:FMMPartitionDeadTime",
+  "sessionIdColumnName" : "",
+  "flashlistType" : "FMM_PARTITION_DEAD_TIME",
+  "rowsNode" : [ ],
+  "definitionNode" : [ {
+    "key" : "deltaT",
+    "type" : "unsigned int 64"
+  }, {
+    "key" : "integralTimeBusy",
+    "type" : "unsigned int 64"
+  }, {
+    "key" : "integralTimeError",
+    "type" : "unsigned int 64"
+  }, {
+    "key" : "integralTimeOOS",
+    "type" : "unsigned int 64"
+  }, {
+    "key" : "integralTimeOther",
+    "type" : "unsigned int 64"
+  }, {
+    "key" : "integralTimeWarning",
+    "type" : "unsigned int 64"
+  }, {
+    "key" : "partitionNumber",
+    "type" : "int"
+  }, {
+    "key" : "runNumber",
+    "type" : "unsigned int 32"
+  }, {
+    "key" : "timestamp",
+    "type" : "time"
+  }, {
+    "key" : "timeTag",
+    "type" : "unsigned int 64"
+  } ],
+  "retrievalDate" : 1472743072594
+}
