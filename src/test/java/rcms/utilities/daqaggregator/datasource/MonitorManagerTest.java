@@ -16,17 +16,31 @@ import rcms.utilities.hwcfg.HardwareConfigurationException;
 import rcms.utilities.hwcfg.InvalidNodeTypeException;
 import rcms.utilities.hwcfg.PathNotFoundException;
 
+/**
+ * This test ensures that {@link MonitorManager#getSystemSnapshot()} method
+ * returns correct results. Tests if returned triple is correct:
+ * <ul>
+ * <li>briefly tests DAQ snapshot</li>
+ * <li>asserts date of snapshot update</li>
+ * </ul>
+ * 
+ * @throws HardwareConfigurationException
+ * @throws PathNotFoundException
+ * @throws InvalidNodeTypeException
+ * 
+ * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
+ */
 public class MonitorManagerTest {
 
 	private static MonitorManager monitorManager;
 
-	private static final String TEST_FLASHLISTS_DIR = "src/test/resources/test-flashlists/";
+	private static final String TEST_FLASHLISTS_DIR = "src/test/resources/test-flashlists/json/";
 
 	@BeforeClass
 	public static void initialize() throws IOException, DBConnectorException, HardwareConfigurationException {
 
 		FileFlashlistRetriever flashlistRetriever = new FileFlashlistRetriever(TEST_FLASHLISTS_DIR,
-				PersistenceFormat.SMILE);
+				PersistenceFormat.JSON);
 		flashlistRetriever.prepare();
 		SessionRetriever sessionRetriever = new SessionRetriever("toppro", "toppro");
 		HardwareConnector hardwareConnector = new HardwareConnector();
@@ -47,17 +61,24 @@ public class MonitorManagerTest {
 
 		Triple<DAQ, Collection<Flashlist>, Boolean> snapshot1 = monitorManager.getSystemSnapshot();
 		Assert.assertTrue(snapshot1.getRight());
-		testSnapshot(snapshot1.getLeft(), 1472630406999L, 0);
+		testSnapshot(snapshot1.getLeft(), 1472743072594L, 0);
 
 		Triple<DAQ, Collection<Flashlist>, Boolean> snapshot2 = monitorManager.getSystemSnapshot();
 		Assert.assertFalse(snapshot2.getRight());
-		testSnapshot(snapshot2.getLeft(), 1472630415772L, 0);
+		testSnapshot(snapshot2.getLeft(), 1472743080834L, 0);
 
 		Triple<DAQ, Collection<Flashlist>, Boolean> snapshot3 = monitorManager.getSystemSnapshot();
 		Assert.assertFalse(snapshot3.getRight());
-		testSnapshot(snapshot3.getLeft(), 1472630424552L, 0);
+		testSnapshot(snapshot3.getLeft(), 1472743088565L, 0);
 	}
 
+	/**
+	 * General method for asserting DAQ snapshot
+	 * 
+	 * @param snapshot
+	 * @param expectedTime
+	 * @param expectedEvents
+	 */
 	private void testSnapshot(DAQ snapshot, long expectedTime, int expectedEvents) {
 		Assert.assertNotNull(snapshot);
 		Assert.assertEquals(expectedTime, snapshot.getLastUpdate());

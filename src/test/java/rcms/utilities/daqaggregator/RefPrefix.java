@@ -1,3 +1,4 @@
+package rcms.utilities.daqaggregator;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -9,6 +10,14 @@ import rcms.utilities.daqaggregator.data.DAQ;
 import rcms.utilities.daqaggregator.persistence.PersistenceFormat;
 import rcms.utilities.daqaggregator.persistence.StructureSerializer;
 
+/**
+ * 
+ * TODO: this test will not run automatically
+ * 
+ * TODO: avoid absolute path since it will not work on all machines
+ * 
+ * @author Michail Vougioukas (michail.vougioukas@cern.ch)
+ */
 public class RefPrefix {
 
 	public static void main(String[] args) {
@@ -20,8 +29,7 @@ public class RefPrefix {
 			File file = new File("/afs/cern.ch/user/m/mvougiou/Desktop/tmp/snapshots/");
 
 			FileOutputStream fos = new FileOutputStream(file);
-			serializer.serialize(daq, fos ,
-					PersistenceFormat.JSONREFPREFIXED);
+			serializer.serialize(daq, fos, PersistenceFormat.JSONREFPREFIXED);
 		} catch (JsonGenerationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
