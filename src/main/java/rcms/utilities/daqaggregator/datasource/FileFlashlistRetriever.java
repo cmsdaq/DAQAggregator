@@ -11,8 +11,8 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import rcms.utilities.daqaggregator.DAQAggregatorException;
-import rcms.utilities.daqaggregator.DAQAggregatorExceptionCode;
+import rcms.utilities.daqaggregator.DAQException;
+import rcms.utilities.daqaggregator.DAQExceptionCode;
 import rcms.utilities.daqaggregator.persistence.PersistenceExplorer;
 import rcms.utilities.daqaggregator.persistence.PersistenceFormat;
 import rcms.utilities.daqaggregator.persistence.StructureSerializer;
@@ -118,7 +118,7 @@ public class FileFlashlistRetriever implements FlashlistRetriever {
 	@Override
 	public Flashlist retrieveFlashlist(FlashlistType flashlistType) {
 		if (exploredFlashlists.get(flashlistType).size() <= i)
-			throw new DAQAggregatorException(DAQAggregatorExceptionCode.NoMoreFlashlistSourceFiles,
+			throw new DAQException(DAQExceptionCode.NoMoreFlashlistSourceFiles,
 					"Cannot retrieve flashlist, all flashlist source files has been processed");
 		File flashistFile = exploredFlashlists.get(flashlistType).get(i);
 		Flashlist flashlist = structureSerialzier.deserializeFlashlist(flashistFile, flashlistFormat);

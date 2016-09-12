@@ -5,8 +5,8 @@ import java.util.Collection;
 import org.apache.commons.lang3.tuple.Triple;
 import org.apache.log4j.Logger;
 
-import rcms.utilities.daqaggregator.DAQAggregatorException;
-import rcms.utilities.daqaggregator.DAQAggregatorExceptionCode;
+import rcms.utilities.daqaggregator.DAQException;
+import rcms.utilities.daqaggregator.DAQExceptionCode;
 import rcms.utilities.daqaggregator.data.DAQ;
 import rcms.utilities.daqaggregator.mappers.MappingManager;
 import rcms.utilities.daqaggregator.mappers.PostProcessor;
@@ -42,42 +42,32 @@ public class MonitorManager {
 	public Triple<DAQ, Collection<Flashlist>, Boolean> getSystemSnapshot()
 			throws HardwareConfigurationException, PathNotFoundException, InvalidNodeTypeException {
 
-		try {
-			boolean newSession = sessionDetector.detectNewSession();
+		boolean newSession = sessionDetector.detectNewSession();
 
-			if (newSession) {
-				logger.info("Loading hardware for new session");
-				daq = rebuildDaqModel(sessionDetector.getResult());
+		if (newSession) {
+			logger.info("Loading hardware for new session");
+			daq = rebuildDaqModel(sessionDetector.getResult());
 
-				flashlistRetriever.retrieveAvailableFlashlists(sessionDetector.getResult().getMiddle());
-			}
-
-			Collection<Flashlist> flashlists = flashlistRetriever.retrieveAllFlashlists().values();
-			flashlistManager.mapFlashlists(flashlists);
-
-			long lastUpdate = 0L;
-			for (Flashlist flashlist : flashlists) {
-				// why null here?
-				logger.debug(flashlist.getRetrievalDate() + ", " + flashlist.getFlashlistType());
-				if (flashlist.getRetrievalDate() != null && lastUpdate < flashlist.getRetrievalDate().getTime()) {
-					lastUpdate = flashlist.getRetrievalDate().getTime();
-				}
-			}
-
-			daq.setLastUpdate(lastUpdate);
-			// postprocess daq (derived values, summary classes)
-			PostProcessor postProcessor = new PostProcessor(daq);
-			postProcessor.postProcess();
-			return Triple.of(daq, flashlists, newSession);
-
-		} catch (DAQAggregatorException e) {
-			if (e.getCode() == DAQAggregatorExceptionCode.SessionCannotBeRetrieved) {
-				logger.info("session cannot be retrieved temporarly");
-				flashlistRetriever.retrieveAllFlashlists();
-			} else
-				throw e;
-			return null;
+			flashlistRetriever.retrieveAvailableFlashlists(sessionDetector.getResult().getMiddle());
 		}
+
+		Collection<Flashlist> flashlists = flashlistRetriever.retrieveAllFlashlists().values();
+		flashlistManager.mapFlashlists(flashlists);
+
+		long lastUpdate = 0L;
+		for (Flashlist flashlist : flashlists) {
+			// why null here?
+			logger.debug(flashlist.getRetrievalDate() + ", " + flashlist.getFlashlistType());
+			if (flashlist.getRetrievalDate() != null && lastUpdate < flashlist.getRetrievalDate().getTime()) {
+				lastUpdate = flashlist.getRetrievalDate().getTime();
+			}
+		}
+
+		daq.setLastUpdate(lastUpdate);
+		// postprocess daq (derived values, summary classes)
+		PostProcessor postProcessor = new PostProcessor(daq);
+		postProcessor.postProcess();
+		return Triple.of(daq, flashlists, newSession);
 
 	}
 

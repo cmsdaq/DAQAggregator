@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
@@ -14,19 +13,16 @@ import rcms.common.db.DBConnectorException;
 import rcms.utilities.daqaggregator.data.DAQ;
 import rcms.utilities.daqaggregator.datasource.FileFlashlistRetriever;
 import rcms.utilities.daqaggregator.datasource.Flashlist;
-import rcms.utilities.daqaggregator.datasource.FlashlistManager;
 import rcms.utilities.daqaggregator.datasource.FlashlistRetriever;
 import rcms.utilities.daqaggregator.datasource.HardwareConnector;
 import rcms.utilities.daqaggregator.datasource.LASFlashlistRetriever;
 import rcms.utilities.daqaggregator.datasource.MonitorManager;
 import rcms.utilities.daqaggregator.datasource.SessionRetriever;
-import rcms.utilities.daqaggregator.mappers.MappingManager;
 import rcms.utilities.daqaggregator.persistence.PersistenceFormat;
 import rcms.utilities.daqaggregator.persistence.PersistorManager;
 import rcms.utilities.hwcfg.HardwareConfigurationException;
 import rcms.utilities.hwcfg.InvalidNodeTypeException;
 import rcms.utilities.hwcfg.PathNotFoundException;
-import rcms.utilities.hwcfg.dp.DAQPartition;
 
 public class DAQAggregator {
 
@@ -72,8 +68,8 @@ public class DAQAggregator {
 							logger.info("Unsuccessful iteration, already for " + problems + "time(s)");
 						}
 					}
-				} catch (DAQAggregatorException e) {
-					if (e.getCode() == DAQAggregatorExceptionCode.NoMoreFlashlistSourceFiles)
+				} catch (DAQException e) {
+					if (e.getCode() == DAQExceptionCode.NoMoreFlashlistSourceFiles)
 						logger.info("All flashlist files processed");
 					else
 						throw e;
@@ -85,14 +81,23 @@ public class DAQAggregator {
 				while (true) {
 					try {
 						monitorAndPersist(monitorManager, persistenceManager, persistMode);
-					} catch (PathNotFoundException | InvalidNodeTypeException e) {
-						logger.error("Problem in RT loop");
-						logger.info("Going to sleep for 30 seconds before trying again...\n");
+					} catch (DAQException e) {
+						logger.error(e.getMessage());
+						logger.info("Going to sleep for 10 seconds before trying again...");
 						try {
-							Thread.sleep(30000);
+							Thread.sleep(10000);
 						} catch (InterruptedException e1) {
+							e1.printStackTrace();
 						}
+					} catch (Exception e) {
+						logger.fatal("Fatal problem in RT loop, unknown problem, going to sleep for 2 minutes");
 						e.printStackTrace();
+
+						try {
+							Thread.sleep(120000);
+						} catch (InterruptedException e1) {
+							e1.printStackTrace();
+						}
 					}
 				}
 			}
