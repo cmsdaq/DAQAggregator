@@ -1,6 +1,6 @@
 package rcms.utilities.daqaggregator;
 
-public enum DAQAggregatorExceptionCode {
+public enum DAQExceptionCode {
 
 	/* General errors */
 	SessionCannotBeRetrieved(101, "Cannot retrieve session"),
@@ -12,7 +12,7 @@ public enum DAQAggregatorExceptionCode {
 
 	/* Persistence errors */
 
-	DAQAggregatorExceptionCode(int code, String name) {
+	DAQExceptionCode(int code, String name) {
 		this.code = code;
 		this.name = name;
 	}

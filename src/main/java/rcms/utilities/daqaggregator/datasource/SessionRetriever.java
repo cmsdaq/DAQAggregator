@@ -10,8 +10,8 @@ import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import rcms.utilities.daqaggregator.DAQAggregatorException;
-import rcms.utilities.daqaggregator.DAQAggregatorExceptionCode;
+import rcms.utilities.daqaggregator.DAQException;
+import rcms.utilities.daqaggregator.DAQExceptionCode;
 
 /**
  * Retrieves session information from flashlist LEVEL_ZERO_STATIC
@@ -32,7 +32,7 @@ public class SessionRetriever {
 	private static final SimpleDateFormat df2 = new SimpleDateFormat("EEE, MMM dd yyyy HH:mm:ss Z");
 	private static final Logger logger = Logger.getLogger(SessionRetriever.class);
 
-	protected static final String EXCEPTION_MISSING_ROW_MESSAGE = "Could not found appropriate row in flashist to determine session";
+	protected static final String EXCEPTION_MISSING_ROW_MESSAGE = "Could not find the appropriate row in flashist LEVEL_ZERO_STATIC to determine session";
 	protected static final String EXCEPTION_OTHER_PROBLEM_MESSAGE = "Problem detecting the session";
 	protected static final String EXCEPTION_PARSING_DATE_PROBLEM_MESSAGE = "Could not parse timestamp from flashlist data";
 	protected static final String EXCEPTION_NO_DATA_MESSAGE = "Flashlist has no data";
@@ -58,8 +58,7 @@ public class SessionRetriever {
 		if (flashlist.getFlashlistType() != FlashlistType.LEVEL_ZERO_FM_STATIC)
 			throw new RuntimeException(EXCEPTION_WRONG_FLASHLIST_MESSAGE);
 		if (flashlist.getRowsNode() == null || flashlist.getRowsNode().size() == 0)
-			throw new DAQAggregatorException(DAQAggregatorExceptionCode.SessionCannotBeRetrieved,
-					EXCEPTION_NO_DATA_MESSAGE);
+			throw new DAQException(DAQExceptionCode.SessionCannotBeRetrieved, EXCEPTION_NO_DATA_MESSAGE);
 
 		Iterator<JsonNode> rowIterator = flashlist.getRowsNode().iterator();
 		Triple<String, Integer, Long> result = null;
@@ -87,7 +86,7 @@ public class SessionRetriever {
 		}
 
 		if (!foundRowSatisfyingFilters) {
-			throw new RuntimeException(EXCEPTION_MISSING_ROW_MESSAGE);
+			throw new DAQException(DAQExceptionCode.SessionCannotBeRetrieved, EXCEPTION_MISSING_ROW_MESSAGE);
 		}
 		if (result != null) {
 			logger.debug("Result of " + result);
