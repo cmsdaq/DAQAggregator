@@ -12,6 +12,14 @@ import org.junit.Test;
 import rcms.utilities.daqaggregator.Application;
 import rcms.utilities.daqaggregator.ProxyManager;
 
+/**
+ * This test will not work when there is data available in LAS flashlist
+ * 
+ * @TODO: make it independent on flashlist availability
+ * 
+ * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
+ *
+ */
 public class LASFlashlistRetrieverTest {
 
 	private static String filter1;
