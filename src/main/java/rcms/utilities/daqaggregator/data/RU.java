@@ -386,7 +386,6 @@ public class RU implements FlashlistUpdatable, Derivable {
 				this.allocateRate = flashlistRow.get("allocateRate").asInt();
 				this.allocateRetryRate = flashlistRow.get("allocateRate").asDouble();
 			}
-
 		}
 	}
 

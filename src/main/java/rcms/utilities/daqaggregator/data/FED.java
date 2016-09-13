@@ -1,11 +1,17 @@
 package rcms.utilities.daqaggregator.data;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
 
+import rcms.utilities.daqaggregator.DAQException;
+import rcms.utilities.daqaggregator.DAQExceptionCode;
+import rcms.utilities.daqaggregator.data.helper.BackpressureConverter;
 import rcms.utilities.daqaggregator.datasource.FlashlistType;
 import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
 
@@ -38,7 +44,7 @@ public class FED implements FlashlistUpdatable {
 	private int fmmIO;
 
 	private int srcIdExpected;
-	
+
 	/** pseudofeds */
 	private List<FED> dependentFeds = new ArrayList<FED>();
 
@@ -79,11 +85,11 @@ public class FED implements FlashlistUpdatable {
 	private int ruFedOutOfSync;
 
 	private boolean ruFedWithoutFragments;
-	
+
 	private double frl_AccSlinkFullSec;
 
 	@JsonIgnore
-	private String timestamp;
+	private BackpressureConverter converter = new BackpressureConverter();
 
 	/**
 	 * Available columns in flashlist FMM_INPUT:
@@ -160,55 +166,48 @@ public class FED implements FlashlistUpdatable {
 			this.percentWarning = (float) (flashlistRow.get("fractionWarning").asDouble() * 100);
 			this.percentBusy = (float) (flashlistRow.get("fractionBusy").asDouble() * 100);
 			this.ttsState = flashlistRow.get("inputState").asText();
-			//this.fmmMasked = !flashlistRow.get("isActive").asBoolean(); //covered
+			// this.fmmMasked = !flashlistRow.get("isActive").asBoolean();
+			// //covered
 
 		} else if (flashlistType == FlashlistType.FEROL_INPUT_STREAM) {
-			
-			if (flashlistRow.get("WrongFEDIdDetected").asInt() == 0){
-				//srcIdExpected already filled at mapping from corresponding hwfed
+
+			if (flashlistRow.get("WrongFEDIdDetected").asInt() == 0) {
+				// srcIdExpected already filled at mapping from corresponding
+				// hwfed
 				this.srcIdReceived = this.srcIdExpected;
-			}else{
+			} else {
 				this.srcIdReceived = flashlistRow.get("WrongFEDId").asInt();
 			}
-			
+
 			this.numSCRCerrors = flashlistRow.get("LinkCRCError").asInt();
 			this.numFCRCerrors = flashlistRow.get("FEDCRCError").asInt();
 			this.numTriggers = flashlistRow.get("TriggerNumber").asInt();
 			this.eventCounter = flashlistRow.get("EventCounter").asLong();
-			
+
 			/*
-			 * converting accumulated backpressure from flashlist - subtract
-			 * last from current based on timestamp
+			 * converting accumulated backpressure from flashlist
 			 */
-			if (!flashlistRow.get("timestamp").asText().equals(timestamp)) {
-				this.percentBackpressure = (float) flashlistRow.get("AccBackpressureSecond").asDouble()
-						- percentBackpressure;
-			}
-			/*
-			 * timestamp updated as last - thus can be used as last updated for
-			 * this flashlist (calculating backpresusure from accumulated
-			 * backpressure)
-			 */
-			this.timestamp = flashlistRow.get("timestamp").asText();
+			this.percentBackpressure = converter.calculatePercent(flashlistRow.get("AccBackpressureSecond").asDouble(),
+					flashlistRow.get("timestamp").asText());
 
 		} else if (flashlistType == FlashlistType.FEROL_CONFIGURATION) {
-			
-			/*
-			if (this.frlIO == 0)
-				this.frlMasked = !flashlistRow.get("enableStream0").asBoolean();
 
-			else if (this.frlIO == 1)
-				this.frlMasked = !flashlistRow.get("enableStream1").asBoolean();
-				*/ //covered
+			/*
+			 * if (this.frlIO == 0) this.frlMasked =
+			 * !flashlistRow.get("enableStream0").asBoolean();
+			 * 
+			 * else if (this.frlIO == 1) this.frlMasked =
+			 * !flashlistRow.get("enableStream1").asBoolean();
+			 */ // covered
 		} else if (flashlistType == FlashlistType.FRL_MONITORING) {
-			
+
 			if (this.frlIO == 0)
 				this.frl_AccSlinkFullSec = flashlistRow.get("AccSlinkFullSec_L0").asDouble();
-					
+
 			else if (this.frlIO == 1)
 				this.frl_AccSlinkFullSec = flashlistRow.get("AccSlinkFullSec_L1").asDouble();
-				
-		}else if (flashlistType == FlashlistType.RU) {
+
+		} else if (flashlistType == FlashlistType.RU) {
 
 			int myPositionInErrorArray = -1;
 			int currentPosition = 0;
@@ -330,11 +329,11 @@ public class FED implements FlashlistUpdatable {
 	public int getSrcIdExpected() {
 		return srcIdExpected;
 	}
-	
+
 	public List<FED> getDependentFeds() {
 		return dependentFeds;
 	}
-	
+
 	public void setFrl(FRL frl) {
 		this.frl = frl;
 	}
@@ -354,7 +353,7 @@ public class FED implements FlashlistUpdatable {
 	public void setSrcIdExpected(int srcIdExpected) {
 		this.srcIdExpected = srcIdExpected;
 	}
-	
+
 	public void setDependentFeds(List<FED> dependentFeds) {
 		this.dependentFeds = dependentFeds;
 	}
@@ -470,8 +469,6 @@ public class FED implements FlashlistUpdatable {
 	public void setTtcp(TTCPartition ttcp) {
 		this.ttcp = ttcp;
 	}
-
-	
 
 	@Override
 	public int hashCode() {

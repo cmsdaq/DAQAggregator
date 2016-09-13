@@ -1,5 +1,10 @@
 package rcms.utilities.daqaggregator.datasource;
 
+import static org.hamcrest.CoreMatchers.is;
+
+import java.util.Date;
+
+import org.apache.commons.lang3.tuple.Triple;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -8,14 +13,6 @@ import org.junit.rules.ExpectedException;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-
-import rcms.utilities.daqaggregator.datasource.Flashlist;
-import rcms.utilities.daqaggregator.datasource.FlashlistType;
-import rcms.utilities.daqaggregator.datasource.SessionRetriever;
-
-import static org.hamcrest.CoreMatchers.is;
-
-import org.apache.commons.lang3.tuple.Triple;
 
 /**
  * Session retriever test class
@@ -52,8 +49,9 @@ public class SessionRetrieverTest {
 	@Test
 	public void emptyFlashlistTest() {
 		thrown.expect(RuntimeException.class);
-		thrown.expectMessage(is(SessionRetriever.EXCEPTION_NO_DATA_MESSAGE));
+		thrown.expectMessage(is(SessionRetriever.EXCEPTION_NO_DATA_MESSAGE + " @timestamp " + new Date(1L)));
 		Flashlist flashlist = new Flashlist(FlashlistType.LEVEL_ZERO_FM_STATIC);
+		flashlist.retrievalDate = new Date(1L);
 		sr.retrieveSession(flashlist);
 	}
 
