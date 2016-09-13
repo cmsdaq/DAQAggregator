@@ -62,10 +62,19 @@ public class DAQAggregator {
 				try {
 					int problems = 0;
 					while (true) {
-						boolean result = monitorAndPersist(monitorManager, persistenceManager, persistMode);
-						if (!result) {
-							problems++;
-							logger.info("Unsuccessful iteration, already for " + problems + "time(s)");
+						try {
+							boolean result = monitorAndPersist(monitorManager, persistenceManager, persistMode);
+							if (!result) {
+								problems++;
+								logger.info("Unsuccessful iteration, already for " + problems + "time(s)");
+							}
+						} catch (DAQException e) {
+							if (e.getCode() == DAQExceptionCode.NoMoreFlashlistSourceFiles) {
+								throw e;
+							} else {
+								logger.error(e);
+								monitorManager.skipToNextSnapshot();
+							}
 						}
 					}
 				} catch (DAQException e) {

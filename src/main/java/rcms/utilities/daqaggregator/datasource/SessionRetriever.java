@@ -58,7 +58,7 @@ public class SessionRetriever {
 		if (flashlist.getFlashlistType() != FlashlistType.LEVEL_ZERO_FM_STATIC)
 			throw new RuntimeException(EXCEPTION_WRONG_FLASHLIST_MESSAGE);
 		if (flashlist.getRowsNode() == null || flashlist.getRowsNode().size() == 0)
-			throw new DAQException(DAQExceptionCode.SessionCannotBeRetrieved, EXCEPTION_NO_DATA_MESSAGE);
+			throw new DAQException(DAQExceptionCode.SessionCannotBeRetrieved, EXCEPTION_NO_DATA_MESSAGE + " @timestamp " + flashlist.getRetrievalDate());
 
 		Iterator<JsonNode> rowIterator = flashlist.getRowsNode().iterator();
 		Triple<String, Integer, Long> result = null;
