@@ -148,7 +148,12 @@ public class FEDBuilderSummary implements Derivable {
 
 		for (FEDBuilder fb : daq.getFedBuilders()) {
 			RU ru = fb.getRu();
-			rate += ru.getRate();
+		
+			/* average event building rate can be taken from the EVM as this already holds an average*/ 
+			if (ru.isEVM()){
+				rate = ru.getRate();
+			}
+			
 			sumEventsInRU += ru.getEventsInRU();
 			sumFragmentsInRU += ru.getFragmentsInRU();
 			sumRequests += ru.getRequests();
@@ -161,13 +166,13 @@ public class FEDBuilderSummary implements Derivable {
 			if (minEvents > ru.getEventsInRU() && ru.getEventsInRU() != 0) {
 				minEvents = ru.getEventsInRU();
 			}
-
 		}
 
-		/* avarage values */
+		/* average values */
 		superFragmentSizeMean = superFragmentSizeMean / (float) numberOfRus;
 		superFragmentSizeStddev = superFragmentSizeStddev / (float) numberOfRus;
-		rate = rate / (float) numberOfRus;
+		
+		
 
 		/* deltas */
 		this.setDeltaEvents(maxEvents - minEvents);
