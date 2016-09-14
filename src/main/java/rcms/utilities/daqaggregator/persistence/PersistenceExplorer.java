@@ -10,6 +10,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
 
 public class PersistenceExplorer {
@@ -39,7 +40,7 @@ public class PersistenceExplorer {
 	 *         one
 	 * @throws IOException
 	 */
-	public Entry<Long, List<File>> explore(Long startTimestamp, String directory) throws IOException {
+	public Pair<Long, List<File>> explore(Long startTimestamp, String directory) throws IOException {
 		return explore(startTimestamp, Long.MAX_VALUE, directory, 2000);
 	}
 
@@ -57,8 +58,7 @@ public class PersistenceExplorer {
 	 *         one
 	 * @throws IOException
 	 */
-	public Entry<Long, List<File>> explore(Long startTimestamp, Long endTimestamp, String directory)
-			throws IOException {
+	public Pair<Long, List<File>> explore(Long startTimestamp, Long endTimestamp, String directory) throws IOException {
 		return explore(startTimestamp, endTimestamp, directory, 2000);
 	}
 
@@ -78,7 +78,7 @@ public class PersistenceExplorer {
 	 *         one
 	 * @throws IOException
 	 */
-	public Entry<Long, List<File>> explore(Long startTimestamp, Long endTimestamp, String dir, int chunkSize)
+	public Pair<Long, List<File>> explore(Long startTimestamp, Long endTimestamp, String dir, int chunkSize)
 			throws IOException {
 
 		logger.info("Exploring " + startTimestamp + "-" + endTimestamp + " in directory " + dir
@@ -128,7 +128,7 @@ public class PersistenceExplorer {
 
 		Long endTime = System.currentTimeMillis();
 		logger.info("Explored " + snapshotCount + " in " + (endTime - startTime) + "ms");
-		Entry<Long, List<File>> entry = new SimpleEntry<>(startTimestamp, result);
+		Pair<Long, List<File>> entry = Pair.of(startTimestamp, result);
 		return entry;
 	}
 
