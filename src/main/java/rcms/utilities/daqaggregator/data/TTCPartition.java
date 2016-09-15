@@ -34,6 +34,8 @@ public class TTCPartition implements FlashlistUpdatable, Derivable {
 	private FMMInfo topFMMInfo;
 	
 	private String tcds_pm_ttsState;
+	
+	private String tcds_apv_pm_ttsState;
 
 	private SubSystem subsystem;
 	
@@ -58,6 +60,14 @@ public class TTCPartition implements FlashlistUpdatable, Derivable {
 
 	private List<FED> feds = new ArrayList<>();
 	
+
+	public String getTcds_apv_pm_ttsState() {
+		return tcds_apv_pm_ttsState;
+	}
+
+	public void setTcds_apv_pm_ttsState(String tcds_apv_pm_ttsState) {
+		this.tcds_apv_pm_ttsState = tcds_apv_pm_ttsState;
+	}
 
 	public String getTcds_pm_ttsState() {
 		return tcds_pm_ttsState;
@@ -203,6 +213,7 @@ public class TTCPartition implements FlashlistUpdatable, Derivable {
 		result = prime * result + ttcpNr;
 		result = prime * result + ((ttsState == null) ? 0 : ttsState.hashCode());
 		result = prime * result + ((tcds_pm_ttsState == null) ? 0 : tcds_pm_ttsState.hashCode());
+		result = prime * result + ((tcds_apv_pm_ttsState == null) ? 0 : tcds_apv_pm_ttsState.hashCode());
 		return result;
 	}
 
@@ -242,6 +253,11 @@ public class TTCPartition implements FlashlistUpdatable, Derivable {
 			if (other.tcds_pm_ttsState != null)
 				return false;
 		} else if (!tcds_pm_ttsState.equals(other.tcds_pm_ttsState))
+			return false;
+		if (tcds_apv_pm_ttsState == null) {
+			if (other.tcds_apv_pm_ttsState != null)
+				return false;
+		} else if (!tcds_apv_pm_ttsState.equals(other.tcds_apv_pm_ttsState))
 			return false;
 		return true;
 	}
