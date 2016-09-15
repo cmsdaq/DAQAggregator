@@ -6,6 +6,7 @@ import java.util.Collection;
 import org.apache.commons.lang3.tuple.Triple;
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import rcms.common.db.DBConnectorException;
@@ -29,7 +30,11 @@ import rcms.utilities.hwcfg.PathNotFoundException;
  * @throws InvalidNodeTypeException
  * 
  * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
+ * 
+ * @TODO: make it independent on flashlist availability
+ * 
  */
+@Ignore
 public class MonitorManagerTest {
 
 	private static MonitorManager monitorManager;

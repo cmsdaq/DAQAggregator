@@ -90,6 +90,10 @@ public class FileFlashlistRetriever implements FlashlistRetriever {
 		logger.info("Explored " + flashlistCount + " sets of flashlists");
 		flashlistSnapshotCount = flashlistCount;
 	}
+	
+	public void skip(){
+		i++;
+	}
 
 	/**
 	 * Retrieve next batch of flashlists to process

@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.commons.lang3.tuple.Triple;
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import rcms.utilities.daqaggregator.Application;
@@ -20,6 +21,7 @@ import rcms.utilities.daqaggregator.ProxyManager;
  * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
  *
  */
+@Ignore
 public class LASFlashlistRetrieverTest {
 
 	private static String filter1;

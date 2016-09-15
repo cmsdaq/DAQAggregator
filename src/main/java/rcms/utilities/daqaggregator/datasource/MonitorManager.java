@@ -39,6 +39,12 @@ public class MonitorManager {
 
 	}
 
+	public void skipToNextSnapshot() {
+		if (flashlistRetriever instanceof FileFlashlistRetriever) {
+			((FileFlashlistRetriever) flashlistRetriever).skip();
+		}
+	}
+
 	public Triple<DAQ, Collection<Flashlist>, Boolean> getSystemSnapshot()
 			throws HardwareConfigurationException, PathNotFoundException, InvalidNodeTypeException {
 
