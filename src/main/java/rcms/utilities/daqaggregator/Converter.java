@@ -41,7 +41,7 @@ public class Converter {
 
 		StructureSerializer serializer = new StructureSerializer();
 
-		Entry<Long, List<File>> result = PersistenceExplorer.get().explore(startTimestamp, endTimestamp, sourceDir);
+		Entry<Long, List<File>> result = (new PersistenceExplorer()).explore(startTimestamp, endTimestamp, sourceDir);
 
 		System.out.println("Explored: " + result.getValue());
 

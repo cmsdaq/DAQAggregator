@@ -3,12 +3,10 @@ package rcms.utilities.daqaggregator.persistence;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map.Entry;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
@@ -16,17 +14,6 @@ import org.apache.log4j.Logger;
 public class PersistenceExplorer {
 
 	private Logger logger = Logger.getLogger(PersistenceExplorer.class);
-
-	private PersistenceExplorer() {
-	}
-
-	private static PersistenceExplorer instance;
-
-	public static PersistenceExplorer get() {
-		if (instance == null)
-			instance = new PersistenceExplorer();
-		return instance;
-	}
 
 	/**
 	 * Explore time-based directory structure. Only chunk of data will be
