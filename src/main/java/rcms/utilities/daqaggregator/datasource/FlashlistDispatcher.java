@@ -63,24 +63,24 @@ public class FlashlistDispatcher {
 			break;
 		case EVM:
 			if (flashlist.getRowsNode().isArray() && flashlist.getRowsNode().size() > 0) {
-				
+
 				int runNumber = flashlist.getRowsNode().get(0).get("runNumber").asInt();
 				mappingManager.getObjectMapper().daq.setRunNumber(runNumber);
 				logger.debug("Successfully got runnumber: " + runNumber);
-				
+
 				for (RU ru : mappingManager.getObjectMapper().rus.values()) {
 					if (ru.isEVM())
 						ru.updateFromFlashlist(flashlist.getFlashlistType(), flashlist.getRowsNode().get(0));
 					// additional check hostname
 
 				}
-				
+
 			} else {
 				logger.error("run-number problem while dispatching EVM flashlist, here is EVM flashlist row: "
 						+ flashlist.getRowsNode());
 			}
 
-			
+
 			break;
 		case LEVEL_ZERO_FM_STATIC:
 			if (flashlist.getRowsNode().isArray() && flashlist.getRowsNode().size() > 0) {
@@ -95,14 +95,14 @@ public class FlashlistDispatcher {
 					total++;
 					if (maskedFlagsByFed.containsKey(fedEntry.getKey())) {
 						String[] maskingFlags = maskedFlagsByFed.get(fedEntry.getKey()).split("-"); // string
-																									// from
-																									// map
-																									// contains
-																									// two
-																									// dash-separated
-																									// flags
-																									// as
-																									// substrings
+						// from
+						// map
+						// contains
+						// two
+						// dash-separated
+						// flags
+						// as
+						// substrings
 
 						fedEntry.getValue().setFmmMasked(Boolean.parseBoolean(maskingFlags[0]));
 						fedEntry.getValue().setFrlMasked(Boolean.parseBoolean(maskingFlags[1]));
@@ -139,7 +139,7 @@ public class FlashlistDispatcher {
 
 				if (mappingManager.getObjectMapper().subsystemByName.containsKey(subsystemName)) {
 					mappingManager.getObjectMapper().subsystemByName.get(subsystemName)
-							.updateFromFlashlist(flashlist.getFlashlistType(), rowNode);
+					.updateFromFlashlist(flashlist.getFlashlistType(), rowNode);
 				}
 
 			}
@@ -173,7 +173,8 @@ public class FlashlistDispatcher {
 			// This will only work for CDAQ. Need to figure out how to know what
 			// PM (CPM or LPM) is used for a given run, instead of hardcoding
 			String serviceField = "cpm-pri";
-			String typeField = "tts_ici";
+			String typeField1 = "tts_ici";
+			String typeField2 = "tts_apve";
 
 			Map<String, Map<String, Map<Integer, Map<Integer, Map<String, String>>>>> stpiDataFromFlashlist = TCDSFlashlistHelpers
 					.getTreeFromFlashlist(flashlist);
@@ -199,10 +200,29 @@ public class FlashlistDispatcher {
 					continue;
 				}
 
-				int stateCode = Integer.parseInt(stpiDataFromFlashlist.get(serviceField).get(typeField)
-						.get(ttcp.getTopFMMInfo().getPMNr()).get(ttcp.getTopFMMInfo().getICINr()).get("value"));
+				if (stpiDataFromFlashlist.containsKey(serviceField)  &&
+						stpiDataFromFlashlist.get(serviceField).containsKey(typeField1) &&
+						stpiDataFromFlashlist.get(serviceField).get(typeField1).containsKey( ttcp.getTopFMMInfo().getPMNr() ) && 
+						stpiDataFromFlashlist.get(serviceField).get(typeField1).get( ttcp.getTopFMMInfo().getPMNr() ).containsKey( ttcp.getTopFMMInfo().getICINr() ) )  {
+					
+					int stateCode = Integer.parseInt(stpiDataFromFlashlist.get(serviceField).get(typeField1)
+							.get(ttcp.getTopFMMInfo().getPMNr()).get(ttcp.getTopFMMInfo().getICINr()).get("value"));
 
-				ttcp.setTcds_pm_ttsState(TCDSFlashlistHelpers.decodeTCDSTTSState(stateCode));
+					ttcp.setTcds_pm_ttsState(TCDSFlashlistHelpers.decodeTCDSTTSState(stateCode));
+				}
+
+
+
+				if (stpiDataFromFlashlist.containsKey(serviceField)  &&
+						stpiDataFromFlashlist.get(serviceField).containsKey(typeField2) &&
+						stpiDataFromFlashlist.get(serviceField).get(typeField2).containsKey( ttcp.getTopFMMInfo().getPMNr() ) && 
+						stpiDataFromFlashlist.get(serviceField).get(typeField2).get( ttcp.getTopFMMInfo().getPMNr() ).containsKey( ttcp.getTopFMMInfo().getICINr() ) )  {
+					
+					int stateCode = Integer.parseInt(stpiDataFromFlashlist.get(serviceField).get(typeField2)
+							.get(ttcp.getTopFMMInfo().getPMNr()).get(ttcp.getTopFMMInfo().getICINr()).get("value"));
+
+					ttcp.setTcds_apv_pm_ttsState(TCDSFlashlistHelpers.decodeTCDSTTSState(stateCode));
+				}
 			}
 
 			break;
