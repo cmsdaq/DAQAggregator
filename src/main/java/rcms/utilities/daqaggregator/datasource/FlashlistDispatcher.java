@@ -57,6 +57,7 @@ public class FlashlistDispatcher {
 			break;
 		case FMM_INPUT:
 			dispatchRowsByGeo(flashlist, mappingManager.getObjectMapper().fedsById.values(), new FedInFmmGeoFinder());
+			
 			break;
 		case FEROL_STATUS:
 			dispatchRowsByGeo(flashlist, mappingManager.getObjectMapper().frls.values(), new FRLGeoFinder());

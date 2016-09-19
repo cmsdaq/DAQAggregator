@@ -7,9 +7,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 
+
+import rcms.utilities.hwcfg.HardwareConfigurationException;
 import rcms.utilities.daqaggregator.data.BU;
 import rcms.utilities.daqaggregator.data.BUSummary;
 import rcms.utilities.daqaggregator.data.DAQ;
@@ -30,6 +33,7 @@ import rcms.utilities.hwcfg.HardwareConfigurationException;
 import rcms.utilities.hwcfg.dp.DAQPartition;
 import rcms.utilities.hwcfg.dp.DPGenericHost;
 import rcms.utilities.hwcfg.eq.FMMFMMLink;
+
 
 import rcms.utilities.hwcfg.eq.FMMTriggerLink;
 import rcms.utilities.hwcfg.fb.FBI;
@@ -118,6 +122,7 @@ public class ObjectMapper {
 		/* map FEDs */
 		feds = new HashMap<>();
 		for (rcms.utilities.hwcfg.eq.FED hwfed : getHardwareFeds(daqPartition)) {
+
 			FED fed = new FED();
 			fed.setId((int) hwfed.getId());
 			fedsById.put(fed.getId(), fed);
@@ -278,7 +283,7 @@ public class ObjectMapper {
 		for (rcms.utilities.hwcfg.eq.FED hwfed : getHardwareFeds(daqPartition)) {
 			if (hwfed.getFMM() != null) {
 				result.add(hwfed.getFMM());
-				
+
 				//also retrieve second-level FMMs linked to this FMM
 				for (rcms.utilities.hwcfg.eq.FMMFMMLink ffl: daqPartition.getDAQPartitionSet().getEquipmentSet().getFMMFMMLinks()){
 					if (ffl.getSourceFMMId() == hwfed.getFMM().getId()){
@@ -300,17 +305,35 @@ public class ObjectMapper {
 	 * @return set of hardware FED objects.
 	 */
 	public Set<rcms.utilities.hwcfg.eq.FED> getHardwareFeds(DAQPartition daqPartition) {
-
+		
 		Set<rcms.utilities.hwcfg.eq.FED> result = new HashSet<>();
-		for (rcms.utilities.hwcfg.eq.FRL hwfrl : getHardwareFrls(daqPartition)) {
-			for (rcms.utilities.hwcfg.eq.FED hwfed : hwfrl.getFEDs().values())
-				if (hwfed != null) {
-					result.add(hwfed);
-					Set<rcms.utilities.hwcfg.eq.FED> dependents = getDependentFeds(hwfed);
+		try {
 
-					result.addAll(dependents);
+			for (rcms.utilities.hwcfg.dp.RU hwru : daqPartition.getRUs().values()){
+				rcms.utilities.hwcfg.fb.FEDBuilder hwfb = daqPartition.getDAQPartitionSet().getFEDBuilderSet().getFBs().get(hwru.getFBId());
+
+				for (FBI hwfbi : hwfb.getFBIs().values()){
+					Long frlId = hwfbi.getFRLId();
+					rcms.utilities.hwcfg.eq.FRL frl = daqPartition.getDAQPartitionSet().getEquipmentSet().getFRL(frlId);
+
+					for (Integer frlIO : frl.getFEDs().keySet() ) {
+						if ( hwfbi.getFRLInputEnableMask() == null || 
+								((hwfbi.getFRLInputEnableMask() & (1<<frlIO)) == (1<<frlIO) ) ) {							
+							rcms.utilities.hwcfg.eq.FED fed = frl.getFEDs().get(frlIO);
+
+							result.add(fed);
+							
+							Set<rcms.utilities.hwcfg.eq.FED> dependents = getDependentFeds(fed);
+
+							result.addAll(dependents);
+						}
+					}
 				}
+			}
+		}catch (HardwareConfigurationException e){
+			e.printStackTrace();
 		}
+
 		return result;
 	}
 
@@ -418,12 +441,12 @@ public class ObjectMapper {
 	public Map<Integer, TTCPartition> mapTTCPartitions(DAQPartition daqPartition) {
 
 		Map<Integer, TTCPartition> result = new HashMap<>();
-		
+
 		for (rcms.utilities.hwcfg.eq.TTCPartition hwttcPartition : daqPartition.getDAQPartitionSet().getEquipmentSet()
 				.getTTCPartitions().values()){
-		
-			
-		/*for (rcms.utilities.hwcfg.eq.FED hwfed : getHardwareFeds(daqPartition)) {
+
+
+			/*for (rcms.utilities.hwcfg.eq.FED hwfed : getHardwareFeds(daqPartition)) {
 
 			rcms.utilities.hwcfg.eq.TTCPartition hwttcPartition = hwfed.getTTCPartition();*/
 
