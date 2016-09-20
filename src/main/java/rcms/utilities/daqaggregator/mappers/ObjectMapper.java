@@ -24,6 +24,7 @@ import rcms.utilities.daqaggregator.data.FMMApplication;
 import rcms.utilities.daqaggregator.data.FRL;
 import rcms.utilities.daqaggregator.data.FRLPc;
 import rcms.utilities.daqaggregator.data.FRLType;
+import rcms.utilities.daqaggregator.data.GlobalTTSState;
 import rcms.utilities.daqaggregator.data.FMMType;
 import rcms.utilities.daqaggregator.data.RU;
 import rcms.utilities.daqaggregator.data.SubFEDBuilder;
@@ -190,7 +191,12 @@ public class ObjectMapper {
 		FEDBuilderSummary fedBuilderSummary = new FEDBuilderSummary();
 		daq.setFedBuilderSummary(fedBuilderSummary);
 		fedBuilderSummary.setDaq(daq);
-
+		
+		/* create flashlist-updatable object with global TTS states */
+		Map<String, GlobalTTSState> globalTtsStates = new HashMap<String, GlobalTTSState>();
+		daq.setGlobalTtsStates(globalTtsStates);
+		
+		
 		daq.setTtcPartitions(new ArrayList<>(ttcpartitionsById.values()));
 		daq.setFmms(new ArrayList<>(fmms.values()));
 		daq.setRus(new ArrayList<>(rus.values()));
