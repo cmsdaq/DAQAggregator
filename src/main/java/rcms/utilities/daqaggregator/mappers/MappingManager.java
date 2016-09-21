@@ -100,56 +100,61 @@ public class MappingManager implements Serializable {
 					frl = daqPartition.getDAQPartitionSet().getEquipmentSet().getFRL(fbi.getFRLId());
 
 					// loop over feds of given fbi
-					for (rcms.utilities.hwcfg.eq.FED fed : frl.getFEDs().values()) {
+					for (Integer frlIO : frl.getFEDs().keySet() ) {
 
-						String ttcpName = fed.getTTCPartition().getName();
-						String frlPc = frl.getFRLCrate().getHostName();
-						
-						String fedBuilderName = fb.getName();
-						
-						String sfbMappingId = new String(String.valueOf(ttcpName)+"$"+String.valueOf(frlPc)+"$"+String.valueOf(fedBuilderName));
-						int sfbId = sfbMappingId.hashCode(); //replaces use of empty object hashcode as key
+						if ( fbi.getFRLInputEnableMask() == null || 
+								((fbi.getFRLInputEnableMask() & (1<<frlIO)) == (1<<frlIO) ) ){
 
-						/* a new TTC partition in this fedbuilder */
-						if (!ttcPartitionToFrlPCs.containsKey(ttcpName)) {
-							ttcPartitionToFrlPCs.put(ttcpName, new HashSet<String>());
-						}
+							rcms.utilities.hwcfg.eq.FED fed = frl.getFEDs().get(frlIO);
 
-						/*
-						 * this TTC partition does not have this frlpc in this
-						 * fedbuilder yet, create a new subfedbuilder for this
-						 */
-						if (!ttcPartitionToFrlPCs.get(ttcpName).contains(frlPc)) {
-							ttcPartitionToFrlPCs.get(ttcpName).add(frlPc);
-							SubFEDBuilder subFedBuilder = new SubFEDBuilder();
-							//int id = subFedBuilder.hashCode()+(new java.util.Random()).nextInt(1000);
-							
-							subFedBuilders.put(sfbId, subFedBuilder);
+							String ttcpName = fed.getTTCPartition().getName();
+							String frlPc = frl.getFRLCrate().getHostName();
 
-							/* FEDBuilder - SubFEDBuilder */
-							if (!fedBuilderToSubFedBuilder.containsKey(fb.hashCode())) {
-								fedBuilderToSubFedBuilder.put(fb.hashCode(), new HashSet<Integer>());
+							String fedBuilderName = fb.getName();
+
+							String sfbMappingId = new String(String.valueOf(ttcpName)+"$"+String.valueOf(frlPc)+"$"+String.valueOf(fedBuilderName));
+							int sfbId = sfbMappingId.hashCode(); //replaces use of empty object hashcode as key
+
+							/* a new TTC partition in this fedbuilder */
+							if (!ttcPartitionToFrlPCs.containsKey(ttcpName)) {
+								ttcPartitionToFrlPCs.put(ttcpName, new HashSet<String>());
 							}
-							fedBuilderToSubFedBuilder.get(fb.hashCode()).add(sfbId);
 
-							/* SubFEDBuilder - FRL */
-							if (!subFedBuilderToFrl.containsKey(sfbId)) {
-								subFedBuilderToFrl.put(sfbId, new HashSet<Integer>());
+							/*
+							 * this TTC partition does not have this frlpc in this
+							 * fedbuilder yet, create a new subfedbuilder for this
+							 */
+							if (!ttcPartitionToFrlPCs.get(ttcpName).contains(frlPc)) {
+								ttcPartitionToFrlPCs.get(ttcpName).add(frlPc);
+								SubFEDBuilder subFedBuilder = new SubFEDBuilder();
+								//int id = subFedBuilder.hashCode()+(new java.util.Random()).nextInt(1000);
+
+								subFedBuilders.put(sfbId, subFedBuilder);
+
+								/* FEDBuilder - SubFEDBuilder */
+								if (!fedBuilderToSubFedBuilder.containsKey(fb.hashCode())) {
+									fedBuilderToSubFedBuilder.put(fb.hashCode(), new HashSet<Integer>());
+								}
+								fedBuilderToSubFedBuilder.get(fb.hashCode()).add(sfbId);
+
+								/* SubFEDBuilder - FRL */
+								if (!subFedBuilderToFrl.containsKey(sfbId)) {
+									subFedBuilderToFrl.put(sfbId, new HashSet<Integer>());
+								}
+
+								/* SubFedBuilder - TTCPartition */
+								subFedBuilderToTTCP.put(sfbId, fed.getTTCPartition().hashCode());
+
+								/* SubFedBuilder - FRLPc */
+								subFedBuilderToFrlPc.put(sfbId, frlPc.hashCode());
+
 							}
-							
-							/* SubFedBuilder - TTCPartition */
-							subFedBuilderToTTCP.put(sfbId, fed.getTTCPartition().hashCode());
 
-							/* SubFedBuilder - FRLPc */
-							subFedBuilderToFrlPc.put(sfbId, frlPc.hashCode());
+							/*If no new subFEDBuilder is created, attach this frl to the one existing
+							 */
+							subFedBuilderToFrl.get(sfbId).add(frl.hashCode());
 
 						}
-						
-						/*If no new subFEDBuilder is created, attach this frl to the one existing
-						 */
-						subFedBuilderToFrl.get(sfbId).add(frl.hashCode());
-						
-						
 					}
 
 				} catch (HardwareConfigurationException e) {
@@ -161,6 +166,7 @@ public class MappingManager implements Serializable {
 
 		return subFedBuilders;
 	}
+
 
 	public DAQPartition getDaqPartition() {
 		return daqPartition;
