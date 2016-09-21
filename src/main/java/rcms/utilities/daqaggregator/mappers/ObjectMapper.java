@@ -448,13 +448,15 @@ public class ObjectMapper {
 
 		Map<Integer, TTCPartition> result = new HashMap<>();
 
-		for (rcms.utilities.hwcfg.eq.TTCPartition hwttcPartition : daqPartition.getDAQPartitionSet().getEquipmentSet()
-				.getTTCPartitions().values()){
+		
+		
+		/*for (rcms.utilities.hwcfg.eq.TTCPartition hwttcPartition : daqPartition.getDAQPartitionSet().getEquipmentSet()
+				.getTTCPartitions().values()){*/
 
 
-			/*for (rcms.utilities.hwcfg.eq.FED hwfed : getHardwareFeds(daqPartition)) {
+			for (rcms.utilities.hwcfg.eq.FED hwfed : getHardwareFeds(daqPartition)) {
 
-			rcms.utilities.hwcfg.eq.TTCPartition hwttcPartition = hwfed.getTTCPartition();*/
+			rcms.utilities.hwcfg.eq.TTCPartition hwttcPartition = hwfed.getTTCPartition();
 
 			TTCPartition ttcPartition = new TTCPartition();
 			ttcPartition.setName(hwttcPartition.getName());
@@ -462,7 +464,7 @@ public class ObjectMapper {
 			ttcpartitionsById.put((int) hwttcPartition.getId(), ttcPartition);
 			// ttcpById.put(hwttcPartition.getId(), value)
 			// TODO: get masked info
-
+			
 			result.put(hwttcPartition.hashCode(), ttcPartition);
 
 		}
