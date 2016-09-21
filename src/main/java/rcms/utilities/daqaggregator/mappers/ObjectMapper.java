@@ -191,12 +191,12 @@ public class ObjectMapper {
 		FEDBuilderSummary fedBuilderSummary = new FEDBuilderSummary();
 		daq.setFedBuilderSummary(fedBuilderSummary);
 		fedBuilderSummary.setDaq(daq);
-		
+
 		/* create flashlist-updatable object with global TTS states */
 		Map<String, GlobalTTSState> globalTtsStates = new HashMap<String, GlobalTTSState>();
 		daq.setGlobalTtsStates(globalTtsStates);
-		
-		
+
+
 		daq.setTtcPartitions(new ArrayList<>(ttcpartitionsById.values()));
 		daq.setFmms(new ArrayList<>(fmms.values()));
 		daq.setRus(new ArrayList<>(rus.values()));
@@ -311,7 +311,7 @@ public class ObjectMapper {
 	 * @return set of hardware FED objects.
 	 */
 	public Set<rcms.utilities.hwcfg.eq.FED> getHardwareFeds(DAQPartition daqPartition) {
-		
+
 		Set<rcms.utilities.hwcfg.eq.FED> result = new HashSet<>();
 		try {
 
@@ -328,7 +328,7 @@ public class ObjectMapper {
 							rcms.utilities.hwcfg.eq.FED fed = frl.getFEDs().get(frlIO);
 
 							result.add(fed);
-							
+
 							Set<rcms.utilities.hwcfg.eq.FED> dependents = getDependentFeds(fed);
 
 							result.addAll(dependents);
@@ -448,13 +448,13 @@ public class ObjectMapper {
 
 		Map<Integer, TTCPartition> result = new HashMap<>();
 
-		
-		
+
+
 		/*for (rcms.utilities.hwcfg.eq.TTCPartition hwttcPartition : daqPartition.getDAQPartitionSet().getEquipmentSet()
 				.getTTCPartitions().values()){*/
 
 
-			for (rcms.utilities.hwcfg.eq.FED hwfed : getHardwareFeds(daqPartition)) {
+		for (rcms.utilities.hwcfg.eq.FED hwfed : getHardwareFeds(daqPartition)) {
 
 			rcms.utilities.hwcfg.eq.TTCPartition hwttcPartition = hwfed.getTTCPartition();
 
@@ -464,7 +464,7 @@ public class ObjectMapper {
 			ttcpartitionsById.put((int) hwttcPartition.getId(), ttcPartition);
 			// ttcpById.put(hwttcPartition.getId(), value)
 			// TODO: get masked info
-			
+
 			result.put(hwttcPartition.hashCode(), ttcPartition);
 
 		}
@@ -476,8 +476,14 @@ public class ObjectMapper {
 
 		Map<Integer, SubSystem> result = new HashMap<>();
 
-		for (rcms.utilities.hwcfg.eq.SubSystem hwsubsystem : daqPartition.getDAQPartitionSet().getEquipmentSet()
-				.getSubsystems().values()) {
+
+
+
+		for (rcms.utilities.hwcfg.eq.FED hwfed : getHardwareFeds(daqPartition)) {
+
+			rcms.utilities.hwcfg.eq.TTCPartition hwttcPartition = hwfed.getTTCPartition();
+
+			rcms.utilities.hwcfg.eq.SubSystem hwsubsystem = hwttcPartition.getSubSystem();
 
 			SubSystem subSystem = new SubSystem();
 			subSystem.setName(hwsubsystem.getName());

@@ -612,6 +612,9 @@ public class RelationMapper implements Serializable {
 		Collection<rcms.utilities.hwcfg.eq.SubSystem> subsystems = daqPartition.getDAQPartitionSet().getEquipmentSet()
 				.getSubsystems().values();
 		for (rcms.utilities.hwcfg.eq.SubSystem hwsubsystem : subsystems) {
+			
+			if (!objectMapper.subSystems.containsKey(hwsubsystem.hashCode()))
+				continue;
 
 			Collection<rcms.utilities.hwcfg.eq.TTCPartition> ttcPartitions = hwsubsystem.getTTCPartitions().values();
 
