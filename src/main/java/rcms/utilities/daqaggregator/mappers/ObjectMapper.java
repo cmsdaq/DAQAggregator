@@ -424,8 +424,11 @@ public class ObjectMapper {
 
 		Set<String> frlPcs = new HashSet<String>();
 
-		Map<Long, rcms.utilities.hwcfg.eq.FRL> frls = daqPartition.getDAQPartitionSet().getEquipmentSet().getFRLs();
-		for (rcms.utilities.hwcfg.eq.FRL hwfrl : frls.values()) {
+		/*Map<Long, rcms.utilities.hwcfg.eq.FRL> frls = daqPartition.getDAQPartitionSet().getEquipmentSet().getFRLs();
+		for (rcms.utilities.hwcfg.eq.FRL hwfrl : frls.values()) {*/
+		
+		Set<rcms.utilities.hwcfg.eq.FRL> frls = getHardwareFrls(daqPartition);
+		for (rcms.utilities.hwcfg.eq.FRL hwfrl : frls){
 
 			String frlPc = hwfrl.getFRLCrate().getHostName();
 			frlPcs.add(frlPc);
