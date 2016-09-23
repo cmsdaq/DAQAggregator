@@ -423,9 +423,6 @@ public class ObjectMapper {
 		Map<Integer, FRLPc> result = new HashMap<>();
 
 		Set<String> frlPcs = new HashSet<String>();
-
-		/*Map<Long, rcms.utilities.hwcfg.eq.FRL> frls = daqPartition.getDAQPartitionSet().getEquipmentSet().getFRLs();
-		for (rcms.utilities.hwcfg.eq.FRL hwfrl : frls.values()) {*/
 		
 		Set<rcms.utilities.hwcfg.eq.FRL> frls = getHardwareFrls(daqPartition);
 		for (rcms.utilities.hwcfg.eq.FRL hwfrl : frls){
@@ -450,11 +447,6 @@ public class ObjectMapper {
 	public Map<Integer, TTCPartition> mapTTCPartitions(DAQPartition daqPartition) {
 
 		Map<Integer, TTCPartition> result = new HashMap<>();
-
-
-
-		/*for (rcms.utilities.hwcfg.eq.TTCPartition hwttcPartition : daqPartition.getDAQPartitionSet().getEquipmentSet()
-				.getTTCPartitions().values()){*/
 
 
 		for (rcms.utilities.hwcfg.eq.FED hwfed : getHardwareFeds(daqPartition)) {
