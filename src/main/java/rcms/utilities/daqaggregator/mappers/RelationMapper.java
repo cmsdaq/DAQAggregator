@@ -30,6 +30,7 @@ import rcms.utilities.hwcfg.eq.FMMFMMLink;
 import rcms.utilities.hwcfg.eq.FMMTriggerLink;
 import rcms.utilities.hwcfg.eq.TCDSiCI;
 import rcms.utilities.hwcfg.eq.Trigger;
+import rcms.utilities.hwcfg.fb.FBI;
 
 /**
  * This class performs mapping of hardware objects' relations into {@link DAQ}
@@ -103,9 +104,6 @@ public class RelationMapper implements Serializable {
 			FRL frl = objectMapper.frls.get(relation.getKey());
 			for (int fedId : relation.getValue()) {
 				FED fed = objectMapper.feds.get(fedId);
-				if (fed == null){
-					System.out.println("!!!!!!!");
-				}
 				frl.getFeds().put(fed.getFrlIO(), fed); // TODO: check if
 				// correct
 				fed.setFrl(frl);
@@ -257,7 +255,6 @@ public class RelationMapper implements Serializable {
 							}else{
 								encounteredPseudofeds.add(pseudofed.getSrcIdExpected());
 							}
-
 							if (pseudofed.getTtcp().getName().equals(fed.getTtcp().getName())){
 								objectMapper.subFedBuilders.get(subFedBuilderId).getFeds().add(pseudofed);
 							} else if (isExistTtcpCompatibleSubfedbuilder(fedBuilder, pseudofed.getTtcp())){
@@ -360,13 +357,12 @@ public class RelationMapper implements Serializable {
 			result.put(hwfmm.hashCode(), children);
 
 			for (rcms.utilities.hwcfg.eq.FED hwfed : hwfmm.getFEDs().values()) {
-				/*loop above yields a FED set
-				 * which is superset of
-				 * the set of FEDs in current
-				 * DAQ model.
+				/*
 				 * Only add links to FEDs
-				 * which are actually included
-				 * to the model
+				 * which have actually
+				 * been included in the model
+				 * (as an FMM of a FED may point
+				 * to other FEDs as well)
 				 */
 				if (objectMapper.feds.containsKey(hwfed.hashCode()))
 					children.add(hwfed.hashCode());
@@ -477,13 +473,9 @@ public class RelationMapper implements Serializable {
 
 		Map<Integer, Integer> result = new HashMap<>();
 
-		for (rcms.utilities.hwcfg.eq.TTCPartition hwttcPartition : daqPartition.getDAQPartitionSet().getEquipmentSet()
-				.getTTCPartitions().values()) {
-			
-			if (!objectMapper.ttcPartitions.containsKey(hwttcPartition.hashCode()))
-					continue;
+		for (rcms.utilities.hwcfg.eq.FED hwfed : objectMapper.getHardwareFeds(daqPartition)) {
 
-			//rcms.utilities.hwcfg.eq.FMM hwfmm = getTopFMMForPartition(daqPartition, hwttcPartition.getName());
+			rcms.utilities.hwcfg.eq.TTCPartition hwttcPartition = hwfed.getTTCPartition();
 
 			/*
 			 * 2-element vector with the rcms.utilities.hwcfg.eq.FMM at first position (can be null)
@@ -517,26 +509,36 @@ public class RelationMapper implements Serializable {
 	private Map<Integer, Set<Integer>> mapRelationsFrlToFed(DAQPartition daqPartition) {
 
 		Map<Integer, Set<Integer>> result = new HashMap<>();
-		Set<rcms.utilities.hwcfg.eq.FRL> frls = objectMapper.getHardwareFrls(daqPartition);
-		for (rcms.utilities.hwcfg.eq.FRL hwfrl : frls) {
 
-			HashSet<Integer> children = new HashSet<>();
-			result.put(hwfrl.hashCode(), children);
 
-			for (rcms.utilities.hwcfg.eq.FED hwfed : hwfrl.getFEDs().values()) {
+		/* loop over fed builders */
+		for (rcms.utilities.hwcfg.fb.FEDBuilder hwfb : objectMapper.getHardwareFedBuilders(daqPartition)) {
 
-				/*loop above yields a FED set
-				 * which is superset of
-				 * the set of FEDs in current
-				 * DAQ model.
-				 * Only add links to FEDs
-				 * which are actually included
-				 * to the model
-				 */
-				if (objectMapper.feds.containsKey(hwfed.hashCode()))
-					children.add(hwfed.hashCode());
+			// loop over fedbuilder inputs of given fedbuilder
+			for (FBI hwfbi : hwfb.getFBIs().values()) {
+				try {
+					rcms.utilities.hwcfg.eq.FRL hwfrl;
+					hwfrl = daqPartition.getDAQPartitionSet().getEquipmentSet().getFRL(hwfbi.getFRLId());
+
+					HashSet<Integer> children = new HashSet<>();
+					result.put(hwfrl.hashCode(), children);
+
+					for (Integer frlIO : hwfrl.getFEDs().keySet() ) {
+						if ( hwfbi.getFRLInputEnableMask() == null || 
+								((hwfbi.getFRLInputEnableMask() & (1<<frlIO)) == (1<<frlIO) ) ) {							
+							rcms.utilities.hwcfg.eq.FED hwfed = hwfrl.getFEDs().get(frlIO);
+
+							children.add(hwfed.hashCode());
+
+						}
+					}
+
+				} catch (HardwareConfigurationException e) {
+					logger.warn("cannot get FRL by id, source error: " + e.getMessage());
+				}
 			}
 		}
+
 		return result;
 	}
 
@@ -609,12 +611,20 @@ public class RelationMapper implements Serializable {
 
 		Map<Integer, Set<Integer>> result = new HashMap<>();
 
-		Collection<rcms.utilities.hwcfg.eq.SubSystem> subsystems = daqPartition.getDAQPartitionSet().getEquipmentSet()
-				.getSubsystems().values();
+		Set<rcms.utilities.hwcfg.eq.SubSystem> subsystems = new HashSet<rcms.utilities.hwcfg.eq.SubSystem>();
+
+
+		for (rcms.utilities.hwcfg.eq.FED hwfed : objectMapper.getHardwareFeds(daqPartition)) {
+
+			rcms.utilities.hwcfg.eq.TTCPartition hwttcPartition = hwfed.getTTCPartition();
+
+			rcms.utilities.hwcfg.eq.SubSystem hwsubsystem = hwttcPartition.getSubSystem();
+
+			subsystems.add(hwsubsystem);
+
+		}
+
 		for (rcms.utilities.hwcfg.eq.SubSystem hwsubsystem : subsystems) {
-			
-			if (!objectMapper.subSystems.containsKey(hwsubsystem.hashCode()))
-				continue;
 
 			Collection<rcms.utilities.hwcfg.eq.TTCPartition> ttcPartitions = hwsubsystem.getTTCPartitions().values();
 
@@ -639,25 +649,19 @@ public class RelationMapper implements Serializable {
 
 		Map<Integer, Set<Integer>> result = new HashMap<>();
 
-		for (rcms.utilities.hwcfg.eq.TTCPartition hwttcp : daqPartition.getDAQPartitionSet().getEquipmentSet()
-				.getTTCPartitions().values()) {
+		for (rcms.utilities.hwcfg.eq.FED hwfed : objectMapper.getHardwareFeds(daqPartition)) {
 
-			HashSet<Integer> children = new HashSet<>();
-			result.put(hwttcp.hashCode(), children);
+			rcms.utilities.hwcfg.eq.TTCPartition hwttcPartition = hwfed.getTTCPartition();
 
-			for (rcms.utilities.hwcfg.eq.FED hwfed : hwttcp.getFEDs().values()) {
-				/*loop above yields a FED set
-				 * which is superset of
-				 * the set of FEDs in current
-				 * DAQ model.
-				 * Only add links to FEDs
-				 * which are actually included
-				 * to the model
-				 */
-				if (objectMapper.feds.containsKey(hwfed.hashCode()))
-					children.add(hwfed.hashCode());
+			if (result.containsKey(hwttcPartition.hashCode())){
+				result.get(hwttcPartition.hashCode()).add(hwfed.hashCode());
+			}else{
+				HashSet<Integer> children = new HashSet<>();
+				children.add(hwfed.hashCode());
+				result.put(hwttcPartition.hashCode(), children);
 			}
 		}
+
 		return result;
 	}
 }
