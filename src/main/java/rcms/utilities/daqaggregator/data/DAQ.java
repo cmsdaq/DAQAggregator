@@ -2,6 +2,7 @@ package rcms.utilities.daqaggregator.data;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -53,6 +54,17 @@ public class DAQ implements FlashlistUpdatable {
 	private List<FRL> frls;
 	private List<SubFEDBuilder> subFEDBuilders;
 	private Collection<FED> feds;
+	
+	private Map<String, GlobalTTSState> globalTtsStates;
+	
+
+	public Map<String, GlobalTTSState> getGlobalTtsStates() {
+		return globalTtsStates;
+	}
+
+	public void setGlobalTtsStates(Map<String, GlobalTTSState> globalTtsStates) {
+		this.globalTtsStates = globalTtsStates;
+	}
 
 	public BUSummary getBuSummary() {
 		return buSummary;
