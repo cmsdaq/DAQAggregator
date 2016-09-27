@@ -1,6 +1,7 @@
 package rcms.utilities.daqaggregator;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -8,6 +9,8 @@ import java.util.List;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.apache.log4j.Logger;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import rcms.common.db.DBConnectorException;
 import rcms.utilities.daqaggregator.data.DAQ;
@@ -122,6 +125,38 @@ public class DAQAggregator {
 						}
 					}
 				}
+			case SPECIAL:
+				List<Pair<Long, Float>> values = new ArrayList<>();
+				try {
+					while (true) {
+						try {
+							logger.info("Special iteration ...");
+							Triple<DAQ, Collection<Flashlist>, Boolean> result = monitor(monitorManager);
+							long a = result.getLeft().getLastUpdate();
+							float b = result.getLeft().getFedBuilderSummary().getRate();
+							values.add(Pair.of(a, b));
+
+						} catch (PathNotFoundException | InvalidNodeTypeException e) {
+							e.printStackTrace();
+						} catch (DAQException e) {
+							if (e.getCode() == DAQExceptionCode.NoMoreFlashlistSourceFiles) {
+								throw e;
+							} else {
+								logger.error(e);
+								monitorManager.skipToNextSnapshot();
+							}
+						}
+					}
+				} catch (DAQException e) {
+					if (e.getCode() == DAQExceptionCode.NoMoreFlashlistSourceFiles) {
+						logger.info("All flashlist files processed");
+						ObjectMapper om = new ObjectMapper();
+						String result = om.writeValueAsString(values);
+						System.out.println(result);
+					} else
+						throw e;
+				}
+
 			}
 
 		} catch (DBConnectorException | HardwareConfigurationException | IOException e1) {
@@ -202,7 +237,7 @@ public class DAQAggregator {
 			flashlistRetriever = new LASFlashlistRetriever(mainUrl, urlList);
 
 			break;
-		case FILE:
+		case FILE: case SPECIAL:
 			FileFlashlistRetriever fileFlashlistRetriever = new FileFlashlistRetriever(flashlistPersistenceDir,
 					flashlistFormat);
 			flashlistRetriever = fileFlashlistRetriever;

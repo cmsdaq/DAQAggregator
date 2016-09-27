@@ -68,7 +68,7 @@ public class PersistenceExplorer {
 	public Pair<Long, List<File>> explore(Long startTimestamp, Long endTimestamp, String dir, int chunkSize)
 			throws IOException {
 
-		logger.info("Exploring " + startTimestamp + "-" + endTimestamp + " in directory " + dir
+		logger.debug("Exploring " + startTimestamp + "-" + endTimestamp + " in directory " + dir
 				+ ", maximum chunk size " + chunkSize);
 
 		Long tmpLast = startTimestamp;
@@ -114,7 +114,8 @@ public class PersistenceExplorer {
 		}
 
 		Long endTime = System.currentTimeMillis();
-		logger.info("Explored " + snapshotCount + " in " + (endTime - startTime) + "ms");
+		if (snapshotCount > 0)
+			logger.info("Explored " + snapshotCount + " in " + (endTime - startTime) + "ms");
 		Pair<Long, List<File>> entry = Pair.of(startTimestamp, result);
 		return entry;
 	}
