@@ -8,7 +8,8 @@ public enum DAQExceptionCode {
 	/* LAS access errors */
 
 	/* File access errors */
-	NoMoreFlashlistSourceFiles(301, "No more flashlist source files");
+	NoMoreFlashlistSourceFiles(301, "No more flashlist source files"),
+	ProblemExploringFiles(302, "Problem exploring files");
 
 	/* Persistence errors */
 

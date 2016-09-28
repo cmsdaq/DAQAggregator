@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 
 import rcms.utilities.daqaggregator.DAQException;
 import rcms.utilities.daqaggregator.DAQExceptionCode;
+import rcms.utilities.daqaggregator.persistence.FileSystemConnector;
 import rcms.utilities.daqaggregator.persistence.PersistenceExplorer;
 import rcms.utilities.daqaggregator.persistence.PersistenceFormat;
 import rcms.utilities.daqaggregator.persistence.StructureSerializer;
@@ -47,10 +48,13 @@ public class FileFlashlistRetriever implements FlashlistRetriever {
 
 	private final PersistenceFormat flashlistFormat;
 
+	private final PersistenceExplorer persistenceExplorer;
+
 	public FileFlashlistRetriever(String persistenceDirectory, PersistenceFormat flashlistFormat) {
 		this.persistenceDirectory = persistenceDirectory;
 		this.flashlistFormat = flashlistFormat;
 		this.structureSerialzier = new StructureSerializer();
+		this.persistenceExplorer = new PersistenceExplorer(new FileSystemConnector());
 	}
 
 	/**
@@ -61,7 +65,7 @@ public class FileFlashlistRetriever implements FlashlistRetriever {
 	public void prepare() throws IOException {
 		Set<Integer> exploredFlashlistCount = new HashSet<>();
 		for (FlashlistType flashlistType : FlashlistType.values()) {
-			Entry<Long, List<File>> explored = PersistenceExplorer.get().explore(0L, Long.MAX_VALUE,
+			Entry<Long, List<File>> explored = persistenceExplorer.explore(0L, Long.MAX_VALUE,
 					persistenceDirectory + flashlistType.name(), Integer.MAX_VALUE);
 			exploredFlashlists.put(flashlistType, explored.getValue());
 			logger.info("Explored " + explored.getValue().size() + " for flashlist " + flashlistType.name());
@@ -90,8 +94,8 @@ public class FileFlashlistRetriever implements FlashlistRetriever {
 		logger.info("Explored " + flashlistCount + " sets of flashlists");
 		flashlistSnapshotCount = flashlistCount;
 	}
-	
-	public void skip(){
+
+	public void skip() {
 		i++;
 	}
 

@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import rcms.utilities.daqaggregator.datasource.Flashlist;
+import rcms.utilities.daqaggregator.persistence.FileSystemConnector;
 import rcms.utilities.daqaggregator.persistence.PersistenceExplorer;
 import rcms.utilities.daqaggregator.persistence.PersistenceFormat;
 import rcms.utilities.daqaggregator.persistence.StructureSerializer;
@@ -41,7 +42,8 @@ public class Converter {
 
 		StructureSerializer serializer = new StructureSerializer();
 
-		Entry<Long, List<File>> result = PersistenceExplorer.get().explore(startTimestamp, endTimestamp, sourceDir);
+		Entry<Long, List<File>> result = (new PersistenceExplorer(new FileSystemConnector())).explore(startTimestamp,
+				endTimestamp, sourceDir);
 
 		System.out.println("Explored: " + result.getValue());
 

@@ -1,6 +1,7 @@
 package rcms.utilities.daqaggregator;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -8,6 +9,8 @@ import java.util.List;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.apache.log4j.Logger;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import rcms.common.db.DBConnectorException;
 import rcms.utilities.daqaggregator.data.DAQ;
@@ -63,10 +66,14 @@ public class DAQAggregator {
 					int problems = 0;
 					while (true) {
 						try {
-							boolean result = monitorAndPersist(monitorManager, persistenceManager, persistMode);
-							if (!result) {
+
+							Triple<DAQ, Collection<Flashlist>, Boolean> result = monitor(monitorManager);
+
+							if (result == null) {
 								problems++;
 								logger.info("Unsuccessful iteration, already for " + problems + "time(s)");
+							} else {
+								persist(persistenceManager, persistMode, result);
 							}
 						} catch (DAQException e) {
 							if (e.getCode() == DAQExceptionCode.NoMoreFlashlistSourceFiles) {
@@ -89,7 +96,16 @@ public class DAQAggregator {
 			case RT:
 				while (true) {
 					try {
-						monitorAndPersist(monitorManager, persistenceManager, persistMode);
+
+						long start = System.currentTimeMillis();
+
+						Triple<DAQ, Collection<Flashlist>, Boolean> result = monitor(monitorManager);
+						persist(persistenceManager, persistMode, result);
+
+						long end = System.currentTimeMillis();
+						int resultTime = (int) (end - start);
+						logger.info("Monitor & persist in " + resultTime + "ms");
+
 					} catch (DAQException e) {
 						logger.error(e.getMessage());
 						logger.info("Going to sleep for 10 seconds before trying again...");
@@ -109,6 +125,38 @@ public class DAQAggregator {
 						}
 					}
 				}
+			case SPECIAL:
+				List<Pair<Long, Float>> values = new ArrayList<>();
+				try {
+					while (true) {
+						try {
+							logger.info("Special iteration ...");
+							Triple<DAQ, Collection<Flashlist>, Boolean> result = monitor(monitorManager);
+							long a = result.getLeft().getLastUpdate();
+							float b = result.getLeft().getFedBuilderSummary().getRate();
+							values.add(Pair.of(a, b));
+
+						} catch (PathNotFoundException | InvalidNodeTypeException e) {
+							e.printStackTrace();
+						} catch (DAQException e) {
+							if (e.getCode() == DAQExceptionCode.NoMoreFlashlistSourceFiles) {
+								throw e;
+							} else {
+								logger.error(e);
+								monitorManager.skipToNextSnapshot();
+							}
+						}
+					}
+				} catch (DAQException e) {
+					if (e.getCode() == DAQExceptionCode.NoMoreFlashlistSourceFiles) {
+						logger.info("All flashlist files processed");
+						ObjectMapper om = new ObjectMapper();
+						String result = om.writeValueAsString(values);
+						System.out.println(result);
+					} else
+						throw e;
+				}
+
 			}
 
 		} catch (DBConnectorException | HardwareConfigurationException | IOException e1) {
@@ -116,13 +164,15 @@ public class DAQAggregator {
 		}
 	}
 
-	private static boolean monitorAndPersist(MonitorManager monitorManager, PersistorManager persistorManager,
-			PersistMode persistMode)
+	private static Triple<DAQ, Collection<Flashlist>, Boolean> monitor(MonitorManager monitorManager)
 			throws HardwareConfigurationException, PathNotFoundException, InvalidNodeTypeException {
-		long start = System.currentTimeMillis();
+
 		Triple<DAQ, Collection<Flashlist>, Boolean> a = monitorManager.getSystemSnapshot();
-		if (a == null)
-			return false;
+		return a;
+	}
+
+	private static void persist(PersistorManager persistorManager, PersistMode persistMode,
+			Triple<DAQ, Collection<Flashlist>, Boolean> a) {
 		switch (persistMode) {
 		case SNAPSHOT:
 			persistorManager.persistSnapshot(a.getLeft());
@@ -135,11 +185,6 @@ public class DAQAggregator {
 			persistorManager.persistFlashlists(a.getMiddle());
 			break;
 		}
-		long end = System.currentTimeMillis();
-		int resultTime = (int) (end - start);
-		logger.info("Monitor & persist in " + resultTime + "ms");
-		return true;
-
 	}
 
 	public static Pair<MonitorManager, PersistorManager> initialize(RunMode runMode)
@@ -192,7 +237,7 @@ public class DAQAggregator {
 			flashlistRetriever = new LASFlashlistRetriever(mainUrl, urlList);
 
 			break;
-		case FILE:
+		case FILE: case SPECIAL:
 			FileFlashlistRetriever fileFlashlistRetriever = new FileFlashlistRetriever(flashlistPersistenceDir,
 					flashlistFormat);
 			flashlistRetriever = fileFlashlistRetriever;
