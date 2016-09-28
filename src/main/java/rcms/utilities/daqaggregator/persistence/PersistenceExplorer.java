@@ -132,7 +132,7 @@ public class PersistenceExplorer {
 			endOfSearchPeriod = cal.getTimeInMillis();
 
 			boolean exploreYear = enterDirectory(startOfSearchPeriod, endOfSearchPeriod, startTimestamp, endTimestamp);
-			logger.info("In year directory " + dirYear + ", explore it? " + exploreYear);
+			logger.debug("In year directory " + dirYear + ", explore it? " + exploreYear);
 
 			if (exploreYear && !chunkComplete) {
 				for (File monthDir : monthDirs) {
@@ -145,7 +145,7 @@ public class PersistenceExplorer {
 
 					boolean exploreMonth = enterDirectory(startOfSearchPeriod, endOfSearchPeriod, startTimestamp,
 							endTimestamp);
-					logger.info("In month directory " + monthDir + ", explore it? " + exploreMonth);
+					logger.debug("In month directory " + monthDir + ", explore it? " + exploreMonth);
 
 					if (exploreMonth && !chunkComplete) {
 						List<File> dayDirs = fileSystemConnector.getDirs(monthDir.getAbsolutePath());
@@ -161,7 +161,7 @@ public class PersistenceExplorer {
 
 							boolean exploreDay = enterDirectory(startOfSearchPeriod, endOfSearchPeriod, startTimestamp,
 									endTimestamp);
-							logger.info("In day directory " + dayDir + ", explore it? " + exploreDay);
+							logger.debug("In day directory " + dayDir + ", explore it? " + exploreDay);
 
 							if (exploreDay && !chunkComplete) {
 								List<File> hourDirs = fileSystemConnector.getDirs(dayDir.getAbsolutePath());
@@ -178,7 +178,7 @@ public class PersistenceExplorer {
 
 									boolean exploreHour = enterDirectory(startOfSearchPeriod, endOfSearchPeriod,
 											startTimestamp, endTimestamp);
-									logger.info("In hour directory " + hour + ", explore it? " + exploreHour);
+									logger.debug("In hour directory " + hour + ", explore it? " + exploreHour);
 
 									if (exploreHour && !chunkComplete) {
 										List<File> snapshots = fileSystemConnector.getFiles(hourDir.getAbsolutePath());
