@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 
 import rcms.utilities.daqaggregator.DAQException;
 import rcms.utilities.daqaggregator.DAQExceptionCode;
+import rcms.utilities.daqaggregator.persistence.FileSystemConnector;
 import rcms.utilities.daqaggregator.persistence.PersistenceExplorer;
 import rcms.utilities.daqaggregator.persistence.PersistenceFormat;
 import rcms.utilities.daqaggregator.persistence.StructureSerializer;
@@ -53,7 +54,7 @@ public class FileFlashlistRetriever implements FlashlistRetriever {
 		this.persistenceDirectory = persistenceDirectory;
 		this.flashlistFormat = flashlistFormat;
 		this.structureSerialzier = new StructureSerializer();
-		this.persistenceExplorer = new PersistenceExplorer();
+		this.persistenceExplorer = new PersistenceExplorer(new FileSystemConnector());
 	}
 
 	/**

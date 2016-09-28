@@ -1,19 +1,38 @@
 package rcms.utilities.daqaggregator.persistence;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
 
+/**
+ * This class explores time based directory structure
+ * 
+ * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
+ *
+ */
 public class PersistenceExplorer {
 
-	private Logger logger = Logger.getLogger(PersistenceExplorer.class);
+	public PersistenceExplorer(FileSystemConnector fileSystemConnector) {
+		super();
+		this.fileSystemConnector = fileSystemConnector;
+		df.setTimeZone(tz);
+	}
+
+	private final FileSystemConnector fileSystemConnector;
+
+	private static final Logger logger = Logger.getLogger(PersistenceExplorer.class);
+
+	TimeZone tz = TimeZone.getTimeZone("UTC");
+	DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
 
 	/**
 	 * Explore time-based directory structure. Only chunk of data will be
@@ -49,6 +68,18 @@ public class PersistenceExplorer {
 		return explore(startTimestamp, endTimestamp, directory, 2000);
 	}
 
+	protected boolean enterDirectory(long startOfPeriod, long endOfPeriod, long startTimestamp, long endTimestamp) {
+
+		logger.debug("Enter search period [" + df.format(new Date(startOfPeriod)) + "-"
+				+ df.format(new Date(endOfPeriod)) + "] for target period [" + df.format(new Date(startTimestamp)) + "-"
+				+ df.format(new Date(endTimestamp)) + "]?");
+		if (endTimestamp <= startOfPeriod)
+			return false;
+		if (endOfPeriod <= startTimestamp)
+			return false;
+		return true;
+	}
+
 	/**
 	 * Explore time-based directory structure. Only chunk of data will be
 	 * returned.
@@ -71,43 +102,118 @@ public class PersistenceExplorer {
 		logger.debug("Exploring " + startTimestamp + "-" + endTimestamp + " in directory " + dir
 				+ ", maximum chunk size " + chunkSize);
 
-		Long tmpLast = startTimestamp;
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.YEAR, 0);
+		cal.set(Calendar.MONTH, 0);
+		cal.set(Calendar.DAY_OF_MONTH, 1);
+		cal.set(Calendar.HOUR_OF_DAY, 1);
+		cal.set(Calendar.MINUTE, 0);
+		cal.set(Calendar.SECOND, 0);
+		cal.set(Calendar.MILLISECOND, 0);
+
 		Long startTime = System.currentTimeMillis();
 		Long snapshotCount = 0L;
+		long mostRecentExplored = 0L;
 
 		List<File> result = new ArrayList<>();
+		List<File> yearDirs = fileSystemConnector.getDirs(dir);
 
-		List<File> yearDirs = getDirs(dir);
+		long startOfSearchPeriod = 0L;
+		long endOfSearchPeriod = 0L;
 
+		boolean chunkComplete = false;
 		for (File dirYear : yearDirs) {
-			List<File> monthDirs = getDirs(dirYear.getAbsolutePath());
+			List<File> monthDirs = fileSystemConnector.getDirs(dirYear.getAbsolutePath());
 
-			for (File monthDir : monthDirs) {
-				List<File> dayDirs = getDirs(monthDir.getAbsolutePath());
+			int year = Integer.parseInt(dirYear.getName());
+			cal.set(Calendar.YEAR, year);
+			startOfSearchPeriod = cal.getTimeInMillis();
+			cal.set(Calendar.YEAR, year + 1);
+			endOfSearchPeriod = cal.getTimeInMillis();
 
-				for (File dayDir : dayDirs) {
-					List<File> hourDirs = getDirs(dayDir.getAbsolutePath());
+			boolean exploreYear = enterDirectory(startOfSearchPeriod, endOfSearchPeriod, startTimestamp, endTimestamp);
+			logger.info("In year directory " + dirYear + ", explore it? " + exploreYear);
 
-					for (File hourDir : hourDirs) {
-						List<File> snapshots = getFiles(hourDir.getAbsolutePath());
+			if (exploreYear && !chunkComplete) {
+				for (File monthDir : monthDirs) {
+					int month = Integer.parseInt(monthDir.getName()) - 1;
+					cal.set(Calendar.YEAR, year);
+					cal.set(Calendar.MONTH, month);
+					startOfSearchPeriod = cal.getTimeInMillis();
+					cal.set(Calendar.MONTH, month + 1);
+					endOfSearchPeriod = cal.getTimeInMillis();
 
-						for (File snapshot : snapshots) {
+					boolean exploreMonth = enterDirectory(startOfSearchPeriod, endOfSearchPeriod, startTimestamp,
+							endTimestamp);
+					logger.info("In month directory " + monthDir + ", explore it? " + exploreMonth);
 
-							int dotIdx = snapshot.getName().indexOf(".");
+					if (exploreMonth && !chunkComplete) {
+						List<File> dayDirs = fileSystemConnector.getDirs(monthDir.getAbsolutePath());
+						for (File dayDir : dayDirs) {
 
-							if (dotIdx != -1) {
-								Long timestamp = Long.parseLong(snapshot.getName().substring(0, dotIdx));
+							int day = Integer.parseInt(dayDir.getName());
+							cal.set(Calendar.YEAR, year);
+							cal.set(Calendar.MONTH, month);
+							cal.set(Calendar.DAY_OF_MONTH, day);
+							startOfSearchPeriod = cal.getTimeInMillis();
+							cal.set(Calendar.DAY_OF_MONTH, day + 1);
+							endOfSearchPeriod = cal.getTimeInMillis();
 
-								// FIXME: this needs to be improved
-								if (startTimestamp < timestamp && timestamp < endTimestamp
-										&& snapshotCount < chunkSize) {
-									startTimestamp = timestamp;
-									result.add(snapshot);
-									snapshotCount++;
+							boolean exploreDay = enterDirectory(startOfSearchPeriod, endOfSearchPeriod, startTimestamp,
+									endTimestamp);
+							logger.info("In day directory " + dayDir + ", explore it? " + exploreDay);
+
+							if (exploreDay && !chunkComplete) {
+								List<File> hourDirs = fileSystemConnector.getDirs(dayDir.getAbsolutePath());
+								for (File hourDir : hourDirs) {
+
+									int hour = Integer.parseInt(hourDir.getName()) - 1;
+									cal.set(Calendar.YEAR, year);
+									cal.set(Calendar.MONTH, month);
+									cal.set(Calendar.DAY_OF_MONTH, day);
+									cal.set(Calendar.HOUR_OF_DAY, hour);
+									startOfSearchPeriod = cal.getTimeInMillis();
+									cal.set(Calendar.HOUR_OF_DAY, hour + 1);
+									endOfSearchPeriod = cal.getTimeInMillis();
+
+									boolean exploreHour = enterDirectory(startOfSearchPeriod, endOfSearchPeriod,
+											startTimestamp, endTimestamp);
+									logger.info("In hour directory " + hour + ", explore it? " + exploreHour);
+
+									if (exploreHour && !chunkComplete) {
+										List<File> snapshots = fileSystemConnector.getFiles(hourDir.getAbsolutePath());
+										for (File snapshot : snapshots) {
+
+											int dotIdx = snapshot.getName().indexOf(".");
+
+											/**
+											 * check for the extension existence
+											 */
+											if (dotIdx != -1) {
+												Long timestamp = Long
+														.parseLong(snapshot.getName().substring(0, dotIdx));
+
+												// FIXME: this needs to be
+												// improved
+												if (startTimestamp < timestamp && timestamp < endTimestamp
+														&& !chunkComplete) {
+
+													if (timestamp > mostRecentExplored)
+														mostRecentExplored = timestamp;
+
+													result.add(snapshot);
+													snapshotCount++;
+
+													if (snapshotCount >= chunkSize) {
+														chunkComplete = true;
+													}
+												}
+											}
+										}
+									}
 								}
 							}
 						}
-
 					}
 				}
 			}
@@ -116,80 +222,8 @@ public class PersistenceExplorer {
 		Long endTime = System.currentTimeMillis();
 		if (snapshotCount > 0)
 			logger.info("Explored " + snapshotCount + " in " + (endTime - startTime) + "ms");
-		Pair<Long, List<File>> entry = Pair.of(startTimestamp, result);
+		Pair<Long, List<File>> entry = Pair.of(mostRecentExplored, result);
 		return entry;
 	}
-
-	public List<File> getDirs(String file) throws IOException {
-		List<File> result = new ArrayList<>();
-
-		File folder = new File(file);
-
-		if (folder.exists() && folder.isDirectory()) {
-
-			File[] listOfFiles = folder.listFiles();
-
-			for (int i = 0; i < listOfFiles.length; i++) {
-				if (listOfFiles[i].isFile()) {
-
-					System.out.println("File " + listOfFiles[i].getName());
-				} else if (listOfFiles[i].isDirectory()) {
-					// directory name must be always parsable integer
-					try {
-						Integer.parseInt(listOfFiles[i].getName());
-						result.add(listOfFiles[i]);
-					} catch (NumberFormatException e) {
-						// ignore directory
-					}
-				}
-			}
-			Collections.sort(result, DirComparator);
-
-			return result;
-		} else {
-			throw new FileNotFoundException("Folder does not exist " + folder.getAbsolutePath());
-		}
-	}
-
-	public List<File> getFiles(String file) throws IOException {
-		List<File> result = new ArrayList<>();
-
-		File folder = new File(file);
-
-		if (folder.exists() && folder.isDirectory()) {
-
-			File[] listOfFiles = folder.listFiles();
-
-			for (int i = 0; i < listOfFiles.length; i++) {
-				if (listOfFiles[i].isFile()) {
-
-					result.add(listOfFiles[i]);
-				} else if (listOfFiles[i].isDirectory()) {
-					System.out.println("Directory " + listOfFiles[i].getName());
-				}
-			}
-			Collections.sort(result, FileComparator);
-
-			return result;
-		} else {
-			throw new FileNotFoundException("Folder does not exist " + folder.getAbsolutePath());
-		}
-	}
-
-	public static Comparator<File> DirComparator = new Comparator<File>() {
-		public int compare(File path1, File path2) {
-			Integer filename1 = Integer.parseInt(path1.getName().toString());
-			Integer filename2 = Integer.parseInt(path2.getName().toString());
-			return filename1.compareTo(filename2);
-		}
-	};
-
-	public static Comparator<File> FileComparator = new Comparator<File>() {
-		public int compare(File path1, File path2) {
-			String filename1 = path1.getName().toString();
-			String filename2 = path2.getName().toString();
-			return filename1.compareTo(filename2);
-		}
-	};
 
 }
