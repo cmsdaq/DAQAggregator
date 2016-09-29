@@ -8,6 +8,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
@@ -52,7 +53,7 @@ public class FileSystemConnectorFake extends FileSystemConnector {
 					LinkedHashMap<String, List<String>> hours = new LinkedHashMap<>();
 					for (Integer hour = 0; hour <= 23; hour++) {
 
-						Calendar cal = Calendar.getInstance();
+						Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 						cal.set(Calendar.YEAR, year);
 						cal.set(Calendar.MONTH, month - 1);
 						cal.set(Calendar.DAY_OF_MONTH, day);
@@ -63,7 +64,7 @@ public class FileSystemConnectorFake extends FileSystemConnector {
 						timestamp = cal.getTimeInMillis();
 						// int initHour = (new Date(timestamp)).getHours();
 
-						Calendar tmpCal = Calendar.getInstance();
+						Calendar tmpCal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 						tmpCal.setTimeInMillis(timestamp);
 
 						List<String> snapshots = new ArrayList<>();
@@ -78,7 +79,7 @@ public class FileSystemConnectorFake extends FileSystemConnector {
 							counter++;
 						}
 						logger.trace("Prepared " + snapshotCounter + " fake snapshots");
-						hours.put(((Integer) (hour + 1)).toString(), snapshots);
+						hours.put(((Integer) hour).toString(), snapshots);
 					}
 					days.put(day.toString(), hours);
 				}
