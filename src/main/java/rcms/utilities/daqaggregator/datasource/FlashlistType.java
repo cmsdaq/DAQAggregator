@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 
 public enum FlashlistType {
 
+	//fsname, sessionContext?, download?, sessionIdColName
 	BU("BU", true, true, "sessionid"),
 	EVM("EVM", true, true, "sessionid"),
 	FMM_INPUT("FMMInput", true, true, "sessionid"),
@@ -24,7 +25,23 @@ public enum FlashlistType {
 	DISK_INFO("diskInfo", true, false, "sessionid"),
 	FMM_PARTITION_DEAD_TIME("FMMPartitionDeadTime", true, false, ""),
 	FMM_FED_DEAD_TIME("FMMFEDDeadTime", true, false, ""),
-	TCDS_PM_TTS_CHANNEL("tcds_pm_tts_channel", false, true, "");
+
+	TCDS_BOBR("tcds_bobr", false, false, ""),
+	TCDS_COMMON("tcds_common", false, false, ""),
+	TCDS_CPM_COUNTS("tcds_cpm_counts", false, true, ""),
+	TCDS_CPM_DEADTIMES("tcds_cpm_deadtimes", false, true, ""),
+	TCDS_CPM_RATES("tcds_cpm_rates", false, true, ""),
+	TCDS_FREQMON("tcds_freqmon", false, false, ""),
+	TCDS_HW_STATUS_ICI("tcds_hw_status_ici", false, false, ""),
+	TCDS_HW_STATUS_PI("tcds_hw_status_pi", false, false, ""),
+	TCDS_ICI_BGO_COUNTS("tcds_ici_bgo_counts", false, false, ""),
+	TCDS_PM_ACTION_COUNTS("tcds_pm_action_counts", false, true, ""),
+	TCDS_PM_BGO_COUNTS("tcds_pm_bgo_counts", false, false, ""),
+	TCDS_PM_SEQUENCE_COUNTS("tcds_pm_sequence_counts", false, false, ""),
+	TCDS_PM_TTS_CHANNEL("tcds_pm_tts_channel", false, true, ""),
+	TCDS_RF2TTC_BST("tcds_rf2ttc_bst", false, false, ""),
+	TCDS_RF2TTC_CLOCKS("tcds_rf2ttc_clocks", false, false, ""),
+	TCDS_RFRXD_LEGEND("tcds_rfrxd_legend", false, false, "");
 	
 	private static Logger logger = Logger.getLogger(FlashlistType.class);
 
@@ -129,9 +146,69 @@ public enum FlashlistType {
 			logger.debug(FMM_FED_DEAD_TIME.flashlistName + message + name);
 			return FMM_FED_DEAD_TIME;
 
+		} else if (name.toLowerCase().contains(TCDS_BOBR.flashlistName.toLowerCase())) {
+			logger.debug(TCDS_BOBR.flashlistName + message + name);
+			return TCDS_BOBR;
+
+		} else if (name.toLowerCase().contains(TCDS_COMMON.flashlistName.toLowerCase())) {
+			logger.debug(TCDS_COMMON.flashlistName + message + name);
+			return TCDS_COMMON;
+
+		} else if (name.toLowerCase().contains(TCDS_CPM_COUNTS.flashlistName.toLowerCase())) {
+			logger.debug(TCDS_CPM_COUNTS.flashlistName + message + name);
+			return TCDS_CPM_COUNTS;
+
+		} else if (name.toLowerCase().contains(TCDS_CPM_DEADTIMES.flashlistName.toLowerCase())) {
+			logger.debug(TCDS_CPM_DEADTIMES.flashlistName + message + name);
+			return TCDS_CPM_DEADTIMES;
+
+		} else if (name.toLowerCase().contains(TCDS_CPM_RATES.flashlistName.toLowerCase())) {
+			logger.debug(TCDS_CPM_RATES.flashlistName + message + name);
+			return TCDS_CPM_RATES;
+
+		} else if (name.toLowerCase().contains(TCDS_FREQMON.flashlistName.toLowerCase())) {
+			logger.debug(TCDS_FREQMON.flashlistName + message + name);
+			return TCDS_FREQMON;
+
+		} else if (name.toLowerCase().contains(TCDS_HW_STATUS_ICI.flashlistName.toLowerCase())) {
+			logger.debug(TCDS_HW_STATUS_ICI.flashlistName + message + name);
+			return TCDS_HW_STATUS_ICI;
+
+		} else if (name.toLowerCase().contains(TCDS_HW_STATUS_PI.flashlistName.toLowerCase())) {
+			logger.debug(TCDS_HW_STATUS_PI.flashlistName + message + name);
+			return TCDS_HW_STATUS_PI;
+
+		} else if (name.toLowerCase().contains(TCDS_ICI_BGO_COUNTS.flashlistName.toLowerCase())) {
+			logger.debug(TCDS_ICI_BGO_COUNTS.flashlistName + message + name);
+			return TCDS_ICI_BGO_COUNTS;
+
+		} else if (name.toLowerCase().contains(TCDS_PM_ACTION_COUNTS.flashlistName.toLowerCase())) {
+			logger.debug(TCDS_PM_ACTION_COUNTS.flashlistName + message + name);
+			return TCDS_PM_ACTION_COUNTS;
+
+		} else if (name.toLowerCase().contains(TCDS_PM_BGO_COUNTS.flashlistName.toLowerCase())) {
+			logger.debug(TCDS_PM_BGO_COUNTS.flashlistName + message + name);
+			return TCDS_PM_BGO_COUNTS;
+
+		} else if (name.toLowerCase().contains(TCDS_PM_SEQUENCE_COUNTS.flashlistName.toLowerCase())) {
+			logger.debug(TCDS_PM_SEQUENCE_COUNTS.flashlistName + message + name);
+			return TCDS_PM_SEQUENCE_COUNTS;
+
 		} else if (name.toLowerCase().contains(TCDS_PM_TTS_CHANNEL.flashlistName.toLowerCase())) {
 			logger.debug(TCDS_PM_TTS_CHANNEL.flashlistName + message + name);
 			return TCDS_PM_TTS_CHANNEL;
+
+		} else if (name.toLowerCase().contains(TCDS_RF2TTC_BST.flashlistName.toLowerCase())) {
+			logger.debug(TCDS_RF2TTC_BST.flashlistName + message + name);
+			return TCDS_RF2TTC_BST;
+
+		} else if (name.toLowerCase().contains(TCDS_RF2TTC_CLOCKS.flashlistName.toLowerCase())) {
+			logger.debug(TCDS_RF2TTC_CLOCKS.flashlistName + message + name);
+			return TCDS_RF2TTC_CLOCKS;
+
+		} else if (name.toLowerCase().contains(TCDS_RFRXD_LEGEND.flashlistName.toLowerCase())) {
+			logger.debug(TCDS_RFRXD_LEGEND.flashlistName + message + name);
+			return TCDS_RFRXD_LEGEND;
 
 		}
 		else {

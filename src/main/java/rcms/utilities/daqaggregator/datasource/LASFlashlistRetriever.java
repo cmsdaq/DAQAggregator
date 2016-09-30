@@ -47,7 +47,7 @@ public class LASFlashlistRetriever implements FlashlistRetriever {
 
 	@Override
 	public Map<FlashlistType, Flashlist> retrieveAllFlashlists() {
-		logger.info("Downloading flashlists " + flashlists.size());
+		logger.info("Downloading flashlists ...");
 
 		Collection<Future<?>> futures = new LinkedList<Future<?>>();
 		long startTime = System.currentTimeMillis();
@@ -113,17 +113,14 @@ public class LASFlashlistRetriever implements FlashlistRetriever {
 		for (String lasUrl : lasUrls) {
 
 			/*
-			 * hack to filter out a single flashlist ('tcds_pm_tts_channel')
-			 * from the LAS at pc-c2e11-23-01, while in any other case
-			 * (dedicated DAQAggregator LAS) all flashlists are retrieved with
-			 * no exception TODO: This is not a final solution, review
-			 * flashlists
+			 * hack to download only the tcds-prefixed flashlists
+			 * from the LAS at pc-c2e11-23-01:9945
 			 */
 			if (lasUrl.equals("http://pc-c2e11-23-01.cms:9945/urn:xdaq-application:service=xmaslas2g")) {
 				try {
 					List<String> resultLines = Connector.get().retrieveLines(lasUrl + "/retrieveCatalog?fmt=plain");
 					for (String line : resultLines) {
-						if (line.startsWith("urn:xdaq-flashlist:tcds_pm_tts_channel")) {
+						if (line.startsWith("urn:xdaq-flashlist:tcds_")) {
 							flashlists.put(FlashlistType.inferTypeByName(line), new Flashlist(lasUrl, line, sessionId));
 						}
 					}
