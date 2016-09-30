@@ -267,9 +267,9 @@ public class FlashlistDispatcher {
 				}
 
 				//insert (first execution of the DAQAggregator) or replace (subsequent runs)
-				mappingManager.getObjectMapper().daq.getGlobalTtsStates().put(typeName, globalTtsState);
+				mappingManager.getObjectMapper().daq.getTcdsGlobalInfo().getGlobalTtsStates().put(typeName, globalTtsState);
 			}
-			logger.debug("Global TTS states count="+mappingManager.getObjectMapper().daq.getGlobalTtsStates().size());
+
 		
 		break;
 	default:
