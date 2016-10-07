@@ -34,6 +34,11 @@ public class FlashlistDispatcher {
 
 	final String INSTANCE = "instance";
 
+	// Value to filter out values from TCDS flashlists
+	// This will only work for CDAQ. Need to figure out how to know what
+	// PM (CPM or LPM) is used for a given run, instead of hardcoding
+	private String serviceField = "cpm-pri";
+
 	private static final Logger logger = Logger.getLogger(Flashlist.class);
 
 	/**
@@ -174,10 +179,6 @@ public class FlashlistDispatcher {
 			break;
 		case TCDS_PM_TTS_CHANNEL:
 
-			// This will only work for CDAQ. Need to figure out how to know what
-			// PM (CPM or LPM) is used for a given run, instead of hardcoding
-			String serviceField = "cpm-pri";
-
 			String typeField1 = "tts_ici";
 			String typeField2 = "tts_apve";
 
@@ -247,14 +248,14 @@ public class FlashlistDispatcher {
 			GlobalTTSState globalTtsState;
 			for (String typeName: types){
 				logger.debug("Global TTS state detected for this service:"+typeName);
-				
+
 				globalTtsState = new GlobalTTSState();
 
 				int stateCode = Integer.parseInt(stpiDataFromFlashlist.get(serviceField).get(typeName)
 						.get(0).get(0).get("value"));
 				globalTtsState.setState(TCDSFlashlistHelpers.decodeTCDSTTSState(stateCode));
 
-				//percentage keys should be reviewed according to the flashlist column name
+				//percentage keys should be reviewed when the flashlist column name for these attributes is defined
 				String busyKey = "outputFractionBusy";
 				String warningKey = "outputFractionWarning";
 
@@ -266,183 +267,237 @@ public class FlashlistDispatcher {
 					globalTtsState.setPercentWarning(Float.parseFloat(stpiDataFromFlashlist.get(serviceField).get(typeName).get(0).get(0).get(warningKey)));
 				}
 
-				//insert (first execution of the DAQAggregator) or replace (subsequent runs)
 				mappingManager.getObjectMapper().daq.getTcdsGlobalInfo().getGlobalTtsStates().put(typeName, globalTtsState);
 			}
 
-		
-		break;
-	default:
-		break;
-	}
+			break;
 
-}
 
-private void printFlashListTypeInfo(Flashlist flashlist) {
-	com.fasterxml.jackson.databind.ObjectMapper om = new com.fasterxml.jackson.databind.ObjectMapper();
-	try {
-		logger.info("Flashlist schema:  " + om.writeValueAsString(flashlist.getDefinitionNode()));
-	} catch (JsonProcessingException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	}
-
-}
-
-private void dispatchRowsByFedIdsWithErrors(Flashlist flashlist, Map<Integer, FED> fedsByExpectedId) {
-
-	HashMap<FED, JsonNode> fedToFlashlistRow = new HashMap<>();
-
-	for (JsonNode row : flashlist.getRowsNode()) {
-		if (row.get("fedIdsWithErrors").isArray()) {
-			for (JsonNode fedIdWithErrors : row.get("fedIdsWithErrors")) {
-				int fedId = fedIdWithErrors.asInt();
-				if (fedsByExpectedId.containsKey(fedId)) {
-					FED fed = fedsByExpectedId.get(fedId);
-					fedToFlashlistRow.put(fed, row);
-
-				} else {
-					logger.debug(
-							"FED with problem indicated by flashlist RU.fedIdsWithErrors could not be found by id "
-									+ fedId);
-				}
-			}
-			for (JsonNode fedIdWithoutFragment : row.get("fedIdsWithoutFragments")) {
-				int fedId = fedIdWithoutFragment.asInt();
-				if (fedsByExpectedId.containsKey(fedId)) {
-					FED fed = fedsByExpectedId.get(fedId);
-					fedToFlashlistRow.put(fed, row);
-
-				} else {
-					logger.debug(
-							"FED with problem indicated by flashlist RU.fedIdsWithoutFragments could not be found by id "
-									+ fedId);
+		case TCDS_CPM_COUNTS:
+			for (JsonNode rowNode : flashlist.getRowsNode()) {
+				
+				//get flashlist row corresponding to service
+				if (rowNode.get("service").asText().equalsIgnoreCase(serviceField)){
+					mappingManager.getObjectMapper().daq.getTcdsGlobalInfo().updateFromFlashlist(flashlist.getFlashlistType(), rowNode);
+					break;
 				}
 			}
 
-		}
+			break;
 
-	}
-	logger.debug("There are " + fedToFlashlistRow.size() + " FEDs with problems (according to RU flashlist)");
-	for (Entry<FED, JsonNode> entry : fedToFlashlistRow.entrySet()) {
-		FED fed = entry.getKey();
-		fed.updateFromFlashlist(flashlist.getFlashlistType(), entry.getValue());
-	}
+		case TCDS_CPM_DEADTIMES:
+			for (JsonNode rowNode : flashlist.getRowsNode()) {
+				
+				//get flashlist row corresponding to service
+				if (rowNode.get("service").asText().equalsIgnoreCase(serviceField)){
+					mappingManager.getObjectMapper().daq.getTcdsGlobalInfo().updateFromFlashlist(flashlist.getFlashlistType(), rowNode);
+					break;
+				}
+			}
 
-}
+			break;
 
-/**
- * 
- * Dispatch rows of a flashlist to appropriate objects using 2 elements geo
- * matcher
- *
- * @param flashlist
- *            flashlist to dispatch
- * @param collection
- *            objects to dispatch flashlist data to
- * @param matcher
- *            object responsible for matching row - object
- */
-public <T extends FlashlistUpdatable> void dispatchRowsByGeo(Flashlist flashlist, Collection<T> collection,
-		Matcher<T> matcher) {
+		case TCDS_CPM_RATES:
+			for (JsonNode rowNode : flashlist.getRowsNode()) {
+				
+				//get flashlist row corresponding to service
+				if (rowNode.get("service").asText().equalsIgnoreCase(serviceField)){
+					mappingManager.getObjectMapper().daq.getTcdsGlobalInfo().updateFromFlashlist(flashlist.getFlashlistType(), rowNode);
+					break;
+				}
+			}
 
-	FlashlistType flashlistType = flashlist.getFlashlistType();
+			break;
 
-	/* Object T will receive row JsonNode */
-	Map<T, JsonNode> dispatchMap = matcher.match(flashlist, collection);
-	logger.debug("Elements matched by geolocation: " + dispatchMap.size() + "/" + collection.size());
+		case TCDS_PM_ACTION_COUNTS:
+			for (JsonNode rowNode : flashlist.getRowsNode()) {
+				
+				//get flashlist row corresponding to service
+				if (rowNode.get("service").asText().equalsIgnoreCase(serviceField)){
+					mappingManager.getObjectMapper().daq.getTcdsGlobalInfo().updateFromFlashlist(flashlist.getFlashlistType(), rowNode);
+					break;
+				}
+			}
 
-	for (Entry<T, JsonNode> match : dispatchMap.entrySet()) {
-		match.getKey().updateFromFlashlist(flashlistType, match.getValue());
-	}
-
-	int failed = matcher.getFailded();
-	int all = matcher.getFailded() + matcher.getSuccessful();
-
-	MappingReporter.get().increaseMissing(flashlistType.name(), failed);
-	MappingReporter.get().increaseTotal(flashlistType.name(), all);
-
-}
-
-/**
- * Dispatch rows of a flashlist to appropriate objects
- * 
- * @param flashlist
- *            flashlit to dispatch
- * @param objectsByHostname
- *            map of objects by hostname
- * @param flashlistKey
- *            key to find flashlist column with hostname
- */
-public <T extends FlashlistUpdatable> void dispatchRowsByHostname(Flashlist flashlist,
-		Map<String, T> objectsByHostname, String flashlistKey) {
-
-	logger.debug("Updating " + flashlist.getRowsNode().size() + " of " + flashlist.getFlashlistType() + " objects ("
-			+ objectsByHostname.size() + " in the structure)");
-
-	int found = 0;
-	int failed = 0;
-
-	for (JsonNode rowNode : flashlist.getRowsNode()) {
-		String hostname = rowNode.get(flashlistKey).asText();
-		hostname = ContextHelper.getHostnameFromContext(hostname);
-		if (objectsByHostname.containsKey(hostname)) {
-			T flashlistUpdatableObject = objectsByHostname.get(hostname);
-			flashlistUpdatableObject.updateFromFlashlist(flashlist.getFlashlistType(), rowNode);
-			found++;
-		} else {
-			logger.debug("Cannot find object " + hostname + " by name in " + objectsByHostname.keySet());
-			failed++;
+			break;
+		default:
+			break;
 		}
 	}
 
-	// TODO: better report this warnings
-	MappingReporter.get().increaseMissing(flashlist.getFlashlistType().name(), failed);
-	MappingReporter.get().increaseTotal(flashlist.getFlashlistType().name(), failed + found);
-}
-
-/**
- * 
- * Dispatch rows of a flashlist to appropriate objects by instance id
- * 
- * @param flashlist
- *            Flashlist object with data retrieved from LAS
- * @param objectsById
- *            objects to update
- */
-public <T extends FlashlistUpdatable> void dispatchRowsByInstanceId(Flashlist flashlist,
-		Map<Integer, T> objectsById) {
-
-	logger.debug("Updating " + flashlist.getRowsNode().size() + " of " + flashlist.getFlashlistType() + " objects ("
-			+ objectsById.size() + " in the structure)");
-	int found = 0;
-	int failed = 0;
-
-	for (JsonNode rowNode : flashlist.getRowsNode()) {
+	private void printFlashListTypeInfo(Flashlist flashlist) {
+		com.fasterxml.jackson.databind.ObjectMapper om = new com.fasterxml.jackson.databind.ObjectMapper();
 		try {
-			int objectId = Integer.parseInt(rowNode.get(INSTANCE).asText());
+			logger.debug("Flashlist schema:  " + om.writeValueAsString(flashlist.getDefinitionNode()));
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
-			if (objectsById.containsKey(objectId)) {
+	}
 
-				T flashlistUpdatableObject = objectsById.get(objectId);
+	private void dispatchRowsByFedIdsWithErrors(Flashlist flashlist, Map<Integer, FED> fedsByExpectedId) {
+
+		HashMap<FED, JsonNode> fedToFlashlistRow = new HashMap<>();
+
+		for (JsonNode row : flashlist.getRowsNode()) {
+			if (row.get("fedIdsWithErrors").isArray()) {
+				for (JsonNode fedIdWithErrors : row.get("fedIdsWithErrors")) {
+					int fedId = fedIdWithErrors.asInt();
+					if (fedsByExpectedId.containsKey(fedId)) {
+						FED fed = fedsByExpectedId.get(fedId);
+						fedToFlashlistRow.put(fed, row);
+
+					} else {
+						logger.debug(
+								"FED with problem indicated by flashlist RU.fedIdsWithErrors could not be found by id "
+										+ fedId);
+					}
+				}
+				for (JsonNode fedIdWithoutFragment : row.get("fedIdsWithoutFragments")) {
+					int fedId = fedIdWithoutFragment.asInt();
+					if (fedsByExpectedId.containsKey(fedId)) {
+						FED fed = fedsByExpectedId.get(fedId);
+						fedToFlashlistRow.put(fed, row);
+
+					} else {
+						logger.debug(
+								"FED with problem indicated by flashlist RU.fedIdsWithoutFragments could not be found by id "
+										+ fedId);
+					}
+				}
+
+			}
+
+		}
+		logger.debug("There are " + fedToFlashlistRow.size() + " FEDs with problems (according to RU flashlist)");
+		for (Entry<FED, JsonNode> entry : fedToFlashlistRow.entrySet()) {
+			FED fed = entry.getKey();
+			fed.updateFromFlashlist(flashlist.getFlashlistType(), entry.getValue());
+		}
+
+	}
+
+	/**
+	 * 
+	 * Dispatch rows of a flashlist to appropriate objects using 2 elements geo
+	 * matcher
+	 *
+	 * @param flashlist
+	 *            flashlist to dispatch
+	 * @param collection
+	 *            objects to dispatch flashlist data to
+	 * @param matcher
+	 *            object responsible for matching row - object
+	 */
+	public <T extends FlashlistUpdatable> void dispatchRowsByGeo(Flashlist flashlist, Collection<T> collection,
+			Matcher<T> matcher) {
+
+		FlashlistType flashlistType = flashlist.getFlashlistType();
+
+		/* Object T will receive row JsonNode */
+		Map<T, JsonNode> dispatchMap = matcher.match(flashlist, collection);
+		logger.debug("Elements matched by geolocation: " + dispatchMap.size() + "/" + collection.size());
+
+		for (Entry<T, JsonNode> match : dispatchMap.entrySet()) {
+			match.getKey().updateFromFlashlist(flashlistType, match.getValue());
+		}
+
+		int failed = matcher.getFailded();
+		int all = matcher.getFailded() + matcher.getSuccessful();
+
+		MappingReporter.get().increaseMissing(flashlistType.name(), failed);
+		MappingReporter.get().increaseTotal(flashlistType.name(), all);
+
+	}
+
+	/**
+	 * Dispatch rows of a flashlist to appropriate objects
+	 * 
+	 * @param flashlist
+	 *            flashlit to dispatch
+	 * @param objectsByHostname
+	 *            map of objects by hostname
+	 * @param flashlistKey
+	 *            key to find flashlist column with hostname
+	 */
+	public <T extends FlashlistUpdatable> void dispatchRowsByHostname(Flashlist flashlist,
+			Map<String, T> objectsByHostname, String flashlistKey) {
+
+		logger.debug("Updating " + flashlist.getRowsNode().size() + " of " + flashlist.getFlashlistType() + " objects ("
+				+ objectsByHostname.size() + " in the structure)");
+
+		int found = 0;
+		int failed = 0;
+
+		for (JsonNode rowNode : flashlist.getRowsNode()) {
+			String hostname = rowNode.get(flashlistKey).asText();
+			hostname = ContextHelper.getHostnameFromContext(hostname);
+			if (objectsByHostname.containsKey(hostname)) {
+				T flashlistUpdatableObject = objectsByHostname.get(hostname);
 				flashlistUpdatableObject.updateFromFlashlist(flashlist.getFlashlistType(), rowNode);
-
-				logger.debug("Updated objects: " + flashlistUpdatableObject);
 				found++;
-
 			} else {
-				logger.debug("No DAQ object " + flashlist.getFlashlistType() + " with flashlist id " + objectId
-						+ ", ignoring "); // TODO: print class name of
-				// object being ignored
+				logger.debug("Cannot find object " + hostname + " by name in " + objectsByHostname.keySet());
 				failed++;
 			}
-		} catch (NumberFormatException e) {
-			logger.warn("Instance number can not be parsed " + rowNode.get(INSTANCE));
 		}
+
+		// TODO: better report this warnings
+		MappingReporter.get().increaseMissing(flashlist.getFlashlistType().name(), failed);
+		MappingReporter.get().increaseTotal(flashlist.getFlashlistType().name(), failed + found);
 	}
 
-	MappingReporter.get().increaseMissing(flashlist.getFlashlistType().name(), failed);
-	MappingReporter.get().increaseTotal(flashlist.getFlashlistType().name(), failed + found);
-}
+	/**
+	 * 
+	 * Dispatch rows of a flashlist to appropriate objects by instance id
+	 * 
+	 * @param flashlist
+	 *            Flashlist object with data retrieved from LAS
+	 * @param objectsById
+	 *            objects to update
+	 */
+	public <T extends FlashlistUpdatable> void dispatchRowsByInstanceId(Flashlist flashlist,
+			Map<Integer, T> objectsById) {
+
+		logger.debug("Updating " + flashlist.getRowsNode().size() + " of " + flashlist.getFlashlistType() + " objects ("
+				+ objectsById.size() + " in the structure)");
+		int found = 0;
+		int failed = 0;
+
+		for (JsonNode rowNode : flashlist.getRowsNode()) {
+			try {
+				int objectId = Integer.parseInt(rowNode.get(INSTANCE).asText());
+
+				if (objectsById.containsKey(objectId)) {
+
+					T flashlistUpdatableObject = objectsById.get(objectId);
+					flashlistUpdatableObject.updateFromFlashlist(flashlist.getFlashlistType(), rowNode);
+
+					logger.debug("Updated objects: " + flashlistUpdatableObject);
+					found++;
+
+				} else {
+					logger.debug("No DAQ object " + flashlist.getFlashlistType() + " with flashlist id " + objectId
+							+ ", ignoring "); // TODO: print class name of
+					// object being ignored
+					failed++;
+				}
+			} catch (NumberFormatException e) {
+				logger.warn("Instance number can not be parsed " + rowNode.get(INSTANCE));
+			}
+		}
+
+		MappingReporter.get().increaseMissing(flashlist.getFlashlistType().name(), failed);
+		MappingReporter.get().increaseTotal(flashlist.getFlashlistType().name(), failed + found);
+	}
+
+	public String getServiceField() {
+		return serviceField;
+	}
+
+	public void setServiceField(String serviceField) {
+		this.serviceField = serviceField;
+	}
 
 }
