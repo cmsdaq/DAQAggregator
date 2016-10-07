@@ -5,7 +5,7 @@ Aggregate monitoring data from the CMS DAQ system
 
 
 # Deploying
-To assembly runnable jar file run following command
+To assemble runnable jar file run following command
 ```
 mvn clean compile assembly:single
 ```
