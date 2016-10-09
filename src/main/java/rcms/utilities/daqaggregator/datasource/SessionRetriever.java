@@ -1,9 +1,9 @@
 package rcms.utilities.daqaggregator.datasource;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
+
+import javax.xml.bind.DatatypeConverter;
 
 import org.apache.commons.lang3.tuple.Triple;
 import org.apache.log4j.Logger;
@@ -29,7 +29,6 @@ public class SessionRetriever {
 	private final String filter1;
 	private final String filter2;
 
-	private static final SimpleDateFormat df2 = new SimpleDateFormat("EEE, MMM dd yyyy HH:mm:ss Z");
 	private static final Logger logger = Logger.getLogger(SessionRetriever.class);
 
 	protected static final String EXCEPTION_MISSING_ROW_MESSAGE = "Could not find the appropriate row in flashist LEVEL_ZERO_STATIC to determine session";
@@ -98,12 +97,9 @@ public class SessionRetriever {
 	}
 
 	private long parseTimestamp(String timestampString) {
-		try {
-			Date date = df2.parse(timestampString);
-			logger.debug("Parsed date: " + date + ", from string: " + timestampString);
-			return date.getTime();
-		} catch (ParseException e) {
-			throw new RuntimeException(EXCEPTION_PARSING_DATE_PROBLEM_MESSAGE);
-		}
+		logger.debug("Parsing date from string: " + timestampString);
+		Date date = DatatypeConverter.parseDateTime(timestampString).getTime();
+		logger.debug("Parsed date: " + date + ", from string: " + timestampString);
+		return date.getTime();
 	}
 }
