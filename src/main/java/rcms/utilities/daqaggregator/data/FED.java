@@ -1,16 +1,11 @@
 package rcms.utilities.daqaggregator.data;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
 
-import rcms.utilities.daqaggregator.DAQException;
-import rcms.utilities.daqaggregator.DAQExceptionCode;
 import rcms.utilities.daqaggregator.data.helper.BackpressureConverter;
 import rcms.utilities.daqaggregator.datasource.FlashlistType;
 import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;

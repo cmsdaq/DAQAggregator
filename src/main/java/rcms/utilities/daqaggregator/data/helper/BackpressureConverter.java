@@ -1,7 +1,6 @@
 package rcms.utilities.daqaggregator.data.helper;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import javax.xml.bind.DatatypeConverter;
 
 import org.apache.log4j.Logger;
 
@@ -11,6 +10,7 @@ public class BackpressureConverter {
 	private long lastTime;
 	private double lastResult;
 
+	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(BackpressureConverter.class);
 
 	public double calculate(double value, long time) {
@@ -39,17 +39,11 @@ public class BackpressureConverter {
 		}
 	}
 
-	private static final SimpleDateFormat df = new SimpleDateFormat("EEE, MMM dd yyyy HH:mm:ss Z");
 
 	public double calculate(double value, String time) {
 		long timeLong;
-		try {
-			timeLong = df.parse(time).getTime();
-			return calculate(value, timeLong);
-		} catch (ParseException e) {
-			logger.warn("Problem parsing timestamp " + time + " using " + df.toPattern());
-			return lastResult;
-		}
+		timeLong = DatatypeConverter.parseDateTime(time).getTimeInMillis();
+		return calculate(value, timeLong);
 	}
 
 	public float calculatePercent(double value, String time) {
