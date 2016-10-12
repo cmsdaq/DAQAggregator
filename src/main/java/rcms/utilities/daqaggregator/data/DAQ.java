@@ -55,16 +55,8 @@ public class DAQ implements FlashlistUpdatable {
 	private List<SubFEDBuilder> subFEDBuilders;
 	private Collection<FED> feds;
 	
-	private Map<String, GlobalTTSState> globalTtsStates;
-	
+	private TCDSGlobalInfo tcdsGlobalInfo;
 
-	public Map<String, GlobalTTSState> getGlobalTtsStates() {
-		return globalTtsStates;
-	}
-
-	public void setGlobalTtsStates(Map<String, GlobalTTSState> globalTtsStates) {
-		this.globalTtsStates = globalTtsStates;
-	}
 
 	public BUSummary getBuSummary() {
 		return buSummary;
@@ -244,6 +236,14 @@ public class DAQ implements FlashlistUpdatable {
 
 	public void setLhcBeamMode(String lhcBeamMode) {
 		this.lhcBeamMode = lhcBeamMode;
+	}
+	
+	public TCDSGlobalInfo getTcdsGlobalInfo() {
+		return tcdsGlobalInfo;
+	}
+
+	public void setTcdsGlobalInfo(TCDSGlobalInfo tcdsGlobalInfo) {
+		this.tcdsGlobalInfo = tcdsGlobalInfo;
 	}
 
 	@Override
