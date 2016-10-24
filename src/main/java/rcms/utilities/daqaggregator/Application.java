@@ -7,6 +7,7 @@ import java.util.Properties;
 
 public class Application {
 
+	public static final String LIMIT = "persistence.flashlist.explore.start";
 	// settings concerning session definition
 	public static String PROPERTYNAME_SESSION_LASURL_GE = "session.lasURLgeneral";
 	public static String PROPERTYNAME_SESSION_L0FILTER1 = "session.l0filter1";

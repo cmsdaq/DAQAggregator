@@ -11,6 +11,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import rcms.utilities.daqaggregator.Application;
 import rcms.utilities.daqaggregator.DAQException;
 import rcms.utilities.daqaggregator.DAQExceptionCode;
 import rcms.utilities.daqaggregator.persistence.FileSystemConnector;
@@ -65,7 +66,10 @@ public class FileFlashlistRetriever implements FlashlistRetriever {
 	public void prepare() throws IOException {
 		Set<Integer> exploredFlashlistCount = new HashSet<>();
 		for (FlashlistType flashlistType : FlashlistType.values()) {
-			Entry<Long, List<File>> explored = persistenceExplorer.explore(0L, Long.MAX_VALUE,
+
+			Long start = Long.parseLong(Application.get().getProp().get(Application.get().LIMIT).toString());
+
+			Entry<Long, List<File>> explored = persistenceExplorer.explore(start, Long.MAX_VALUE,
 					persistenceDirectory + flashlistType.name(), Integer.MAX_VALUE);
 			exploredFlashlists.put(flashlistType, explored.getValue());
 			logger.info("Explored " + explored.getValue().size() + " for flashlist " + flashlistType.name());
