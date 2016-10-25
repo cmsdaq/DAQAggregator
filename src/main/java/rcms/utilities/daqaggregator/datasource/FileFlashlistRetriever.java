@@ -63,13 +63,12 @@ public class FileFlashlistRetriever implements FlashlistRetriever {
 	 * 
 	 * @throws IOException
 	 */
-	public void prepare() throws IOException {
+	public void prepare(Long startLimit) throws IOException {
 		Set<Integer> exploredFlashlistCount = new HashSet<>();
 		for (FlashlistType flashlistType : FlashlistType.values()) {
 
-			Long start = Long.parseLong(Application.get().getProp().get(Application.get().LIMIT).toString());
 
-			Entry<Long, List<File>> explored = persistenceExplorer.explore(start, Long.MAX_VALUE,
+			Entry<Long, List<File>> explored = persistenceExplorer.explore(startLimit, Long.MAX_VALUE,
 					persistenceDirectory + flashlistType.name(), Integer.MAX_VALUE);
 			exploredFlashlists.put(flashlistType, explored.getValue());
 			logger.info("Explored " + explored.getValue().size() + " for flashlist " + flashlistType.name());

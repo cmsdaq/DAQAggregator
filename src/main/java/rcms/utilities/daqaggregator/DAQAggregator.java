@@ -237,11 +237,13 @@ public class DAQAggregator {
 			flashlistRetriever = new LASFlashlistRetriever(mainUrl, urlList);
 
 			break;
-		case FILE: case SPECIAL:
+		case FILE:
+		case SPECIAL:
 			FileFlashlistRetriever fileFlashlistRetriever = new FileFlashlistRetriever(flashlistPersistenceDir,
 					flashlistFormat);
 			flashlistRetriever = fileFlashlistRetriever;
-			fileFlashlistRetriever.prepare();
+			long startLimit = Long.parseLong(Application.get().getProp().getProperty(Application.LIMIT));
+			fileFlashlistRetriever.prepare(startLimit);
 			break;
 		}
 

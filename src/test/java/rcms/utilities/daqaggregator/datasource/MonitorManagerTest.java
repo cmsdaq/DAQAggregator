@@ -3,6 +3,8 @@ package rcms.utilities.daqaggregator.datasource;
 import java.io.IOException;
 import java.util.Collection;
 
+import javax.xml.bind.DatatypeConverter;
+
 import org.apache.commons.lang3.tuple.Triple;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -46,7 +48,8 @@ public class MonitorManagerTest {
 
 		FileFlashlistRetriever flashlistRetriever = new FileFlashlistRetriever(TEST_FLASHLISTS_DIR,
 				PersistenceFormat.JSON);
-		flashlistRetriever.prepare();
+		long startLimit = DatatypeConverter.parseDateTime("2016-10-09T19:00:00Z").getTimeInMillis();
+		flashlistRetriever.prepare(startLimit);
 		SessionRetriever sessionRetriever = new SessionRetriever("toppro", "toppro");
 		HardwareConnector hardwareConnector = new HardwareConnector();
 

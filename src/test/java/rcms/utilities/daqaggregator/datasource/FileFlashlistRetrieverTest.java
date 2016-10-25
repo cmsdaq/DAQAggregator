@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.Map;
 
+import javax.xml.bind.DatatypeConverter;
+
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -31,7 +33,7 @@ public class FileFlashlistRetrieverTest {
 	@Test
 	public void noMoreFlashlistsTest() throws IOException {
 		FileFlashlistRetriever retriever = new FileFlashlistRetriever(TEST_FLASHLISTS_DIR, PersistenceFormat.JSON);
-		retriever.prepare();
+		retriever.prepare(DatatypeConverter.parseDateTime("2016-10-09T19:00:00Z").getTimeInMillis());
 		Assert.assertEquals(21, retriever.retrieveAllFlashlists().size());
 		Assert.assertEquals(21, retriever.retrieveAllFlashlists().size());
 		Assert.assertEquals(21, retriever.retrieveAllFlashlists().size());
@@ -46,7 +48,7 @@ public class FileFlashlistRetrieverTest {
 	@Test
 	public void retrievalTimeTest() throws IOException {
 		FileFlashlistRetriever retriever = new FileFlashlistRetriever(TEST_FLASHLISTS_DIR, PersistenceFormat.JSON);
-		retriever.prepare();
+		retriever.prepare(DatatypeConverter.parseDateTime("2016-10-09T19:00:00Z").getTimeInMillis());
 		Map<FlashlistType, Flashlist> result = retriever.retrieveAllFlashlists();
 		Assert.assertEquals(21, result.size());
 		Date d1 = result.get(FlashlistType.BU).getRetrievalDate();
@@ -77,7 +79,7 @@ public class FileFlashlistRetrieverTest {
 	@Test
 	public void singleFlashlistRetrieval() throws IOException {
 		FileFlashlistRetriever retriever = new FileFlashlistRetriever(TEST_FLASHLISTS_DIR, PersistenceFormat.JSON);
-		retriever.prepare();
+		retriever.prepare(DatatypeConverter.parseDateTime("2016-10-09T19:00:00Z").getTimeInMillis());
 		Assert.assertEquals(FlashlistType.LEVEL_ZERO_FM_STATIC,
 				retriever.retrieveFlashlist(FlashlistType.LEVEL_ZERO_FM_STATIC).getFlashlistType());
 		Assert.assertEquals(21, retriever.retrieveAllFlashlists().size());
