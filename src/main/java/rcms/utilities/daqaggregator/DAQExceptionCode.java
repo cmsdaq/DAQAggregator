@@ -4,6 +4,7 @@ public enum DAQExceptionCode {
 
 	/* General errors */
 	SessionCannotBeRetrieved(101, "Cannot retrieve session"),
+	MissingProperty(102, "Missing property in configuration file"),
 
 	/* LAS access errors */
 

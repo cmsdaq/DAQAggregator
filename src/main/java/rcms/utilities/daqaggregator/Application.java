@@ -19,14 +19,14 @@ public class Application {
 	public static void initialize(String propertiesFile) {
 		String message = "Required property missing ";
 		instance = new Application(propertiesFile);
-		if (!instance.prop.containsKey(Settings.SESSION_LASURL_GE))
-			throw new RuntimeException(message + Settings.SESSION_LASURL_GE);
-		if (!instance.prop.containsKey(Settings.MONITOR_URLS))
-			throw new RuntimeException(message + Settings.MONITOR_URLS);
-		if (!instance.prop.containsKey(Settings.PERSISTENCE_MODE))
-			throw new RuntimeException(message + Settings.PERSISTENCE_MODE);
-		if (!instance.prop.containsKey(Settings.RUN_MODE))
-			throw new RuntimeException(message + Settings.RUN_MODE);
+
+		for (Settings setting : Settings.values()) {
+			if (setting.isRequired()) {
+				if (!instance.prop.containsKey(setting.getKey()))
+					throw new DAQException(DAQExceptionCode.MissingProperty, ": " + message + setting);
+			}
+		}
+
 	}
 
 	private Application(String propertiesFile) {
@@ -53,9 +53,13 @@ public class Application {
 	}
 
 	public String getProp(Settings setting) {
-		return prop.get(setting.getKey()).toString();
+		Object property = prop.get(setting.getKey());
+		if (property != null) {
+			return property.toString();
+		} else
+			return null;
 	}
-	
+
 	public Properties getProp() {
 		return prop;
 	}

@@ -38,7 +38,12 @@ public class DAQAggregator {
 				propertiesFile = args[0];
 			logger.info("DAQAggregator started with properties file '" + propertiesFile + "'");
 
-			Application.initialize(propertiesFile);
+			try {
+				Application.initialize(propertiesFile);
+			} catch (DAQException e) {
+				logger.fatal(e.getCode().getName() + e.getMessage());
+				System.exit(e.getCode().getCode());
+			}
 
 			/*
 			 * Run mode from properties file
@@ -56,8 +61,7 @@ public class DAQAggregator {
 			/*
 			 * Persist mode from properties file
 			 */
-			PersistMode persistMode = PersistMode
-					.decode(Application.get().getProp(Settings.PERSISTENCE_MODE));
+			PersistMode persistMode = PersistMode.decode(Application.get().getProp(Settings.PERSISTENCE_MODE));
 			logger.info("Persist mode:" + persistMode);
 
 			switch (runMode) {
