@@ -6,8 +6,11 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map.Entry;
 
+import javax.xml.bind.DatatypeConverter;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import rcms.utilities.daqaggregator.data.DAQ;
 import rcms.utilities.daqaggregator.datasource.Flashlist;
 import rcms.utilities.daqaggregator.persistence.FileSystemConnector;
 import rcms.utilities.daqaggregator.persistence.PersistenceExplorer;
@@ -25,19 +28,19 @@ public class Converter {
 	public static void main(String[] args) throws IOException {
 
 		// Times here are in UTC
-		Long startTimestamp = javax.xml.bind.DatatypeConverter.parseDateTime("2016-08-30T19:50:00").getTimeInMillis();
-		Long endTimestamp = javax.xml.bind.DatatypeConverter.parseDateTime("2016-08-30T20:40:00").getTimeInMillis();
-		String sourceDir = "/tmp/daqaggregator-dev/flashlists/LEVEL_ZERO_FM_DYNAMIC/";
-		String targetDir = "/tmp/flashlists-request/flashlist-LEVEL_ZERO_FM_DYNAMIC-2016-08-30T20:00:00/";
+		Long startTimestamp = DatatypeConverter.parseDateTime("2016-10-25T06:50:59+02:00").getTimeInMillis();
+		Long endTimestamp = DatatypeConverter.parseDateTime("2016-10-25T14:09:59+02:00").getTimeInMillis();
+		String sourceDir = "/tmp/daqaggregator-dev/snapshots";
+		String targetDir = "/tmp/daqaggregator-dev/smile-test/";
 		PersistenceFormat sourceFormat = PersistenceFormat.SMILE;
 		PersistenceFormat targetFormat = PersistenceFormat.JSON;
 
 		Converter converter = new Converter();
 
-		converter.convert(startTimestamp, endTimestamp, sourceDir, targetDir, sourceFormat, targetFormat);
+		converter.convertSnapshot(startTimestamp, endTimestamp, sourceDir, targetDir, sourceFormat, targetFormat);
 	}
 
-	private void convert(Long startTimestamp, Long endTimestamp, String sourceDir, String targetDir,
+	private void convertFlashlist(Long startTimestamp, Long endTimestamp, String sourceDir, String targetDir,
 			PersistenceFormat sourceFormat, PersistenceFormat targetFormat) throws IOException {
 
 		StructureSerializer serializer = new StructureSerializer();
@@ -62,4 +65,26 @@ public class Converter {
 		}
 	}
 
+	private void convertSnapshot(Long startTimestamp, Long endTimestamp, String sourceDir, String targetDir,
+			PersistenceFormat sourceFormat, PersistenceFormat targetFormat) throws IOException {
+
+		StructureSerializer serializer = new StructureSerializer();
+
+		Entry<Long, List<File>> result = (new PersistenceExplorer(new FileSystemConnector())).explore(startTimestamp,
+				endTimestamp, sourceDir);
+
+		System.out.println("Explored: " + result.getValue());
+
+		for (File file : result.getValue()) {
+
+			DAQ snapshot = serializer.deserialize(file.getAbsolutePath(), sourceFormat);
+
+			String snapshotFileName = snapshot.getLastUpdate() + targetFormat.getExtension();
+
+			File targetFile = new File(targetDir + snapshotFileName);
+
+			FileOutputStream fos = new FileOutputStream(targetFile);
+			serializer.serialize(snapshot, fos, targetFormat);
+		}
+	}
 }
