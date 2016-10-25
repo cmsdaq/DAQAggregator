@@ -98,7 +98,10 @@ public class SessionRetriever {
 
 	private long parseTimestamp(String timestampString) {
 		logger.debug("Parsing date from string: " + timestampString);
-		Date date = DatatypeConverter.parseDateTime(timestampString).getTime();
+		Date date = DateParser.parseDateTransparently(timestampString);
+		if(date == null){
+			throw new RuntimeException(EXCEPTION_PARSING_DATE_PROBLEM_MESSAGE);
+		}
 		logger.debug("Parsed date: " + date + ", from string: " + timestampString);
 		return date.getTime();
 	}
