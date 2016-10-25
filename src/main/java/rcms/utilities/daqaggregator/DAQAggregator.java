@@ -43,7 +43,7 @@ public class DAQAggregator {
 			/*
 			 * Run mode from properties file
 			 */
-			RunMode runMode = RunMode.decode(Application.get().getProp().getProperty(Application.RUN_MODE));
+			RunMode runMode = RunMode.decode(Application.get().getProp(Settings.RUN_MODE));
 			logger.info("Run mode:" + runMode);
 
 			Pair<MonitorManager, PersistorManager> initializedManagers;
@@ -57,7 +57,7 @@ public class DAQAggregator {
 			 * Persist mode from properties file
 			 */
 			PersistMode persistMode = PersistMode
-					.decode(Application.get().getProp().getProperty(Application.PERSISTENCE_MODE));
+					.decode(Application.get().getProp(Settings.PERSISTENCE_MODE));
 			logger.info("Persist mode:" + persistMode);
 
 			switch (runMode) {
@@ -194,12 +194,12 @@ public class DAQAggregator {
 		 * Setup database
 		 */
 		HardwareConnector hardwareConnector = new HardwareConnector();
-		String url = Application.get().getProp().getProperty(Application.PROPERTYNAME_HWCFGDB_DBURL);
-		String host = Application.get().getProp().getProperty(Application.PROPERTYNAME_HWCFGDB_HOST);
-		String port = Application.get().getProp().getProperty(Application.PROPERTYNAME_HWCFGDB_PORT);
-		String sid = Application.get().getProp().getProperty(Application.PROPERTYNAME_HWCFGDB_SID);
-		String user = Application.get().getProp().getProperty(Application.PROPERTYNAME_HWCFGDB_LOGIN);
-		String passwd = Application.get().getProp().getProperty(Application.PROPERTYNAME_HWCFGDB_PWD);
+		String url = Application.get().getProp(Settings.HWCFGDB_DBURL);
+		String host = Application.get().getProp(Settings.HWCFGDB_HOST);
+		String port = Application.get().getProp(Settings.HWCFGDB_PORT);
+		String sid = Application.get().getProp(Settings.HWCFGDB_SID);
+		String user = Application.get().getProp(Settings.HWCFGDB_LOGIN);
+		String passwd = Application.get().getProp(Settings.HWCFGDB_PWD);
 		hardwareConnector.initialize(url, host, port, sid, user, passwd);
 
 		/*
@@ -210,23 +210,23 @@ public class DAQAggregator {
 		/*
 		 * Get the urls
 		 */
-		String[] lasURLs = Application.get().getProp().getProperty(Application.PROPERTYNAME_MONITOR_URLS).split(" +");
+		String[] lasURLs = Application.get().getProp(Settings.MONITOR_URLS).split(" +");
 		List<String> urlList = Arrays.asList(lasURLs);
-		String mainUrl = Application.get().getProp().getProperty(Application.PROPERTYNAME_SESSION_LASURL_GE).toString();
+		String mainUrl = Application.get().getProp(Settings.SESSION_LASURL_GE).toString();
 
 		/*
 		 * Get persistence dirs
 		 */
-		String snapshotPersistenceDir = Application.get().getProp().getProperty(Application.PERSISTENCE_SNAPSHOT_DIR);
-		String flashlistPersistenceDir = Application.get().getProp().getProperty(Application.PERSISTENCE_FLASHLIST_DIR);
+		String snapshotPersistenceDir = Application.get().getProp(Settings.PERSISTENCE_SNAPSHOT_DIR);
+		String flashlistPersistenceDir = Application.get().getProp(Settings.PERSISTENCE_FLASHLIST_DIR);
 
 		/*
 		 * Format of snapshot from properties file
 		 */
 		PersistenceFormat flashlistFormat = PersistenceFormat
-				.decode(Application.get().getProp().getProperty(Application.PERSISTENCE_FLASHLIST_FORMAT));
+				.decode(Application.get().getProp(Settings.PERSISTENCE_FLASHLIST_FORMAT));
 		PersistenceFormat snapshotFormat = PersistenceFormat
-				.decode(Application.get().getProp().getProperty(Application.PERSISTENCE_SNAPSHOT_FORMAT));
+				.decode(Application.get().getProp(Settings.PERSISTENCE_SNAPSHOT_FORMAT));
 
 		PersistorManager persistorManager = new PersistorManager(snapshotPersistenceDir, flashlistPersistenceDir,
 				snapshotFormat, flashlistFormat);
@@ -242,13 +242,13 @@ public class DAQAggregator {
 			FileFlashlistRetriever fileFlashlistRetriever = new FileFlashlistRetriever(flashlistPersistenceDir,
 					flashlistFormat);
 			flashlistRetriever = fileFlashlistRetriever;
-			long startLimit = Long.parseLong(Application.get().getProp().getProperty(Application.LIMIT));
+			long startLimit = Long.parseLong(Application.get().getProp(Settings.PERSISTENCE_LIMIT));
 			fileFlashlistRetriever.prepare(startLimit);
 			break;
 		}
 
-		String filter1 = Application.get().getProp().getProperty(Application.PROPERTYNAME_SESSION_L0FILTER1);
-		String filter2 = Application.get().getProp().getProperty(Application.PROPERTYNAME_SESSION_L0FILTER2);
+		String filter1 = Application.get().getProp(Settings.SESSION_L0FILTER1);
+		String filter2 = Application.get().getProp(Settings.SESSION_L0FILTER2);
 
 		SessionRetriever sessionRetriever = new SessionRetriever(filter1, filter2);
 		MonitorManager monitorManager = new MonitorManager(flashlistRetriever, sessionRetriever, hardwareConnector);

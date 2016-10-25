@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import rcms.utilities.daqaggregator.Application;
 import rcms.utilities.daqaggregator.ProxyManager;
+import rcms.utilities.daqaggregator.Settings;
 
 /**
  * This test will not work when there is data available in LAS flashlist
@@ -35,10 +36,10 @@ public class LASFlashlistRetrieverTest {
 		Application.initialize("DAQAggregator.properties");
 
 		ProxyManager.get().startProxy();
-		String mainUrl = Application.get().getProp().get(Application.PROPERTYNAME_SESSION_LASURL_GE).toString();
-		filter1 = Application.get().getProp().get(Application.PROPERTYNAME_SESSION_L0FILTER1).toString();
-		filter2 = Application.get().getProp().get(Application.PROPERTYNAME_SESSION_L0FILTER2).toString();
-		String[] urls = Application.get().getProp().get(Application.PROPERTYNAME_MONITOR_URLS).toString().split(" +");
+		String mainUrl = Application.get().getProp(Settings.SESSION_LASURL_GE).toString();
+		filter1 = Application.get().getProp(Settings.SESSION_L0FILTER1).toString();
+		filter2 = Application.get().getProp(Settings.SESSION_L0FILTER2).toString();
+		String[] urls = Application.get().getProp(Settings.MONITOR_URLS).toString().split(" +");
 		List<String> urlList = Arrays.asList(urls);
 
 		retriever = new LASFlashlistRetriever(mainUrl, urlList);

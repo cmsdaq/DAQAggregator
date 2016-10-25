@@ -13,6 +13,7 @@ import org.junit.Test;
 
 import rcms.common.db.DBConnectorException;
 import rcms.utilities.daqaggregator.Application;
+import rcms.utilities.daqaggregator.Settings;
 import rcms.utilities.daqaggregator.data.DAQ;
 import rcms.utilities.daqaggregator.persistence.PersistenceFormat;
 import rcms.utilities.hwcfg.HardwareConfigurationException;
@@ -54,12 +55,12 @@ public class MonitorManagerTest {
 		HardwareConnector hardwareConnector = new HardwareConnector();
 
 		Application.initialize("DAQAggregator.properties");
-		String url = Application.get().getProp().getProperty(Application.PROPERTYNAME_HWCFGDB_DBURL);
-		String host = Application.get().getProp().getProperty(Application.PROPERTYNAME_HWCFGDB_HOST);
-		String port = Application.get().getProp().getProperty(Application.PROPERTYNAME_HWCFGDB_PORT);
-		String sid = Application.get().getProp().getProperty(Application.PROPERTYNAME_HWCFGDB_SID);
-		String user = Application.get().getProp().getProperty(Application.PROPERTYNAME_HWCFGDB_LOGIN);
-		String passwd = Application.get().getProp().getProperty(Application.PROPERTYNAME_HWCFGDB_PWD);
+		String url = Application.get().getProp(Settings.HWCFGDB_DBURL);
+		String host = Application.get().getProp(Settings.HWCFGDB_HOST);
+		String port = Application.get().getProp(Settings.HWCFGDB_PORT);
+		String sid = Application.get().getProp(Settings.HWCFGDB_SID);
+		String user = Application.get().getProp(Settings.HWCFGDB_LOGIN);
+		String passwd = Application.get().getProp(Settings.HWCFGDB_PWD);
 		hardwareConnector.initialize(url, host, port, sid, user, passwd);
 		monitorManager = new MonitorManager(flashlistRetriever, sessionRetriever, hardwareConnector);
 	}
