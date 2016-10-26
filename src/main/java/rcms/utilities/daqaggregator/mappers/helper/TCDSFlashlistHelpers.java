@@ -107,7 +107,6 @@ public class TCDSFlashlistHelpers {
 			for (String field : fields){
 				rootToReturn.get(service).get(type).get(pmNr).get(idNr).put(field, row.get(field).asText());
 			}
-
 		}
 
 		return rootToReturn;
