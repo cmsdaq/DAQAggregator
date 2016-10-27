@@ -31,13 +31,6 @@ public class SessionRetriever {
 
 	private static final Logger logger = Logger.getLogger(SessionRetriever.class);
 
-	protected static final String EXCEPTION_MISSING_ROW_MESSAGE = "Could not find the appropriate row in flashist LEVEL_ZERO_STATIC to determine session";
-	protected static final String EXCEPTION_OTHER_PROBLEM_MESSAGE = "Problem detecting the session";
-	protected static final String EXCEPTION_PARSING_DATE_PROBLEM_MESSAGE = "Could not parse timestamp from flashlist data";
-	protected static final String EXCEPTION_NO_DATA_MESSAGE = "Flashlist has no data";
-	protected static final String EXCEPTION_FLASHLIST_NULL_MESSAGE = "Flashlist cannot be null";
-	protected static final String EXCEPTION_WRONG_FLASHLIST_MESSAGE = "Wrong flashlist type supplied, expected level zero static";
-
 	public SessionRetriever(String filter1, String filter2) {
 		this.filter1 = filter1;
 		this.filter2 = filter2;
@@ -53,11 +46,13 @@ public class SessionRetriever {
 	public Triple<String, Integer, Long> retrieveSession(Flashlist flashlist) {
 
 		if (flashlist == null)
-			throw new RuntimeException(EXCEPTION_FLASHLIST_NULL_MESSAGE);
+			throw new DAQException(DAQExceptionCode.FlashlistNull, "");
 		if (flashlist.getFlashlistType() != FlashlistType.LEVEL_ZERO_FM_STATIC)
-			throw new RuntimeException(EXCEPTION_WRONG_FLASHLIST_MESSAGE);
+			throw new DAQException(DAQExceptionCode.WrongFlaslhist,
+					"Wrong flashlist type: " + flashlist.getFlashlistType());
 		if (flashlist.getRowsNode() == null || flashlist.getRowsNode().size() == 0)
-			throw new DAQException(DAQExceptionCode.SessionCannotBeRetrieved, EXCEPTION_NO_DATA_MESSAGE + " @timestamp " + flashlist.getRetrievalDate());
+			throw new DAQException(DAQExceptionCode.EmptyFlashlistDetectingSession,
+					"Empty flashlist at timestamp " + flashlist.getRetrievalDate());
 
 		Iterator<JsonNode> rowIterator = flashlist.getRowsNode().iterator();
 		Triple<String, Integer, Long> result = null;
@@ -85,12 +80,13 @@ public class SessionRetriever {
 		}
 
 		if (!foundRowSatisfyingFilters) {
-			throw new DAQException(DAQExceptionCode.SessionCannotBeRetrieved, EXCEPTION_MISSING_ROW_MESSAGE);
+			throw new DAQException(DAQExceptionCode.MissingRowDetectingSession,
+					"No rows found that satisfy filters: " + filter1 + ", " + filter2);
 		}
 		if (result != null) {
 			logger.debug("Result of " + result);
 		} else {
-			throw new RuntimeException(EXCEPTION_OTHER_PROBLEM_MESSAGE);
+			throw new DAQException(DAQExceptionCode.ProblemDetectingSession, "Problem unknown");
 		}
 		return result;
 
@@ -99,8 +95,8 @@ public class SessionRetriever {
 	private long parseTimestamp(String timestampString) {
 		logger.debug("Parsing date from string: " + timestampString);
 		Date date = DateParser.parseDateTransparently(timestampString);
-		if(date == null){
-			throw new RuntimeException(EXCEPTION_PARSING_DATE_PROBLEM_MESSAGE);
+		if (date == null) {
+			throw new DAQException(DAQExceptionCode.ProblemDetectingSession, "Cannot parse date with known formats");
 		}
 		logger.debug("Parsed date: " + date + ", from string: " + timestampString);
 		return date.getTime();

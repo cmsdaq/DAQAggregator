@@ -14,6 +14,10 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import rcms.utilities.daqaggregator.DAQException;
+import rcms.utilities.daqaggregator.DAQExceptionCode;
+import static org.hamcrest.Matchers.hasProperty;
+
 /**
  * Session retriever test class
  * 
@@ -32,24 +36,25 @@ public class SessionRetrieverTest {
 
 	@Test
 	public void noFlashlistTest() {
-		thrown.expect(RuntimeException.class);
-		thrown.expectMessage(is(SessionRetriever.EXCEPTION_FLASHLIST_NULL_MESSAGE));
+		thrown.expect(DAQException.class);
+
+		thrown.expect(hasProperty("code", is(DAQExceptionCode.FlashlistNull)));
 		Flashlist flashlist = null;
 		sr.retrieveSession(flashlist);
 	}
 
 	@Test
 	public void wrongFlashlistTest() {
-		thrown.expect(RuntimeException.class);
-		thrown.expectMessage(is(SessionRetriever.EXCEPTION_WRONG_FLASHLIST_MESSAGE));
+		thrown.expect(DAQException.class);
+		thrown.expect(hasProperty("code", is(DAQExceptionCode.WrongFlaslhist)));
 		Flashlist flashlist = new Flashlist(FlashlistType.BU);
 		sr.retrieveSession(flashlist);
 	}
 
 	@Test
 	public void emptyFlashlistTest() {
-		thrown.expect(RuntimeException.class);
-		thrown.expectMessage(is(SessionRetriever.EXCEPTION_NO_DATA_MESSAGE + " @timestamp " + new Date(1L)));
+		thrown.expect(DAQException.class);
+		thrown.expect(hasProperty("code", is(DAQExceptionCode.EmptyFlashlistDetectingSession)));
 		Flashlist flashlist = new Flashlist(FlashlistType.LEVEL_ZERO_FM_STATIC);
 		flashlist.retrievalDate = new Date(1L);
 		sr.retrieveSession(flashlist);
@@ -57,8 +62,8 @@ public class SessionRetrieverTest {
 
 	@Test
 	public void missingRowSatisfingFiltersTest() {
-		thrown.expect(RuntimeException.class);
-		thrown.expectMessage(is(SessionRetriever.EXCEPTION_MISSING_ROW_MESSAGE));
+		thrown.expect(DAQException.class);
+		thrown.expect(hasProperty("code", is(DAQExceptionCode.MissingRowDetectingSession)));
 		Flashlist flashlist = new Flashlist(FlashlistType.LEVEL_ZERO_FM_STATIC);
 		ArrayNode rowsNode = JsonNodeFactory.instance.arrayNode();
 		ObjectNode row = JsonNodeFactory.instance.objectNode();
@@ -73,8 +78,8 @@ public class SessionRetrieverTest {
 
 	@Test
 	public void problemParsingTimestampTest() {
-		thrown.expect(RuntimeException.class);
-		thrown.expectMessage(is(SessionRetriever.EXCEPTION_PARSING_DATE_PROBLEM_MESSAGE));
+		thrown.expect(DAQException.class);
+		thrown.expect(hasProperty("code", is(DAQExceptionCode.ProblemDetectingSession)));
 		Flashlist flashlist = new Flashlist(FlashlistType.LEVEL_ZERO_FM_STATIC);
 		ArrayNode rowsNode = JsonNodeFactory.instance.arrayNode();
 		ObjectNode row = JsonNodeFactory.instance.objectNode();
