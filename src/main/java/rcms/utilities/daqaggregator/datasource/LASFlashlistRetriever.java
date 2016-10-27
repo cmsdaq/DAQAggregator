@@ -3,9 +3,9 @@ package rcms.utilities.daqaggregator.datasource;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -48,8 +48,8 @@ public class LASFlashlistRetriever implements FlashlistRetriever {
 
 		Collection<Future<?>> futures = new LinkedList<Future<?>>();
 		long startTime = System.currentTimeMillis();
-		final Map<FlashlistType, Integer> times = new HashMap<>();
-		final Map<FlashlistType, Flashlist> flashlists = new HashMap<>();
+		final Map<FlashlistType, Integer> times = new ConcurrentHashMap<>();
+		final Map<FlashlistType, Flashlist> flashlists = new ConcurrentHashMap<>();
 		final Date retrievalDate = new Date();
 		for (final FlashlistType flashlistType : FlashlistType.values()) {
 
@@ -109,7 +109,7 @@ public class LASFlashlistRetriever implements FlashlistRetriever {
 
 		Flashlist flashlistSnapshot = new Flashlist(flashlistType);
 		int time = flashlistSnapshot.download(retrievalDate);
-		logger.info("Flashlist " + flashlistType + " downloaded in " + time + "ms, without sessionId.");
+		logger.debug("Flashlist " + flashlistType + " downloaded in " + time + "ms, without sessionId.");
 		return Pair.of(flashlistSnapshot, time);
 
 	}
@@ -119,7 +119,7 @@ public class LASFlashlistRetriever implements FlashlistRetriever {
 
 		Flashlist flashlistSnapshot = new Flashlist(flashlistType, sessionId);
 		int time = flashlistSnapshot.download(retrievalDate);
-		logger.info("Flashlist " + flashlistType + " downloaded in " + time + "ms, with sessionId: " + sessionId);
+		logger.debug("Flashlist " + flashlistType + " downloaded in " + time + "ms, with sessionId: " + sessionId);
 		return Pair.of(flashlistSnapshot, time);
 
 	}
