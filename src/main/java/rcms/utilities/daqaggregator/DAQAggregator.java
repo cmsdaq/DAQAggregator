@@ -212,13 +212,6 @@ public class DAQAggregator {
 		ProxyManager.get().startProxy();
 
 		/*
-		 * Get the urls
-		 */
-		String[] lasURLs = Application.get().getProp(Settings.MONITOR_URLS).split(" +");
-		List<String> urlList = Arrays.asList(lasURLs);
-		String mainUrl = Application.get().getProp(Settings.SESSION_LASURL_GE).toString();
-
-		/*
 		 * Get persistence dirs
 		 */
 		String snapshotPersistenceDir = Application.get().getProp(Settings.PERSISTENCE_SNAPSHOT_DIR);
@@ -238,8 +231,7 @@ public class DAQAggregator {
 		FlashlistRetriever flashlistRetriever = null;
 		switch (runMode) {
 		case RT:
-			flashlistRetriever = new LASFlashlistRetriever(mainUrl, urlList);
-
+			flashlistRetriever = new LASFlashlistRetriever();
 			break;
 		case FILE:
 		case SPECIAL:

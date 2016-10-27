@@ -41,6 +41,7 @@ import rcms.utilities.daqaggregator.data.mixin.SubFEDBuilderMixIn;
 import rcms.utilities.daqaggregator.data.mixin.SubSystemMixIn;
 import rcms.utilities.daqaggregator.data.mixin.TTCPartitionMixIn;
 import rcms.utilities.daqaggregator.datasource.Flashlist;
+import rcms.utilities.daqaggregator.datasource.FlashlistMixin;
 
 /**
  * Persists DAQ structure in multiple formats format
@@ -100,6 +101,8 @@ public class StructureSerializer {
 
 	public Flashlist deserializeFlashlist(File file, PersistenceFormat format) {
 		ObjectMapper mapper = format.getMapper();
+
+		mapper.addMixIn(Flashlist.class, FlashlistMixin.class);
 
 		Flashlist flashlist = null;
 

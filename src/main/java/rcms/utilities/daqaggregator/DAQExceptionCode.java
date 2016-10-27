@@ -7,6 +7,8 @@ public enum DAQExceptionCode {
 	MissingProperty(102, "Missing property in configuration file"),
 
 	/* LAS access errors */
+	ProblemRetrievingFlashlists(201, "Problem retrieving flashlist(s)"),
+	MissingSessionIdRetrievingFlashlists(202, "Missing session id retrieving flashlists"),
 
 	/* File access errors */
 	NoMoreFlashlistSourceFiles(301, "No more flashlist source files"),

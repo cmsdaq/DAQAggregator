@@ -32,10 +32,8 @@ public class FlashlistManager {
 		cleanStructure();
 		for (Flashlist flashlist : flashlists) {
 
-			if (flashlist.getFlashlistType().isDownload()) {
-				FlashlistDispatcher dispatcher = new FlashlistDispatcher();
-				dispatcher.dispatch(flashlist, mappingManager);
-			}
+			FlashlistDispatcher dispatcher = new FlashlistDispatcher();
+			dispatcher.dispatch(flashlist, mappingManager);
 		}
 		long stopTime = System.currentTimeMillis();
 		int time = (int) (stopTime - startTime);

@@ -2,6 +2,8 @@ package rcms.utilities.daqaggregator.datasource;
 
 import java.util.Map;
 
+import org.apache.commons.lang3.tuple.Pair;
+
 /**
  * Flashlist retriever flashlists
  * 
@@ -15,17 +17,15 @@ public interface FlashlistRetriever {
 	 * 
 	 * @return set of retrieved flashlists
 	 */
-	public Map<FlashlistType, Flashlist> retrieveAllFlashlists();
+	public Map<FlashlistType, Flashlist> retrieveAllFlashlists(int sessionId);
 
 	/**
 	 * Retrieve specific flashlist
 	 * 
 	 * @param flashlistType
 	 *            flashlist type
-	 * @return retrieved flashlist
+	 * @return retrieved flashlist and time to retrieve
 	 */
-	public Flashlist retrieveFlashlist(FlashlistType flashlistType);
+	public Pair<Flashlist, Integer> retrieveFlashlist(FlashlistType flashlistType);
 
-	
-	public void retrieveAvailableFlashlists(int sessionId);
 }

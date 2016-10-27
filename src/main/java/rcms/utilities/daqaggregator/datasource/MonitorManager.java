@@ -48,16 +48,20 @@ public class MonitorManager {
 	public Triple<DAQ, Collection<Flashlist>, Boolean> getSystemSnapshot()
 			throws HardwareConfigurationException, PathNotFoundException, InvalidNodeTypeException {
 
+		logger.info("Detecting new session");
 		boolean newSession = sessionDetector.detectNewSession();
+
+		logger.info("New session: " + newSession);
 
 		if (newSession) {
 			logger.info("Loading hardware for new session");
 			daq = rebuildDaqModel(sessionDetector.getResult());
 
-			flashlistRetriever.retrieveAvailableFlashlists(sessionDetector.getResult().getMiddle());
 		}
 
-		Collection<Flashlist> flashlists = flashlistRetriever.retrieveAllFlashlists().values();
+		int sessionId = sessionDetector.getResult().getMiddle();
+
+		Collection<Flashlist> flashlists = flashlistRetriever.retrieveAllFlashlists(sessionId).values();
 		flashlistManager.mapFlashlists(flashlists);
 
 		long lastUpdate = 0L;

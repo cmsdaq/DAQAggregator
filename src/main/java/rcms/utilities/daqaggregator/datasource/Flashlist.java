@@ -10,26 +10,22 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 public class Flashlist {
 
-	// TODO: final
-	private int sessionId;
-
-	// TODO: final
-	private String address;
-
-	// TODO: final
-	private String name;
-
-	// TODO: final
-	private String sessionIdColumnName;
-
-	// TODO: final
 	private FlashlistType flashlistType;
 
 	private JsonNode rowsNode;
 
 	private JsonNode definitionNode;
 
+	private int sessionId;
+
+	/** Date of flashlist retrieve */
 	protected Date retrievalDate;
+
+	/** Address from which the flashlist was retrieved */
+	private String address;
+
+	/** Name of flashlist used as parameter to API request */
+	private String name;
 
 	private static final Logger logger = Logger.getLogger(Flashlist.class);
 
@@ -37,28 +33,24 @@ public class Flashlist {
 	}
 
 	public Flashlist(FlashlistType flashlistType) {
-		this.flashlistType = flashlistType;
+		this(flashlistType, 0);
 	}
 
-	public Flashlist(String address, String name, int sessionId) {
+	public Flashlist(FlashlistType flashlistType, int sessionId) {
 		super();
-		this.address = address;
-		this.name = name;
+		this.flashlistType = flashlistType;
 		this.sessionId = sessionId;
-		inferType();
-	}
+		this.name = "urn:xdaq-flashlist:" + flashlistType.getFlashlistName();
+		this.address = flashlistType.getLas().getUrl() + "/retrieveCollection?flash=" + name + "&fmt=json";
 
-	public void inferType() {
-		this.flashlistType = FlashlistType.inferTypeByName(name);
-		this.sessionIdColumnName = this.flashlistType.getSessionIdColumnName();
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public String getSessionIdColumnName() {
-		return sessionIdColumnName;
+		if (flashlistType.isSessionContext()) {
+			if (sessionId != 0) {
+				address = address + "&" + flashlistType.getSessionIdColumnName() + "=" + sessionId;
+			} else {
+				logger.warn("Attempt to downoad session context flashlist " + flashlistType
+						+ " without passing the session nr");
+			}
+		}
 	}
 
 	public JsonNode getRowsNode() {
@@ -77,33 +69,46 @@ public class Flashlist {
 		this.definitionNode = definitionNode;
 	}
 
-	public int initialize(Date date) throws IOException {
+	/**
+	 * Initializes the flashlist
+	 * 
+	 * @param date
+	 * @return request processing time
+	 * @throws IOException
+	 */
+	public int download(Date date) throws IOException {
 
+		/* Setting the retrieval date */
 		retrievalDate = date;
-		int timeResult;
-		String requestAddress = address + "/retrieveCollection?flash=" + name + "&fmt=json";
-
-		if (flashlistType.isSessionContext()) {
-			// requestAddress = requestAddress + "&sessionid=" + sessionId;
-			requestAddress = requestAddress + "&" + sessionIdColumnName + "=" + sessionId;
-		}
-		logger.debug("Reading flashlist from endpoint: " + requestAddress);
+		logger.debug("Reading flashlist from endpoint: " + address);
 
 		long startTime = System.currentTimeMillis();
-		List<String> result = Connector.get().retrieveLines(requestAddress);
+		download();
+		long stopTime = System.currentTimeMillis();
+
+		int timeResult = (int) (stopTime - startTime);
+
+		/* Warning if there was no data retrieved */
+		if (definitionNode.size() == 0 || rowsNode.size() == 0)
+			logger.warn("Reading " + flashlistType + " finished in " + timeResult + "ms, fetched " + rowsNode.size()
+					+ " rows and " + definitionNode.size() + " columns");
+
+		return timeResult;
+	}
+
+	/**
+	 * Downloads the data of flashlist
+	 * 
+	 * @throws IOException
+	 */
+	private void download() throws IOException {
+		List<String> result = Connector.get().retrieveLines(address);
 
 		com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
 		JsonNode rootNode = mapper.readValue(result.get(0), JsonNode.class);
 
 		definitionNode = rootNode.get("table").get("definition");
 		rowsNode = rootNode.get("table").get("rows");
-
-		long stopTime = System.currentTimeMillis();
-		timeResult = (int) (stopTime - startTime);
-		if (definitionNode.size() == 0 || rowsNode.size() == 0)
-			logger.warn("Reading " + name + " finished in " + timeResult + "ms, fetched " + rowsNode.size()
-					+ " rows and " + definitionNode.size() + " columns");
-		return timeResult;
 	}
 
 	public FlashlistType getFlashlistType() {
@@ -116,13 +121,24 @@ public class Flashlist {
 
 	@Override
 	public String toString() {
-		return "Flashlist [sessionId=" + sessionId + ", address=" + address + ", name=" + name
-				+ ", sessionIdColumnName=" + sessionIdColumnName + ", rowsNode=" + rowsNode + ", definitionNode="
-				+ definitionNode + ", flashlistType=" + flashlistType + ", retrievalDate=" + retrievalDate + "]";
+		return "Flashlist [sessionId=" + sessionId + ", rowsNode=" + rowsNode + ", definitionNode=" + definitionNode
+				+ ", flashlistType=" + flashlistType + ", retrievalDate=" + retrievalDate + "]";
 	}
 
 	public String getAddress() {
 		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 }
