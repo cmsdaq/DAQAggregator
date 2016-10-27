@@ -5,41 +5,17 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
 
+import rcms.utilities.daqaggregator.datasource.LiveAccessService;
+
 public class Application {
 
-	public static final String LIMIT = "persistence.flashlist.explore.start";
-	// settings concerning session definition
-	public static String PROPERTYNAME_SESSION_LASURL_GE = "session.lasURLgeneral";
-	public static String PROPERTYNAME_SESSION_L0FILTER1 = "session.l0filter1";
-	public static String PROPERTYNAME_SESSION_L0FILTER2 = "session.l0filter2";
-
-	// settings for monitoring
-	public static String PROPERTYNAME_MONITOR_SETUPNAME = "monitor.setupName";
-	public static String PROPERTYNAME_MONITOR_URLS = "monitor.lasURLs";
-
-	// settings concerning HWCFG DB
-	public static String PROPERTYNAME_HWCFGDB_DBURL = "hwcfgdb.dburl";
-	public static String PROPERTYNAME_HWCFGDB_HOST = "hwcfgdb.host";
-	public static String PROPERTYNAME_HWCFGDB_PORT = "hwcfgdb.port";
-	public static String PROPERTYNAME_HWCFGDB_SID = "hwcfgdb.sid";
-	public static String PROPERTYNAME_HWCFGDB_LOGIN = "hwcfgdb.login";
-	public static String PROPERTYNAME_HWCFGDB_PWD = "hwcfgdb.pwd";
-
-	// settings concerning SOCKS proxy
-	public static String PROPERTYNAME_PROXY_ENABLE = "socksproxy.enableproxy"; // optional
-	public static String PROPERTYNAME_PROXY_HOST = "socksproy.host";
-	public static String PROPERTYNAME_PROXY_PORT = "socksproxy.port";
-
-	// settings concerning persistence
-	public static String PERSISTENCE_FLASHLIST_DIR = "persistence.flashlist.dir";
-	public static String PERSISTENCE_SNAPSHOT_DIR = "persistence.snapshot.dir";
-	public static String PERSISTENCE_FLASHLIST_FORMAT = "persistence.flashlist.format";
-	public static String PERSISTENCE_SNAPSHOT_FORMAT = "persistence.snapshot.format";
-	public static String PERSISTENCE_MODE = "persistence.mode";
-
-	public static String RUN_MODE = "run.mode";
-
 	private final Properties prop;
+
+	private static Application instance;
+
+	private Application(String propertiesFile) {
+		prop = load(propertiesFile);
+	}
 
 	public static Application get() {
 		if (instance == null) {
@@ -49,23 +25,10 @@ public class Application {
 	}
 
 	public static void initialize(String propertiesFile) {
-		String message = "Required property missing ";
 		instance = new Application(propertiesFile);
-		if (!instance.prop.containsKey(PROPERTYNAME_SESSION_LASURL_GE))
-			throw new RuntimeException(message + PROPERTYNAME_SESSION_LASURL_GE);
-		if (!instance.prop.containsKey(PROPERTYNAME_MONITOR_URLS))
-			throw new RuntimeException(message + PROPERTYNAME_MONITOR_URLS);
-		if (!instance.prop.containsKey(PERSISTENCE_MODE))
-			throw new RuntimeException(message + PERSISTENCE_MODE);
-		if (!instance.prop.containsKey(RUN_MODE))
-			throw new RuntimeException(message + RUN_MODE);
+		checkRequiredSettings();
+		initializeLAS();
 	}
-
-	private Application(String propertiesFile) {
-		prop = load(propertiesFile);
-	}
-
-	private static Application instance;
 
 	private Properties load(String propertiesFile) {
 
@@ -82,6 +45,35 @@ public class Application {
 			e.printStackTrace();
 			throw new RuntimeException("Cannot run application without configuration file");
 		}
+	}
+
+	/**
+	 * Check if all required settings are present in configuration file
+	 */
+	private static void checkRequiredSettings() {
+		for (Settings setting : Settings.values()) {
+			if (setting.isRequired()) {
+				if (!instance.prop.containsKey(setting.getKey()))
+					throw new DAQException(DAQExceptionCode.MissingProperty, ": Required property missing " + setting);
+			}
+		}
+	}
+
+	/**
+	 * Initialize Liva Access Service urls from configuration file
+	 */
+	private static void initializeLAS() {
+		LiveAccessService.PRIMARY.setUrl(Application.get().getProp(Settings.FLASHLIST_PRIMARY_URL));
+		LiveAccessService.SECONDARY.setUrl(Application.get().getProp(Settings.FLASHLIST_SECONDARY_URL));
+		LiveAccessService.ADDITIONAL.setUrl(Application.get().getProp(Settings.FLASHLIST_ADDITIONAL_URL));
+	}
+
+	public String getProp(Settings setting) {
+		Object property = prop.get(setting.getKey());
+		if (property != null) {
+			return property.toString();
+		} else
+			return null;
 	}
 
 	public Properties getProp() {

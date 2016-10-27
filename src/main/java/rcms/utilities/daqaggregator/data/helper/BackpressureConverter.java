@@ -1,8 +1,10 @@
 package rcms.utilities.daqaggregator.data.helper;
 
-import javax.xml.bind.DatatypeConverter;
+import java.util.Date;
 
 import org.apache.log4j.Logger;
+
+import rcms.utilities.daqaggregator.datasource.DateParser;
 
 public class BackpressureConverter {
 
@@ -39,10 +41,14 @@ public class BackpressureConverter {
 		}
 	}
 
-
 	public double calculate(double value, String time) {
 		long timeLong;
-		timeLong = DatatypeConverter.parseDateTime(time).getTimeInMillis();
+		Date date = DateParser.parseDateTransparently(time);
+		if (date == null) {
+			return lastResult;
+		}
+
+		timeLong = date.getTime();
 		return calculate(value, timeLong);
 	}
 

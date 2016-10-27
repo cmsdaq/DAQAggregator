@@ -4,45 +4,35 @@ import org.apache.log4j.Logger;
 
 public enum FlashlistType {
 
-	//fsname, sessionContext?, download?, sessionIdColName
-	BU("BU", true, true, "sessionid"),
-	EVM("EVM", true, true, "sessionid"),
-	FMM_INPUT("FMMInput", true, true, "sessionid"),
-	FMM_INPUT_DETAIL("FMMInputDetail", true, false, "sessionid"),
-	FMM_STATUS("FMMStatus", true, true, "sessionid"),
-	RU("RU", true, true, "sessionid"),
-	FEROL_CONFIGURATION("ferolConfiguration", true, true, "sessionid"),
-	FEROL_INPUT_STREAM("ferolInputStream", true, true, "sessionid"),
-	FEROL_MONITORING("ferolMonitoring", true, false, "sessionid"),
-	FEROL_STATUS("ferolStatus", true, true, "sessionid"),
-	FEROL_TCP_STREAM("ferolTcpStream", true, false, "sessionid"),
-	FRL_MONITORING("frlMonitoring", true, true, "sessionid"),
-	HOST_INFO("hostInfo", true, false, "sessionid"),
-	LEVEL_ZERO_FM_DYNAMIC("levelZeroFM_dynamic", false, true, "SID"),
-	LEVEL_ZERO_FM_STATIC("levelZeroFM_static", false, true, "SID"),
-	LEVEL_ZERO_FM_SUBSYS("levelZeroFM_subsys", false, true, "SID"),
-	JOB_CONTROL("jobcontrol", false, true, "sessionid"),
-	DISK_INFO("diskInfo", true, false, "sessionid"),
-	FMM_PARTITION_DEAD_TIME("FMMPartitionDeadTime", true, false, ""),
-	FMM_FED_DEAD_TIME("FMMFEDDeadTime", true, false, ""),
+	// fsname, sessionContext?, download?, sessionIdColName
+	BU(LiveAccessService.PRIMARY, "BU", "sessionid"),
+	EVM(LiveAccessService.PRIMARY, "EVM", "sessionid"),
+	FMM_INPUT(LiveAccessService.PRIMARY, "FMMInput", "sessionid"),
+	FMM_INPUT_DETAIL(LiveAccessService.PRIMARY, "FMMInputDetail", "sessionid"),
+	FMM_STATUS(LiveAccessService.PRIMARY, "FMMStatus", "sessionid"),
+	RU(LiveAccessService.PRIMARY, "RU", "sessionid"),
+	FEROL_CONFIGURATION(LiveAccessService.PRIMARY, "ferolConfiguration", "sessionid"),
+	FEROL_INPUT_STREAM(LiveAccessService.PRIMARY, "ferolInputStream", "sessionid"),
+	FEROL_MONITORING(LiveAccessService.PRIMARY, "ferolMonitoring", "sessionid"),
+	FEROL_STATUS(LiveAccessService.PRIMARY, "ferolStatus", "sessionid"),
+	FEROL_TCP_STREAM(LiveAccessService.PRIMARY, "ferolTcpStream", "sessionid"),
+	FRL_MONITORING(LiveAccessService.PRIMARY, "frlMonitoring", "sessionid"),
+	HOST_INFO(LiveAccessService.PRIMARY, "hostInfo", "sessionid"),
+	LEVEL_ZERO_FM_DYNAMIC(LiveAccessService.PRIMARY, "levelZeroFM_dynamic"),
+	LEVEL_ZERO_FM_STATIC(LiveAccessService.PRIMARY, "levelZeroFM_static"),
+	LEVEL_ZERO_FM_SUBSYS(LiveAccessService.PRIMARY, "levelZeroFM_subsys"),
 
-	TCDS_BOBR("tcds_bobr", false, false, ""),
-	TCDS_COMMON("tcds_common", false, false, ""),
-	TCDS_CPM_COUNTS("tcds_cpm_counts", false, true, ""),
-	TCDS_CPM_DEADTIMES("tcds_cpm_deadtimes", false, true, ""),
-	TCDS_CPM_RATES("tcds_cpm_rates", false, true, ""),
-	TCDS_FREQMON("tcds_freqmon", false, false, ""),
-	TCDS_HW_STATUS_ICI("tcds_hw_status_ici", false, false, ""),
-	TCDS_HW_STATUS_PI("tcds_hw_status_pi", false, false, ""),
-	TCDS_ICI_BGO_COUNTS("tcds_ici_bgo_counts", false, false, ""),
-	TCDS_PM_ACTION_COUNTS("tcds_pm_action_counts", false, true, ""),
-	TCDS_PM_BGO_COUNTS("tcds_pm_bgo_counts", false, false, ""),
-	TCDS_PM_SEQUENCE_COUNTS("tcds_pm_sequence_counts", false, false, ""),
-	TCDS_PM_TTS_CHANNEL("tcds_pm_tts_channel", false, true, ""),
-	TCDS_RF2TTC_BST("tcds_rf2ttc_bst", false, false, ""),
-	TCDS_RF2TTC_CLOCKS("tcds_rf2ttc_clocks", false, false, ""),
-	TCDS_RFRXD_LEGEND("tcds_rfrxd_legend", false, false, "");
-	
+	JOB_CONTROL(LiveAccessService.SECONDARY, "jobcontrol"),
+	DISK_INFO(LiveAccessService.SECONDARY, "diskInfo", "sessionid"),
+	FMM_PARTITION_DEAD_TIME(LiveAccessService.SECONDARY, "FMMPartitionDeadTime"),
+	FMM_FED_DEAD_TIME(LiveAccessService.SECONDARY, "FMMFEDDeadTime"),
+
+	TCDS_CPM_COUNTS(LiveAccessService.ADDITIONAL, "tcds_cpm_counts"),
+	TCDS_CPM_DEADTIMES(LiveAccessService.ADDITIONAL, "tcds_cpm_deadtimes"),
+	TCDS_CPM_RATES(LiveAccessService.ADDITIONAL, "tcds_cpm_rates"),
+	TCDS_PM_ACTION_COUNTS(LiveAccessService.ADDITIONAL, "tcds_pm_action_counts"),
+	TCDS_PM_TTS_CHANNEL(LiveAccessService.ADDITIONAL, "tcds_pm_tts_channel");
+
 	private static Logger logger = Logger.getLogger(FlashlistType.class);
 
 	private final String flashlistName;
@@ -53,186 +43,39 @@ public enum FlashlistType {
 	 */
 	private final boolean sessionContext;
 
-	private final boolean download;
-
 	private final String sessionIdColumnName;
 
-	private FlashlistType(String name, boolean sessionContext, boolean download, String sessionIdColumnName) {
+	private final LiveAccessService las;
+
+	private FlashlistType(LiveAccessService las, String name, String sessionIdColumnName) {
+		this(las, name, true, sessionIdColumnName);
+	}
+
+	private FlashlistType(LiveAccessService las, String name, boolean sessionContext, String sessionIdColumnName) {
+		this.las = las;
 		this.flashlistName = name;
 		this.sessionContext = sessionContext;
-		this.download = download;
 		this.sessionIdColumnName = sessionIdColumnName;
 	}
 
-	private static String message = " flashlist type infered from name ";
-
-	public static FlashlistType inferTypeByName(String name) {
-		if (name.toLowerCase().contains(BU.flashlistName.toLowerCase())) {
-			logger.debug(BU.flashlistName + message + name);
-			return BU;
-		} else if (name.toLowerCase().contains(RU.flashlistName.toLowerCase())) {
-			logger.debug(RU.flashlistName + message + name);
-			return RU;
-
-		} else if (name.toLowerCase().contains(FMM_INPUT_DETAIL.flashlistName.toLowerCase())) {
-			logger.debug(FMM_INPUT_DETAIL.flashlistName + message + name);
-			return FMM_INPUT_DETAIL;
-
-		} else if (name.toLowerCase().contains(FMM_INPUT.flashlistName.toLowerCase())) {
-			logger.debug(FMM_INPUT.flashlistName + message + name);
-			return FMM_INPUT;
-
-		} else if (name.toLowerCase().contains(EVM.flashlistName.toLowerCase())) {
-			logger.debug(EVM.flashlistName + message + name);
-			return EVM;
-
-		} else if (name.toLowerCase().contains(FMM_STATUS.flashlistName.toLowerCase())) {
-			logger.debug(FMM_STATUS.flashlistName + message + name);
-			return FMM_STATUS;
-
-		} else if (name.toLowerCase().contains(FEROL_CONFIGURATION.flashlistName.toLowerCase())) {
-			logger.debug(FEROL_CONFIGURATION.flashlistName + message + name);
-			return FEROL_CONFIGURATION;
-
-		} else if (name.toLowerCase().contains(FEROL_INPUT_STREAM.flashlistName.toLowerCase())) {
-			logger.debug(FEROL_INPUT_STREAM.flashlistName + message + name);
-			return FEROL_INPUT_STREAM;
-
-		} else if (name.toLowerCase().contains(FEROL_MONITORING.flashlistName.toLowerCase())) {
-			logger.debug(FEROL_MONITORING.flashlistName + message + name);
-			return FEROL_MONITORING;
-
-		} else if (name.toLowerCase().contains(FEROL_STATUS.flashlistName.toLowerCase())) {
-			logger.debug(FEROL_STATUS.flashlistName + message + name);
-			return FEROL_STATUS;
-
-		} else if (name.toLowerCase().contains(FEROL_TCP_STREAM.flashlistName.toLowerCase())) {
-			logger.debug(FEROL_TCP_STREAM.flashlistName + message + name);
-			return FEROL_TCP_STREAM;
-
-		} else if (name.toLowerCase().contains(FRL_MONITORING.flashlistName.toLowerCase())) {
-			logger.debug(FRL_MONITORING.flashlistName + message + name);
-			return FRL_MONITORING;
-
-		} else if (name.toLowerCase().contains(HOST_INFO.flashlistName.toLowerCase())) {
-			logger.debug(HOST_INFO.flashlistName + message + name);
-			return HOST_INFO;
-
-		} else if (name.toLowerCase().contains(LEVEL_ZERO_FM_DYNAMIC.flashlistName.toLowerCase())) {
-			logger.debug(LEVEL_ZERO_FM_DYNAMIC.flashlistName + message + name);
-			return LEVEL_ZERO_FM_DYNAMIC;
-
-		} else if (name.toLowerCase().contains(LEVEL_ZERO_FM_STATIC.flashlistName.toLowerCase())) {
-			logger.debug(LEVEL_ZERO_FM_STATIC.flashlistName + message + name);
-			return LEVEL_ZERO_FM_STATIC;
-
-		} else if (name.toLowerCase().contains(LEVEL_ZERO_FM_SUBSYS.flashlistName.toLowerCase())) {
-			logger.debug(LEVEL_ZERO_FM_SUBSYS.flashlistName + message + name);
-			return LEVEL_ZERO_FM_SUBSYS;
-
-		} else if (name.toLowerCase().contains(JOB_CONTROL.flashlistName.toLowerCase())) {
-			logger.debug(JOB_CONTROL.flashlistName + message + name);
-			return JOB_CONTROL;
-
-		} else if (name.toLowerCase().contains(DISK_INFO.flashlistName.toLowerCase())) {
-			logger.debug(DISK_INFO.flashlistName + message + name);
-			return DISK_INFO;
-
-		} else if (name.toLowerCase().contains(FMM_PARTITION_DEAD_TIME.flashlistName.toLowerCase())) {
-			logger.debug(FMM_PARTITION_DEAD_TIME.flashlistName + message + name);
-			return FMM_PARTITION_DEAD_TIME;
-
-		} else if (name.toLowerCase().contains(FMM_FED_DEAD_TIME.flashlistName.toLowerCase())) {
-			logger.debug(FMM_FED_DEAD_TIME.flashlistName + message + name);
-			return FMM_FED_DEAD_TIME;
-
-		} else if (name.toLowerCase().contains(TCDS_BOBR.flashlistName.toLowerCase())) {
-			logger.debug(TCDS_BOBR.flashlistName + message + name);
-			return TCDS_BOBR;
-
-		} else if (name.toLowerCase().contains(TCDS_COMMON.flashlistName.toLowerCase())) {
-			logger.debug(TCDS_COMMON.flashlistName + message + name);
-			return TCDS_COMMON;
-
-		} else if (name.toLowerCase().contains(TCDS_CPM_COUNTS.flashlistName.toLowerCase())) {
-			logger.debug(TCDS_CPM_COUNTS.flashlistName + message + name);
-			return TCDS_CPM_COUNTS;
-
-		} else if (name.toLowerCase().contains(TCDS_CPM_DEADTIMES.flashlistName.toLowerCase())) {
-			logger.debug(TCDS_CPM_DEADTIMES.flashlistName + message + name);
-			return TCDS_CPM_DEADTIMES;
-
-		} else if (name.toLowerCase().contains(TCDS_CPM_RATES.flashlistName.toLowerCase())) {
-			logger.debug(TCDS_CPM_RATES.flashlistName + message + name);
-			return TCDS_CPM_RATES;
-
-		} else if (name.toLowerCase().contains(TCDS_FREQMON.flashlistName.toLowerCase())) {
-			logger.debug(TCDS_FREQMON.flashlistName + message + name);
-			return TCDS_FREQMON;
-
-		} else if (name.toLowerCase().contains(TCDS_HW_STATUS_ICI.flashlistName.toLowerCase())) {
-			logger.debug(TCDS_HW_STATUS_ICI.flashlistName + message + name);
-			return TCDS_HW_STATUS_ICI;
-
-		} else if (name.toLowerCase().contains(TCDS_HW_STATUS_PI.flashlistName.toLowerCase())) {
-			logger.debug(TCDS_HW_STATUS_PI.flashlistName + message + name);
-			return TCDS_HW_STATUS_PI;
-
-		} else if (name.toLowerCase().contains(TCDS_ICI_BGO_COUNTS.flashlistName.toLowerCase())) {
-			logger.debug(TCDS_ICI_BGO_COUNTS.flashlistName + message + name);
-			return TCDS_ICI_BGO_COUNTS;
-
-		} else if (name.toLowerCase().contains(TCDS_PM_ACTION_COUNTS.flashlistName.toLowerCase())) {
-			logger.debug(TCDS_PM_ACTION_COUNTS.flashlistName + message + name);
-			return TCDS_PM_ACTION_COUNTS;
-
-		} else if (name.toLowerCase().contains(TCDS_PM_BGO_COUNTS.flashlistName.toLowerCase())) {
-			logger.debug(TCDS_PM_BGO_COUNTS.flashlistName + message + name);
-			return TCDS_PM_BGO_COUNTS;
-
-		} else if (name.toLowerCase().contains(TCDS_PM_SEQUENCE_COUNTS.flashlistName.toLowerCase())) {
-			logger.debug(TCDS_PM_SEQUENCE_COUNTS.flashlistName + message + name);
-			return TCDS_PM_SEQUENCE_COUNTS;
-
-		} else if (name.toLowerCase().contains(TCDS_PM_TTS_CHANNEL.flashlistName.toLowerCase())) {
-			logger.debug(TCDS_PM_TTS_CHANNEL.flashlistName + message + name);
-			return TCDS_PM_TTS_CHANNEL;
-
-		} else if (name.toLowerCase().contains(TCDS_RF2TTC_BST.flashlistName.toLowerCase())) {
-			logger.debug(TCDS_RF2TTC_BST.flashlistName + message + name);
-			return TCDS_RF2TTC_BST;
-
-		} else if (name.toLowerCase().contains(TCDS_RF2TTC_CLOCKS.flashlistName.toLowerCase())) {
-			logger.debug(TCDS_RF2TTC_CLOCKS.flashlistName + message + name);
-			return TCDS_RF2TTC_CLOCKS;
-
-		} else if (name.toLowerCase().contains(TCDS_RFRXD_LEGEND.flashlistName.toLowerCase())) {
-			logger.debug(TCDS_RFRXD_LEGEND.flashlistName + message + name);
-			return TCDS_RFRXD_LEGEND;
-
-		}
-		else {
-
-			logger.warn("Cannot infer flashlist type from name " + name);
-			return null;
-		}
-
+	private FlashlistType(LiveAccessService las, String name) {
+		this(las, name, false, null);
 	}
 
 	public boolean isSessionContext() {
 		return sessionContext;
 	}
 
-	public boolean isDownload() {
-		return download;
-	}
-
-	public String getSessionIdColumnName(){
+	public String getSessionIdColumnName() {
 		return sessionIdColumnName;
 	}
 
 	public String getFlashlistName() {
 		return flashlistName;
+	}
+
+	public LiveAccessService getLas() {
+		return las;
 	}
 
 }

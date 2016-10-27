@@ -39,15 +39,30 @@ public class BackpressureConverterTest {
 		Assert.assertEquals(10, backpressureConverter.calculate(15, 2000), 0.0001);
 		Assert.assertEquals(20, backpressureConverter.calculate(30, 3000), 0.0001);
 	}
-
+	/**
+	 * Format before 2016-10-07
+	 */
 	@Test
-	public void formatSimpleTest() {
+	public void oldFormatSimpleTest() {
 		BackpressureConverter backpressureConverter = new BackpressureConverter();
 		Assert.assertEquals(0, backpressureConverter.calculate(0, "Tue, Sep 13 2016 15:35:22 GMT"), 0.0001);
 		Assert.assertEquals(10, backpressureConverter.calculate(10, "Tue, Sep 13 2016 15:35:23 GMT"), 0.0001);
 		Assert.assertEquals(5, backpressureConverter.calculate(15, "Tue, Sep 13 2016 15:35:24 GMT"), 0.0001);
 		Assert.assertEquals(0, backpressureConverter.calculate(15, "Tue, Sep 13 2016 15:35:25 GMT"), 0.0001);
 		Assert.assertEquals(15, backpressureConverter.calculate(30, "Tue, Sep 13 2016 15:35:26 GMT"), 0.0001);
+	}
+	
+	/**
+	 * Format introduced 2016-10-07
+	 */
+	@Test
+	public void newFormatSimpleTest() {
+		BackpressureConverter backpressureConverter = new BackpressureConverter();
+		Assert.assertEquals(0, backpressureConverter.calculate(0, "2016-09-13T15:35:22Z"), 0.0001);
+		Assert.assertEquals(10, backpressureConverter.calculate(10, "2016-09-13T15:35:23Z"), 0.0001);
+		Assert.assertEquals(5, backpressureConverter.calculate(15, "2016-09-13T15:35:24Z"), 0.0001);
+		Assert.assertEquals(0, backpressureConverter.calculate(15, "2016-09-13T15:35:25Z"), 0.0001);
+		Assert.assertEquals(15, backpressureConverter.calculate(30, "2016-09-13T15:35:26Z"), 0.0001);
 	}
 
 	@Test

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -89,18 +90,13 @@ public class SessionDetectorTest {
 		private final Iterator<Flashlist> iterator;
 
 		@Override
-		public Flashlist retrieveFlashlist(FlashlistType flashlistType) {
-			return iterator.next();
+		public Pair<Flashlist, Integer> retrieveFlashlist(FlashlistType flashlistType) {
+			return Pair.of(iterator.next(), 0);
 		}
 
 		@Override
-		public Map<FlashlistType, Flashlist> retrieveAllFlashlists() {
+		public Map<FlashlistType, Flashlist> retrieveAllFlashlists(int sessionId) {
 			return null;
-		}
-
-		@Override
-		public void retrieveAvailableFlashlists(int sessionId) {
-
 		}
 
 	}
