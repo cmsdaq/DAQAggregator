@@ -3,7 +3,9 @@ package rcms.utilities.daqaggregator.datasource;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -22,7 +24,7 @@ import rcms.utilities.daqaggregator.Settings;
  * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
  *
  */
-@Ignore
+// @Ignore
 public class LASFlashlistRetrieverTest {
 
 	private static String filter1;
@@ -36,35 +38,28 @@ public class LASFlashlistRetrieverTest {
 		Application.initialize("DAQAggregator.properties");
 
 		ProxyManager.get().startProxy();
-		String mainUrl = Application.get().getProp(Settings.SESSION_LASURL_GE).toString();
 		filter1 = Application.get().getProp(Settings.SESSION_L0FILTER1).toString();
 		filter2 = Application.get().getProp(Settings.SESSION_L0FILTER2).toString();
-		String[] urls = Application.get().getProp(Settings.MONITOR_URLS).toString().split(" +");
-		List<String> urlList = Arrays.asList(urls);
 
-		retriever = new LASFlashlistRetriever(mainUrl, urlList);
+		retriever = new LASFlashlistRetriever();
 
-		Flashlist flashlist = retriever.retrieveFlashlist(FlashlistType.LEVEL_ZERO_FM_STATIC);
+		Pair<Flashlist, Integer> flashlistDownloadResult = retriever
+				.retrieveFlashlist(FlashlistType.LEVEL_ZERO_FM_STATIC);
 
 		SessionRetriever sessionRetriever = new SessionRetriever(filter1, filter2);
-		Triple<String, Integer, Long> result = sessionRetriever.retrieveSession(flashlist);
+		Triple<String, Integer, Long> result = sessionRetriever.retrieveSession(flashlistDownloadResult.getLeft());
 
 		sessionId = result.getMiddle();
+		Assert.assertNotNull(flashlistDownloadResult);
+		Assert.assertNotNull(flashlistDownloadResult.getLeft());
 
-	}
-
-	@Test
-	public void retrieveSingleFlashlistTest() throws IOException {
-
-		Flashlist flashlist = retriever.retrieveFlashlist(FlashlistType.LEVEL_ZERO_FM_STATIC);
-		Assert.assertNotNull(flashlist);
 	}
 
 	@Test
 	public void retrieveMultipleFlashlistsTest() throws IOException {
 
-		retriever.retrieveAvailableFlashlists(sessionId);
-		Assert.assertEquals(21, retriever.retrieveAllFlashlists().size());
+		Map<FlashlistType, Flashlist> flashlistRetrieveResult = retriever.retrieveAllFlashlists(sessionId);
+		Assert.assertEquals(25, flashlistRetrieveResult.size());
 	}
 
 }
