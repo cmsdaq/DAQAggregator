@@ -51,18 +51,18 @@ public class DAQAggregator {
 			RunMode runMode = RunMode.decode(Application.get().getProp(Settings.RUN_MODE));
 			logger.info("Run mode:" + runMode);
 
+			/*
+			 * Persist mode from properties file
+			 */
+			PersistMode persistMode = PersistMode.decode(Application.get().getProp(Settings.PERSISTENCE_MODE));
+			logger.info("Persist mode:" + persistMode);
+
 			Pair<MonitorManager, PersistorManager> initializedManagers;
 
 			initializedManagers = initialize(runMode);
 
 			MonitorManager monitorManager = initializedManagers.getLeft();
 			PersistorManager persistenceManager = initializedManagers.getRight();
-
-			/*
-			 * Persist mode from properties file
-			 */
-			PersistMode persistMode = PersistMode.decode(Application.get().getProp(Settings.PERSISTENCE_MODE));
-			logger.info("Persist mode:" + persistMode);
 
 			switch (runMode) {
 			case FILE:
@@ -194,6 +194,7 @@ public class DAQAggregator {
 	public static Pair<MonitorManager, PersistorManager> initialize(RunMode runMode)
 			throws DBConnectorException, HardwareConfigurationException, IOException {
 
+		long start = System.currentTimeMillis();
 		/*
 		 * Setup database
 		 */
@@ -216,6 +217,13 @@ public class DAQAggregator {
 		 */
 		String snapshotPersistenceDir = Application.get().getProp(Settings.PERSISTENCE_SNAPSHOT_DIR);
 		String flashlistPersistenceDir = Application.get().getProp(Settings.PERSISTENCE_FLASHLIST_DIR);
+
+		PersistMode persistMode = PersistMode.decode(Application.get().getProp(Settings.PERSISTENCE_MODE));
+
+		if (persistMode == PersistMode.SNAPSHOT || persistMode == PersistMode.ALL)
+			logger.info("Snapshots will be persisted at: " + snapshotPersistenceDir);
+		if (persistMode == PersistMode.FLASHLIST || persistMode == PersistMode.ALL)
+			logger.info("Flashlists will be persisted at: " + flashlistPersistenceDir);
 
 		/*
 		 * Format of snapshot from properties file
@@ -249,8 +257,10 @@ public class DAQAggregator {
 		SessionRetriever sessionRetriever = new SessionRetriever(filter1, filter2);
 		MonitorManager monitorManager = new MonitorManager(flashlistRetriever, sessionRetriever, hardwareConnector);
 
-		logger.info("DAQAggregator is initialized");
+		int timeToInitialize = (int) (System.currentTimeMillis() - start);
 
+		logger.info("DAQAggregator initialized in " + timeToInitialize + "ms");
+		logger.info("----------------------------------");
 		return Pair.of(monitorManager, persistorManager);
 
 	}

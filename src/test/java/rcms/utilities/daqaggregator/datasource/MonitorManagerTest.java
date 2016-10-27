@@ -8,7 +8,6 @@ import javax.xml.bind.DatatypeConverter;
 import org.apache.commons.lang3.tuple.Triple;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import rcms.common.db.DBConnectorException;
@@ -34,10 +33,9 @@ import rcms.utilities.hwcfg.PathNotFoundException;
  * 
  * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
  * 
- * @TODO: make it independent on flashlist availability
+ * @TODO: make it independent on hardware availability
  * 
  */
-@Ignore
 public class MonitorManagerTest {
 
 	private static MonitorManager monitorManager;
@@ -49,7 +47,7 @@ public class MonitorManagerTest {
 
 		FileFlashlistRetriever flashlistRetriever = new FileFlashlistRetriever(TEST_FLASHLISTS_DIR,
 				PersistenceFormat.JSON);
-		long startLimit = DatatypeConverter.parseDateTime("2016-10-09T19:00:00Z").getTimeInMillis();
+		long startLimit = DatatypeConverter.parseDateTime("2016-09-01T15:00:00Z").getTimeInMillis();
 		flashlistRetriever.prepare(startLimit);
 		SessionRetriever sessionRetriever = new SessionRetriever("toppro", "toppro");
 		HardwareConnector hardwareConnector = new HardwareConnector();

@@ -48,14 +48,18 @@ public class MonitorManager {
 	public Triple<DAQ, Collection<Flashlist>, Boolean> getSystemSnapshot()
 			throws HardwareConfigurationException, PathNotFoundException, InvalidNodeTypeException {
 
-		logger.info("Detecting new session");
+		logger.debug("Detecting new session");
 		boolean newSession = sessionDetector.detectNewSession();
 
-		logger.info("New session: " + newSession);
+		logger.debug("New session: " + newSession);
 
 		if (newSession) {
-			logger.info("Loading hardware for new session");
+			logger.info("New session detected. Rebuilding the daq model based on hardware database");
+			long start = System.currentTimeMillis();
 			daq = rebuildDaqModel(sessionDetector.getResult());
+			int timeToRebuild = (int) (System.currentTimeMillis() - start);
+			logger.info("Structure rebuiled in " + timeToRebuild + "ms");
+			logger.info("--------------------------------------");
 
 		}
 

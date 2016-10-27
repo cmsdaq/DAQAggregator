@@ -25,7 +25,7 @@ public class ProxyManager {
 		if (Application.get().getProp().containsKey(Settings.PROXY_ENABLE.getKey())
 				&& Application.get().getProp().getProperty(Settings.PROXY_ENABLE.getKey()).toString()
 						.toLowerCase().equals("true")) {
-			logger.info("Setting up SOCKS proxy ...");
+			logger.debug("Setting up SOCKS proxy ...");
 
 			Properties sysProperties = System.getProperties();
 
