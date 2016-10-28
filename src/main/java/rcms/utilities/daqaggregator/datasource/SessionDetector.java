@@ -1,5 +1,6 @@
 package rcms.utilities.daqaggregator.datasource;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.apache.log4j.Logger;
 
@@ -32,10 +33,13 @@ public class SessionDetector {
 	 */
 	public boolean detectNewSession() {
 
-		long start = System.currentTimeMillis();
 		boolean detectedChange = false;
 
-		Flashlist levelZeroStaticFlashist = flashlistRetriever.retrieveFlashlist(FlashlistType.LEVEL_ZERO_FM_STATIC);
+		Pair<Flashlist, Integer> levelZeroRetrieveResult = flashlistRetriever
+				.retrieveFlashlist(FlashlistType.LEVEL_ZERO_FM_STATIC);
+
+		Flashlist levelZeroStaticFlashist = levelZeroRetrieveResult.getLeft();
+		int timeToAutoDetect = levelZeroRetrieveResult.getRight();
 
 		Triple<String, Integer, Long> result = sessionRetriever.retrieveSession(levelZeroStaticFlashist);
 
@@ -58,8 +62,6 @@ public class SessionDetector {
 		}
 
 		lastResult = result;
-		long end = System.currentTimeMillis();
-		int timeToAutoDetect = (int) (end - start);
 		logger.info("Auto-detecting session finished in " + timeToAutoDetect + " ms with detected change: "
 				+ detectedChange);
 

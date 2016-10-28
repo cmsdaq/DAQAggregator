@@ -10,16 +10,16 @@ import java.util.Date;
 
 import org.junit.Test;
 
-import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
-import rcms.utilities.daqaggregator.persistence.PersistorManager;
 import rcms.utilities.daqaggregator.datasource.Flashlist;
+import rcms.utilities.daqaggregator.datasource.FlashlistType;
 import rcms.utilities.daqaggregator.persistence.PersistenceFormat;
+import rcms.utilities.daqaggregator.persistence.PersistorManager;
 
 public class FlashlistPersistenceTest {
 
@@ -27,7 +27,7 @@ public class FlashlistPersistenceTest {
 	public void test() throws JsonGenerationException, JsonMappingException, IOException {
 
 		ObjectMapper mapper = new ObjectMapper();
-		FlashlistStub flashlist = new FlashlistStub("test-address", "bu", 0);
+		FlashlistStub flashlist = new FlashlistStub(FlashlistType.BU);
 		flashlist.setRetrievalDate(new Date());
 		ArrayNode rowsNode = JsonNodeFactory.instance.arrayNode();
 		rowsNode.add(JsonNodeFactory.instance.textNode("a"));
@@ -48,7 +48,7 @@ public class FlashlistPersistenceTest {
 		System.out.println(flashlistDeserialized);
 
 		assertEquals(flashlist.getRowsNode(), flashlistDeserialized.getRowsNode());
-		assertEquals(flashlist.getName(), flashlistDeserialized.getName());
+		assertEquals(flashlist.getFlashlistType(), flashlistDeserialized.getFlashlistType());
 		assertEquals(flashlist.getRetrievalDate(), flashlistDeserialized.getRetrievalDate());
 
 	}
@@ -57,8 +57,8 @@ public class FlashlistPersistenceTest {
 
 class FlashlistStub extends Flashlist {
 
-	public FlashlistStub(String address, String name, int sessionId) {
-		super(address, name, sessionId);
+	public FlashlistStub(FlashlistType type) {
+		super(type);
 	}
 
 	public void setRetrievalDate(Date retrievalDate) {

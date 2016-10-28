@@ -38,13 +38,24 @@ public class DAQAggregator {
 				propertiesFile = args[0];
 			logger.info("DAQAggregator started with properties file '" + propertiesFile + "'");
 
-			Application.initialize(propertiesFile);
+			try {
+				Application.initialize(propertiesFile);
+			} catch (DAQException e) {
+				logger.fatal(e.getCode().getName() + e.getMessage());
+				System.exit(e.getCode().getCode());
+			}
 
 			/*
 			 * Run mode from properties file
 			 */
-			RunMode runMode = RunMode.decode(Application.get().getProp().getProperty(Application.RUN_MODE));
+			RunMode runMode = RunMode.decode(Application.get().getProp(Settings.RUN_MODE));
 			logger.info("Run mode:" + runMode);
+
+			/*
+			 * Persist mode from properties file
+			 */
+			PersistMode persistMode = PersistMode.decode(Application.get().getProp(Settings.PERSISTENCE_MODE));
+			logger.info("Persist mode:" + persistMode);
 
 			Pair<MonitorManager, PersistorManager> initializedManagers;
 
@@ -52,13 +63,6 @@ public class DAQAggregator {
 
 			MonitorManager monitorManager = initializedManagers.getLeft();
 			PersistorManager persistenceManager = initializedManagers.getRight();
-
-			/*
-			 * Persist mode from properties file
-			 */
-			PersistMode persistMode = PersistMode
-					.decode(Application.get().getProp().getProperty(Application.PERSISTENCE_MODE));
-			logger.info("Persist mode:" + persistMode);
 
 			switch (runMode) {
 			case FILE:
@@ -190,16 +194,17 @@ public class DAQAggregator {
 	public static Pair<MonitorManager, PersistorManager> initialize(RunMode runMode)
 			throws DBConnectorException, HardwareConfigurationException, IOException {
 
+		long start = System.currentTimeMillis();
 		/*
 		 * Setup database
 		 */
 		HardwareConnector hardwareConnector = new HardwareConnector();
-		String url = Application.get().getProp().getProperty(Application.PROPERTYNAME_HWCFGDB_DBURL);
-		String host = Application.get().getProp().getProperty(Application.PROPERTYNAME_HWCFGDB_HOST);
-		String port = Application.get().getProp().getProperty(Application.PROPERTYNAME_HWCFGDB_PORT);
-		String sid = Application.get().getProp().getProperty(Application.PROPERTYNAME_HWCFGDB_SID);
-		String user = Application.get().getProp().getProperty(Application.PROPERTYNAME_HWCFGDB_LOGIN);
-		String passwd = Application.get().getProp().getProperty(Application.PROPERTYNAME_HWCFGDB_PWD);
+		String url = Application.get().getProp(Settings.HWCFGDB_DBURL);
+		String host = Application.get().getProp(Settings.HWCFGDB_HOST);
+		String port = Application.get().getProp(Settings.HWCFGDB_PORT);
+		String sid = Application.get().getProp(Settings.HWCFGDB_SID);
+		String user = Application.get().getProp(Settings.HWCFGDB_LOGIN);
+		String passwd = Application.get().getProp(Settings.HWCFGDB_PWD);
 		hardwareConnector.initialize(url, host, port, sid, user, passwd);
 
 		/*
@@ -208,25 +213,25 @@ public class DAQAggregator {
 		ProxyManager.get().startProxy();
 
 		/*
-		 * Get the urls
-		 */
-		String[] lasURLs = Application.get().getProp().getProperty(Application.PROPERTYNAME_MONITOR_URLS).split(" +");
-		List<String> urlList = Arrays.asList(lasURLs);
-		String mainUrl = Application.get().getProp().getProperty(Application.PROPERTYNAME_SESSION_LASURL_GE).toString();
-
-		/*
 		 * Get persistence dirs
 		 */
-		String snapshotPersistenceDir = Application.get().getProp().getProperty(Application.PERSISTENCE_SNAPSHOT_DIR);
-		String flashlistPersistenceDir = Application.get().getProp().getProperty(Application.PERSISTENCE_FLASHLIST_DIR);
+		String snapshotPersistenceDir = Application.get().getProp(Settings.PERSISTENCE_SNAPSHOT_DIR);
+		String flashlistPersistenceDir = Application.get().getProp(Settings.PERSISTENCE_FLASHLIST_DIR);
+
+		PersistMode persistMode = PersistMode.decode(Application.get().getProp(Settings.PERSISTENCE_MODE));
+
+		if (persistMode == PersistMode.SNAPSHOT || persistMode == PersistMode.ALL)
+			logger.info("Snapshots will be persisted at: " + snapshotPersistenceDir);
+		if (persistMode == PersistMode.FLASHLIST || persistMode == PersistMode.ALL)
+			logger.info("Flashlists will be persisted at: " + flashlistPersistenceDir);
 
 		/*
 		 * Format of snapshot from properties file
 		 */
 		PersistenceFormat flashlistFormat = PersistenceFormat
-				.decode(Application.get().getProp().getProperty(Application.PERSISTENCE_FLASHLIST_FORMAT));
+				.decode(Application.get().getProp(Settings.PERSISTENCE_FLASHLIST_FORMAT));
 		PersistenceFormat snapshotFormat = PersistenceFormat
-				.decode(Application.get().getProp().getProperty(Application.PERSISTENCE_SNAPSHOT_FORMAT));
+				.decode(Application.get().getProp(Settings.PERSISTENCE_SNAPSHOT_FORMAT));
 
 		PersistorManager persistorManager = new PersistorManager(snapshotPersistenceDir, flashlistPersistenceDir,
 				snapshotFormat, flashlistFormat);
@@ -234,25 +239,28 @@ public class DAQAggregator {
 		FlashlistRetriever flashlistRetriever = null;
 		switch (runMode) {
 		case RT:
-			flashlistRetriever = new LASFlashlistRetriever(mainUrl, urlList);
-
+			flashlistRetriever = new LASFlashlistRetriever();
 			break;
-		case FILE: case SPECIAL:
+		case FILE:
+		case SPECIAL:
 			FileFlashlistRetriever fileFlashlistRetriever = new FileFlashlistRetriever(flashlistPersistenceDir,
 					flashlistFormat);
 			flashlistRetriever = fileFlashlistRetriever;
-			fileFlashlistRetriever.prepare();
+			long startLimit = Long.parseLong(Application.get().getProp(Settings.PERSISTENCE_LIMIT));
+			fileFlashlistRetriever.prepare(startLimit);
 			break;
 		}
 
-		String filter1 = Application.get().getProp().getProperty(Application.PROPERTYNAME_SESSION_L0FILTER1);
-		String filter2 = Application.get().getProp().getProperty(Application.PROPERTYNAME_SESSION_L0FILTER2);
+		String filter1 = Application.get().getProp(Settings.SESSION_L0FILTER1);
+		String filter2 = Application.get().getProp(Settings.SESSION_L0FILTER2);
 
 		SessionRetriever sessionRetriever = new SessionRetriever(filter1, filter2);
 		MonitorManager monitorManager = new MonitorManager(flashlistRetriever, sessionRetriever, hardwareConnector);
 
-		logger.info("DAQAggregator is initialized");
+		int timeToInitialize = (int) (System.currentTimeMillis() - start);
 
+		logger.info("DAQAggregator initialized in " + timeToInitialize + "ms");
+		logger.info("----------------------------------");
 		return Pair.of(monitorManager, persistorManager);
 
 	}
