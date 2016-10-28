@@ -40,7 +40,7 @@ public class MonitorManagerTest {
 
 	private static MonitorManager monitorManager;
 
-	private static final String TEST_FLASHLISTS_DIR = "src/test/resources/test-flashlists/json/";
+	private static final String TEST_FLASHLISTS_DIR = "src/test/resources/compatibility/1.4.0/";
 
 	@BeforeClass
 	public static void initialize() throws IOException, DBConnectorException, HardwareConfigurationException {

@@ -1,0 +1,214 @@
+{
+  "flashlistType" : "FMM_PARTITION_DEAD_TIME",
+  "rowsNode" : [ {
+    "deltaT" : 85764887,
+    "integralTimeBusy" : 490222,
+    "integralTimeError" : 0,
+    "integralTimeOOS" : 0,
+    "integralTimeOther" : 0,
+    "integralTimeWarning" : 0,
+    "partitionNumber" : 29,
+    "runNumber" : 284075,
+    "timestamp" : "2016-10-27T08:43:27.666943Z",
+    "timeTag" : 217233114865
+  }, {
+    "deltaT" : 85761529,
+    "integralTimeBusy" : 12201825,
+    "integralTimeError" : 0,
+    "integralTimeOOS" : 927514363,
+    "integralTimeOther" : 49,
+    "integralTimeWarning" : 8,
+    "partitionNumber" : 19,
+    "runNumber" : 284075,
+    "timestamp" : "2016-10-27T08:43:27.667415Z",
+    "timeTag" : 217233914349
+  }, {
+    "deltaT" : 85743855,
+    "integralTimeBusy" : 158430844,
+    "integralTimeError" : 3,
+    "integralTimeOOS" : 0,
+    "integralTimeOther" : 2,
+    "integralTimeWarning" : 0,
+    "partitionNumber" : 12,
+    "runNumber" : 284075,
+    "timestamp" : "2016-10-27T08:43:27.669843Z",
+    "timeTag" : 217233969524
+  }, {
+    "deltaT" : 85773507,
+    "integralTimeBusy" : 490233,
+    "integralTimeError" : 0,
+    "integralTimeOOS" : 0,
+    "integralTimeOther" : 0,
+    "integralTimeWarning" : 0,
+    "partitionNumber" : 28,
+    "runNumber" : 284075,
+    "timestamp" : "2016-10-27T08:43:27.671168Z",
+    "timeTag" : 217233961001
+  }, {
+    "deltaT" : 87008113,
+    "integralTimeBusy" : 601188212,
+    "integralTimeError" : 0,
+    "integralTimeOOS" : 0,
+    "integralTimeOther" : 0,
+    "integralTimeWarning" : 0,
+    "partitionNumber" : 25,
+    "runNumber" : 284075,
+    "timestamp" : "2016-10-27T08:43:27.682722Z",
+    "timeTag" : 217234355629
+  }, {
+    "deltaT" : 87007981,
+    "integralTimeBusy" : 601178125,
+    "integralTimeError" : 0,
+    "integralTimeOOS" : 0,
+    "integralTimeOther" : 0,
+    "integralTimeWarning" : 0,
+    "partitionNumber" : 27,
+    "runNumber" : 284075,
+    "timestamp" : "2016-10-27T08:43:27.683346Z",
+    "timeTag" : 217234233552
+  }, {
+    "deltaT" : 86993568,
+    "integralTimeBusy" : 3441,
+    "integralTimeError" : 0,
+    "integralTimeOOS" : 0,
+    "integralTimeOther" : 67,
+    "integralTimeWarning" : 0,
+    "partitionNumber" : 15,
+    "runNumber" : 284075,
+    "timestamp" : "2016-10-27T08:43:27.041246Z",
+    "timeTag" : 217210532695
+  }, {
+    "deltaT" : 86994649,
+    "integralTimeBusy" : 445,
+    "integralTimeError" : 0,
+    "integralTimeOOS" : 0,
+    "integralTimeOther" : 0,
+    "integralTimeWarning" : 0,
+    "partitionNumber" : 16,
+    "runNumber" : 284075,
+    "timestamp" : "2016-10-27T08:43:27.043817Z",
+    "timeTag" : 217211329540
+  }, {
+    "deltaT" : 86996355,
+    "integralTimeBusy" : 442,
+    "integralTimeError" : 25831910,
+    "integralTimeOOS" : 0,
+    "integralTimeOther" : 0,
+    "integralTimeWarning" : 10551723,
+    "partitionNumber" : 17,
+    "runNumber" : 284075,
+    "timestamp" : "2016-10-27T08:43:27.044433Z",
+    "timeTag" : 217210766898
+  }, {
+    "deltaT" : 86996918,
+    "integralTimeBusy" : 3164,
+    "integralTimeError" : 0,
+    "integralTimeOOS" : 0,
+    "integralTimeOther" : 65,
+    "integralTimeWarning" : 0,
+    "partitionNumber" : 13,
+    "runNumber" : 284075,
+    "timestamp" : "2016-10-27T08:43:27.045089Z",
+    "timeTag" : 217211494946
+  }, {
+    "deltaT" : 86997199,
+    "integralTimeBusy" : 3431,
+    "integralTimeError" : 0,
+    "integralTimeOOS" : 0,
+    "integralTimeOther" : 73,
+    "integralTimeWarning" : 0,
+    "partitionNumber" : 14,
+    "runNumber" : 284075,
+    "timestamp" : "2016-10-27T08:43:27.045748Z",
+    "timeTag" : 217211234049
+  }, {
+    "deltaT" : 83907477,
+    "integralTimeBusy" : 57,
+    "integralTimeError" : 0,
+    "integralTimeOOS" : 0,
+    "integralTimeOther" : 0,
+    "integralTimeWarning" : 0,
+    "partitionNumber" : 1,
+    "runNumber" : 284075,
+    "timestamp" : "2016-10-27T08:43:27.628814Z",
+    "timeTag" : 217232795248
+  }, {
+    "deltaT" : 83906960,
+    "integralTimeBusy" : 62,
+    "integralTimeError" : 0,
+    "integralTimeOOS" : 0,
+    "integralTimeOther" : 0,
+    "integralTimeWarning" : 0,
+    "partitionNumber" : 2,
+    "runNumber" : 284075,
+    "timestamp" : "2016-10-27T08:43:27.629340Z",
+    "timeTag" : 217232945309
+  }, {
+    "deltaT" : 83900990,
+    "integralTimeBusy" : 62,
+    "integralTimeError" : 0,
+    "integralTimeOOS" : 0,
+    "integralTimeOther" : 0,
+    "integralTimeWarning" : 0,
+    "partitionNumber" : 3,
+    "runNumber" : 284075,
+    "timestamp" : "2016-10-27T08:43:27.630943Z",
+    "timeTag" : 217233324450
+  }, {
+    "deltaT" : 83909672,
+    "integralTimeBusy" : 59,
+    "integralTimeError" : 0,
+    "integralTimeOOS" : 0,
+    "integralTimeOther" : 0,
+    "integralTimeWarning" : 0,
+    "partitionNumber" : 0,
+    "runNumber" : 284075,
+    "timestamp" : "2016-10-27T08:43:27.631600Z",
+    "timeTag" : 217233354743
+  }, {
+    "deltaT" : 87054233,
+    "integralTimeBusy" : 603668655,
+    "integralTimeError" : 0,
+    "integralTimeOOS" : 0,
+    "integralTimeOther" : 0,
+    "integralTimeWarning" : 0,
+    "partitionNumber" : 24,
+    "runNumber" : 284075,
+    "timestamp" : "2016-10-27T08:43:27.704433Z",
+    "timeTag" : 217236404025
+  } ],
+  "definitionNode" : [ {
+    "key" : "deltaT",
+    "type" : "unsigned int 64"
+  }, {
+    "key" : "integralTimeBusy",
+    "type" : "unsigned int 64"
+  }, {
+    "key" : "integralTimeError",
+    "type" : "unsigned int 64"
+  }, {
+    "key" : "integralTimeOOS",
+    "type" : "unsigned int 64"
+  }, {
+    "key" : "integralTimeOther",
+    "type" : "unsigned int 64"
+  }, {
+    "key" : "integralTimeWarning",
+    "type" : "unsigned int 64"
+  }, {
+    "key" : "partitionNumber",
+    "type" : "int"
+  }, {
+    "key" : "runNumber",
+    "type" : "unsigned int 32"
+  }, {
+    "key" : "timestamp",
+    "type" : "time"
+  }, {
+    "key" : "timeTag",
+    "type" : "unsigned int 64"
+  } ],
+  "retrievalDate" : 1477557890932,
+  "address" : "http://pc-c2e11-29-01.cms:9942/urn:xdaq-application:service=xmaslas2g/retrieveCollection?flash=urn:xdaq-flashlist:FMMPartitionDeadTime&fmt=json",
+  "name" : "urn:xdaq-flashlist:FMMPartitionDeadTime"
+}

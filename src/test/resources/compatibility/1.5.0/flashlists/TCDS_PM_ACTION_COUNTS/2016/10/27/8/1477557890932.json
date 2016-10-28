@@ -1,0 +1,135 @@
+{
+  "flashlistType" : "TCDS_PM_ACTION_COUNTS",
+  "rowsNode" : [ {
+    "action0_count" : 0,
+    "action1_count" : 4,
+    "action2_count" : 0,
+    "action3_count" : 0,
+    "action4_count" : 0,
+    "action5_count" : 0,
+    "action6_count" : 0,
+    "action7_count" : 0,
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "lid" : "100",
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T08:44:52.994829Z"
+  }, {
+    "action0_count" : 0,
+    "action1_count" : 0,
+    "action2_count" : 0,
+    "action3_count" : 0,
+    "action4_count" : 0,
+    "action5_count" : 0,
+    "action6_count" : 0,
+    "action7_count" : 0,
+    "context" : "http://tcds-control-ecal.cms:2109",
+    "lid" : "201",
+    "service" : "lpm-ecal",
+    "timestamp" : "2016-10-21T13:14:39.035935Z"
+  }, {
+    "action0_count" : 0,
+    "action1_count" : 0,
+    "action2_count" : 0,
+    "action3_count" : 0,
+    "action4_count" : 0,
+    "action5_count" : 0,
+    "action6_count" : 0,
+    "action7_count" : 0,
+    "context" : "http://tcds-control-misc.cms:2106",
+    "lid" : "201",
+    "service" : "lpm-misc",
+    "timestamp" : "2016-10-25T20:03:20.641146Z"
+  }, {
+    "action0_count" : 0,
+    "action1_count" : 0,
+    "action2_count" : 0,
+    "action3_count" : 0,
+    "action4_count" : 0,
+    "action5_count" : 0,
+    "action6_count" : 0,
+    "action7_count" : 0,
+    "context" : "http://tcds-control-hcal.cms:2108",
+    "lid" : "201",
+    "service" : "lpm-hcal",
+    "timestamp" : "2016-10-27T08:44:54.376882Z"
+  }, {
+    "action0_count" : 0,
+    "action1_count" : 0,
+    "action2_count" : 0,
+    "action3_count" : 0,
+    "action4_count" : 0,
+    "action5_count" : 0,
+    "action6_count" : 0,
+    "action7_count" : 0,
+    "context" : "http://tcds-control-dt.cms:2105",
+    "lid" : "201",
+    "service" : "lpm-dt",
+    "timestamp" : "2016-10-25T20:40:36.540094Z"
+  }, {
+    "action0_count" : 342,
+    "action1_count" : 0,
+    "action2_count" : 0,
+    "action3_count" : 0,
+    "action4_count" : 0,
+    "action5_count" : 0,
+    "action6_count" : 0,
+    "action7_count" : 0,
+    "context" : "http://tcds-control-csc.cms:2104",
+    "lid" : "201",
+    "service" : "lpm-csc",
+    "timestamp" : "2016-10-27T08:44:54.375563Z"
+  }, {
+    "action0_count" : 0,
+    "action1_count" : 0,
+    "action2_count" : 0,
+    "action3_count" : 0,
+    "action4_count" : 0,
+    "action5_count" : 0,
+    "action6_count" : 0,
+    "action7_count" : 0,
+    "context" : "http://tcds-control-rpc.cms:2103",
+    "lid" : "201",
+    "service" : "lpm-rpc",
+    "timestamp" : "2016-10-20T12:39:00.137126Z"
+  } ],
+  "definitionNode" : [ {
+    "key" : "action0_count",
+    "type" : "unsigned int 32"
+  }, {
+    "key" : "action1_count",
+    "type" : "unsigned int 32"
+  }, {
+    "key" : "action2_count",
+    "type" : "unsigned int 32"
+  }, {
+    "key" : "action3_count",
+    "type" : "unsigned int 32"
+  }, {
+    "key" : "action4_count",
+    "type" : "unsigned int 32"
+  }, {
+    "key" : "action5_count",
+    "type" : "unsigned int 32"
+  }, {
+    "key" : "action6_count",
+    "type" : "unsigned int 32"
+  }, {
+    "key" : "action7_count",
+    "type" : "unsigned int 32"
+  }, {
+    "key" : "context",
+    "type" : "string"
+  }, {
+    "key" : "lid",
+    "type" : "string"
+  }, {
+    "key" : "service",
+    "type" : "string"
+  }, {
+    "key" : "timestamp",
+    "type" : "time"
+  } ],
+  "retrievalDate" : 1477557890932,
+  "address" : "http://pc-c2e11-23-01.cms:9945/urn:xdaq-application:service=xmaslas2g/retrieveCollection?flash=urn:xdaq-flashlist:tcds_pm_action_counts&fmt=json",
+  "name" : "urn:xdaq-flashlist:tcds_pm_action_counts"
+}
