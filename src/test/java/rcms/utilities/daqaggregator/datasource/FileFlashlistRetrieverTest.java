@@ -17,7 +17,7 @@ import rcms.utilities.daqaggregator.persistence.PersistenceFormat;
 
 public class FileFlashlistRetrieverTest {
 
-	private static final String TEST_FLASHLISTS_DIR = "src/test/resources/test-flashlists/json/";
+	private static final String TEST_FLASHLISTS_DIR = "src/test/resources/compatibility/1.4.0/";
 
 	private static final int dummySessionId = 1;
 

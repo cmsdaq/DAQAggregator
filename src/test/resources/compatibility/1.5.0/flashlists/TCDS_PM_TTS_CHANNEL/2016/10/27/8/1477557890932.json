@@ -1,0 +1,2485 @@
+{
+  "flashlistType" : "TCDS_PM_TTS_CHANNEL",
+  "rowsNode" : [ {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 5,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 4,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.113196Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 2,
+    "label" : "PIXELCLEAN",
+    "lid" : "100",
+    "pm_number" : 1,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.103346Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 5,
+    "label" : "CTPPS",
+    "lid" : "100",
+    "pm_number" : 6,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.116315Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 7,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 7,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.118103Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 7,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 2,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.110355Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 3,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 1,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.102929Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 1,
+    "label" : "EE-",
+    "lid" : "100",
+    "pm_number" : 9,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:12:48.915227Z",
+    "type" : "tts_ici",
+    "value" : 8
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 8,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 8,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.119780Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 4,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 12,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.107877Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 2,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 12,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.108139Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 5,
+    "label" : "CALSTAGE1",
+    "lid" : "100",
+    "pm_number" : 10,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.105363Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 1,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 11,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.106418Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 3,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 5,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.113984Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 4,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 11,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.106287Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 1,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 3,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.110618Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 4,
+    "label" : "BCMUTCA",
+    "lid" : "100",
+    "pm_number" : 7,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.117718Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 2,
+    "label" : "EB-",
+    "lid" : "100",
+    "pm_number" : 9,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:12:50.197833Z",
+    "type" : "tts_ici",
+    "value" : 8
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 7,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 8,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.119657Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 3,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 12,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.107744Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 2,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 10,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.104973Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 3,
+    "label" : "APVE TIBTID",
+    "lid" : "100",
+    "pm_number" : 2,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:13:21.374583Z",
+    "type" : "tts_apve",
+    "value" : 8
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 7,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 3,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.111927Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 4,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 11,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.106819Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 1,
+    "label" : "DTUP",
+    "lid" : "100",
+    "pm_number" : 5,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.114230Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 8,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 1,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.104169Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 1,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 11,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.105891Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 2,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 7,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.116945Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 7,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 1,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.104016Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 3,
+    "label" : "TOTTRG",
+    "lid" : "100",
+    "pm_number" : 6,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.116048Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 3,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 4,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.112441Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 8,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 6,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.116690Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 2,
+    "label" : "HBHEB",
+    "lid" : "100",
+    "pm_number" : 8,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:12:48.126491Z",
+    "type" : "tts_ici",
+    "value" : 8
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 8,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 12,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.108924Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 2,
+    "label" : "TEC+",
+    "lid" : "100",
+    "pm_number" : 2,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:13:12.551840Z",
+    "type" : "tts_ici",
+    "value" : 8
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 4,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 8,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.118748Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 4,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 3,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.111532Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 7,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 11,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.107217Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 7,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 12,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.108793Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 2,
+    "label" : "DT-",
+    "lid" : "100",
+    "pm_number" : 5,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:11:31.906782Z",
+    "type" : "tts_ici",
+    "value" : 8
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 7,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 4,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.113450Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 0,
+    "label" : "Bunch mask",
+    "lid" : "100",
+    "pm_number" : 0,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T08:30:29.627632Z",
+    "type" : "block_bx_mask",
+    "value" : 8
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 2,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 11,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.106028Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 8,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 4,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.113584Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 4,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 3,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.111007Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 3,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 10,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.104553Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 1,
+    "label" : "HBHEA",
+    "lid" : "100",
+    "pm_number" : 8,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:12:48.131608Z",
+    "type" : "tts_ici",
+    "value" : 8
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 5,
+    "label" : "FPIX",
+    "lid" : "100",
+    "pm_number" : 2,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:11:25.479982Z",
+    "type" : "tts_ici",
+    "value" : 8
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 1,
+    "label" : "PLT",
+    "lid" : "100",
+    "pm_number" : 7,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.117324Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 1,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 8,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.118359Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 1,
+    "label" : "RPC",
+    "lid" : "100",
+    "pm_number" : 3,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:13:01.423853Z",
+    "type" : "tts_ici",
+    "value" : 8
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 7,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 9,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.121214Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 7,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 5,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.115008Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 7,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 10,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.105635Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 4,
+    "label" : "APVE TOB",
+    "lid" : "100",
+    "pm_number" : 2,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:13:21.611787Z",
+    "type" : "tts_apve",
+    "value" : 8
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 0,
+    "label" : "DAQ link",
+    "lid" : "100",
+    "pm_number" : 0,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.121733Z",
+    "type" : "block_daq_backpressure",
+    "value" : 8
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 6,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 6,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.116441Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 6,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 7,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.117982Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 4,
+    "label" : "GTUP",
+    "lid" : "100",
+    "pm_number" : 10,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:12:41.751090Z",
+    "type" : "tts_ici",
+    "value" : 8
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 1,
+    "label" : "APVE TEC-",
+    "lid" : "100",
+    "pm_number" : 2,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:13:21.627234Z",
+    "type" : "tts_apve",
+    "value" : 8
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 2,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 11,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.106552Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 2,
+    "label" : "CSC-",
+    "lid" : "100",
+    "pm_number" : 4,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:55.376754Z",
+    "type" : "tts_ici",
+    "value" : 8
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 5,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 1,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.103740Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 1,
+    "label" : "SCAL",
+    "lid" : "100",
+    "pm_number" : 6,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:12:57.098873Z",
+    "type" : "tts_ici",
+    "value" : 8
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 2,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 3,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.110746Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 2,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 9,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.120037Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 4,
+    "label" : "HO",
+    "lid" : "100",
+    "pm_number" : 8,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:12:50.455224Z",
+    "type" : "tts_ici",
+    "value" : 8
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 1,
+    "label" : "GTUPSPARE",
+    "lid" : "100",
+    "pm_number" : 10,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.104828Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 2,
+    "label" : "APVE TEC+",
+    "lid" : "100",
+    "pm_number" : 2,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:13:21.631056Z",
+    "type" : "tts_apve",
+    "value" : 8
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 6,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 3,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.111802Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 8,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 9,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.121342Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 5,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 11,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.106955Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 5,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 12,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.108524Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 1,
+    "label" : "CSCTF",
+    "lid" : "100",
+    "pm_number" : 4,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:43:27.304296Z",
+    "type" : "tts_ici",
+    "value" : 8
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 0,
+    "label" : "ReTri",
+    "lid" : "100",
+    "pm_number" : 0,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T08:17:59.758518Z",
+    "type" : "block_retri",
+    "value" : 8
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 3,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 7,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.117071Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 3,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 6,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.115540Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 6,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 1,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.103895Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 2,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 4,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.112306Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 1,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 9,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.119910Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 8,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 3,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.112051Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 1,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 10,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.104287Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 3,
+    "label" : "HBHEC",
+    "lid" : "100",
+    "pm_number" : 8,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:12:48.291337Z",
+    "type" : "tts_ici",
+    "value" : 8
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 3,
+    "label" : "BCMVME",
+    "lid" : "100",
+    "pm_number" : 7,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.117590Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 3,
+    "label" : "TIBTID",
+    "lid" : "100",
+    "pm_number" : 2,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:13:12.744275Z",
+    "type" : "tts_ici",
+    "value" : 8
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 3,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 8,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.118625Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 3,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 3,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.111399Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 5,
+    "label" : "ES-",
+    "lid" : "100",
+    "pm_number" : 9,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:11:56.118513Z",
+    "type" : "tts_ici",
+    "value" : 8
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 6,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 12,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.108660Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 5,
+    "label" : "TWINMUX",
+    "lid" : "100",
+    "pm_number" : 5,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:12:41.772321Z",
+    "type" : "tts_ici",
+    "value" : 8
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 8,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 2,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.110483Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 4,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 4,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.113065Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 4,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 6,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.115669Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 8,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 5,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.115143Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 3,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 1,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.103473Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 4,
+    "label" : "TOTDET",
+    "lid" : "100",
+    "pm_number" : 6,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.116182Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 6,
+    "label" : "BPIX",
+    "lid" : "100",
+    "pm_number" : 2,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:11:28.274162Z",
+    "type" : "tts_ici",
+    "value" : 8
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 0,
+    "label" : "PM APVE",
+    "lid" : "100",
+    "pm_number" : 0,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T08:07:37.097391Z",
+    "type" : "block_pm_apve",
+    "value" : 8
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 2,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 1,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.102779Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 6,
+    "label" : "ES+",
+    "lid" : "100",
+    "pm_number" : 9,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:11:56.579593Z",
+    "type" : "tts_ici",
+    "value" : 8
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 3,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 12,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.108273Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 6,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 5,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.114876Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 6,
+    "label" : "CALTRIGUP",
+    "lid" : "100",
+    "pm_number" : 10,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:12:42.287403Z",
+    "type" : "tts_ici",
+    "value" : 8
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 2,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 5,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.113854Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 4,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 4,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.112568Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 7,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 6,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.116564Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 4,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 9,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.120295Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 5,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 7,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.117855Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 8,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 10,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.105761Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 1,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 1,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.102667Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 3,
+    "label" : "EB+",
+    "lid" : "100",
+    "pm_number" : 9,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:12:51.009106Z",
+    "type" : "tts_ici",
+    "value" : 8
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 4,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 10,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.104676Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 6,
+    "label" : "HCALLASER",
+    "lid" : "100",
+    "pm_number" : 8,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:12:53.194690Z",
+    "type" : "tts_ici",
+    "value" : 8
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 2,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 12,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.107614Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 8,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 7,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.118230Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 3,
+    "label" : "RCT",
+    "lid" : "100",
+    "pm_number" : 10,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:12:44.447378Z",
+    "type" : "tts_ici",
+    "value" : 8
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 3,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 11,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.106683Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 3,
+    "label" : "CSC+",
+    "lid" : "100",
+    "pm_number" : 4,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:51.777387Z",
+    "type" : "tts_ici",
+    "value" : 8
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 1,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 5,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.113719Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 8,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 11,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.107348Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 1,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 7,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.116817Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 1,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 6,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.115275Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 4,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 1,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.103612Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 2,
+    "label" : "CASTOR",
+    "lid" : "100",
+    "pm_number" : 6,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.115926Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 3,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 3,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.110873Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 3,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 9,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.120163Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 5,
+    "label" : "HF",
+    "lid" : "100",
+    "pm_number" : 8,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:12:48.821898Z",
+    "type" : "tts_ici",
+    "value" : 8
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 1,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 12,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.107475Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 1,
+    "label" : "TEC-",
+    "lid" : "100",
+    "pm_number" : 2,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:13:13.298516Z",
+    "type" : "tts_ici",
+    "value" : 8
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 5,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 3,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.111670Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 6,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 11,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.107086Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 4,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 12,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.108396Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 3,
+    "label" : "DT0",
+    "lid" : "100",
+    "pm_number" : 5,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:11:32.603697Z",
+    "type" : "tts_ici",
+    "value" : 8
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 0,
+    "label" : "Top-level TTS",
+    "lid" : "100",
+    "pm_number" : 0,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:13:22.217892Z",
+    "type" : "tts_toplevel",
+    "value" : 8
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 6,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 4,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.113324Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 4,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 5,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.114103Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 3,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 11,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.106159Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 4,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 7,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.117201Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 2,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 6,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.115403Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 1,
+    "label" : "PIXELPILOT",
+    "lid" : "100",
+    "pm_number" : 1,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:11:13.106692Z",
+    "type" : "tts_ici",
+    "value" : 8
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 1,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 4,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.112177Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 2,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 10,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.104416Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 4,
+    "label" : "TOB",
+    "lid" : "100",
+    "pm_number" : 2,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:13:13.307485Z",
+    "type" : "tts_ici",
+    "value" : 8
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 2,
+    "label" : "BHM",
+    "lid" : "100",
+    "pm_number" : 7,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.117458Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 2,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 8,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.118485Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 4,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 1,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.103071Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 2,
+    "label" : "MUTFUP",
+    "lid" : "100",
+    "pm_number" : 3,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:12:42.316321Z",
+    "type" : "tts_ici",
+    "value" : 8
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 4,
+    "label" : "EE+",
+    "lid" : "100",
+    "pm_number" : 9,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:12:51.038215Z",
+    "type" : "tts_ici",
+    "value" : 8
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 1,
+    "label" : "Unused",
+    "lid" : "100",
+    "pm_number" : 12,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:10:26.108008Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-cpm.cms:2050",
+    "id_number" : 4,
+    "label" : "DT+",
+    "lid" : "100",
+    "pm_number" : 5,
+    "service" : "cpm-pri",
+    "timestamp" : "2016-10-27T07:11:34.778236Z",
+    "type" : "tts_ici",
+    "value" : 8
+  }, {
+    "context" : "http://tcds-control-ecal.cms:2109",
+    "id_number" : 0,
+    "label" : "Bunch mask",
+    "lid" : "201",
+    "pm_number" : 0,
+    "service" : "lpm-ecal",
+    "timestamp" : "2016-10-13T12:45:44.382329Z",
+    "type" : "block_bx_mask",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-ecal.cms:2109",
+    "id_number" : 4,
+    "label" : "Unused",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-ecal",
+    "timestamp" : "2016-10-13T12:45:44.382869Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-ecal.cms:2109",
+    "id_number" : 0,
+    "label" : "Top-level TTS",
+    "lid" : "201",
+    "pm_number" : 0,
+    "service" : "lpm-ecal",
+    "timestamp" : "2016-10-21T13:02:43.936780Z",
+    "type" : "tts_toplevel",
+    "value" : 4
+  }, {
+    "context" : "http://tcds-control-ecal.cms:2109",
+    "id_number" : 5,
+    "label" : "ES-",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-ecal",
+    "timestamp" : "2016-10-13T12:45:44.383944Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-ecal.cms:2109",
+    "id_number" : 2,
+    "label" : "Unused",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-ecal",
+    "timestamp" : "2016-10-13T12:45:44.384426Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-ecal.cms:2109",
+    "id_number" : 0,
+    "label" : "DAQ link",
+    "lid" : "201",
+    "pm_number" : 0,
+    "service" : "lpm-ecal",
+    "timestamp" : "2016-10-19T14:23:22.184351Z",
+    "type" : "block_daq_backpressure",
+    "value" : 8
+  }, {
+    "context" : "http://tcds-control-ecal.cms:2109",
+    "id_number" : 4,
+    "label" : "EE+",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-ecal",
+    "timestamp" : "2016-10-21T13:02:43.938662Z",
+    "type" : "tts_ici",
+    "value" : 4
+  }, {
+    "context" : "http://tcds-control-ecal.cms:2109",
+    "id_number" : 3,
+    "label" : "Unused",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-ecal",
+    "timestamp" : "2016-10-13T12:45:44.385992Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-ecal.cms:2109",
+    "id_number" : 7,
+    "label" : "Unused",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-ecal",
+    "timestamp" : "2016-10-13T12:45:44.386474Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-ecal.cms:2109",
+    "id_number" : 6,
+    "label" : "ES+",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-ecal",
+    "timestamp" : "2016-10-13T12:45:44.437651Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-ecal.cms:2109",
+    "id_number" : 1,
+    "label" : "Unused",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-ecal",
+    "timestamp" : "2016-10-13T12:45:44.438177Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-ecal.cms:2109",
+    "id_number" : 1,
+    "label" : "EE-",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-ecal",
+    "timestamp" : "2016-10-21T13:02:43.992048Z",
+    "type" : "tts_ici",
+    "value" : 4
+  }, {
+    "context" : "http://tcds-control-ecal.cms:2109",
+    "id_number" : 3,
+    "label" : "EB+",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-ecal",
+    "timestamp" : "2016-10-21T13:02:43.992595Z",
+    "type" : "tts_ici",
+    "value" : 4
+  }, {
+    "context" : "http://tcds-control-ecal.cms:2109",
+    "id_number" : 2,
+    "label" : "EB-",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-ecal",
+    "timestamp" : "2016-10-21T13:02:43.993121Z",
+    "type" : "tts_ici",
+    "value" : 4
+  }, {
+    "context" : "http://tcds-control-ecal.cms:2109",
+    "id_number" : 8,
+    "label" : "Unused",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-ecal",
+    "timestamp" : "2016-10-13T12:45:44.453801Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-ecal.cms:2109",
+    "id_number" : 0,
+    "label" : "ReTri",
+    "lid" : "201",
+    "pm_number" : 0,
+    "service" : "lpm-ecal",
+    "timestamp" : "2016-10-13T12:45:44.548524Z",
+    "type" : "block_retri",
+    "value" : 8
+  }, {
+    "context" : "http://tcds-control-misc.cms:2106",
+    "id_number" : 0,
+    "label" : "Bunch mask",
+    "lid" : "201",
+    "pm_number" : 0,
+    "service" : "lpm-misc",
+    "timestamp" : "2016-10-25T20:01:07.031078Z",
+    "type" : "block_bx_mask",
+    "value" : 8
+  }, {
+    "context" : "http://tcds-control-misc.cms:2106",
+    "id_number" : 4,
+    "label" : "Unused",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-misc",
+    "timestamp" : "2016-10-13T14:03:34.338901Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-misc.cms:2106",
+    "id_number" : 0,
+    "label" : "Top-level TTS",
+    "lid" : "201",
+    "pm_number" : 0,
+    "service" : "lpm-misc",
+    "timestamp" : "2016-10-25T20:02:37.596157Z",
+    "type" : "tts_toplevel",
+    "value" : 8
+  }, {
+    "context" : "http://tcds-control-misc.cms:2106",
+    "id_number" : 5,
+    "label" : "CTPPS",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-misc",
+    "timestamp" : "2016-10-13T14:03:34.339889Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-misc.cms:2106",
+    "id_number" : 2,
+    "label" : "Unused",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-misc",
+    "timestamp" : "2016-10-13T14:03:34.340330Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-misc.cms:2106",
+    "id_number" : 0,
+    "label" : "DAQ link",
+    "lid" : "201",
+    "pm_number" : 0,
+    "service" : "lpm-misc",
+    "timestamp" : "2016-10-13T14:03:34.340844Z",
+    "type" : "block_daq_backpressure",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-misc.cms:2106",
+    "id_number" : 4,
+    "label" : "TOTDET",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-misc",
+    "timestamp" : "2016-10-25T20:02:37.598042Z",
+    "type" : "tts_ici",
+    "value" : 8
+  }, {
+    "context" : "http://tcds-control-misc.cms:2106",
+    "id_number" : 3,
+    "label" : "Unused",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-misc",
+    "timestamp" : "2016-10-13T14:03:34.341768Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-misc.cms:2106",
+    "id_number" : 7,
+    "label" : "Unused",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-misc",
+    "timestamp" : "2016-10-13T14:03:34.342257Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-misc.cms:2106",
+    "id_number" : 6,
+    "label" : "Unused",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-misc",
+    "timestamp" : "2016-10-13T14:03:34.385999Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-misc.cms:2106",
+    "id_number" : 1,
+    "label" : "Unused",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-misc",
+    "timestamp" : "2016-10-13T14:03:34.386556Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-misc.cms:2106",
+    "id_number" : 1,
+    "label" : "SCAL",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-misc",
+    "timestamp" : "2016-10-13T14:03:34.387042Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-misc.cms:2106",
+    "id_number" : 3,
+    "label" : "TOTTRG",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-misc",
+    "timestamp" : "2016-10-13T14:03:34.387548Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-misc.cms:2106",
+    "id_number" : 2,
+    "label" : "CASTOR",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-misc",
+    "timestamp" : "2016-10-13T14:03:34.388042Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-misc.cms:2106",
+    "id_number" : 8,
+    "label" : "Unused",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-misc",
+    "timestamp" : "2016-10-13T14:03:34.400435Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-misc.cms:2106",
+    "id_number" : 0,
+    "label" : "ReTri",
+    "lid" : "201",
+    "pm_number" : 0,
+    "service" : "lpm-misc",
+    "timestamp" : "2016-10-13T14:03:34.482688Z",
+    "type" : "block_retri",
+    "value" : 8
+  }, {
+    "context" : "http://tcds-control-hcal.cms:2108",
+    "id_number" : 0,
+    "label" : "Bunch mask",
+    "lid" : "201",
+    "pm_number" : 0,
+    "service" : "lpm-hcal",
+    "timestamp" : "2016-10-18T17:08:18.501853Z",
+    "type" : "block_bx_mask",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-hcal.cms:2108",
+    "id_number" : 4,
+    "label" : "Unused",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-hcal",
+    "timestamp" : "2016-10-18T17:08:18.502376Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-hcal.cms:2108",
+    "id_number" : 0,
+    "label" : "Top-level TTS",
+    "lid" : "201",
+    "pm_number" : 0,
+    "service" : "lpm-hcal",
+    "timestamp" : "2016-10-18T17:08:18.502916Z",
+    "type" : "tts_toplevel",
+    "value" : 8
+  }, {
+    "context" : "http://tcds-control-hcal.cms:2108",
+    "id_number" : 5,
+    "label" : "HF",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-hcal",
+    "timestamp" : "2016-10-18T17:08:18.503400Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-hcal.cms:2108",
+    "id_number" : 2,
+    "label" : "Unused",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-hcal",
+    "timestamp" : "2016-10-18T17:08:18.503887Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-hcal.cms:2108",
+    "id_number" : 0,
+    "label" : "DAQ link",
+    "lid" : "201",
+    "pm_number" : 0,
+    "service" : "lpm-hcal",
+    "timestamp" : "2016-10-18T17:08:18.504423Z",
+    "type" : "block_daq_backpressure",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-hcal.cms:2108",
+    "id_number" : 4,
+    "label" : "HO",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-hcal",
+    "timestamp" : "2016-10-18T17:08:18.504887Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-hcal.cms:2108",
+    "id_number" : 3,
+    "label" : "Unused",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-hcal",
+    "timestamp" : "2016-10-18T17:08:18.505383Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-hcal.cms:2108",
+    "id_number" : 7,
+    "label" : "Unused",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-hcal",
+    "timestamp" : "2016-10-18T17:08:18.505927Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-hcal.cms:2108",
+    "id_number" : 6,
+    "label" : "HCALLASER",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-hcal",
+    "timestamp" : "2016-10-18T17:08:18.560673Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-hcal.cms:2108",
+    "id_number" : 1,
+    "label" : "Unused",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-hcal",
+    "timestamp" : "2016-10-18T17:08:18.561254Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-hcal.cms:2108",
+    "id_number" : 1,
+    "label" : "HBHEA",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-hcal",
+    "timestamp" : "2016-10-18T17:08:18.561907Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-hcal.cms:2108",
+    "id_number" : 3,
+    "label" : "HBHEC",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-hcal",
+    "timestamp" : "2016-10-18T17:08:18.562529Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-hcal.cms:2108",
+    "id_number" : 2,
+    "label" : "HBHEB",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-hcal",
+    "timestamp" : "2016-10-18T17:08:18.563231Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-hcal.cms:2108",
+    "id_number" : 8,
+    "label" : "Unused",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-hcal",
+    "timestamp" : "2016-10-18T17:08:18.578411Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-hcal.cms:2108",
+    "id_number" : 0,
+    "label" : "ReTri",
+    "lid" : "201",
+    "pm_number" : 0,
+    "service" : "lpm-hcal",
+    "timestamp" : "2016-10-18T17:08:18.686998Z",
+    "type" : "block_retri",
+    "value" : 8
+  }, {
+    "context" : "http://tcds-control-dt.cms:2105",
+    "id_number" : 0,
+    "label" : "Bunch mask",
+    "lid" : "201",
+    "pm_number" : 0,
+    "service" : "lpm-dt",
+    "timestamp" : "2016-10-14T11:53:41.460474Z",
+    "type" : "block_bx_mask",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-dt.cms:2105",
+    "id_number" : 4,
+    "label" : "Unused",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-dt",
+    "timestamp" : "2016-10-14T11:53:41.461001Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-dt.cms:2105",
+    "id_number" : 0,
+    "label" : "Top-level TTS",
+    "lid" : "201",
+    "pm_number" : 0,
+    "service" : "lpm-dt",
+    "timestamp" : "2016-10-25T20:10:03.360992Z",
+    "type" : "tts_toplevel",
+    "value" : 8
+  }, {
+    "context" : "http://tcds-control-dt.cms:2105",
+    "id_number" : 5,
+    "label" : "TWINMUX",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-dt",
+    "timestamp" : "2016-10-14T11:53:41.462011Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-dt.cms:2105",
+    "id_number" : 2,
+    "label" : "Unused",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-dt",
+    "timestamp" : "2016-10-14T11:53:41.462518Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-dt.cms:2105",
+    "id_number" : 0,
+    "label" : "DAQ link",
+    "lid" : "201",
+    "pm_number" : 0,
+    "service" : "lpm-dt",
+    "timestamp" : "2016-10-14T11:53:41.462987Z",
+    "type" : "block_daq_backpressure",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-dt.cms:2105",
+    "id_number" : 4,
+    "label" : "DT+",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-dt",
+    "timestamp" : "2016-10-25T20:10:03.362473Z",
+    "type" : "tts_ici",
+    "value" : 8
+  }, {
+    "context" : "http://tcds-control-dt.cms:2105",
+    "id_number" : 3,
+    "label" : "Unused",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-dt",
+    "timestamp" : "2016-10-14T11:53:41.464058Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-dt.cms:2105",
+    "id_number" : 7,
+    "label" : "Unused",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-dt",
+    "timestamp" : "2016-10-14T11:53:41.464500Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-dt.cms:2105",
+    "id_number" : 6,
+    "label" : "Unused",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-dt",
+    "timestamp" : "2016-10-14T11:53:41.509558Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-dt.cms:2105",
+    "id_number" : 1,
+    "label" : "Unused",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-dt",
+    "timestamp" : "2016-10-14T11:53:41.510031Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-dt.cms:2105",
+    "id_number" : 1,
+    "label" : "DTUP",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-dt",
+    "timestamp" : "2016-10-14T11:53:41.510504Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-dt.cms:2105",
+    "id_number" : 3,
+    "label" : "DT0",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-dt",
+    "timestamp" : "2016-10-25T20:10:01.453799Z",
+    "type" : "tts_ici",
+    "value" : 8
+  }, {
+    "context" : "http://tcds-control-dt.cms:2105",
+    "id_number" : 2,
+    "label" : "DT-",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-dt",
+    "timestamp" : "2016-10-25T20:10:00.407046Z",
+    "type" : "tts_ici",
+    "value" : 8
+  }, {
+    "context" : "http://tcds-control-dt.cms:2105",
+    "id_number" : 8,
+    "label" : "Unused",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-dt",
+    "timestamp" : "2016-10-14T11:53:41.523940Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-dt.cms:2105",
+    "id_number" : 0,
+    "label" : "ReTri",
+    "lid" : "201",
+    "pm_number" : 0,
+    "service" : "lpm-dt",
+    "timestamp" : "2016-10-25T20:40:33.671317Z",
+    "type" : "block_retri",
+    "value" : 4
+  }, {
+    "context" : "http://tcds-control-csc.cms:2104",
+    "id_number" : 0,
+    "label" : "Bunch mask",
+    "lid" : "201",
+    "pm_number" : 0,
+    "service" : "lpm-csc",
+    "timestamp" : "2016-10-27T08:44:54.316562Z",
+    "type" : "block_bx_mask",
+    "value" : 8
+  }, {
+    "context" : "http://tcds-control-csc.cms:2104",
+    "id_number" : 4,
+    "label" : "Unused",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-csc",
+    "timestamp" : "2016-10-14T12:34:23.573165Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-csc.cms:2104",
+    "id_number" : 0,
+    "label" : "Top-level TTS",
+    "lid" : "201",
+    "pm_number" : 0,
+    "service" : "lpm-csc",
+    "timestamp" : "2016-10-27T08:43:27.311256Z",
+    "type" : "tts_toplevel",
+    "value" : 8
+  }, {
+    "context" : "http://tcds-control-csc.cms:2104",
+    "id_number" : 5,
+    "label" : "Unused",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-csc",
+    "timestamp" : "2016-10-14T12:34:23.574057Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-csc.cms:2104",
+    "id_number" : 2,
+    "label" : "Unused",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-csc",
+    "timestamp" : "2016-10-14T12:34:23.574516Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-csc.cms:2104",
+    "id_number" : 0,
+    "label" : "DAQ link",
+    "lid" : "201",
+    "pm_number" : 0,
+    "service" : "lpm-csc",
+    "timestamp" : "2016-10-14T12:34:23.574946Z",
+    "type" : "block_daq_backpressure",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-csc.cms:2104",
+    "id_number" : 4,
+    "label" : "Unused",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-csc",
+    "timestamp" : "2016-10-14T12:34:23.575410Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-csc.cms:2104",
+    "id_number" : 3,
+    "label" : "Unused",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-csc",
+    "timestamp" : "2016-10-14T12:34:23.575859Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-csc.cms:2104",
+    "id_number" : 7,
+    "label" : "Unused",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-csc",
+    "timestamp" : "2016-10-14T12:34:23.576345Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-csc.cms:2104",
+    "id_number" : 6,
+    "label" : "Unused",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-csc",
+    "timestamp" : "2016-10-14T12:34:23.625661Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-csc.cms:2104",
+    "id_number" : 1,
+    "label" : "Unused",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-csc",
+    "timestamp" : "2016-10-14T12:34:23.626162Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-csc.cms:2104",
+    "id_number" : 1,
+    "label" : "CSCTF",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-csc",
+    "timestamp" : "2016-10-27T07:13:20.026424Z",
+    "type" : "tts_ici",
+    "value" : 8
+  }, {
+    "context" : "http://tcds-control-csc.cms:2104",
+    "id_number" : 3,
+    "label" : "CSC+",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-csc",
+    "timestamp" : "2016-10-27T07:10:51.989286Z",
+    "type" : "tts_ici",
+    "value" : 8
+  }, {
+    "context" : "http://tcds-control-csc.cms:2104",
+    "id_number" : 2,
+    "label" : "CSC-",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-csc",
+    "timestamp" : "2016-10-27T08:43:27.370909Z",
+    "type" : "tts_ici",
+    "value" : 8
+  }, {
+    "context" : "http://tcds-control-csc.cms:2104",
+    "id_number" : 8,
+    "label" : "Unused",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-csc",
+    "timestamp" : "2016-10-14T12:34:23.640800Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-csc.cms:2104",
+    "id_number" : 0,
+    "label" : "ReTri",
+    "lid" : "201",
+    "pm_number" : 0,
+    "service" : "lpm-csc",
+    "timestamp" : "2016-10-14T12:34:23.728956Z",
+    "type" : "block_retri",
+    "value" : 8
+  }, {
+    "context" : "http://tcds-control-rpc.cms:2103",
+    "id_number" : 0,
+    "label" : "Bunch mask",
+    "lid" : "201",
+    "pm_number" : 0,
+    "service" : "lpm-rpc",
+    "timestamp" : "2016-10-20T10:18:30.063639Z",
+    "type" : "block_bx_mask",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-rpc.cms:2103",
+    "id_number" : 4,
+    "label" : "Unused",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-rpc",
+    "timestamp" : "2016-10-20T10:18:30.064233Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-rpc.cms:2103",
+    "id_number" : 0,
+    "label" : "Top-level TTS",
+    "lid" : "201",
+    "pm_number" : 0,
+    "service" : "lpm-rpc",
+    "timestamp" : "2016-10-20T12:32:29.048137Z",
+    "type" : "tts_toplevel",
+    "value" : 8
+  }, {
+    "context" : "http://tcds-control-rpc.cms:2103",
+    "id_number" : 5,
+    "label" : "Unused",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-rpc",
+    "timestamp" : "2016-10-20T10:18:30.065344Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-rpc.cms:2103",
+    "id_number" : 2,
+    "label" : "Unused",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-rpc",
+    "timestamp" : "2016-10-20T10:18:30.065873Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-rpc.cms:2103",
+    "id_number" : 0,
+    "label" : "DAQ link",
+    "lid" : "201",
+    "pm_number" : 0,
+    "service" : "lpm-rpc",
+    "timestamp" : "2016-10-20T10:18:30.066380Z",
+    "type" : "block_daq_backpressure",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-rpc.cms:2103",
+    "id_number" : 4,
+    "label" : "Unused",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-rpc",
+    "timestamp" : "2016-10-20T10:18:30.066981Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-rpc.cms:2103",
+    "id_number" : 3,
+    "label" : "Unused",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-rpc",
+    "timestamp" : "2016-10-20T10:18:30.067629Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-rpc.cms:2103",
+    "id_number" : 7,
+    "label" : "Unused",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-rpc",
+    "timestamp" : "2016-10-20T10:18:30.068144Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-rpc.cms:2103",
+    "id_number" : 6,
+    "label" : "Unused",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-rpc",
+    "timestamp" : "2016-10-20T10:18:30.120755Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-rpc.cms:2103",
+    "id_number" : 1,
+    "label" : "Unused",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-rpc",
+    "timestamp" : "2016-10-20T10:18:30.121241Z",
+    "type" : "tts_apve",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-rpc.cms:2103",
+    "id_number" : 1,
+    "label" : "RPC",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-rpc",
+    "timestamp" : "2016-10-20T10:18:30.121731Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-rpc.cms:2103",
+    "id_number" : 3,
+    "label" : "Unused",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-rpc",
+    "timestamp" : "2016-10-20T10:18:30.122230Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-rpc.cms:2103",
+    "id_number" : 2,
+    "label" : "MUTFUP",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-rpc",
+    "timestamp" : "2016-10-20T12:32:28.109740Z",
+    "type" : "tts_ici",
+    "value" : 8
+  }, {
+    "context" : "http://tcds-control-rpc.cms:2103",
+    "id_number" : 8,
+    "label" : "Unused",
+    "lid" : "201",
+    "pm_number" : 1,
+    "service" : "lpm-rpc",
+    "timestamp" : "2016-10-20T10:18:30.136660Z",
+    "type" : "tts_ici",
+    "value" : 152
+  }, {
+    "context" : "http://tcds-control-rpc.cms:2103",
+    "id_number" : 0,
+    "label" : "ReTri",
+    "lid" : "201",
+    "pm_number" : 0,
+    "service" : "lpm-rpc",
+    "timestamp" : "2016-10-20T10:18:30.243928Z",
+    "type" : "block_retri",
+    "value" : 8
+  } ],
+  "definitionNode" : [ {
+    "key" : "context",
+    "type" : "string"
+  }, {
+    "key" : "id_number",
+    "type" : "unsigned int 32"
+  }, {
+    "key" : "label",
+    "type" : "string"
+  }, {
+    "key" : "lid",
+    "type" : "string"
+  }, {
+    "key" : "pm_number",
+    "type" : "unsigned int 32"
+  }, {
+    "key" : "service",
+    "type" : "string"
+  }, {
+    "key" : "timestamp",
+    "type" : "time"
+  }, {
+    "key" : "type",
+    "type" : "string"
+  }, {
+    "key" : "value",
+    "type" : "unsigned int 32"
+  } ],
+  "retrievalDate" : 1477557890932,
+  "address" : "http://pc-c2e11-23-01.cms:9945/urn:xdaq-application:service=xmaslas2g/retrieveCollection?flash=urn:xdaq-flashlist:tcds_pm_tts_channel&fmt=json",
+  "name" : "urn:xdaq-flashlist:tcds_pm_tts_channel"
+}
