@@ -1,0 +1,20 @@
+{
+  "flashlistType" : "HOST_INFO",
+  "rowsNode" : [ ],
+  "definitionNode" : [ {
+    "key" : "context",
+    "type" : "string"
+  }, {
+    "key" : "cpuUsage",
+    "type" : "double"
+  }, {
+    "key" : "sessionid",
+    "type" : "string"
+  }, {
+    "key" : "timestamp",
+    "type" : "time"
+  } ],
+  "retrievalDate" : 1477557890932,
+  "address" : "http://pc-c2e11-29-01.cms:9941/urn:xdaq-application:service=xmaslas2g/retrieveCollection?flash=urn:xdaq-flashlist:hostInfo&fmt=json&sessionid=286004",
+  "name" : "urn:xdaq-flashlist:hostInfo"
+}
