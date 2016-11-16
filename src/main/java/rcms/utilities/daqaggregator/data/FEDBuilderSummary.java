@@ -181,8 +181,6 @@ public class FEDBuilderSummary implements Derivable {
 		this.setSuperFragmentSizeMean(superFragmentSizeMean);
 		this.setSuperFragmentSizeStddev(superFragmentSizeStddev);
 		this.setThroughput(throughput);
-		
-		System.out.println(superFragmentSizeMean+"+-"+superFragmentSizeStddev);
 
 	}
 
