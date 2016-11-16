@@ -86,6 +86,8 @@ public class BUSummary implements Derivable {
 
 	@Override
 	public void calculateDerivedValues() {
+		
+		
 
 		/* TODO sum or avg? */
 		int currentLumisection = 0;
@@ -113,6 +115,7 @@ public class BUSummary implements Derivable {
 		int numRequestsBlocked = 0;
 		int numRequestsSent = 0;
 		int numRequestsUsed = 0;
+		double fuOutputBandwidthInMB = 0;
 
 		int numberOfBus = 0;
 
@@ -180,6 +183,8 @@ public class BUSummary implements Derivable {
 		this.setRamDiskUsage(ramDiskUsage);
 		this.setRate(rate);
 		this.setThroughput(throughput);
+		this.setFuOutputBandwidthInMB(fuOutputBandwidthInMB);
+		
 	}
 
 	public DAQ getDaq() {
