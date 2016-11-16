@@ -186,8 +186,6 @@ public class BUSummary implements Derivable {
 		this.setThroughput(throughput);
 		this.setFuOutputBandwidthInMB(fuOutputBandwidthInMB);
 		
-		System.out.println(this.getNumLumisectionsWithFiles());
-		
 	}
 
 	public DAQ getDaq() {
