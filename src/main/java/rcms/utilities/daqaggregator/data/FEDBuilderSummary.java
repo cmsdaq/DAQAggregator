@@ -34,11 +34,7 @@ public class FEDBuilderSummary implements Derivable {
 	/** spread of superfragment size in kByte ? */
 	private float superFragmentSizeStddev;
 
-	/**
-	 * difference of number of events in RU between highest and lowest
-	 * fedbuilder ???
-	 */
-	private int deltaEvents;
+	private long deltaEvents;
 
 	private int sumFragmentsInRU;
 
@@ -83,11 +79,11 @@ public class FEDBuilderSummary implements Derivable {
 		this.superFragmentSizeStddev = superFragmentSizeStddev;
 	}
 
-	public int getDeltaEvents() {
+	public long getDeltaEvents() {
 		return deltaEvents;
 	}
 
-	public void setDeltaEvents(int deltaEvents) {
+	public void setDeltaEvents(long deltaEvents) {
 		this.deltaEvents = deltaEvents;
 	}
 
@@ -131,9 +127,8 @@ public class FEDBuilderSummary implements Derivable {
 		int numberOfRus = daq.getFedBuilders().size();
 
 		/* delta between min and max (min not 0) */
-		int deltaEvents = 0;
-		int maxEvents = Integer.MIN_VALUE;
-		int minEvents = Integer.MAX_VALUE;
+		long maxEvents = Long.MIN_VALUE;
+		long minEvents = Long.MAX_VALUE;
 
 		/* Averages */
 		float superFragmentSizeMean = 0;
@@ -161,10 +156,11 @@ public class FEDBuilderSummary implements Derivable {
 			superFragmentSizeStddev += ru.getSuperFragmentSizeStddev();
 			throughput += ru.getThroughput();
 
-			if (maxEvents < ru.getEventsInRU())
-				maxEvents = ru.getEventsInRU();
-			if (minEvents > ru.getEventsInRU() && ru.getEventsInRU() != 0) {
-				minEvents = ru.getEventsInRU();
+			
+			if (maxEvents < ru.getEventCount())
+				maxEvents = ru.getEventCount();
+			if (minEvents > ru.getEventCount() && ru.getEventCount() != 0) {
+				minEvents = ru.getEventCount();
 			}
 		}
 
@@ -177,7 +173,6 @@ public class FEDBuilderSummary implements Derivable {
 		/* deltas */
 		this.setDeltaEvents(maxEvents - minEvents);
 
-		this.setDeltaEvents(deltaEvents);
 		this.setRate(rate);
 		this.setSumEventsInRU(sumEventsInRU);
 		this.setSumFragmentsInRU(sumFragmentsInRU);
@@ -192,7 +187,8 @@ public class FEDBuilderSummary implements Derivable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + deltaEvents;
+		result = prime * result + ((daq == null) ? 0 : daq.hashCode());
+		result = prime * result + (int) (deltaEvents ^ (deltaEvents >>> 32));
 		result = prime * result + Float.floatToIntBits(rate);
 		result = prime * result + sumEventsInRU;
 		result = prime * result + sumFragmentsInRU;
@@ -212,6 +208,11 @@ public class FEDBuilderSummary implements Derivable {
 		if (getClass() != obj.getClass())
 			return false;
 		FEDBuilderSummary other = (FEDBuilderSummary) obj;
+		if (daq == null) {
+			if (other.daq != null)
+				return false;
+		} else if (!daq.equals(other.daq))
+			return false;
 		if (deltaEvents != other.deltaEvents)
 			return false;
 		if (Float.floatToIntBits(rate) != Float.floatToIntBits(other.rate))
@@ -230,4 +231,5 @@ public class FEDBuilderSummary implements Derivable {
 			return false;
 		return true;
 	}
+
 }
