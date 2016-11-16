@@ -131,7 +131,6 @@ public class FEDBuilderSummary implements Derivable {
 		int numberOfRus = daq.getFedBuilders().size();
 
 		/* delta between min and max (min not 0) */
-		int deltaEvents = 0;
 		int maxEvents = Integer.MIN_VALUE;
 		int minEvents = Integer.MAX_VALUE;
 
@@ -177,7 +176,6 @@ public class FEDBuilderSummary implements Derivable {
 		/* deltas */
 		this.setDeltaEvents(maxEvents - minEvents);
 
-		this.setDeltaEvents(deltaEvents);
 		this.setRate(rate);
 		this.setSumEventsInRU(sumEventsInRU);
 		this.setSumFragmentsInRU(sumFragmentsInRU);
