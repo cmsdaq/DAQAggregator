@@ -188,7 +188,6 @@ public class FEDBuilderSummary implements Derivable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((daq == null) ? 0 : daq.hashCode());
 		result = prime * result + (int) (deltaEvents ^ (deltaEvents >>> 32));
 		result = prime * result + Float.floatToIntBits(rate);
 		result = prime * result + sumEventsInRU;
@@ -212,11 +211,6 @@ public class FEDBuilderSummary implements Derivable {
 		if (getClass() != obj.getClass())
 			return false;
 		FEDBuilderSummary other = (FEDBuilderSummary) obj;
-		if (daq == null) {
-			if (other.daq != null)
-				return false;
-		} else if (!daq.equals(other.daq))
-			return false;
 		if (deltaEvents != other.deltaEvents)
 			return false;
 		if (Float.floatToIntBits(rate) != Float.floatToIntBits(other.rate))
@@ -235,6 +229,8 @@ public class FEDBuilderSummary implements Derivable {
 			return false;
 		return true;
 	}
+
+
 
 
 }
