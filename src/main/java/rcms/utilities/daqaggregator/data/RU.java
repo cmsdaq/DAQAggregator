@@ -335,14 +335,14 @@ public class RU implements FlashlistUpdatable, Derivable {
 
 			this.setStateName(flashlistRow.get("stateName").asText());
 			this.setErrorMsg(flashlistRow.get("errorMsg").asText());
-			this.requests = flashlistRow.get("requestRate").asInt();
+			this.requests = flashlistRow.get("activeRequests").asInt();
 			this.rate = flashlistRow.get("eventRate").asInt();
 			this.eventsInRU = flashlistRow.get("eventsInRU").asInt();
 			this.eventCount = flashlistRow.get("eventCount").asLong();
 			this.superFragmentSizeMean = flashlistRow.get("superFragmentSize").asInt();
 			this.superFragmentSizeStddev = flashlistRow.get("superFragmentSizeStdDev").asInt();
 			this.incompleteSuperFragmentCount = flashlistRow.get("incompleteSuperFragmentCount").asInt();
-			this.fragmentsInRU = flashlistRow.get("fragmentRate").asInt();
+			this.fragmentsInRU = flashlistRow.get("incompleteSuperFragmentCount").asInt();
 
 			// derived values
 			this.throughput = rate * superFragmentSizeMean;

@@ -207,6 +207,10 @@ public class FlashlistDispatcher {
 					// in this case, the nullCause String field of associated
 					// FMMInfo is not null and contains more information on why
 					// this ttcp's topFMM was null
+					
+					ttcp.setTcds_pm_ttsState(ttcp.getTopFMMInfo().getNullCause());
+					ttcp.setTcds_apv_pm_ttsState(ttcp.getTopFMMInfo().getNullCause());
+					
 					continue;
 				}
 
