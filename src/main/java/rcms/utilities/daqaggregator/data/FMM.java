@@ -41,6 +41,9 @@ public class FMM implements FlashlistUpdatable {
 	private List<FED> feds = new ArrayList<FED>();
 
 	private boolean takeB;
+	
+	private String stateName;
+	
 
 	public TTCPartition getTtcPartition() {
 		return ttcPartition;
@@ -102,11 +105,21 @@ public class FMM implements FlashlistUpdatable {
 	public void setFeds(List<FED> feds) {
 		this.feds = feds;
 	}
+	
+
+	public String getStateName() {
+		return stateName;
+	}
+
+	public void setStateName(String stateName) {
+		this.stateName = stateName;
+	}
 
 	@Override
 	public void updateFromFlashlist(FlashlistType flashlistType, JsonNode flashlistRow) {
 		if (flashlistType == FlashlistType.FMM_STATUS) {
 			url = flashlistRow.get("context").asText();
+			stateName = flashlistRow.get("stateName").asText();
 		}
 	}
 
@@ -123,6 +136,7 @@ public class FMM implements FlashlistUpdatable {
 		result = prime * result + geoslot;
 		result = prime * result + ((ttcPartition == null) ? 0 : ttcPartition.hashCode());
 		result = prime * result + ((url == null) ? 0 : url.hashCode());
+		result = prime * result + ((stateName == null) ? 0 : stateName.hashCode());
 		return result;
 	}
 
@@ -152,6 +166,11 @@ public class FMM implements FlashlistUpdatable {
 			if (other.url != null)
 				return false;
 		} else if (!url.equals(other.url))
+			return false;
+		if (stateName == null) {
+			if (other.stateName != null)
+				return false;
+		} else if (!stateName.equals(other.stateName))
 			return false;
 		return true;
 	}

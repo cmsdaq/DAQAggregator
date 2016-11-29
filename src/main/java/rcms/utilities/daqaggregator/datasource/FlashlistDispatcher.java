@@ -207,6 +207,10 @@ public class FlashlistDispatcher {
 					// in this case, the nullCause String field of associated
 					// FMMInfo is not null and contains more information on why
 					// this ttcp's topFMM was null
+					
+					ttcp.setTcds_pm_ttsState(ttcp.getTopFMMInfo().getNullCause());
+					ttcp.setTcds_apv_pm_ttsState(ttcp.getTopFMMInfo().getNullCause());
+					
 					continue;
 				}
 
@@ -222,16 +226,25 @@ public class FlashlistDispatcher {
 				}
 
 
-
 				if (stpiDataFromFlashlist.containsKey(serviceField)  &&
 						stpiDataFromFlashlist.get(serviceField).containsKey(typeField2) &&
 						stpiDataFromFlashlist.get(serviceField).get(typeField2).containsKey( ttcp.getTopFMMInfo().getPMNr() ) && 
 						stpiDataFromFlashlist.get(serviceField).get(typeField2).get( ttcp.getTopFMMInfo().getPMNr() ).containsKey( ttcp.getTopFMMInfo().getICINr() ) )  {
 
-					int stateCode = Integer.parseInt(stpiDataFromFlashlist.get(serviceField).get(typeField2)
-							.get(ttcp.getTopFMMInfo().getPMNr()).get(ttcp.getTopFMMInfo().getICINr()).get("value"));
+					
 
-					ttcp.setTcds_apv_pm_ttsState(TCDSFlashlistHelpers.decodeTCDSTTSState(stateCode));
+					String label = stpiDataFromFlashlist.get(serviceField).get(typeField2)
+							.get(ttcp.getTopFMMInfo().getPMNr()).get(ttcp.getTopFMMInfo().getICINr()).get("label");
+					
+					if (label.equalsIgnoreCase("Unused")){
+						ttcp.setTcds_apv_pm_ttsState("x");
+					}else{
+						int stateCode = Integer.parseInt(stpiDataFromFlashlist.get(serviceField).get(typeField2)
+								.get(ttcp.getTopFMMInfo().getPMNr()).get(ttcp.getTopFMMInfo().getICINr()).get("value"));
+						
+						ttcp.setTcds_apv_pm_ttsState(TCDSFlashlistHelpers.decodeTCDSTTSState(stateCode));
+					}
+					
 				}
 			}
 

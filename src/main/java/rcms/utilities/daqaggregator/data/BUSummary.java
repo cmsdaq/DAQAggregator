@@ -86,6 +86,8 @@ public class BUSummary implements Derivable {
 
 	@Override
 	public void calculateDerivedValues() {
+		
+		
 
 		/* TODO sum or avg? */
 		int currentLumisection = 0;
@@ -94,6 +96,7 @@ public class BUSummary implements Derivable {
 		/* Averages */
 		double eventSizeMean = 0;
 		double eventSizeStddev = 0;
+		int numLumisectionsWithFiles = 0;
 
 		/* sums */
 		long rate = 0;
@@ -109,10 +112,10 @@ public class BUSummary implements Derivable {
 		int numFUsStale = 0;
 		int numLumisectionsForHLT = 0;
 		int numLumisectionsOutHLT = 0;
-		int numLumisectionsWithFiles = 0;
 		int numRequestsBlocked = 0;
 		int numRequestsSent = 0;
 		int numRequestsUsed = 0;
+		double fuOutputBandwidthInMB = 0;
 
 		int numberOfBus = 0;
 
@@ -156,6 +159,7 @@ public class BUSummary implements Derivable {
 		if ( numberOfBus > 0 ) {
 			eventSizeMean = eventSizeMean / numberOfBus;
 			eventSizeStddev = Math.sqrt(eventSizeStddev);
+			numLumisectionsWithFiles = numLumisectionsWithFiles / numberOfBus;
 		}
 		ramDiskUsage = ramDiskTotal>0 ? ramDiskUsage/ramDiskTotal : 0;
 
@@ -180,6 +184,8 @@ public class BUSummary implements Derivable {
 		this.setRamDiskUsage(ramDiskUsage);
 		this.setRate(rate);
 		this.setThroughput(throughput);
+		this.setFuOutputBandwidthInMB(fuOutputBandwidthInMB);
+		
 	}
 
 	public DAQ getDaq() {

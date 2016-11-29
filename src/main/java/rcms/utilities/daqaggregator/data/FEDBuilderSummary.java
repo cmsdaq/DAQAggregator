@@ -29,16 +29,12 @@ public class FEDBuilderSummary implements Derivable {
 	private float throughput;
 
 	/** mean superfragment size in kByte ? */
-	private float superFragmentSizeMean;
+	private double superFragmentSizeMean;
 
 	/** spread of superfragment size in kByte ? */
-	private float superFragmentSizeStddev;
+	private double superFragmentSizeStddev;
 
-	/**
-	 * difference of number of events in RU between highest and lowest
-	 * fedbuilder ???
-	 */
-	private int deltaEvents;
+	private long deltaEvents;
 
 	private int sumFragmentsInRU;
 
@@ -67,27 +63,27 @@ public class FEDBuilderSummary implements Derivable {
 		this.throughput = throughput;
 	}
 
-	public float getSuperFragmentSizeMean() {
+	public double getSuperFragmentSizeMean() {
 		return superFragmentSizeMean;
 	}
 
-	public void setSuperFragmentSizeMean(float superFragmentSizeMean) {
+	public void setSuperFragmentSizeMean(double superFragmentSizeMean) {
 		this.superFragmentSizeMean = superFragmentSizeMean;
 	}
 
-	public float getSuperFragmentSizeStddev() {
+	public double getSuperFragmentSizeStddev() {
 		return superFragmentSizeStddev;
 	}
 
-	public void setSuperFragmentSizeStddev(float superFragmentSizeStddev) {
+	public void setSuperFragmentSizeStddev(double superFragmentSizeStddev) {
 		this.superFragmentSizeStddev = superFragmentSizeStddev;
 	}
 
-	public int getDeltaEvents() {
+	public long getDeltaEvents() {
 		return deltaEvents;
 	}
 
-	public void setDeltaEvents(int deltaEvents) {
+	public void setDeltaEvents(long deltaEvents) {
 		this.deltaEvents = deltaEvents;
 	}
 
@@ -131,13 +127,12 @@ public class FEDBuilderSummary implements Derivable {
 		int numberOfRus = daq.getFedBuilders().size();
 
 		/* delta between min and max (min not 0) */
-		int deltaEvents = 0;
-		int maxEvents = Integer.MIN_VALUE;
-		int minEvents = Integer.MAX_VALUE;
+		long maxEvents = Long.MIN_VALUE;
+		long minEvents = Long.MAX_VALUE;
 
 		/* Averages */
-		float superFragmentSizeMean = 0;
-		float superFragmentSizeStddev = 0;
+		double superFragmentSizeMean = 0;
+		double superFragmentSizeStddev = 0;
 		float rate = 0;
 
 		/* Sums */
@@ -158,26 +153,27 @@ public class FEDBuilderSummary implements Derivable {
 			sumFragmentsInRU += ru.getFragmentsInRU();
 			sumRequests += ru.getRequests();
 			superFragmentSizeMean += ru.getSuperFragmentSizeMean();
-			superFragmentSizeStddev += ru.getSuperFragmentSizeStddev();
+			superFragmentSizeStddev += Math.pow(ru.getSuperFragmentSizeStddev(),2);
 			throughput += ru.getThroughput();
 
-			if (maxEvents < ru.getEventsInRU())
-				maxEvents = ru.getEventsInRU();
-			if (minEvents > ru.getEventsInRU() && ru.getEventsInRU() != 0) {
-				minEvents = ru.getEventsInRU();
+			
+			if (maxEvents < ru.getEventCount())
+				maxEvents = ru.getEventCount();
+			if (minEvents > ru.getEventCount() && ru.getEventCount() != 0) {
+				minEvents = ru.getEventCount();
 			}
 		}
 
 		/* average values */
-		superFragmentSizeMean = superFragmentSizeMean / (float) numberOfRus;
-		superFragmentSizeStddev = superFragmentSizeStddev / (float) numberOfRus;
+		
+		//we do not average the superFragmentSizeMean, because we need the sum of RU sizes in the summary
+		superFragmentSizeStddev = Math.sqrt(superFragmentSizeStddev);
 		
 		
 
 		/* deltas */
 		this.setDeltaEvents(maxEvents - minEvents);
 
-		this.setDeltaEvents(deltaEvents);
 		this.setRate(rate);
 		this.setSumEventsInRU(sumEventsInRU);
 		this.setSumFragmentsInRU(sumFragmentsInRU);
@@ -192,13 +188,16 @@ public class FEDBuilderSummary implements Derivable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + deltaEvents;
+		result = prime * result + (int) (deltaEvents ^ (deltaEvents >>> 32));
 		result = prime * result + Float.floatToIntBits(rate);
 		result = prime * result + sumEventsInRU;
 		result = prime * result + sumFragmentsInRU;
 		result = prime * result + (int) (sumRequests ^ (sumRequests >>> 32));
-		result = prime * result + Float.floatToIntBits(superFragmentSizeMean);
-		result = prime * result + Float.floatToIntBits(superFragmentSizeStddev);
+		long temp;
+		temp = Double.doubleToLongBits(superFragmentSizeMean);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		temp = Double.doubleToLongBits(superFragmentSizeStddev);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
 		result = prime * result + Float.floatToIntBits(throughput);
 		return result;
 	}
@@ -222,12 +221,16 @@ public class FEDBuilderSummary implements Derivable {
 			return false;
 		if (sumRequests != other.sumRequests)
 			return false;
-		if (Float.floatToIntBits(superFragmentSizeMean) != Float.floatToIntBits(other.superFragmentSizeMean))
+		if (Double.doubleToLongBits(superFragmentSizeMean) != Double.doubleToLongBits(other.superFragmentSizeMean))
 			return false;
-		if (Float.floatToIntBits(superFragmentSizeStddev) != Float.floatToIntBits(other.superFragmentSizeStddev))
+		if (Double.doubleToLongBits(superFragmentSizeStddev) != Double.doubleToLongBits(other.superFragmentSizeStddev))
 			return false;
 		if (Float.floatToIntBits(throughput) != Float.floatToIntBits(other.throughput))
 			return false;
 		return true;
 	}
+
+
+
+
 }
