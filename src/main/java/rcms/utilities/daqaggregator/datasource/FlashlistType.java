@@ -31,7 +31,13 @@ public enum FlashlistType {
 	TCDS_CPM_DEADTIMES(LiveAccessService.ADDITIONAL, "tcds_cpm_deadtimes"),
 	TCDS_CPM_RATES(LiveAccessService.ADDITIONAL, "tcds_cpm_rates"),
 	TCDS_PM_ACTION_COUNTS(LiveAccessService.ADDITIONAL, "tcds_pm_action_counts"),
-	TCDS_PM_TTS_CHANNEL(LiveAccessService.ADDITIONAL, "tcds_pm_tts_channel");
+	TCDS_PM_TTS_CHANNEL(LiveAccessService.ADDITIONAL, "tcds_pm_tts_channel"),
+	
+	FEROL40_CONFIGURATION(LiveAccessService.DAQ2VAL, "ferol40Configuration"),
+	FEROL40_INPUT_STREAM(LiveAccessService.DAQ2VAL, "ferol40InputStream"),
+	FEROL40_STATUS(LiveAccessService.DAQ2VAL, "ferol40Status"),
+	FEROL40_STREAM_CONFIGURATION(LiveAccessService.DAQ2VAL, "ferol40StreamConfiguration"),
+	FEROL40_TCP_STREAM(LiveAccessService.DAQ2VAL, "ferol40TcpStream");
 
 	private static Logger logger = Logger.getLogger(FlashlistType.class);
 
