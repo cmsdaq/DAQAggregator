@@ -246,6 +246,26 @@ public class DAQ implements FlashlistUpdatable {
 		this.tcdsGlobalInfo = tcdsGlobalInfo;
 	}
 
+	/** @return the corresponding FED object (there should be at most one)
+	 *  corresponding to the given a numeric fed source ID or null if 
+	 *  no such source id was found.
+	 *  @param fedId the source id of the FED requested
+	 */
+	public FED getFEDbyId(int fedId) {
+		
+		for (FED fed : getFeds()) {
+			
+			if (fed.getSrcIdExpected() == fedId) {
+				return fed;
+			}
+
+		} // loop over FEDs
+
+		// fedId not found
+		return null;
+		
+	}
+	
 	@Override
 	public void clean() {
 		// nothing to do
