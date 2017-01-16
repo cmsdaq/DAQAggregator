@@ -8,7 +8,6 @@ public enum Settings {
 	FLASHLIST_PRIMARY_URL("flashlist.primary.url", true),
 	FLASHLIST_SECONDARY_URL("flashlist.secondary.url", true),
 	FLASHLIST_ADDITIONAL_URL("flashlist.additional.url", true),
-	FLASHLIST_DAQ2VAL_URL("flashlist.daq2val.url", true),
 
 	// settings concerning session definition
 	SESSION_L0FILTER1("session.l0filter1"),

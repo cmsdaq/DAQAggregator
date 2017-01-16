@@ -66,7 +66,6 @@ public class Application {
 		LiveAccessService.PRIMARY.setUrl(Application.get().getProp(Settings.FLASHLIST_PRIMARY_URL));
 		LiveAccessService.SECONDARY.setUrl(Application.get().getProp(Settings.FLASHLIST_SECONDARY_URL));
 		LiveAccessService.ADDITIONAL.setUrl(Application.get().getProp(Settings.FLASHLIST_ADDITIONAL_URL));
-		LiveAccessService.DAQ2VAL.setUrl(Application.get().getProp(Settings.FLASHLIST_DAQ2VAL_URL));
 	}
 
 	public String getProp(Settings setting) {
