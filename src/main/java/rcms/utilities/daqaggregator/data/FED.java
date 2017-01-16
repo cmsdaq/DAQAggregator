@@ -225,6 +225,30 @@ public class FED implements FlashlistUpdatable {
 					break;
 				}
 			}
+		} else if (flashlistType == FlashlistType.FEROL40_INPUT_STREAM) {
+
+			if (flashlistRow.get("WrongFEDIdDetected").asInt() == 0) {
+				// srcIdExpected already filled at mapping from corresponding
+				// hwfed
+				this.srcIdReceived = this.srcIdExpected;
+			} else {
+				this.srcIdReceived = flashlistRow.get("WrongFEDId").asInt();
+			}
+
+			this.numSCRCerrors = flashlistRow.get("LinkCRCError").asInt();
+			this.numFCRCerrors = flashlistRow.get("FEDCRCError").asInt();
+			this.numTriggers = flashlistRow.get("TriggerNumber").asInt();
+			this.eventCounter = flashlistRow.get("EventCounter").asLong();
+
+			/*
+			 * converting accumulated backpressure from flashlist
+			 */
+			this.percentBackpressure = converter.calculatePercent(flashlistRow.get("AccBackpressureSeconds").asDouble(),
+					flashlistRow.get("timestamp").asText());
+			
+			//correct?
+			this.frl_AccSlinkFullSec = flashlistRow.get("AccSlinkFullSeconds").asDouble();
+
 		}
 
 	}

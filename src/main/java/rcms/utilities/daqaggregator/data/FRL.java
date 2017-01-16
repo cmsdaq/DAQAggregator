@@ -102,8 +102,17 @@ public class FRL implements FlashlistUpdatable {
 
 	@Override
 	public void updateFromFlashlist(FlashlistType flashlistType, JsonNode flashlistRow) {
+		
+		//remove this line
+		System.out.println("FRL: "+this.getType()+" > "+flashlistType.toString());
 
 		if (flashlistType == FlashlistType.FEROL_STATUS) {
+			state = flashlistRow.get("stateName").asText();
+			substate = flashlistRow.get("subState").asText();
+			url = flashlistRow.get("context").asText();
+		}
+		
+		if (flashlistType == FlashlistType.FEROL40_STATUS) {
 			state = flashlistRow.get("stateName").asText();
 			substate = flashlistRow.get("subState").asText();
 			url = flashlistRow.get("context").asText();
