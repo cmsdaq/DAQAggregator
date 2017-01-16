@@ -102,9 +102,6 @@ public class FRL implements FlashlistUpdatable {
 
 	@Override
 	public void updateFromFlashlist(FlashlistType flashlistType, JsonNode flashlistRow) {
-		
-		//remove this line
-		System.out.println("FRL: "+this.getType()+" > "+flashlistType.toString());
 
 		if (flashlistType == FlashlistType.FEROL_STATUS) {
 			state = flashlistRow.get("stateName").asText();

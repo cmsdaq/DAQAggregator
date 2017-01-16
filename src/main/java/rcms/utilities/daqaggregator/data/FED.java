@@ -50,6 +50,8 @@ public class FED implements FlashlistUpdatable {
 	private int srcIdReceived;
 
 	private float percentBackpressure;
+	
+	private double accBIFIBackpressureSeconds;
 
 	private float percentWarning;
 
@@ -243,11 +245,14 @@ public class FED implements FlashlistUpdatable {
 			/*
 			 * converting accumulated backpressure from flashlist
 			 */
-			this.percentBackpressure = converter.calculatePercent(flashlistRow.get("AccBackpressureSeconds").asDouble(),
-					flashlistRow.get("timestamp").asText());
+			double latchedSeconds = flashlistRow.get("LatchedFerol40ClockSeconds").asDouble();
 			
-			//correct?
+			this.percentBackpressure = converter.calculatePercent(flashlistRow.get("AccBackpressureSeconds").asDouble(),
+					flashlistRow.get("timestamp").asText()); //time to be replaced with latchedSeconds (units in seconds)
+			
 			this.frl_AccSlinkFullSec = flashlistRow.get("AccSlinkFullSeconds").asDouble();
+			
+			this.accBIFIBackpressureSeconds = flashlistRow.get("AccBIFIBackpressureSeconds").asDouble();
 
 		}
 
@@ -279,6 +284,14 @@ public class FED implements FlashlistUpdatable {
 
 	public void setPercentBackpressure(float percentBackpressure) {
 		this.percentBackpressure = percentBackpressure;
+	}
+
+	public double getAccBIFIBackpressureSeconds() {
+		return accBIFIBackpressureSeconds;
+	}
+
+	public void setAccBIFIBackpressureSeconds(double accBIFIBackpressureSeconds) {
+		this.accBIFIBackpressureSeconds = accBIFIBackpressureSeconds;
 	}
 
 	public float getPercentWarning() {
