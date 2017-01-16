@@ -251,7 +251,7 @@ public class DAQ implements FlashlistUpdatable {
 	 *  no such source id was found.
 	 *  @param fedId the source id of the FED requested
 	 */
-	public FED getFEDbyId(int fedId) {
+	public FED getFEDbySrcId(int fedId) {
 		
 		for (FED fed : getFeds()) {
 			
