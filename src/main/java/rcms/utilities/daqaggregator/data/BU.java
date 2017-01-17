@@ -24,6 +24,8 @@ public class BU implements FlashlistUpdatable {
 	private DAQ daq;
 
 	private String hostname;
+	
+	private int port;
 
 	// ----------------------------------------
 	// fields updated periodically
@@ -114,6 +116,7 @@ public class BU implements FlashlistUpdatable {
 
 			// direct values
 			this.stateName = flashlistRow.get("stateName").asText();
+			this.port = Integer.parseInt(flashlistRow.get("context").asText().split(":")[2]);
 			this.errorMsg = flashlistRow.get("errorMsg").asText();
 			this.rate = flashlistRow.get("eventRate").asInt();
 			this.throughput = flashlistRow.get("throughput").asInt();
@@ -180,6 +183,14 @@ public class BU implements FlashlistUpdatable {
 
 	public void setHostname(String hostname) {
 		this.hostname = hostname;
+	}
+
+	public int getPort() {
+		return port;
+	}
+
+	public void setPort(int port) {
+		this.port = port;
 	}
 
 	public String getStateName() {
@@ -451,6 +462,7 @@ public class BU implements FlashlistUpdatable {
 		temp = Double.doubleToLongBits(fuOutputBandwidthInMB);
 		result = prime * result + (int) (temp ^ (temp >>> 32));
 		result = prime * result + ((hostname == null) ? 0 : hostname.hashCode());
+		result = prime * result + port;
 		result = prime * result + nbCorruptedEvents;
 		result = prime * result + nbEventsMissingData;
 		result = prime * result + nbEventsWithCRCerrors;
@@ -511,6 +523,8 @@ public class BU implements FlashlistUpdatable {
 			if (other.hostname != null)
 				return false;
 		} else if (!hostname.equals(other.hostname))
+			return false;
+		if (port != other.port)
 			return false;
 		if (nbCorruptedEvents != other.nbCorruptedEvents)
 			return false;

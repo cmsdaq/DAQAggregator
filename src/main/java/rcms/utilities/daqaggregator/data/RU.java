@@ -28,6 +28,8 @@ public class RU implements FlashlistUpdatable, Derivable {
 	private FEDBuilder fedBuilder;
 
 	private String hostname;
+	
+	private int port;
 
 	private boolean isEVM;
 
@@ -208,6 +210,14 @@ public class RU implements FlashlistUpdatable, Derivable {
 		this.hostname = hostname;
 	}
 
+	public int getPort() {
+		return port;
+	}
+
+	public void setPort(int port) {
+		this.port = port;
+	}
+
 	public void setEVM(boolean isEVM) {
 		this.isEVM = isEVM;
 	}
@@ -336,6 +346,7 @@ public class RU implements FlashlistUpdatable, Derivable {
 			this.setStateName(flashlistRow.get("stateName").asText());
 			this.setErrorMsg(flashlistRow.get("errorMsg").asText());
 			this.requests = flashlistRow.get("activeRequests").asInt();
+			this.port = Integer.parseInt(flashlistRow.get("context").asText().split(":")[2]);
 			this.rate = flashlistRow.get("eventRate").asInt();
 			this.eventsInRU = flashlistRow.get("eventsInRU").asInt();
 			this.eventCount = flashlistRow.get("eventCount").asLong();
@@ -410,6 +421,7 @@ public class RU implements FlashlistUpdatable, Derivable {
 		result = prime * result + ((fragmentRatePerBU == null) ? 0 : fragmentRatePerBU.hashCode());
 		result = prime * result + fragmentsInRU;
 		result = prime * result + ((hostname == null) ? 0 : hostname.hashCode());
+		result = prime * result + port;
 		result = prime * result + incompleteSuperFragmentCount;
 		result = prime * result + ((infoMsg == null) ? 0 : infoMsg.hashCode());
 		result = prime * result + instance;
@@ -467,6 +479,8 @@ public class RU implements FlashlistUpdatable, Derivable {
 		} else if (!hostname.equals(other.hostname))
 			return false;
 		if (incompleteSuperFragmentCount != other.incompleteSuperFragmentCount)
+			return false;
+		if (port != other.port)
 			return false;
 		if (infoMsg == null) {
 			if (other.infoMsg != null)
