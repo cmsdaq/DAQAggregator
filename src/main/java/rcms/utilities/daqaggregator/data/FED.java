@@ -248,7 +248,7 @@ public class FED implements FlashlistUpdatable {
 			double latchedSeconds = flashlistRow.get("LatchedFerol40ClockSeconds").asDouble();
 			
 			this.percentBackpressure = converter.calculatePercent(flashlistRow.get("AccBackpressureSeconds").asDouble(),
-					flashlistRow.get("timestamp").asText()); //time to be replaced with latchedSeconds (units in seconds)
+					flashlistRow.get("timestamp").asText()); //to be replaced with latchedSeconds (unit is seconds)
 			
 			this.frl_AccSlinkFullSec = flashlistRow.get("AccSlinkFullSeconds").asDouble();
 			

@@ -159,7 +159,7 @@ public class FEDBuilderSummary implements Derivable {
 			
 			if (maxEvents < ru.getEventCount())
 				maxEvents = ru.getEventCount();
-			if (minEvents > ru.getEventCount() && ru.getEventCount() != 0) {
+			if (minEvents > ru.getEventCount()) {
 				minEvents = ru.getEventCount();
 			}
 		}
@@ -172,6 +172,7 @@ public class FEDBuilderSummary implements Derivable {
 		
 
 		/* deltas */
+		System.out.println(maxEvents+" : "+minEvents);
 		this.setDeltaEvents(maxEvents - minEvents);
 
 		this.setRate(rate);
