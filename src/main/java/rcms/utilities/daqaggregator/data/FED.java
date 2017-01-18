@@ -196,6 +196,10 @@ public class FED implements FlashlistUpdatable {
 			 * else if (this.frlIO == 1) this.frlMasked =
 			 * !flashlistRow.get("enableStream1").asBoolean();
 			 */ // covered
+		} else if (flashlistType == FlashlistType.FEROL40_STREAM_CONFIGURATION) {
+		
+			 this.frlMasked = flashlistRow.get("enable").asBoolean();
+			 
 		} else if (flashlistType == FlashlistType.FRL_MONITORING) {
 
 			if (this.frlIO == 0)
