@@ -43,13 +43,21 @@ public class Connector {
 		BufferedReader reader = null;
 		try {
 			conn = (HttpURLConnection) url.openConnection();
-			in = conn.getInputStream();
-			isr = new InputStreamReader(in);
-			reader = new BufferedReader(isr);
 
-			for (String line = reader.readLine(); line != null; line = reader.readLine()) {
-				result.add(line);
+			if (conn.getResponseCode() == 200){
+				in = conn.getInputStream();
+				isr = new InputStreamReader(in);
+				reader = new BufferedReader(isr);
+
+				for (String line = reader.readLine(); line != null; line = reader.readLine()) {
+					result.add(line);
+				}
 			}
+			else{
+				logger.error("HTTP error "+conn.getResponseCode()+" in flashlist request at address "+url);
+			}
+
+
 		} catch (IOException e) {
 			System.out.println("\n\nError retrieving ctatalog from URL=" + url);
 			e.printStackTrace();

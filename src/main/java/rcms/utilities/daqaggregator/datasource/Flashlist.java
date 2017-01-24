@@ -103,7 +103,7 @@ public class Flashlist {
 	 */
 	private void download() throws IOException {
 		List<String> result = Connector.get().retrieveLines(address);
-
+		
 		com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
 		JsonNode rootNode = mapper.readValue(result.get(0), JsonNode.class);
 
