@@ -51,7 +51,7 @@ public class FED implements FlashlistUpdatable {
 
 	private float percentBackpressure;
 	
-	private double accBIFIBackpressureSeconds;
+	private double frl_AccBIFIBackpressureSeconds;
 
 	private float percentWarning;
 
@@ -84,6 +84,8 @@ public class FED implements FlashlistUpdatable {
 	private boolean ruFedWithoutFragments;
 
 	private double frl_AccSlinkFullSec;
+	
+	private double frl_AccLatchedFerol40ClockSeconds;
 
 	@JsonIgnore
 	private BackpressureConverter converter = new BackpressureConverter();
@@ -247,16 +249,17 @@ public class FED implements FlashlistUpdatable {
 			this.eventCounter = flashlistRow.get("EventCounter").asLong();
 
 			/*
-			 * converting accumulated backpressure from flashlist
+			 * should be used to convert accumulated backpressure from flashlist
 			 */
-			double latchedSeconds = flashlistRow.get("LatchedFerol40ClockSeconds").asDouble();
+			this.frl_AccLatchedFerol40ClockSeconds  = flashlistRow.get("LatchedFerol40ClockSeconds").asDouble();
+			
 			
 			this.percentBackpressure = converter.calculatePercent(flashlistRow.get("AccBackpressureSeconds").asDouble(),
 					flashlistRow.get("timestamp").asText()); //to be replaced with latchedSeconds (unit is seconds)
 			
 			this.frl_AccSlinkFullSec = flashlistRow.get("AccSlinkFullSeconds").asDouble();
 			
-			this.accBIFIBackpressureSeconds = flashlistRow.get("AccBIFIBackpressureSeconds").asDouble();
+			this.frl_AccBIFIBackpressureSeconds = flashlistRow.get("AccBIFIBackpressureSeconds").asDouble();
 
 		}
 
@@ -290,12 +293,20 @@ public class FED implements FlashlistUpdatable {
 		this.percentBackpressure = percentBackpressure;
 	}
 
-	public double getAccBIFIBackpressureSeconds() {
-		return accBIFIBackpressureSeconds;
+	public double getFrl_AccBIFIBackpressureSeconds() {
+		return frl_AccBIFIBackpressureSeconds;
 	}
 
-	public void setAccBIFIBackpressureSeconds(double accBIFIBackpressureSeconds) {
-		this.accBIFIBackpressureSeconds = accBIFIBackpressureSeconds;
+	public void setFrl_AccBIFIBackpressureSeconds(double frl_AccBIFIBackpressureSeconds) {
+		this.frl_AccBIFIBackpressureSeconds = frl_AccBIFIBackpressureSeconds;
+	}
+
+	public double getFrl_AccLatchedFerol40ClockSeconds() {
+		return frl_AccLatchedFerol40ClockSeconds;
+	}
+
+	public void setFrl_AccLatchedFerol40ClockSeconds(double frl_AccLatchedFerol40ClockSeconds) {
+		this.frl_AccLatchedFerol40ClockSeconds = frl_AccLatchedFerol40ClockSeconds;
 	}
 
 	public float getPercentWarning() {
