@@ -37,7 +37,9 @@ public enum FlashlistType {
 	FEROL40_INPUT_STREAM(LiveAccessService.PRIMARY, "ferol40InputStream"),
 	FEROL40_STATUS(LiveAccessService.PRIMARY, "ferol40Status"),
 	FEROL40_STREAM_CONFIGURATION(LiveAccessService.PRIMARY, "ferol40StreamConfiguration"),
-	FEROL40_TCP_STREAM(LiveAccessService.PRIMARY, "ferol40TcpStream");
+	FEROL40_TCP_STREAM(LiveAccessService.PRIMARY, "ferol40TcpStream"),
+	
+	TCDSFM(LiveAccessService.PRIMARY, "tcdsFM");
 
 	private static Logger logger = Logger.getLogger(FlashlistType.class);
 
