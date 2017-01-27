@@ -45,6 +45,10 @@ public class TCDSFMInfoRetriever {
 		if (flashlist.getFlashlistType() != FlashlistType.TCDSFM)
 			throw new DAQException(DAQExceptionCode.WrongFlaslhist,
 					"Wrong flashlist type: " + flashlist.getFlashlistType()+" (TCDFM expected)");
+		if (flashlist.isUnknownAtLAS()){
+			throw new DAQException(DAQExceptionCode.EmptyFlashlistDetectingSession,
+					"TCDSFM flashlist was not downloaded correctly, either due to a bad request or due to not having been found at LAS" + flashlist.getRetrievalDate());
+		}
 		if (flashlist.getRowsNode() == null || flashlist.getRowsNode().size() == 0)
 			throw new DAQException(DAQExceptionCode.EmptyFlashlistDetectingSession,
 					"Empty TCDSFM flashlist at timestamp " + flashlist.getRetrievalDate());
