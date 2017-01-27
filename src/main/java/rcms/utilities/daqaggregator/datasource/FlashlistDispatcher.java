@@ -37,10 +37,11 @@ public class FlashlistDispatcher {
 	// Value to filter out values from TCDS flashlists
 	// This will only work for CDAQ. Need to figure out how to know what
 	// PM (CPM or LPM) is used for a given run, instead of hardcoding
-	private String serviceField = "cpm-pri";
+	//private String serviceField;
+	
 
 	private static final Logger logger = Logger.getLogger(Flashlist.class);
-
+	
 	/**
 	 * Dispatch flashlist rows to appropriate objects from DAQ structure. Note
 	 * that a flashlist must be already initialized, for initialization see
@@ -50,7 +51,19 @@ public class FlashlistDispatcher {
 	 * @param mappingManager
 	 */
 	public void dispatch(Flashlist flashlist, MappingManager mappingManager) {
+		
+		/**TCDS service name*/
+		String serviceField = mappingManager.getTcdsFmInfoRetriever().getTcdsfm_pmService();
+		logger.debug("Received "+serviceField+" TCDS PM service name");
+		
+		if (flashlist.isUnknownAtLAS()){
+			logger.debug("Flashlist dispatcher received and will ignore "+flashlist.getName()+" because it was not successfully downloaded from LAS");
+			return;
+		}
+		
+		
 		FlashlistType type = flashlist.getFlashlistType();
+		
 		switch (type) {
 		case RU:
 			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().rusByHostname, "context");
@@ -503,14 +516,6 @@ public class FlashlistDispatcher {
 
 		MappingReporter.get().increaseMissing(flashlist.getFlashlistType().name(), failed);
 		MappingReporter.get().increaseTotal(flashlist.getFlashlistType().name(), failed + found);
-	}
-
-	public String getServiceField() {
-		return serviceField;
-	}
-
-	public void setServiceField(String serviceField) {
-		this.serviceField = serviceField;
 	}
 
 }

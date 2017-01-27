@@ -24,6 +24,7 @@ import rcms.utilities.daqaggregator.data.RU;
 import rcms.utilities.daqaggregator.data.SubFEDBuilder;
 import rcms.utilities.daqaggregator.data.SubSystem;
 import rcms.utilities.daqaggregator.data.TTCPartition;
+import rcms.utilities.daqaggregator.datasource.TCDSFMInfoRetriever;
 import rcms.utilities.hwcfg.HardwareConfigurationException;
 import rcms.utilities.hwcfg.dp.DAQPartition;
 import rcms.utilities.hwcfg.eq.FMMFMMLink;
@@ -42,6 +43,9 @@ import rcms.utilities.hwcfg.fb.FBI;
 public class RelationMapper implements Serializable {
 
 	private final static Logger logger = Logger.getLogger(RelationMapper.class);
+	
+	private final transient TCDSFMInfoRetriever tcdsFmInfoRetriever;
+	
 	private final ObjectMapper objectMapper;
 
 	public Map<Integer, Integer> subFedBuilderToFrlPc;
@@ -58,8 +62,9 @@ public class RelationMapper implements Serializable {
 	public Map<Integer, Set<Integer>> subsystemToTTCP;
 	public Map<Integer, Set<Integer>> pseudoFedsToMainFeds;
 
-	public RelationMapper(ObjectMapper objectMapper) {
+	public RelationMapper(ObjectMapper objectMapper, TCDSFMInfoRetriever tcdsFmInfoRetriever) {
 		this.objectMapper = objectMapper;
+		this.tcdsFmInfoRetriever = tcdsFmInfoRetriever;
 	}
 
 	private void fetchRelations(DAQPartition daqPartition) {
@@ -381,6 +386,7 @@ public class RelationMapper implements Serializable {
 
 		FMMInfo fmmInfo = new FMMInfo(); //creates info wrapper in all cases
 
+		//TODO: extend list
 		if ("CPM-PRI".equals(ttcpName) || "CPM-SEC".equals(ttcpName)) {
 			fmmInfo.setNullCause("-");
 
@@ -389,6 +395,11 @@ public class RelationMapper implements Serializable {
 			return ret;
 		}
 
+		String pmUrl = tcdsFmInfoRetriever.getTcdsfm_pmContext();
+		int pmLid = tcdsFmInfoRetriever.getTcdsfm_pmLid();
+		String pmService = tcdsFmInfoRetriever.getTcdsfm_pmService();
+		
+		//TODO: discover trigger name dynamically using information from above
 		String triggerName = "TCDS-PRI";
 
 		Trigger trigger;

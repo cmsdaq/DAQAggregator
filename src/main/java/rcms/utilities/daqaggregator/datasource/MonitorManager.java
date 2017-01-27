@@ -20,6 +20,7 @@ public class MonitorManager {
 	private static final Logger logger = Logger.getLogger(MonitorManager.class);
 	private final FlashlistRetriever flashlistRetriever;
 	private final SessionDetector sessionDetector;
+	private final TCDSFMInfoRetriever tcdsFmInfoRetriever;
 	private final HardwareConnector hardwareConnector;
 
 	/** Manager for mapping the structure */
@@ -36,7 +37,7 @@ public class MonitorManager {
 		this.flashlistRetriever = flashlistRetriever;
 		this.hardwareConnector = hardwareConnector;
 		this.sessionDetector = new SessionDetector(sessionRetriever, flashlistRetriever);
-
+		this.tcdsFmInfoRetriever = new TCDSFMInfoRetriever(flashlistRetriever);
 	}
 
 	public void skipToNextSnapshot() {
@@ -51,6 +52,10 @@ public class MonitorManager {
 		logger.debug("Detecting new session");
 		boolean newSession = sessionDetector.detectNewSession();
 
+		/*retrieves information from tcdsfm used to resolve tcds service name and trigger*/
+		tcdsFmInfoRetriever.downloadInformation();
+		
+		
 		logger.debug("New session: " + newSession);
 
 		if (newSession) {
@@ -108,7 +113,7 @@ public class MonitorManager {
 		DAQPartition daqPartition = hardwareConnector.getPartition(path);
 
 		// map the structure to new DAQ
-		mappingManager = new MappingManager(daqPartition);
+		mappingManager = new MappingManager(daqPartition, this.tcdsFmInfoRetriever);
 		logger.info("New DAQ structure");
 		daq = mappingManager.map();
 		daq.setSessionId(sid);
