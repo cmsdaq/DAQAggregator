@@ -53,7 +53,6 @@ public class FlashlistDispatcher {
 	public void dispatch(Flashlist flashlist, MappingManager mappingManager) {
 		
 		/**TCDS service name*/
-		//Might want to use the infoAvailable flag, to notify of using default values
 		String tcds_serviceField = mappingManager.getTcdsFmInfoRetriever().getTcdsfm_pmService();
 		String tcds_url = mappingManager.getTcdsFmInfoRetriever().getTcdsfm_pmContext();
 		logger.debug("Received "+tcds_serviceField+" TCDS PM service name");

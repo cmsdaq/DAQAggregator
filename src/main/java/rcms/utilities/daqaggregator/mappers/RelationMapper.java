@@ -399,7 +399,7 @@ public class RelationMapper implements Serializable {
 			return ret;
 		}
 
-		String triggerName = "TCDS-PRI"; //default value
+		String triggerName = "GTPe"; //default value
 
 		if(tcdsFmInfoRetriever.isInfoAvailable()){
 			String pmUrl = tcdsFmInfoRetriever.getTcdsfm_pmContext();
@@ -414,7 +414,7 @@ public class RelationMapper implements Serializable {
 				}
 			}
 		}else{
-			triggerName = "GTPe";
+			//TODO: handle special case with GTPe trigger
 		}
 
 

@@ -56,7 +56,7 @@ public class MonitorManager {
 		try{
 			tcdsFmInfoRetriever.aggregateInformation();
 		}catch (Exception e){
-			logger.warn("TCDFM flashlist fetching failed and default values will be used");
+			logger.warn("Unavailable TCDS information: TCDFM flashlist fetching failed");
 		}
 
 
