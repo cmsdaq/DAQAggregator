@@ -17,9 +17,9 @@ public class TCDSFMInfoRetriever {
 	private final FlashlistRetriever flashlistRetriever;
 	
 	private String tcdsfm_fmUrl;
-	private String tcdsfm_pmContext;
-	private int tcdsfm_pmLid;
-	private String tcdsfm_pmService;
+	private String tcdsfm_pmContext = "http://tcds-control-cpm.cms:2050";
+	private int tcdsfm_pmLid = 100;
+	private String tcdsfm_pmService = "cpm-pri";
 
 	public TCDSFMInfoRetriever(FlashlistRetriever flashlistRetriever) {
 		this.flashlistRetriever = flashlistRetriever;
@@ -28,7 +28,7 @@ public class TCDSFMInfoRetriever {
 	/**
 	 * Gets TCDS info from flashlists
 	 */
-	protected void downloadInformation() {
+	protected void aggregateInformation() {
 
 		Pair<Flashlist, Integer> tcdsFmRetrieveResult = flashlistRetriever
 				.retrieveFlashlist(FlashlistType.TCDSFM);

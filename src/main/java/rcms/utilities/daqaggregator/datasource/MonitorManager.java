@@ -52,8 +52,8 @@ public class MonitorManager {
 		logger.debug("Detecting new session");
 		boolean newSession = sessionDetector.detectNewSession();
 
-		/*retrieves information from tcdsfm used to resolve tcds service name and trigger*/
-		tcdsFmInfoRetriever.downloadInformation();
+		/*retrieves information from tcdsfm used to resolve tcds service name, url and trigger name*/
+		tcdsFmInfoRetriever.aggregateInformation();
 		
 		
 		logger.debug("New session: " + newSession);
