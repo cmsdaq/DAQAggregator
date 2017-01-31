@@ -53,9 +53,13 @@ public class MonitorManager {
 		boolean newSession = sessionDetector.detectNewSession();
 
 		/*retrieves information from tcdsfm used to resolve tcds service name, url and trigger name*/
-		tcdsFmInfoRetriever.aggregateInformation();
-		
-		
+		try{
+			tcdsFmInfoRetriever.aggregateInformation();
+		}catch (Exception e){
+			logger.warn("TCDFM flashlist fetching failed and default values will be used");
+		}
+
+
 		logger.debug("New session: " + newSession);
 
 		if (newSession) {

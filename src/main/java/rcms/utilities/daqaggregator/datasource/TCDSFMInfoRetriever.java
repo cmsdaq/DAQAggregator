@@ -20,6 +20,9 @@ public class TCDSFMInfoRetriever {
 	private String tcdsfm_pmContext = "http://tcds-control-cpm.cms:2050";
 	private int tcdsfm_pmLid = 100;
 	private String tcdsfm_pmService = "cpm-pri";
+	
+	/**Flag to make user aware that info was not available from flashlist (and default values will be used)*/
+	private boolean infoAvailable = false;
 
 	public TCDSFMInfoRetriever(FlashlistRetriever flashlistRetriever) {
 		this.flashlistRetriever = flashlistRetriever;
@@ -36,6 +39,8 @@ public class TCDSFMInfoRetriever {
 		Flashlist tcdsFmFlashlist = tcdsFmRetrieveResult.getLeft();
 
 		setTcdsFmFlashlistValues(tcdsFmFlashlist);
+		
+		this.infoAvailable = true;
 		  
 	}
 	
@@ -74,4 +79,10 @@ public class TCDSFMInfoRetriever {
 	public String getTcdsfm_pmService() {
 		return tcdsfm_pmService;
 	}
+
+	public boolean isInfoAvailable() {
+		return infoAvailable;
+	}
+	
+	
 }
