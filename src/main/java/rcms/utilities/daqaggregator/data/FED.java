@@ -50,6 +50,8 @@ public class FED implements FlashlistUpdatable {
 	private int srcIdReceived;
 
 	private float percentBackpressure;
+	
+	private double frl_AccBIFIBackpressureSeconds;
 
 	private float percentWarning;
 
@@ -82,6 +84,8 @@ public class FED implements FlashlistUpdatable {
 	private boolean ruFedWithoutFragments;
 
 	private double frl_AccSlinkFullSec;
+	
+	private double frl_AccLatchedFerol40ClockSeconds;
 
 	@JsonIgnore
 	private BackpressureConverter converter = new BackpressureConverter();
@@ -194,6 +198,10 @@ public class FED implements FlashlistUpdatable {
 			 * else if (this.frlIO == 1) this.frlMasked =
 			 * !flashlistRow.get("enableStream1").asBoolean();
 			 */ // covered
+		} else if (flashlistType == FlashlistType.FEROL40_STREAM_CONFIGURATION) {
+		
+			 this.frlMasked = !flashlistRow.get("enable").asBoolean();
+			 
 		} else if (flashlistType == FlashlistType.FRL_MONITORING) {
 
 			if (this.frlIO == 0)
@@ -225,6 +233,34 @@ public class FED implements FlashlistUpdatable {
 					break;
 				}
 			}
+		} else if (flashlistType == FlashlistType.FEROL40_INPUT_STREAM) {
+
+			if (flashlistRow.get("WrongFEDIdDetected").asInt() == 0) {
+				// srcIdExpected already filled at mapping from corresponding
+				// hwfed
+				this.srcIdReceived = this.srcIdExpected;
+			} else {
+				this.srcIdReceived = flashlistRow.get("WrongFEDId").asInt();
+			}
+
+			this.numSCRCerrors = flashlistRow.get("LinkCRCError").asInt();
+			this.numFCRCerrors = flashlistRow.get("FEDCRCError").asInt();
+			this.numTriggers = flashlistRow.get("TriggerNumber").asInt();
+			this.eventCounter = flashlistRow.get("EventCounter").asLong();
+
+			/*
+			 * should be used to convert accumulated backpressure from flashlist
+			 */
+			this.frl_AccLatchedFerol40ClockSeconds  = flashlistRow.get("LatchedFerol40ClockSeconds").asDouble();
+			
+			
+			this.percentBackpressure = converter.calculatePercent(flashlistRow.get("AccBackpressureSeconds").asDouble(),
+					flashlistRow.get("timestamp").asText()); //to be replaced with latchedSeconds (unit is seconds)
+			
+			this.frl_AccSlinkFullSec = flashlistRow.get("AccSlinkFullSeconds").asDouble();
+			
+			this.frl_AccBIFIBackpressureSeconds = flashlistRow.get("AccBIFIBackpressureSeconds").asDouble();
+
 		}
 
 	}
@@ -255,6 +291,22 @@ public class FED implements FlashlistUpdatable {
 
 	public void setPercentBackpressure(float percentBackpressure) {
 		this.percentBackpressure = percentBackpressure;
+	}
+
+	public double getFrl_AccBIFIBackpressureSeconds() {
+		return frl_AccBIFIBackpressureSeconds;
+	}
+
+	public void setFrl_AccBIFIBackpressureSeconds(double frl_AccBIFIBackpressureSeconds) {
+		this.frl_AccBIFIBackpressureSeconds = frl_AccBIFIBackpressureSeconds;
+	}
+
+	public double getFrl_AccLatchedFerol40ClockSeconds() {
+		return frl_AccLatchedFerol40ClockSeconds;
+	}
+
+	public void setFrl_AccLatchedFerol40ClockSeconds(double frl_AccLatchedFerol40ClockSeconds) {
+		this.frl_AccLatchedFerol40ClockSeconds = frl_AccLatchedFerol40ClockSeconds;
 	}
 
 	public float getPercentWarning() {

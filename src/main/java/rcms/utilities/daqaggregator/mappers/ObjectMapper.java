@@ -31,6 +31,7 @@ import rcms.utilities.daqaggregator.data.SubFEDBuilder;
 import rcms.utilities.daqaggregator.data.SubSystem;
 import rcms.utilities.daqaggregator.data.TCDSGlobalInfo;
 import rcms.utilities.daqaggregator.data.TTCPartition;
+import rcms.utilities.daqaggregator.datasource.TCDSFMInfoRetriever;
 import rcms.utilities.hwcfg.HardwareConfigurationException;
 import rcms.utilities.hwcfg.dp.DAQPartition;
 import rcms.utilities.hwcfg.dp.DPGenericHost;
@@ -50,6 +51,8 @@ public class ObjectMapper {
 
 	private static final Logger logger = Logger.getLogger(ObjectMapper.class);
 
+	private final transient TCDSFMInfoRetriever tcdsFmInfoRetriever;
+	
 	/** DAQ structure root object */
 	public DAQ daq;
 
@@ -77,6 +80,10 @@ public class ObjectMapper {
 	public Map<String, RU> rusByHostname;
 	public Map<String, BU> busByHostname;
 	public Map<String, SubSystem> subsystemByName;
+	
+	public ObjectMapper(TCDSFMInfoRetriever tcdsFmInfoRetriever) {
+		this.tcdsFmInfoRetriever = tcdsFmInfoRetriever;
+	}
 
 	public void mapAllObjects(DAQPartition daqPartition) {
 

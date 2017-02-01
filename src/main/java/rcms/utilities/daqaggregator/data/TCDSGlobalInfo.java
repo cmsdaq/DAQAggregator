@@ -71,7 +71,11 @@ public class TCDSGlobalInfo implements FlashlistUpdatable{
 	/*pm action counts*/
 	//action[i]_count, , where i=0,...,m (action0 always at array position 0 etc.)
 	private List<Integer> actionCounts;
+	
+	private String tcdsControllerContext;
+	private String tcdsControllerServiceName;
 
+	
 	public TCDSGlobalInfo() {
 		super();
 		
@@ -269,9 +273,25 @@ public class TCDSGlobalInfo implements FlashlistUpdatable{
 	public int getSectionNumber_rates() {
 		return sectionNumber_rates;
 	}
-
+ 
 	public void setSectionNumber_rates(int sectionNumber_rates) {
 		this.sectionNumber_rates = sectionNumber_rates;
+	}
+
+	public String getTcdsControllerContext() {
+		return tcdsControllerContext;
+	}
+
+	public void setTcdsControllerContext(String tcdsControllerContext) {
+		this.tcdsControllerContext = tcdsControllerContext;
+	}
+
+	public String getTcdsControllerServiceName() {
+		return tcdsControllerServiceName;
+	}
+
+	public void setTcdsControllerServiceName(String tcdsControllerServiceName) {
+		this.tcdsControllerServiceName = tcdsControllerServiceName;
 	}
 
 	@Override

@@ -108,6 +108,12 @@ public class FRL implements FlashlistUpdatable {
 			substate = flashlistRow.get("subState").asText();
 			url = flashlistRow.get("context").asText();
 		}
+		
+		if (flashlistType == FlashlistType.FEROL40_STATUS) {
+			state = flashlistRow.get("stateName").asText();
+			substate = flashlistRow.get("subState").asText();
+			url = flashlistRow.get("context").asText();
+		}
 
 	}
 

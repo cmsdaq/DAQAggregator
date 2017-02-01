@@ -24,10 +24,12 @@ import rcms.utilities.daqaggregator.data.RU;
 import rcms.utilities.daqaggregator.data.SubFEDBuilder;
 import rcms.utilities.daqaggregator.data.SubSystem;
 import rcms.utilities.daqaggregator.data.TTCPartition;
+import rcms.utilities.daqaggregator.datasource.TCDSFMInfoRetriever;
 import rcms.utilities.hwcfg.HardwareConfigurationException;
 import rcms.utilities.hwcfg.dp.DAQPartition;
 import rcms.utilities.hwcfg.eq.FMMFMMLink;
 import rcms.utilities.hwcfg.eq.FMMTriggerLink;
+import rcms.utilities.hwcfg.eq.TCDSPartitionManager;
 import rcms.utilities.hwcfg.eq.TCDSiCI;
 import rcms.utilities.hwcfg.eq.Trigger;
 import rcms.utilities.hwcfg.fb.FBI;
@@ -42,6 +44,9 @@ import rcms.utilities.hwcfg.fb.FBI;
 public class RelationMapper implements Serializable {
 
 	private final static Logger logger = Logger.getLogger(RelationMapper.class);
+
+	private final transient TCDSFMInfoRetriever tcdsFmInfoRetriever;
+
 	private final ObjectMapper objectMapper;
 
 	public Map<Integer, Integer> subFedBuilderToFrlPc;
@@ -58,8 +63,9 @@ public class RelationMapper implements Serializable {
 	public Map<Integer, Set<Integer>> subsystemToTTCP;
 	public Map<Integer, Set<Integer>> pseudoFedsToMainFeds;
 
-	public RelationMapper(ObjectMapper objectMapper) {
+	public RelationMapper(ObjectMapper objectMapper, TCDSFMInfoRetriever tcdsFmInfoRetriever) {
 		this.objectMapper = objectMapper;
+		this.tcdsFmInfoRetriever = tcdsFmInfoRetriever;
 	}
 
 	private void fetchRelations(DAQPartition daqPartition) {
@@ -381,7 +387,11 @@ public class RelationMapper implements Serializable {
 
 		FMMInfo fmmInfo = new FMMInfo(); //creates info wrapper in all cases
 
-		if ("CPM-PRI".equals(ttcpName) || "CPM-SEC".equals(ttcpName)) {
+		//TODO: extend list
+		if (ttcpName.toLowerCase().startsWith("cpm")||
+				ttcpName.toLowerCase().startsWith("lpm")
+				||ttcpName.toLowerCase().startsWith("dvcpm")||
+				ttcpName.toLowerCase().startsWith("dvlpm")) {
 			fmmInfo.setNullCause("-");
 
 			ret[0] = null;
@@ -389,7 +399,24 @@ public class RelationMapper implements Serializable {
 			return ret;
 		}
 
-		String triggerName = "TCDS-PRI";
+		String triggerName = "GTPe"; //default value
+
+		if(tcdsFmInfoRetriever.isInfoAvailable()){
+			String pmUrl = tcdsFmInfoRetriever.getTcdsfm_pmContext();
+			int pmLid = tcdsFmInfoRetriever.getTcdsfm_pmLid();
+			String pmService = tcdsFmInfoRetriever.getTcdsfm_pmService();
+
+			for (Entry<Long, Trigger> eTrig: dp.getDAQPartitionSet().getEquipmentSet().getTriggers().entrySet()){
+				for (Entry<Integer, TCDSPartitionManager> ePm: eTrig.getValue().getPMs().entrySet()){
+					if (ePm.getValue().getHostName().equalsIgnoreCase(pmUrl)&&ePm.getValue().getServiceName().equalsIgnoreCase(pmService)){
+						triggerName = eTrig.getValue().getName();
+					}
+				}
+			}
+		}else{
+			//TODO: handle special case with GTPe trigger
+		}
+
 
 		Trigger trigger;
 		try {
