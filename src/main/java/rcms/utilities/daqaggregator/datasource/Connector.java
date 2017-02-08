@@ -9,28 +9,15 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.ws.http.HTTPException;
-
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
-
-import rcms.utilities.daqaggregator.DAQException;
 
 public class Connector {
 
 	private static final Logger logger = Logger.getLogger(Connector.class);
 
-	private static Connector instance;
 
-	public static Connector get() {
-
-		if (instance == null) {
-			instance = new Connector();
-		}
-		return instance;
-	}
-
-	private Connector() {
+	public Connector() {
 
 	}
 

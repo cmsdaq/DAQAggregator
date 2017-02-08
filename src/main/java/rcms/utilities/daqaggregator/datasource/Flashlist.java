@@ -34,8 +34,11 @@ public class Flashlist {
 	private boolean unknownAtLAS;
 
 	private static final Logger logger = Logger.getLogger(Flashlist.class);
+	
+	private final Connector connector;
 
 	public Flashlist() {
+		this.connector = new Connector();
 	}
 
 	public Flashlist(FlashlistType flashlistType) {
@@ -44,6 +47,7 @@ public class Flashlist {
 
 	public Flashlist(FlashlistType flashlistType, int sessionId) {
 		super();
+		this.connector = new Connector();
 		this.flashlistType = flashlistType;
 		this.sessionId = sessionId;
 		this.name = "urn:xdaq-flashlist:" + flashlistType.getFlashlistName();
@@ -109,7 +113,7 @@ public class Flashlist {
 	 * @throws HTTPException
 	 */
 	private void download() throws IOException, HTTPException {
-		Pair<Integer, List<String>> result = Connector.get().retrieveLines(address);
+		Pair<Integer, List<String>> result = connector.retrieveLines(address);
 		//List<String> result = Connector.get().retrieveLines(address);
 		
 		/*Codes that may come with a successful request (usually 200)*/
