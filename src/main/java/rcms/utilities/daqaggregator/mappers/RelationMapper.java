@@ -422,7 +422,7 @@ public class RelationMapper implements Serializable {
 		try {
 			trigger = dp.getDAQPartitionSet().getEquipmentSet().getTriggerByName(triggerName);
 		} catch (HardwareConfigurationException e) {
-			e.printStackTrace();
+			logger.warn("Could not find trigger: "+triggerName+" in hardware database. Top FMM object was set to null");
 			fmmInfo.setNullCause("noTRG");
 
 			ret[0] = null;
@@ -435,6 +435,8 @@ public class RelationMapper implements Serializable {
 		try {
 			ici = trigger.getICIByTTCPName(ttcpName);
 		} catch (HardwareConfigurationException e) {
+			logger.warn("Could not find ici for TTC partition: "+ttcpName+" in hardware database. Top FMM object was set to null");
+			
 			fmmInfo.setNullCause("noICI");
 
 			ret[0] = null;
