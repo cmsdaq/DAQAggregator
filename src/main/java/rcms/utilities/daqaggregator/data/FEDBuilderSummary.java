@@ -172,7 +172,7 @@ public class FEDBuilderSummary implements Derivable {
 		
 
 		/* deltas */
-		System.out.println(maxEvents+" : "+minEvents);
+
 		this.setDeltaEvents(maxEvents - minEvents);
 
 		this.setRate(rate);
