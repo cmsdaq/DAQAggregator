@@ -46,7 +46,7 @@ public class F3DataRetriever {
 	}
 
 	/**
-	 * Gets ramdisk and output disk occupancy levels
+	 * Gets ramdisk and output disk occupancy levels. It's summary of all cdaq BU's
 	 * 
 	 * @return
 	 * 
