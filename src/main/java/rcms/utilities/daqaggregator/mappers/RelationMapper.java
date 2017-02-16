@@ -27,6 +27,7 @@ import rcms.utilities.daqaggregator.data.TTCPartition;
 import rcms.utilities.daqaggregator.datasource.TCDSFMInfoRetriever;
 import rcms.utilities.hwcfg.HardwareConfigurationException;
 import rcms.utilities.hwcfg.dp.DAQPartition;
+import rcms.utilities.hwcfg.dp.DAQPartitionStructureExtractor.HalfFMM;
 import rcms.utilities.hwcfg.eq.FMMFMMLink;
 import rcms.utilities.hwcfg.eq.FMMTriggerLink;
 import rcms.utilities.hwcfg.eq.TCDSPartitionManager;
@@ -377,120 +378,117 @@ public class RelationMapper implements Serializable {
 		return result;
 	}
 
-	/**
-	 * Returns 2-element vector with the rcms.utilities.hwcfg.eq.FMM at first position (can be null)
-	 * and the rest info are wrapped in FMMInfo object at second position (ici/pi info if topfmm is not null, meta-info otherwise)
-	 */
-	private Object [] getTopFMMForPartition(DAQPartition dp, String ttcpName) {
 
-		Object [] ret = new Object[2];
+	private FMMInfo getFMMInfo(DAQPartition dp, String ttcpName) {
 
 		FMMInfo fmmInfo = new FMMInfo(); //creates info wrapper in all cases
 
-		//TODO: extend list
+
 		if (ttcpName.toLowerCase().startsWith("cpm")||
 				ttcpName.toLowerCase().startsWith("lpm")
 				||ttcpName.toLowerCase().startsWith("dvcpm")||
 				ttcpName.toLowerCase().startsWith("dvlpm")) {
-			fmmInfo.setNullCause("-");
 
-			ret[0] = null;
-			ret[1] = fmmInfo;
-			return ret;
+			fmmInfo.setNullCause("-");
+			return fmmInfo;
 		}
 
-		String triggerName = "GTPe"; //default value
+		String triggerName = "GTPe"; //default value which will cause a noTRG label
 
 		if(tcdsFmInfoRetriever.isInfoAvailable()){
-			String pmUrl = tcdsFmInfoRetriever.getTcdsfm_pmContext();
+			String pmUrl = tcdsFmInfoRetriever.getTcdsfm_pmContext().toLowerCase();
+			pmUrl = pmUrl.split("//|.cms")[1];
 			int pmLid = tcdsFmInfoRetriever.getTcdsfm_pmLid();
-			String pmService = tcdsFmInfoRetriever.getTcdsfm_pmService();
+			String pmService = tcdsFmInfoRetriever.getTcdsfm_pmService().toLowerCase();
+
 
 			for (Entry<Long, Trigger> eTrig: dp.getDAQPartitionSet().getEquipmentSet().getTriggers().entrySet()){
+
 				for (Entry<Integer, TCDSPartitionManager> ePm: eTrig.getValue().getPMs().entrySet()){
-					if (ePm.getValue().getHostName().equalsIgnoreCase(pmUrl)&&ePm.getValue().getServiceName().equalsIgnoreCase(pmService)){
+
+					String hwcfg_PmHostname = ePm.getValue().getHostName().toLowerCase();
+					hwcfg_PmHostname = hwcfg_PmHostname.split(".cms")[0];
+					String hwcfg_pmService = ePm.getValue().getServiceName().toLowerCase();
+
+					if (pmUrl.equalsIgnoreCase(hwcfg_PmHostname)&&pmService.equalsIgnoreCase(hwcfg_pmService)){
+
 						triggerName = eTrig.getValue().getName();
 					}
 				}
 			}
+
+
+
+			//add parsing matching code
+
+
+			Trigger trigger;
+			try {
+				trigger = dp.getDAQPartitionSet().getEquipmentSet().getTriggerByName(triggerName);
+			} catch (HardwareConfigurationException e) {
+				logger.warn("Could not find trigger: "+triggerName+" in hardware database.");
+				fmmInfo.setNullCause("noTRG");
+
+				return fmmInfo;
+			}
+
+			// Find the ICI
+			TCDSiCI ici;
+			try {
+				ici = trigger.getICIByTTCPName(ttcpName);
+			} catch (HardwareConfigurationException e) {
+				logger.warn("Could not find ici for TTC partition: "+ttcpName+" in hardware database.");
+
+				fmmInfo.setNullCause("noICI");
+
+
+				return fmmInfo;
+
+				// for LPM/LTC partitions it is normal that some of them will have
+				// no fmm. They are unused in the CDAQ config. You will find no FEDs
+				// in these partitions =.
+				// FIXME: encode in the data model, that this partition has no FMM
+				// (and also no PI and no CI).
+			}
+
+			rcms.utilities.hwcfg.eq.FMM pi = null;
+			// Find the PI connected to this partition
+			for (FMMTriggerLink ftl : dp.getDAQPartitionSet().getEquipmentSet().getFMMTriggerLinks())
+				if (ftl.getTriggerId() == trigger.getId() && ftl.getLPMNr() == ici.getPMNr()
+				&& ftl.getiCINr() == ici.getICINr()) {
+					pi = dp.getDAQPartitionSet().getEquipmentSet().getFMMs().get(ftl.getFMMId());
+				}
+
+			if (pi == null) {
+				fmmInfo.setNullCause("noPI");
+
+				return fmmInfo;
+			}
+
+			// Find the FMM connected to the PI
+			for (FMMFMMLink fmmfmm : dp.getDAQPartitionSet().getEquipmentSet().getFMMFMMLinks()) {
+				if (fmmfmm.getTargetFMMId() == pi.getId()) {
+
+					//rcms.utilities.hwcfg.eq.FMM fmm = dp.getDAQPartitionSet().getEquipmentSet().getFMMs().get(fmmfmm.getSourceFMMId());
+
+					fmmInfo.setAb((fmmfmm.getSourceFMMIO() == 20 || fmmfmm.getSourceFMMIO() == 21) ? "A" : "B");
+					fmmInfo.setPMNr(ici.getPMNr());
+					fmmInfo.setICINr(ici.getICINr());
+
+					return fmmInfo;
+				}
+			}
+
+			fmmInfo.setAb("");
+			fmmInfo.setPMNr(ici.getPMNr());
+			fmmInfo.setICINr(ici.getICINr());
+
+			return fmmInfo;
+
 		}else{
-			//TODO: handle special case with GTPe trigger
-		}
-
-
-		Trigger trigger;
-		try {
-			trigger = dp.getDAQPartitionSet().getEquipmentSet().getTriggerByName(triggerName);
-		} catch (HardwareConfigurationException e) {
-			logger.warn("Could not find trigger: "+triggerName+" in hardware database. Top FMM object was set to null");
 			fmmInfo.setNullCause("noTRG");
-
-			ret[0] = null;
-			ret[1] = fmmInfo;
-			return ret;
+			return fmmInfo;
 		}
-
-		// Find the ICI
-		TCDSiCI ici;
-		try {
-			ici = trigger.getICIByTTCPName(ttcpName);
-		} catch (HardwareConfigurationException e) {
-			logger.warn("Could not find ici for TTC partition: "+ttcpName+" in hardware database. Top FMM object was set to null");
-			
-			fmmInfo.setNullCause("noICI");
-
-			ret[0] = null;
-			ret[1] = fmmInfo;
-			return ret;
-
-			// for LPM/LTC partitions it is normal that some of them will have
-			// no fmm. They are unused in the CDAQ config. You will find no FEDs
-			// in these partitions =.
-			// FIXME: encode in the data model, that this partition has no FMM
-			// (and also no PI and no CI).
-		}
-
-		rcms.utilities.hwcfg.eq.FMM pi = null;
-		// Find the PI connected to this partition
-		for (FMMTriggerLink ftl : dp.getDAQPartitionSet().getEquipmentSet().getFMMTriggerLinks())
-			if (ftl.getTriggerId() == trigger.getId() && ftl.getLPMNr() == ici.getPMNr()
-			&& ftl.getiCINr() == ici.getICINr()) {
-				pi = dp.getDAQPartitionSet().getEquipmentSet().getFMMs().get(ftl.getFMMId());
-			}
-
-		if (pi == null) {
-			fmmInfo.setNullCause("noPI");
-
-			ret[0] = null;
-			ret[1] = fmmInfo;
-			return ret;
-		}
-
-		// Find the FMM connected to the PI
-		for (FMMFMMLink fmmfmm : dp.getDAQPartitionSet().getEquipmentSet().getFMMFMMLinks()) {
-			if (fmmfmm.getTargetFMMId() == pi.getId()) {
-
-				rcms.utilities.hwcfg.eq.FMM fmm = dp.getDAQPartitionSet().getEquipmentSet().getFMMs()
-						.get(fmmfmm.getSourceFMMId());
-
-				fmmInfo.setAb((fmmfmm.getSourceFMMIO() == 20 || fmmfmm.getSourceFMMIO() == 21) ? "A" : "B");
-				fmmInfo.setPMNr(ici.getPMNr());
-				fmmInfo.setICINr(ici.getICINr());
-
-
-				ret[0] = fmm;
-				ret[1] = fmmInfo;
-				return ret;
-			}
-		}
-
-		fmmInfo.setAb("");
-		fmmInfo.setPMNr(ici.getPMNr());
-		fmmInfo.setICINr(ici.getICINr());
-
-		ret[0] = null;
-		ret[1] = fmmInfo;
-		return ret;
 	}
 
 	/**
@@ -502,31 +500,46 @@ public class RelationMapper implements Serializable {
 
 		Map<Integer, Integer> result = new HashMap<>();
 
-		for (rcms.utilities.hwcfg.eq.FED hwfed : objectMapper.getHardwareFeds(daqPartition)) {
+		Set<rcms.utilities.hwcfg.eq.TTCPartition> hwTtcPartitions = new HashSet<rcms.utilities.hwcfg.eq.TTCPartition>();
 
-			rcms.utilities.hwcfg.eq.TTCPartition hwttcPartition = hwfed.getTTCPartition();
+		rcms.utilities.hwcfg.dp.DAQPartitionStructureExtractor dpStructExt = new rcms.utilities.hwcfg.dp.DAQPartitionStructureExtractor(daqPartition);
+		Map<String, rcms.utilities.hwcfg.dp.DAQPartitionStructureExtractor.HalfFMM> ttcpToHalFmm;
+		try {
+			ttcpToHalFmm = dpStructExt.getTTCPNameHalfFMMMapping();
 
-			/*
-			 * 2-element vector with the rcms.utilities.hwcfg.eq.FMM at first position (can be null)
-			 * and the rest info wrapped in FMMInfo object at second position (ici/pi info if fmm is not null, meta-info otherwise)
-			 */
-			Object [] FMMWithInfo = getTopFMMForPartition(daqPartition, hwttcPartition.getName());
+			//fill ttcp partitions
+			for (rcms.utilities.hwcfg.eq.FED hwfed : objectMapper.getHardwareFeds(daqPartition)) {
 
-			rcms.utilities.hwcfg.eq.FMM hwfmm = (rcms.utilities.hwcfg.eq.FMM)FMMWithInfo[0];
-			FMMInfo fmmInfo = (FMMInfo)FMMWithInfo[1];
+				hwTtcPartitions.add(hwfed.getTTCPartition());
+
+			}
+
+			for (rcms.utilities.hwcfg.eq.TTCPartition hwTtcPartition : hwTtcPartitions){
+				if(ttcpToHalFmm.containsKey(hwTtcPartition.getName())){
+					rcms.utilities.hwcfg.eq.FMM hwfmm = ttcpToHalFmm.get(hwTtcPartition.getName()).fmm;
 
 
-			if (hwfmm != null)
-				result.put(hwfmm.hashCode(), hwttcPartition.hashCode());
+					//discover ici/pi in case there's a trigger
+					FMMInfo fmmInfo = getFMMInfo(daqPartition, hwTtcPartition.getName());
 
-			/*set FMMInfo (wrapper-object of information for the topFMM) on the corresponding local TTCPartition object
-			 * 
-			 * the actual topFMM to TTCP link (if topFMM is not null) will be restored later (in buildRelations()),
-			 * but the FMMInfo makes sense to be on the TTCP even with topFMM null, to provide meta-info on why the topFMM is null
-			 */
-			objectMapper.ttcPartitions.get(hwttcPartition.hashCode()).setTopFMMInfo(fmmInfo);
+					if (hwfmm != null)
+						result.put(hwfmm.hashCode(), hwTtcPartition.hashCode());
 
+
+					objectMapper.ttcPartitions.get(hwTtcPartition.hashCode()).setTopFMMInfo(fmmInfo);
+				}else{
+					logger.warn("Could not find ttcp: "+hwTtcPartition.getName()+" in ttcp to halffmm mapping");
+				}
+			}
+
+		} catch (HardwareConfigurationException e) {
+			logger.warn("Could not fetch ttcp to halffmm mapping");
+			//e.printStackTrace();
 		}
+
+
+
+
 		return result;
 	}
 
