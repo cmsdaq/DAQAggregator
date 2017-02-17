@@ -3,6 +3,7 @@ package rcms.utilities.daqaggregator.mappers;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -410,7 +411,7 @@ public class RelationMapper implements Serializable {
 					String hwcfg_PmHostname = ePm.getValue().getHostName().toLowerCase();
 					hwcfg_PmHostname = hwcfg_PmHostname.split(".cms")[0];
 					String hwcfg_pmService = ePm.getValue().getServiceName().toLowerCase();
-					
+
 					if (pmUrl.equalsIgnoreCase(hwcfg_PmHostname)&&pmService.equalsIgnoreCase(hwcfg_pmService)){
 
 						triggerName = eTrig.getValue().getName();
@@ -469,12 +470,13 @@ public class RelationMapper implements Serializable {
 
 					//rcms.utilities.hwcfg.eq.FMM fmm = dp.getDAQPartitionSet().getEquipmentSet().getFMMs().get(fmmfmm.getSourceFMMId());
 
-					fmmInfo.setAb((fmmfmm.getSourceFMMIO() == 20 || fmmfmm.getSourceFMMIO() == 21) ? "A" : "B");
+					fmmInfo.setAb((fmmfmm.getSourceFMMIO() == 20 || fmmfmm.getSourceFMMIO() == 21) ? "a" : "b");
+
 					fmmInfo.setPMNr(ici.getPMNr());
 					fmmInfo.setICINr(ici.getICINr());
-					
-					
-					fmmInfo.setNullCause("");
+
+					//do not set nullCause if fmm connected is found!
+
 					return fmmInfo;
 				}
 			}
@@ -518,27 +520,22 @@ public class RelationMapper implements Serializable {
 				if(ttcpToHalFmm.containsKey(hwTtcPartition.getName())){
 					rcms.utilities.hwcfg.eq.FMM hwfmm = ttcpToHalFmm.get(hwTtcPartition.getName()).fmm;
 
-
-					//discover ici/pi in case there's a trigger
-					FMMInfo fmmInfo = getFMMInfo(daqPartition, hwTtcPartition.getName());
-
 					if (hwfmm != null)
 						result.put(hwfmm.hashCode(), hwTtcPartition.hashCode());
 
-
-					objectMapper.ttcPartitions.get(hwTtcPartition.hashCode()).setTopFMMInfo(fmmInfo);
 				}else{
-					logger.warn("Could not find ttcp: "+hwTtcPartition.getName()+" in ttcp to halffmm mapping. There will be no top FMM and FMMInfo for this ttcp.");
+					logger.debug("Could not find ttcp: "+hwTtcPartition.getName()+" in ttcp to halffmm mapping. There will be no top FMM for this ttcp.");
 				}
+
+				//Discover trigger and ICI for all partitions, including those without an FMM
+				FMMInfo fmmInfo = getFMMInfo(daqPartition, hwTtcPartition.getName());
+				objectMapper.ttcPartitions.get(hwTtcPartition.hashCode()).setTopFMMInfo(fmmInfo);
 			}
 
 		} catch (HardwareConfigurationException e) {
 			logger.warn("Could not fetch ttcp to halffmm mapping from hardware database");
 			//e.printStackTrace();
 		}
-
-
-
 
 		return result;
 	}
