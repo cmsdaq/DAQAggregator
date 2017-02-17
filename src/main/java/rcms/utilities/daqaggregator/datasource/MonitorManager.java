@@ -52,17 +52,20 @@ public class MonitorManager {
 		logger.debug("Detecting new session");
 		boolean newSession = sessionDetector.detectNewSession();
 
-		/*retrieves information from tcdsfm used to resolve tcds service name, url and trigger name*/
-		try{
-			tcdsFmInfoRetriever.aggregateInformation();
-		}catch (Exception e){
-			logger.warn("Unavailable TCDS information: TCDFM flashlist fetching failed");
-		}
-
 
 		logger.debug("New session: " + newSession);
 
 		if (newSession) {
+			
+			/**Retrieves information from tcdsfm used to resolve tcds service name, url and trigger name.
+			 * Should also be probably executed when trigger changes, which may happen independently of the session change*/
+			try{
+				tcdsFmInfoRetriever.aggregateInformation();
+			}catch (Exception e){
+				logger.warn("Unavailable TCDS information: TCDFM flashlist fetching failed");
+			}
+			
+			
 			logger.info("New session detected. Rebuilding the daq model based on hardware database");
 			long start = System.currentTimeMillis();
 			daq = rebuildDaqModel(sessionDetector.getResult());

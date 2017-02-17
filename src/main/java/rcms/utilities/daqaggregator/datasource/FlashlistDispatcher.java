@@ -55,14 +55,14 @@ public class FlashlistDispatcher {
 		/**TCDS service name*/
 		String tcds_serviceField = mappingManager.getTcdsFmInfoRetriever().getTcdsfm_pmService();
 		String tcds_url = mappingManager.getTcdsFmInfoRetriever().getTcdsfm_pmContext();
-		
+
 		//default escape values for cdaq
 		if (tcds_serviceField == null || tcds_url == null){
 			logger.debug("Null TCDS service name and url. Default values for cdaq will be used");
 			tcds_serviceField = "cpm-pri";
 			tcds_url = "http://tcds-control-cpm.cms:2050";
 		}
-		
+
 		logger.debug("Received "+tcds_serviceField+" TCDS PM service name");
 
 		if (flashlist.isUnknownAtLAS()){
@@ -222,8 +222,10 @@ public class FlashlistDispatcher {
 			// .. set ttcpartition.tcds_pm_ttsState
 			for (Entry<Integer, TTCPartition> ttcpEntry : mappingManager.getObjectMapper().ttcPartitions.entrySet()) {
 				TTCPartition ttcp = ttcpEntry.getValue(); // ref to ttcp object
+
+				/*this happens if the fmm was null but there is further information on the reason*/
 				if (ttcp.getTopFMMInfo().getNullCause() != null) {
-					// topFMM was null for this ttcp and ici info were not
+					// topFMM was null for this ttcp and ici/pi info were not
 					// filled, therefore there are no keys to get tcds_tts_state
 					// from flashlist data
 					// in this case, the nullCause String field of associated
@@ -275,7 +277,7 @@ public class FlashlistDispatcher {
 
 			//.detect types other than tts_ici, tts_apve
 			Set<String> types = new HashSet<String>();
-	
+
 			types.addAll(stpiDataFromFlashlist.get(tcds_serviceField).keySet());
 			types.remove("tts_ici");
 			types.remove("tts_apve");
