@@ -409,24 +409,21 @@ public class RelationMapper implements Serializable {
 					String hwcfg_PmHostname = ePm.getValue().getHostName().toLowerCase();
 					hwcfg_PmHostname = hwcfg_PmHostname.split(".cms")[0];
 					String hwcfg_pmService = ePm.getValue().getServiceName().toLowerCase();
-
+					
 					if (pmUrl.equalsIgnoreCase(hwcfg_PmHostname)&&pmService.equalsIgnoreCase(hwcfg_pmService)){
 
 						triggerName = eTrig.getValue().getName();
+						logger.debug("Resolved trigger: "+triggerName+" for ttcp: "+ttcpName);
 					}
 				}
 			}
-
-
-
-			//add parsing matching code
 
 
 			Trigger trigger;
 			try {
 				trigger = dp.getDAQPartitionSet().getEquipmentSet().getTriggerByName(triggerName);
 			} catch (HardwareConfigurationException e) {
-				logger.warn("Could not find trigger: "+triggerName+" in hardware database.");
+				logger.warn("Could not resolve trigger: "+triggerName+" in hardware database.");
 				fmmInfo.setNullCause("noTRG");
 
 				return fmmInfo;
@@ -474,7 +471,9 @@ public class RelationMapper implements Serializable {
 					fmmInfo.setAb((fmmfmm.getSourceFMMIO() == 20 || fmmfmm.getSourceFMMIO() == 21) ? "A" : "B");
 					fmmInfo.setPMNr(ici.getPMNr());
 					fmmInfo.setICINr(ici.getICINr());
-
+					
+					
+					fmmInfo.setNullCause("");
 					return fmmInfo;
 				}
 			}
@@ -528,12 +527,12 @@ public class RelationMapper implements Serializable {
 
 					objectMapper.ttcPartitions.get(hwTtcPartition.hashCode()).setTopFMMInfo(fmmInfo);
 				}else{
-					logger.warn("Could not find ttcp: "+hwTtcPartition.getName()+" in ttcp to halffmm mapping");
+					logger.warn("Could not find ttcp: "+hwTtcPartition.getName()+" in ttcp to halffmm mapping. There will be no top FMM and FMMInfo for this ttcp.");
 				}
 			}
 
 		} catch (HardwareConfigurationException e) {
-			logger.warn("Could not fetch ttcp to halffmm mapping");
+			logger.warn("Could not fetch ttcp to halffmm mapping from hardware database");
 			//e.printStackTrace();
 		}
 
@@ -576,7 +575,7 @@ public class RelationMapper implements Serializable {
 					}
 
 				} catch (HardwareConfigurationException e) {
-					logger.warn("cannot get FRL by id, source error: " + e.getMessage());
+					logger.warn("Cannot get FRL by id, source error: " + e.getMessage());
 				}
 			}
 		}

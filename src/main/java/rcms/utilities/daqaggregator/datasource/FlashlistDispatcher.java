@@ -222,8 +222,18 @@ public class FlashlistDispatcher {
 			// .. set ttcpartition.tcds_pm_ttsState
 			for (Entry<Integer, TTCPartition> ttcpEntry : mappingManager.getObjectMapper().ttcPartitions.entrySet()) {
 				TTCPartition ttcp = ttcpEntry.getValue(); // ref to ttcp object
-				if (ttcp.getTopFMMInfo().getNullCause() != null) {
-					// topFMM was null for this ttcp and ici info were not
+				
+				/*this happens if this ttcp was not found in the ttcpToHalFmm mapping and no action was taken to discover fmm, icinr, pinr*/
+				if (ttcp.getTopFMMInfo() == null){
+					ttcp.setTcds_pm_ttsState("-");
+					ttcp.setTcds_apv_pm_ttsState("-");
+					continue;
+				}
+
+
+				/*this happens if the fmm was null but there is further information on the reason*/
+				if (ttcp.getFmm() == null) {
+					// topFMM was null for this ttcp and ici/pi info were not
 					// filled, therefore there are no keys to get tcds_tts_state
 					// from flashlist data
 					// in this case, the nullCause String field of associated
