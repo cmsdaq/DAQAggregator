@@ -398,6 +398,7 @@ public class RelationMapper implements Serializable {
 		if(tcdsFmInfoRetriever.isInfoAvailable()){
 			String pmUrl = tcdsFmInfoRetriever.getTcdsfm_pmContext().toLowerCase();
 			pmUrl = pmUrl.split("//|.cms")[1];
+			pmUrl = pmUrl + "-pri";
 			int pmLid = tcdsFmInfoRetriever.getTcdsfm_pmLid();
 			String pmService = tcdsFmInfoRetriever.getTcdsfm_pmService().toLowerCase();
 
