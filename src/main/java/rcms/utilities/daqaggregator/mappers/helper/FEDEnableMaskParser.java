@@ -3,6 +3,10 @@ package rcms.utilities.daqaggregator.mappers.helper;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
+import rcms.utilities.daqaggregator.datasource.Flashlist;
+
 /**
  * This class helps parsing the FED_ENABLE_MASK session-aware string, which contains masking information for FEDs
  * 
@@ -18,7 +22,7 @@ public class FEDEnableMaskParser {
 	 * */
 	
 	private final Map<Integer, String> fedByExpectedIdToMaskingFlags = new HashMap<Integer, String>();
-
+	private static final Logger logger = Logger.getLogger(FEDEnableMaskParser.class);
 	
 	
 	public FEDEnableMaskParser(String fedEnableMask) {
@@ -31,6 +35,7 @@ public class FEDEnableMaskParser {
 	private void parse(String fedEnableMask) {
 		
 		String [] fedEntries = fedEnableMask.split("%");
+		logger.info("FED_Enable masks found for: "+fedEntries.length+" FEDs.");
 		for (String s : fedEntries){
 			String [] splitEntry = s.split("&");
 			
