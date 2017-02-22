@@ -118,9 +118,9 @@ public class FlashlistDispatcher {
 				String fedEnMask = "";
 				//concatenates fed_enabled_mask from all rows
 				for (int i = 0; i < flashlist.getRowsNode().size() ; i++){
-					fedEnMask += flashlist.getRowsNode().get(0).get("FED_ENABLE_MASK").asText();
+					fedEnMask += flashlist.getRowsNode().get(i).get("FED_ENABLE_MASK").asText();
 				}
-				//String fedEnMask = flashlist.getRowsNode().get(0).get("FED_ENABLE_MASK").asText();
+				
 				FEDEnableMaskParser parser = new FEDEnableMaskParser(fedEnMask);
 				Map<Integer, String> maskedFlagsByFed = parser.getFedByExpectedIdToMaskingFlags();
 
