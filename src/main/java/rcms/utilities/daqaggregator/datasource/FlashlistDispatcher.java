@@ -115,7 +115,12 @@ public class FlashlistDispatcher {
 			break;
 		case LEVEL_ZERO_FM_STATIC:
 			if (flashlist.getRowsNode().isArray() && flashlist.getRowsNode().size() > 0) {
-				String fedEnMask = flashlist.getRowsNode().get(0).get("FED_ENABLE_MASK").asText();
+				String fedEnMask = "";
+				//concatenates fed_enabled_mask from all rows
+				for (int i = 0; i < flashlist.getRowsNode().size() ; i++){
+					fedEnMask += flashlist.getRowsNode().get(i).get("FED_ENABLE_MASK").asText();
+				}
+				
 				FEDEnableMaskParser parser = new FEDEnableMaskParser(fedEnMask);
 				Map<Integer, String> maskedFlagsByFed = parser.getFedByExpectedIdToMaskingFlags();
 

@@ -2,6 +2,7 @@ package rcms.utilities.daqaggregator.datasource;
 
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.log4j.Logger;
 
 import rcms.utilities.daqaggregator.DAQException;
 import rcms.utilities.daqaggregator.DAQExceptionCode;
@@ -14,8 +15,10 @@ import rcms.utilities.daqaggregator.DAQExceptionCode;
 
 public class TCDSFMInfoRetriever {
 
+	private static final Logger logger = Logger.getLogger(TCDSFMInfoRetriever.class);
+
 	private final FlashlistRetriever flashlistRetriever;
-	
+
 	private String tcdsfm_fmUrl;
 	private String tcdsfm_pmContext;
 	private int tcdsfm_pmLid;
@@ -24,11 +27,11 @@ public class TCDSFMInfoRetriever {
 	public TCDSFMInfoRetriever(FlashlistRetriever flashlistRetriever) {
 		this.flashlistRetriever = flashlistRetriever;
 	}
-	
+
 	/**
 	 * Gets TCDS info from flashlists
 	 */
-	protected void aggregateInformation() {
+	protected int aggregateInformation() {
 
 		Pair<Flashlist, Integer> tcdsFmRetrieveResult = flashlistRetriever
 				.retrieveFlashlist(FlashlistType.TCDSFM);
@@ -36,9 +39,11 @@ public class TCDSFMInfoRetriever {
 		Flashlist tcdsFmFlashlist = tcdsFmRetrieveResult.getLeft();
 
 		setTcdsFmFlashlistValues(tcdsFmFlashlist);
-		  
+
+		return tcdsFmRetrieveResult.getRight();
+
 	}
-	
+
 	private void setTcdsFmFlashlistValues(Flashlist flashlist) {
 		if (flashlist == null)
 			throw new DAQException(DAQExceptionCode.FlashlistNull, "");
@@ -52,7 +57,7 @@ public class TCDSFMInfoRetriever {
 		if (flashlist.getRowsNode() == null || flashlist.getRowsNode().size() == 0)
 			throw new DAQException(DAQExceptionCode.EmptyFlashlistDetectingSession,
 					"Empty TCDSFM flashlist at timestamp " + flashlist.getRetrievalDate());
-		
+
 		this.tcdsfm_fmUrl = flashlist.getRowsNode().get(0).get("FMURL").asText();
 		this.tcdsfm_pmContext = flashlist.getRowsNode().get(0).get("pmContext").asText();
 		this.tcdsfm_pmLid = flashlist.getRowsNode().get(0).get("pmLID").asInt();
@@ -82,6 +87,69 @@ public class TCDSFMInfoRetriever {
 			return true;
 		}
 	}
-	
-	
+
+	/**Works like the session detector but inverse logic: first store old values, then update object, then compare*/
+	public boolean detectNewTrigger() {
+
+		boolean detectedChange = false;
+
+		/*current values of fields*/
+		//String tcdsfm_fmUrl_old = this.tcdsfm_fmUrl; //currently not used to identify trigger
+		String tcdsfm_pmContext_old = this.tcdsfm_pmContext;
+		int tcdsfm_pmLid_old = this.tcdsfm_pmLid;
+		String tcdsfm_pmService_old = this.tcdsfm_pmService;
+
+		/*following line will overwrite fields*/
+		int timeToAutoDetect = this.aggregateInformation(); //updates fields on this and returns time it took in ms
+
+
+		//There is no need to specifically check the first trigger, because structure will already be updated by the first session
+		if (tcdsfm_pmContext_old != null && tcdsfm_pmLid_old != 0 && tcdsfm_pmService_old != null) {
+
+			if (this.tcdsfm_pmContext != null){
+				//comparison makes sense
+				if (!this.tcdsfm_pmContext.equals(tcdsfm_pmContext_old)){
+					detectedChange = true;
+				}
+			}else{
+				logger.warn("Auto-detecting trigger: a new tcdsfm value (PM Context) is null, no trigger change can be deduced");
+			}
+
+			if (this.tcdsfm_pmLid != 0){
+				//comparison makes sense
+				if (this.tcdsfm_pmLid != tcdsfm_pmLid_old){
+					detectedChange = true;
+				}
+			}else{
+				logger.warn("Auto-detecting trigger: a new tcdsfm value (PM Lid) is 0, no trigger change can be deduced");
+			}
+
+			if (this.tcdsfm_pmService != null){
+				//comparison makes sense
+				if (!this.tcdsfm_pmService.equals(tcdsfm_pmService_old)){
+					detectedChange = true;
+				}
+			}else{
+				logger.warn("Auto-detecting trigger: a new tcdsfm value (PM Service) is null, no trigger change can be deduced");
+			}
+
+			logger.info("Auto-detecting trigger finished in " + timeToAutoDetect + " ms with detected change: "
+					+ detectedChange);
+			
+		} else {
+			/*this is usually the case at first iteration and will never occur after the first successful values setting from flashlist
+			 * (which should happen in the first iteration, otherwise something is wrong with the flashlist)*/
+
+			logger.debug("Auto-detecting trigger: an old tcdsfm value is null, no trigger change can be deduced");
+
+			logger.info("Auto-detecting trigger finished in " + timeToAutoDetect + " ms with detected change: N/A (expected in first iteration, check TCDSFM flashlist at LAS otherwise)");
+		}
+
+		/*
+		logger.info("Auto-detecting trigger finished in " + timeToAutoDetect + " ms with detected change: "
+				+ detectedChange);*/
+
+		return detectedChange;
+	}
+
 }

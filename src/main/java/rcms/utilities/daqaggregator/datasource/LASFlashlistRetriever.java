@@ -94,7 +94,7 @@ public class LASFlashlistRetriever implements FlashlistRetriever {
 
 	@Override
 	public Pair<Flashlist, Integer> retrieveFlashlist(FlashlistType flashlistType) {
-		logger.info("Requested flashlist " + flashlistType + " retreival");
+		logger.info("Requested flashlist " + flashlistType + " retrieval");
 		try {
 			final Date retrievalDate = new Date();
 			return downloadNonSessionContextFlashlist(flashlistType, retrievalDate);
