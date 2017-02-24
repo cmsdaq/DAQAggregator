@@ -475,7 +475,7 @@ public class RelationMapper implements Serializable {
 
 					//rcms.utilities.hwcfg.eq.FMM fmm = dp.getDAQPartitionSet().getEquipmentSet().getFMMs().get(fmmfmm.getSourceFMMId());
 
-					fmmInfo.setAb((fmmfmm.getSourceFMMIO() == 20 || fmmfmm.getSourceFMMIO() == 21) ? "a" : "b");
+					//fmmInfo.setAb((fmmfmm.getSourceFMMIO() == 20 || fmmfmm.getSourceFMMIO() == 21) ? "a" : "b"); //as FMM discovery has been decoupled from trigger, this is not set here anymore
 
 					fmmInfo.setPMNr(ici.getPMNr());
 					fmmInfo.setICINr(ici.getICINr());
@@ -486,7 +486,7 @@ public class RelationMapper implements Serializable {
 				}
 			}
 
-			fmmInfo.setAb("");
+			//fmmInfo.setAb(""); //as FMM discovery has been decoupled from trigger, this is not set here anymore
 			fmmInfo.setPMNr(ici.getPMNr());
 			fmmInfo.setICINr(ici.getICINr());
 
@@ -522,9 +522,12 @@ public class RelationMapper implements Serializable {
 			}
 
 			for (rcms.utilities.hwcfg.eq.TTCPartition hwTtcPartition : hwTtcPartitions){
+				
+				String ab = null;
+				
 				if(ttcpToHalFmm.containsKey(hwTtcPartition.getName())){
 					rcms.utilities.hwcfg.eq.FMM hwfmm = ttcpToHalFmm.get(hwTtcPartition.getName()).fmm;
-
+					ab = ttcpToHalFmm.get(hwTtcPartition.getName()).ab;
 					if (hwfmm != null)
 						result.put(hwfmm.hashCode(), hwTtcPartition.hashCode());
 
@@ -534,6 +537,10 @@ public class RelationMapper implements Serializable {
 
 				//Discover trigger and ICI for all partitions, including those without an FMM
 				FMMInfo fmmInfo = getFMMInfo(daqPartition, hwTtcPartition.getName());
+				if (ab != null){
+					//will only enter here for non uTCA partitions
+					fmmInfo.setAb(ab);
+				}
 				objectMapper.ttcPartitions.get(hwTtcPartition.hashCode()).setTopFMMInfo(fmmInfo);
 			}
 
