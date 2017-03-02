@@ -22,6 +22,8 @@ public class MonitorManager {
 	private final SessionDetector sessionDetector;
 	private final TCDSFMInfoRetriever tcdsFmInfoRetriever;
 	private final HardwareConnector hardwareConnector;
+	
+	private final F3DataRetriever f3dataRetriever;
 
 	/** Manager for mapping the structure */
 	private MappingManager mappingManager;
@@ -38,6 +40,7 @@ public class MonitorManager {
 		this.hardwareConnector = hardwareConnector;
 		this.sessionDetector = new SessionDetector(sessionRetriever, flashlistRetriever);
 		this.tcdsFmInfoRetriever = new TCDSFMInfoRetriever(flashlistRetriever);
+		this.f3dataRetriever = new F3DataRetriever(new Connector());
 	}
 
 	public void skipToNextSnapshot() {
@@ -71,10 +74,12 @@ public class MonitorManager {
 		}
 
 		int sessionId = sessionDetector.getResult().getMiddle();
-
+		
 		Collection<Flashlist> flashlists = flashlistRetriever.retrieveAllFlashlists(sessionId).values();
 		flashlistManager.mapFlashlists(flashlists);
 
+		f3dataRetriever.dispatch(daq);
+		
 		long lastUpdate = 0L;
 		for (Flashlist flashlist : flashlists) {
 			// why null here?

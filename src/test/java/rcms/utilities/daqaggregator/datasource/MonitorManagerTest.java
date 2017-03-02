@@ -8,6 +8,7 @@ import javax.xml.bind.DatatypeConverter;
 import org.apache.commons.lang3.tuple.Triple;
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import rcms.common.db.DBConnectorException;
@@ -36,6 +37,7 @@ import rcms.utilities.hwcfg.PathNotFoundException;
  * @TODO: make it independent on hardware availability
  * 
  */
+@Ignore
 public class MonitorManagerTest {
 
 	private static MonitorManager monitorManager;

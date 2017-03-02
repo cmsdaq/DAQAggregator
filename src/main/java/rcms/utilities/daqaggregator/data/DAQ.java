@@ -56,6 +56,8 @@ public class DAQ implements FlashlistUpdatable {
 	private Collection<FED> feds;
 	
 	private TCDSGlobalInfo tcdsGlobalInfo;
+	
+	private Double hltRate;
 
 
 	public BUSummary getBuSummary() {
