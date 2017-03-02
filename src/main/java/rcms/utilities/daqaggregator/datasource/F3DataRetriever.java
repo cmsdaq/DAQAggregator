@@ -42,7 +42,11 @@ public class F3DataRetriever {
 
 			logger.debug(resultJson);
 			logger.debug("Accessing physics hlt rate: " + resultJson.elements().next().get("Physics"));
-			return resultJson.elements().next().get("Physics").asDouble();
+			try {
+				return resultJson.elements().next().get("Physics").asDouble();
+			} catch (NullPointerException e) {
+				return null;
+			}
 		} else {
 			logger.warn("Expected 1 node as a response but was " + count);
 			return null;
@@ -131,7 +135,6 @@ public class F3DataRetriever {
 		long start = System.currentTimeMillis();
 
 		boolean diskSuccessful = dispatchDisk(daq);
-
 		boolean hltSuccessful = dispatchHLT(daq);
 
 		long end = System.currentTimeMillis();
@@ -148,8 +151,12 @@ public class F3DataRetriever {
 
 		try {
 			Double d = getHLTInfo(daq.getRunNumber());
-			daq.setHltRate(d);
-			return true;
+			if (d != null) {
+				daq.setHltRate(d);
+				return true;
+			} else {
+				daq.setHltRate(null);
+			}
 
 		} catch (JsonMappingException e) {
 			logger.warn("Could not retrieve F3 HLT rate,  json mapping exception: ", e);
