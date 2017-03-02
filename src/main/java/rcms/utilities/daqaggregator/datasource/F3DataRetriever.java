@@ -36,7 +36,7 @@ public class F3DataRetriever {
 
 		List<String> result = a.getRight();
 
-		long count = result.stream().count();
+		long count = result.size();
 		if (count == 1) {
 			JsonNode resultJson = mapper.readValue(result.get(0), JsonNode.class);
 
@@ -63,7 +63,7 @@ public class F3DataRetriever {
 		Pair<Integer, List<String>> a = connector.retrieveLines("http://es-cdaq.cms/sc/php/summarydisks.php");
 		List<String> result = a.getRight();
 
-		long count = result.stream().count();
+		long count = result.size();
 		if (count == 1) {
 			JsonNode resultJson = mapper.readValue(result.get(0), JsonNode.class);
 
@@ -129,21 +129,51 @@ public class F3DataRetriever {
 	public void dispatch(DAQ daq) {
 
 		long start = System.currentTimeMillis();
-		long end = 0;
+
+		boolean diskSuccessful = dispatchDisk(daq);
+
+		boolean hltSuccessful = dispatchHLT(daq);
+
+		long end = System.currentTimeMillis();
+
+		if (diskSuccessful && hltSuccessful)
+			logger.info("F3 data successfully retrieved and mapped in: " + (end - start) + "ms");
+		else {
+			logger.warn("Problem retrieving F3 data [disk successful,hlt successful]=[" + diskSuccessful + ","
+					+ hltSuccessful + "]");
+		}
+	}
+
+	public boolean dispatchHLT(DAQ daq) {
+
+		try {
+			Double d = getHLTInfo(daq.getRunNumber());
+			daq.setHltRate(d);
+			return true;
+
+		} catch (JsonMappingException e) {
+			logger.warn("Could not retrieve F3 HLT rate,  json mapping exception: ", e);
+		} catch (IOException e) {
+			logger.warn("Could not retrieve F3 HLT rate, IO exception: ", e);
+		}
+		return false;
+
+	}
+
+	public boolean dispatchDisk(DAQ daq) {
 
 		try {
 			DiskInfo d = getDiskInfo();
 			daq.getBuSummary().setOutputDiskTotal(d.getOutputTotal());
 			daq.getBuSummary().setOutputDiskUsage(d.getOutputOccupancyFraction());
+			return true;
 
-			end = System.currentTimeMillis();
 		} catch (JsonMappingException e) {
 			logger.warn("Could not retrieve F3 disk info,  json mapping exception: ", e);
 		} catch (IOException e) {
 			logger.warn("Could not retrieve F3 disk info, IO exception: ", e);
 		}
-		if (end != 0)
-			logger.info("F3 data retrieved and mapped in: " + (end - start) + "ms");
+		return false;
 
 	}
 

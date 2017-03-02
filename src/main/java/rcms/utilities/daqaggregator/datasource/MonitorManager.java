@@ -78,7 +78,6 @@ public class MonitorManager {
 		Collection<Flashlist> flashlists = flashlistRetriever.retrieveAllFlashlists(sessionId).values();
 		flashlistManager.mapFlashlists(flashlists);
 
-		f3dataRetriever.dispatch(daq);
 		
 		long lastUpdate = 0L;
 		for (Flashlist flashlist : flashlists) {
@@ -93,6 +92,9 @@ public class MonitorManager {
 		// postprocess daq (derived values, summary classes)
 		PostProcessor postProcessor = new PostProcessor(daq);
 		postProcessor.postProcess();
+		
+
+		f3dataRetriever.dispatch(daq);
 		return Triple.of(daq, flashlists, newSession);
 
 	}

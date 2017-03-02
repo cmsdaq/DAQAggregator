@@ -373,4 +373,12 @@ public class DAQ implements FlashlistUpdatable {
 		return true;
 	}
 
+	public Double getHltRate() {
+		return hltRate;
+	}
+
+	public void setHltRate(Double hltRate) {
+		this.hltRate = hltRate;
+	}
+
 }
