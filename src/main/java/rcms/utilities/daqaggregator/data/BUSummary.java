@@ -74,7 +74,7 @@ public class BUSummary implements Derivable {
 	private double fuOutputBandwidthInMB;
 
 	/** Output disk total in MB - all CDAQ BUs */
-	private Double outputDiskTotal;
+	private Integer outputDiskTotal;
 	
 	/** Output disk usage (fraction) - all CDAQ BUs*/
 	private Double outputDiskUsage;
@@ -377,6 +377,22 @@ public class BUSummary implements Derivable {
 
 	public void setFuOutputBandwidthInMB(double fuOutputBandwidthInMB) {
 		this.fuOutputBandwidthInMB = fuOutputBandwidthInMB;
+	}
+
+	public Integer getOutputDiskTotal() {
+		return outputDiskTotal;
+	}
+
+	public void setOutputDiskTotal(Integer outputDiskTotal) {
+		this.outputDiskTotal = outputDiskTotal;
+	}
+
+	public Double getOutputDiskUsage() {
+		return outputDiskUsage;
+	}
+
+	public void setOutputDiskUsage(Double outputDiskUsage) {
+		this.outputDiskUsage = outputDiskUsage;
 	}
 
 }

@@ -10,6 +10,10 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import rcms.utilities.daqaggregator.Application;
+import rcms.utilities.daqaggregator.ProxyManager;
+import rcms.utilities.daqaggregator.data.DAQ;
+
 /**
  * Retrieves date from F3
  * 
@@ -46,7 +50,8 @@ public class F3DataRetriever {
 	}
 
 	/**
-	 * Gets ramdisk and output disk occupancy levels. It's summary of all cdaq BU's
+	 * Gets ramdisk and output disk occupancy levels. It's summary of all cdaq
+	 * BU's
 	 * 
 	 * @return
 	 * 
@@ -113,5 +118,54 @@ public class F3DataRetriever {
 			this.outputTotal = outputTotal;
 		}
 
+		@Override
+		public String toString() {
+			return "DiskInfo [ramdiskOccupancyFraction=" + ramdiskOccupancyFraction + ", ramdiskTotal=" + ramdiskTotal
+					+ ", outputOccupancyFraction=" + outputOccupancyFraction + ", outputTotal=" + outputTotal + "]";
+		}
+
+	}
+
+	public void dispatch(DAQ daq) {
+
+		long start = System.currentTimeMillis();
+		long end = 0;
+
+		try {
+			DiskInfo d = getDiskInfo();
+			daq.getBuSummary().setOutputDiskTotal(d.getOutputTotal());
+			daq.getBuSummary().setOutputDiskUsage(d.getOutputOccupancyFraction());
+
+			end = System.currentTimeMillis();
+		} catch (JsonMappingException e) {
+			logger.warn("Could not retrieve F3 disk info,  json mapping exception: ", e);
+		} catch (IOException e) {
+			logger.warn("Could not retrieve F3 disk info, IO exception: ", e);
+		}
+		if (end != 0)
+			logger.info("F3 data retrieved and mapped in: " + (end - start) + "ms");
+
+	}
+
+	/**
+	 * Quick test F3
+	 * 
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		F3DataRetriever f3dr = new F3DataRetriever(new Connector());
+		try {
+			Application.initialize("DAQAggregator.properties");
+			ProxyManager.get().startProxy();
+			DiskInfo d = f3dr.getDiskInfo();
+			Double h = f3dr.getHLTInfo(288498);
+
+			logger.info(d);
+			logger.info(h);
+		} catch (JsonMappingException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }
