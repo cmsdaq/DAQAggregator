@@ -56,12 +56,6 @@ public class FlashlistDispatcher {
 		String tcds_serviceField = mappingManager.getTcdsFmInfoRetriever().getTcdsfm_pmService();
 		String tcds_url = mappingManager.getTcdsFmInfoRetriever().getTcdsfm_pmContext();
 
-		//default escape values for cdaq
-		if (tcds_serviceField == null || tcds_url == null){
-			logger.debug("Null TCDS service name and url. Default values for cdaq will be used");
-			tcds_serviceField = "cpm-pri";
-			tcds_url = "http://tcds-control-cpm.cms:2050";
-		}
 
 		logger.debug("Received "+tcds_serviceField+" TCDS PM service name");
 
@@ -208,6 +202,10 @@ public class FlashlistDispatcher {
 
 			String typeField1 = "tts_ici";
 			String typeField2 = "tts_apve";
+			
+			if (tcds_serviceField == null || tcds_url == null){
+				return;
+			}
 
 			//stpi-indexed flashlist
 			Map<String, Map<String, Map<Integer, Map<Integer, Map<String, String>>>>> stpiDataFromFlashlist = TCDSFlashlistHelpers
@@ -321,6 +319,9 @@ public class FlashlistDispatcher {
 
 
 		case TCDS_CPM_COUNTS:
+			if (tcds_serviceField == null || tcds_url == null){
+				return;
+			}
 			for (JsonNode rowNode : flashlist.getRowsNode()) {
 
 				//get flashlist row corresponding to service
@@ -333,6 +334,9 @@ public class FlashlistDispatcher {
 			break;
 
 		case TCDS_CPM_DEADTIMES:
+			if (tcds_serviceField == null || tcds_url == null){
+				return;
+			}
 			for (JsonNode rowNode : flashlist.getRowsNode()) {
 
 				//get flashlist row corresponding to service
@@ -345,6 +349,9 @@ public class FlashlistDispatcher {
 			break;
 
 		case TCDS_CPM_RATES:
+			if (tcds_serviceField == null || tcds_url == null){
+				return;
+			}
 			for (JsonNode rowNode : flashlist.getRowsNode()) {
 
 				//get flashlist row corresponding to service
@@ -357,6 +364,9 @@ public class FlashlistDispatcher {
 			break;
 
 		case TCDS_PM_ACTION_COUNTS:
+			if (tcds_serviceField == null || tcds_url == null){
+				return;
+			}
 			for (JsonNode rowNode : flashlist.getRowsNode()) {
 
 				//get flashlist row corresponding to service

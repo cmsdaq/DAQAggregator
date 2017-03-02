@@ -316,7 +316,7 @@ public class RU implements FlashlistUpdatable, Derivable {
 			}
 		}
 
-		/* Ru is mask if all of FEDs are masked */
+		/* Ru is masked if all FEDs are masked */
 		if (maskedFeds == allFeds) {
 			masked = true;
 		}

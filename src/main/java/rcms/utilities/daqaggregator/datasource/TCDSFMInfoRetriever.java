@@ -45,23 +45,29 @@ public class TCDSFMInfoRetriever {
 	}
 
 	private void setTcdsFmFlashlistValues(Flashlist flashlist) {
-		if (flashlist == null)
-			throw new DAQException(DAQExceptionCode.FlashlistNull, "");
-		if (flashlist.getFlashlistType() != FlashlistType.TCDSFM)
-			throw new DAQException(DAQExceptionCode.WrongFlaslhist,
-					"Wrong flashlist type: " + flashlist.getFlashlistType()+" (TCDFM expected)");
-		if (flashlist.isUnknownAtLAS()){
-			throw new DAQException(DAQExceptionCode.EmptyFlashlistDetectingSession,
-					"TCDSFM flashlist was not downloaded correctly, either due to a bad request or due to not having been found at LAS" + flashlist.getRetrievalDate());
-		}
-		if (flashlist.getRowsNode() == null || flashlist.getRowsNode().size() == 0)
-			throw new DAQException(DAQExceptionCode.EmptyFlashlistDetectingSession,
-					"Empty TCDSFM flashlist at timestamp " + flashlist.getRetrievalDate());
 
-		this.tcdsfm_fmUrl = flashlist.getRowsNode().get(0).get("FMURL").asText();
-		this.tcdsfm_pmContext = flashlist.getRowsNode().get(0).get("pmContext").asText();
-		this.tcdsfm_pmLid = flashlist.getRowsNode().get(0).get("pmLID").asInt();
-		this.tcdsfm_pmService = flashlist.getRowsNode().get(0).get("pmService").asText();
+		try {
+			if (flashlist == null)
+				throw new DAQException(DAQExceptionCode.FlashlistNull, "");
+			if (flashlist.getFlashlistType() != FlashlistType.TCDSFM)
+				throw new DAQException(DAQExceptionCode.WrongFlaslhist,
+						"Wrong flashlist type: " + flashlist.getFlashlistType()+" (TCDFM expected)");
+			if (flashlist.isUnknownAtLAS()){
+				throw new DAQException(DAQExceptionCode.EmptyFlashlistDetectingSession,
+						"TCDSFM flashlist was not downloaded correctly, either due to a bad request or due to not having been found at LAS" + flashlist.getRetrievalDate());
+			}
+			if (flashlist.getRowsNode() == null || flashlist.getRowsNode().size() == 0)
+				throw new DAQException(DAQExceptionCode.EmptyFlashlistDetectingSession,
+						"Empty TCDSFM flashlist at timestamp " + flashlist.getRetrievalDate());
+
+			this.tcdsfm_fmUrl = flashlist.getRowsNode().get(0).get("FMURL").asText();
+			this.tcdsfm_pmContext = flashlist.getRowsNode().get(0).get("pmContext").asText();
+			this.tcdsfm_pmLid = flashlist.getRowsNode().get(0).get("pmLID").asInt();
+			this.tcdsfm_pmService = flashlist.getRowsNode().get(0).get("pmService").asText();
+
+		}catch(DAQException e){
+			logger.warn(e.getMessage());
+		}
 	}
 
 	public String getTcdsfm_fmUrl() {
@@ -112,7 +118,7 @@ public class TCDSFMInfoRetriever {
 					detectedChange = true;
 				}
 			}else{
-				logger.warn("Auto-detecting trigger: a new tcdsfm value (PM Context) is null, no trigger change can be deduced");
+				logger.warn("Auto-detecting trigger change: a new tcdsfm value (PM Context) is null, no trigger change can be deduced");
 			}
 
 			if (this.tcdsfm_pmLid != 0){
@@ -121,7 +127,7 @@ public class TCDSFMInfoRetriever {
 					detectedChange = true;
 				}
 			}else{
-				logger.warn("Auto-detecting trigger: a new tcdsfm value (PM Lid) is 0, no trigger change can be deduced");
+				logger.warn("Auto-detecting trigger change: a new tcdsfm value (PM Lid) is 0, no trigger change can be deduced");
 			}
 
 			if (this.tcdsfm_pmService != null){
@@ -130,19 +136,19 @@ public class TCDSFMInfoRetriever {
 					detectedChange = true;
 				}
 			}else{
-				logger.warn("Auto-detecting trigger: a new tcdsfm value (PM Service) is null, no trigger change can be deduced");
+				logger.warn("Auto-detecting trigger change: a new tcdsfm value (PM Service) is null, no trigger change can be deduced");
 			}
 
-			logger.info("Auto-detecting trigger finished in " + timeToAutoDetect + " ms with detected change: "
+			logger.info("Auto-detecting trigger change finished in " + timeToAutoDetect + " ms with detected change: "
 					+ detectedChange);
-			
+
 		} else {
 			/*this is usually the case at first iteration and will never occur after the first successful values setting from flashlist
 			 * (which should happen in the first iteration, otherwise something is wrong with the flashlist)*/
 
-			logger.debug("Auto-detecting trigger: an old tcdsfm value is null, no trigger change can be deduced");
+			logger.debug("Auto-detecting trigger change: an old tcdsfm value is null, no trigger change can be deduced");
 
-			logger.info("Auto-detecting trigger finished in " + timeToAutoDetect + " ms with detected change: N/A (expected in first iteration, check TCDSFM flashlist at LAS otherwise)");
+			logger.info("Auto-detecting trigger change finished in " + timeToAutoDetect + " ms with detected change: N/A (expected in first iteration, check TCDSFM flashlist at LAS otherwise)");
 		}
 
 		/*

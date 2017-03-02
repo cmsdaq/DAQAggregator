@@ -92,8 +92,19 @@ public class SubFEDBuilder {
 		minTrig = Long.MAX_VALUE;
 
 		// just derived from feds
+		
+		int total = 0;
+		int masked = 0;
 		for (FRL frl : getFrls()) {
 			for (FED fed : frl.getFeds().values()) {
+				total++;
+				
+				//do not take into account masked FEDs in this aggregation
+				if (fed.isFrlMasked()){
+					masked++;
+					continue;
+				}
+				
 				if (fed.getEventCounter() > maxTrig) {
 					maxTrig = fed.getEventCounter();
 				}
@@ -101,6 +112,11 @@ public class SubFEDBuilder {
 					minTrig = fed.getEventCounter();
 				}
 			}
+		}
+		
+		if (total == masked){
+			maxTrig = -1;
+			minTrig = -1;
 		}
 	}
 
