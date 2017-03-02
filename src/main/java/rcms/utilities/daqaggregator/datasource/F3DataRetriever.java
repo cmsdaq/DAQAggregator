@@ -2,6 +2,7 @@ package rcms.utilities.daqaggregator.datasource;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
@@ -41,10 +42,16 @@ public class F3DataRetriever {
 			JsonNode resultJson = mapper.readValue(result.get(0), JsonNode.class);
 
 			logger.debug(resultJson);
-			logger.debug("Accessing physics hlt rate: " + resultJson.elements().next().get("Physics"));
 			try {
 				return resultJson.elements().next().get("Physics").asDouble();
-			} catch (NullPointerException e) {
+			} catch (NoSuchElementException e) {
+
+				logger.warn("Cannot retrieve hlt rate (no such element) from response: " + result.get(0));
+				return null;
+			}
+
+			catch (NullPointerException e) {
+				logger.warn("Cannot retrieve hlt rate from response: " + result.get(0));
 				return null;
 			}
 		} else {
@@ -71,12 +78,20 @@ public class F3DataRetriever {
 		if (count == 1) {
 			JsonNode resultJson = mapper.readValue(result.get(0), JsonNode.class);
 
-			DiskInfo diskInfo = new DiskInfo();
-			diskInfo.setOutputOccupancyFraction(resultJson.get("output_occ").asDouble());
-			diskInfo.setOutputTotal(resultJson.get("output_tot").asInt());
-			diskInfo.setRamdiskOccupancyFraction(resultJson.get("ramdisk_occ").asDouble());
-			diskInfo.setRamdiskTotal(resultJson.get("ramdisk_tot").asInt());
-			return diskInfo;
+			try {
+				DiskInfo diskInfo = new DiskInfo();
+				diskInfo.setOutputOccupancyFraction(resultJson.get("output_occ").asDouble());
+				diskInfo.setOutputTotal(resultJson.get("output_tot").asInt());
+				diskInfo.setRamdiskOccupancyFraction(resultJson.get("ramdisk_occ").asDouble());
+				diskInfo.setRamdiskTotal(resultJson.get("ramdisk_tot").asInt());
+				return diskInfo;
+			} catch (NoSuchElementException e) {
+				logger.warn("Cannot retrieve disk info (no such element) from response: " + result.get(0));
+				return null;
+			} catch (NullPointerException e) {
+				logger.warn("Cannot retrieve disk info from response: " + result.get(0));
+				return null;
+			}
 		} else {
 			logger.warn("Expected 1 node as a response but was " + count);
 			return null;
@@ -171,9 +186,14 @@ public class F3DataRetriever {
 
 		try {
 			DiskInfo d = getDiskInfo();
-			daq.getBuSummary().setOutputDiskTotal(d.getOutputTotal());
-			daq.getBuSummary().setOutputDiskUsage(d.getOutputOccupancyFraction());
-			return true;
+			if (d != null) {
+				daq.getBuSummary().setOutputDiskTotal(d.getOutputTotal());
+				daq.getBuSummary().setOutputDiskUsage(d.getOutputOccupancyFraction());
+				return true;
+			} else {
+				daq.getBuSummary().setOutputDiskTotal(null);
+				daq.getBuSummary().setOutputDiskUsage(null);
+			}
 
 		} catch (JsonMappingException e) {
 			logger.warn("Could not retrieve F3 disk info,  json mapping exception: ", e);
