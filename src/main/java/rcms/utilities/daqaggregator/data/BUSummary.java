@@ -72,6 +72,13 @@ public class BUSummary implements Derivable {
 	private int numLumisectionsOutHLT;
 
 	private double fuOutputBandwidthInMB;
+
+	/** Output disk total in MB - all CDAQ BUs */
+	private Double outputDiskTotal;
+	
+	/** Output disk usage (fraction) - all CDAQ BUs*/
+	private Double outputDiskUsage;
+	
 	
 	// ----------------------------------------------------------------------
 
@@ -243,8 +250,6 @@ public class BUSummary implements Derivable {
 	public void setEventSizeStddev(double eventSizeStddev) {
 		this.eventSizeStddev = eventSizeStddev;
 	}
-
-
 
 	public int getPriority() {
 		return priority;
