@@ -38,10 +38,10 @@ public class FlashlistDispatcher {
 	// This will only work for CDAQ. Need to figure out how to know what
 	// PM (CPM or LPM) is used for a given run, instead of hardcoding
 	//private String serviceField;
-	
+
 
 	private static final Logger logger = Logger.getLogger(Flashlist.class);
-	
+
 	/**
 	 * Dispatch flashlist rows to appropriate objects from DAQ structure. Note
 	 * that a flashlist must be already initialized, for initialization see
@@ -51,20 +51,28 @@ public class FlashlistDispatcher {
 	 * @param mappingManager
 	 */
 	public void dispatch(Flashlist flashlist, MappingManager mappingManager) {
-		
+
 		/**TCDS service name*/
 		String tcds_serviceField = mappingManager.getTcdsFmInfoRetriever().getTcdsfm_pmService();
 		String tcds_url = mappingManager.getTcdsFmInfoRetriever().getTcdsfm_pmContext();
+
+		//default escape values for cdaq
+		if (tcds_serviceField == null || tcds_url == null){
+			logger.debug("Null TCDS service name and url. Default values for cdaq will be used");
+			tcds_serviceField = "cpm-pri";
+			tcds_url = "http://tcds-control-cpm.cms:2050";
+		}
+
 		logger.debug("Received "+tcds_serviceField+" TCDS PM service name");
-		
+
 		if (flashlist.isUnknownAtLAS()){
 			logger.debug("Flashlist dispatcher received and will ignore "+flashlist.getName()+" because it was not successfully downloaded from LAS");
 			return;
 		}
-		
-		
+
+
 		FlashlistType type = flashlist.getFlashlistType();
-		
+
 		switch (type) {
 		case RU:
 			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().rusByHostname, "context");
@@ -107,7 +115,12 @@ public class FlashlistDispatcher {
 			break;
 		case LEVEL_ZERO_FM_STATIC:
 			if (flashlist.getRowsNode().isArray() && flashlist.getRowsNode().size() > 0) {
-				String fedEnMask = flashlist.getRowsNode().get(0).get("FED_ENABLE_MASK").asText();
+				String fedEnMask = "";
+				//concatenates fed_enabled_mask from all rows
+				for (int i = 0; i < flashlist.getRowsNode().size() ; i++){
+					fedEnMask += flashlist.getRowsNode().get(i).get("FED_ENABLE_MASK").asText();
+				}
+				
 				FEDEnableMaskParser parser = new FEDEnableMaskParser(fedEnMask);
 				Map<Integer, String> maskedFlagsByFed = parser.getFedByExpectedIdToMaskingFlags();
 
@@ -214,17 +227,19 @@ public class FlashlistDispatcher {
 			// .. set ttcpartition.tcds_pm_ttsState
 			for (Entry<Integer, TTCPartition> ttcpEntry : mappingManager.getObjectMapper().ttcPartitions.entrySet()) {
 				TTCPartition ttcp = ttcpEntry.getValue(); // ref to ttcp object
+
+				/*this happens if the fmm was null but there is further information on the reason*/
 				if (ttcp.getTopFMMInfo().getNullCause() != null) {
-					// topFMM was null for this ttcp and ici info were not
+					// topFMM was null for this ttcp and ici/pi info were not
 					// filled, therefore there are no keys to get tcds_tts_state
 					// from flashlist data
 					// in this case, the nullCause String field of associated
 					// FMMInfo is not null and contains more information on why
 					// this ttcp's topFMM was null
-					
+
 					ttcp.setTcds_pm_ttsState(ttcp.getTopFMMInfo().getNullCause());
 					ttcp.setTcds_apv_pm_ttsState(ttcp.getTopFMMInfo().getNullCause());
-					
+
 					continue;
 				}
 
@@ -245,20 +260,20 @@ public class FlashlistDispatcher {
 						stpiDataFromFlashlist.get(tcds_serviceField).get(typeField2).containsKey( ttcp.getTopFMMInfo().getPMNr() ) && 
 						stpiDataFromFlashlist.get(tcds_serviceField).get(typeField2).get( ttcp.getTopFMMInfo().getPMNr() ).containsKey( ttcp.getTopFMMInfo().getICINr() ) )  {
 
-					
+
 
 					String label = stpiDataFromFlashlist.get(tcds_serviceField).get(typeField2)
 							.get(ttcp.getTopFMMInfo().getPMNr()).get(ttcp.getTopFMMInfo().getICINr()).get("label");
-					
+
 					if (label.equalsIgnoreCase("Unused")){
 						ttcp.setTcds_apv_pm_ttsState("x");
 					}else{
 						int stateCode = Integer.parseInt(stpiDataFromFlashlist.get(tcds_serviceField).get(typeField2)
 								.get(ttcp.getTopFMMInfo().getPMNr()).get(ttcp.getTopFMMInfo().getICINr()).get("value"));
-						
+
 						ttcp.setTcds_apv_pm_ttsState(TCDSFlashlistHelpers.decodeTCDSTTSState(stateCode));
 					}
-					
+
 				}
 			}
 
@@ -267,9 +282,11 @@ public class FlashlistDispatcher {
 
 			//.detect types other than tts_ici, tts_apve
 			Set<String> types = new HashSet<String>();
+
 			types.addAll(stpiDataFromFlashlist.get(tcds_serviceField).keySet());
 			types.remove("tts_ici");
 			types.remove("tts_apve");
+
 
 			//.foreach type, decode state value and %B/%W value (if existing) and set corresponding value in model's daq
 			GlobalTTSState globalTtsState;
@@ -299,13 +316,13 @@ public class FlashlistDispatcher {
 
 			mappingManager.getObjectMapper().daq.getTcdsGlobalInfo().setTcdsControllerServiceName(tcds_serviceField);
 			mappingManager.getObjectMapper().daq.getTcdsGlobalInfo().setTcdsControllerContext(tcds_url);
-			
+
 			break;
 
 
 		case TCDS_CPM_COUNTS:
 			for (JsonNode rowNode : flashlist.getRowsNode()) {
-				
+
 				//get flashlist row corresponding to service
 				if (rowNode.get("service").asText().equalsIgnoreCase(tcds_serviceField)){
 					mappingManager.getObjectMapper().daq.getTcdsGlobalInfo().updateFromFlashlist(flashlist.getFlashlistType(), rowNode);
@@ -317,7 +334,7 @@ public class FlashlistDispatcher {
 
 		case TCDS_CPM_DEADTIMES:
 			for (JsonNode rowNode : flashlist.getRowsNode()) {
-				
+
 				//get flashlist row corresponding to service
 				if (rowNode.get("service").asText().equalsIgnoreCase(tcds_serviceField)){
 					mappingManager.getObjectMapper().daq.getTcdsGlobalInfo().updateFromFlashlist(flashlist.getFlashlistType(), rowNode);
@@ -329,19 +346,19 @@ public class FlashlistDispatcher {
 
 		case TCDS_CPM_RATES:
 			for (JsonNode rowNode : flashlist.getRowsNode()) {
-				
+
 				//get flashlist row corresponding to service
 				if (rowNode.get("service").asText().equalsIgnoreCase(tcds_serviceField)){
 					mappingManager.getObjectMapper().daq.getTcdsGlobalInfo().updateFromFlashlist(flashlist.getFlashlistType(), rowNode);
 					break;
-				}
+				}  
 			}
 
 			break;
 
 		case TCDS_PM_ACTION_COUNTS:
 			for (JsonNode rowNode : flashlist.getRowsNode()) {
-				
+
 				//get flashlist row corresponding to service
 				if (rowNode.get("service").asText().equalsIgnoreCase(tcds_serviceField)){
 					mappingManager.getObjectMapper().daq.getTcdsGlobalInfo().updateFromFlashlist(flashlist.getFlashlistType(), rowNode);

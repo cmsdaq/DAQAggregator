@@ -51,23 +51,21 @@ public class MonitorManager {
 
 		logger.debug("Detecting new session");
 		boolean newSession = sessionDetector.detectNewSession();
-
-		/*retrieves information from tcdsfm used to resolve tcds service name, url and trigger name*/
-		try{
-			tcdsFmInfoRetriever.aggregateInformation();
-		}catch (Exception e){
-			logger.warn("Unavailable TCDS information: TCDFM flashlist fetching failed");
-		}
-
-
+		boolean newTrigger = tcdsFmInfoRetriever.detectNewTrigger(); //if true, it will update tcds fm info internally on the tcdsFmInfoRetriever object and they will be picked up later in structure building
+		
 		logger.debug("New session: " + newSession);
-
-		if (newSession) {
-			logger.info("New session detected. Rebuilding the daq model based on hardware database");
+		
+		
+		//rebuild structure if newSession or newTrigger (in both cases we need the session information for HW)
+		if (newSession || newTrigger) {
+			
+			String reason = newSession? "session" : "trigger";
+			
+			logger.info("New "+reason+" detected. Rebuilding the DAQ model.");
 			long start = System.currentTimeMillis();
 			daq = rebuildDaqModel(sessionDetector.getResult());
 			int timeToRebuild = (int) (System.currentTimeMillis() - start);
-			logger.info("Structure rebuiled in " + timeToRebuild + "ms");
+			logger.info("Structure rebuilded in " + timeToRebuild + "ms");
 			logger.info("--------------------------------------");
 
 		}
