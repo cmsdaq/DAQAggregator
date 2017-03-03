@@ -15,16 +15,16 @@ import rcms.utilities.daqaggregator.datasource.Flashlist;
  */
 
 public class FEDEnableMaskParser {
-	
+
 	/**Key is the srcExpectedId of a FED
 	 * Value is a string that contains two dash-separated substrings, each to be parsed as boolean,
 	 * the first of which is the flag for the fmmmasked and the second is the flag for the frlmasked
 	 * */
-	
+
 	private final Map<Integer, String> fedByExpectedIdToMaskingFlags = new HashMap<Integer, String>();
 	private static final Logger logger = Logger.getLogger(FEDEnableMaskParser.class);
-	
-	
+
+
 	public FEDEnableMaskParser(String fedEnableMask) {
 		super();
 		parse(fedEnableMask);
@@ -33,17 +33,17 @@ public class FEDEnableMaskParser {
 
 
 	private void parse(String fedEnableMask) {
-		
+
 		String [] fedEntries = fedEnableMask.split("%");
 		logger.info("FED_Enable masks found for: "+fedEntries.length+" FEDs.");
 		for (String s : fedEntries){
 			String [] splitEntry = s.split("&");
-			
+
 			Integer fedSrcId = Integer.parseInt(splitEntry[0]);
 			Integer maskSum = Integer.parseInt(splitEntry[1]);
-			
+
 			int [] lowerBits = {0,0,0,0}; //only the 4 lower bits are used to convey the masking flags information
-			
+
 			//maskSum in binary format (stringified)
 			String binaryMaskSum = Integer.toString(maskSum, 2);
 
@@ -55,41 +55,51 @@ public class FEDEnableMaskParser {
 			}else if (binaryMaskSum.length()==1){
 				binaryMaskSum = "000"+binaryMaskSum;
 			}
-			
+
 			lowerBits[0] = Integer.parseInt(Character.toString(binaryMaskSum.charAt(0))); //Bit 3 (TTS)
 			lowerBits[1] = Integer.parseInt(Character.toString(binaryMaskSum.charAt(1))); //Bit 2 (SLINK)
 			lowerBits[2] = Integer.parseInt(Character.toString(binaryMaskSum.charAt(2))); //Bit 1 (TTS)
 			lowerBits[3] = Integer.parseInt(Character.toString(binaryMaskSum.charAt(3))); //Bit 0 (SLINK)
-			
-			
+
+
 			String resolvedMasks = "";
-			
+
 			if (lowerBits[0]==0 && lowerBits[2]==1){
 				//FED has TTS output and TTS output is active
 				resolvedMasks = resolvedMasks +"false"; //fmm masked false
 			}else{
-				resolvedMasks = resolvedMasks +"true"; //fmm masked true
+				if (lowerBits[2]==0){
+					resolvedMasks = resolvedMasks +"true"; //fmm masked true (TTS output inactive or permanently masked)
+				}else{
+					//cases of no TTS output, where mask is not applicable
+					resolvedMasks = resolvedMasks +"false";
+				}
 			}
-			
-			resolvedMasks = resolvedMasks+ "-"; //delimiter
-			
+
+			resolvedMasks = resolvedMasks+ "-"; //delimiter FMM/SLINK masks
+
 			if (lowerBits[1]==0 && lowerBits[3]==1){
 				//FED has SLINK and SLINK is active
 				resolvedMasks = resolvedMasks +"false"; //frl masked false
 			}else{
-				resolvedMasks = resolvedMasks +"true"; //frl masked true
+				if (lowerBits[3]==0){
+					resolvedMasks = resolvedMasks +"true"; //frl masked true (SLINK inactive or permanently masked)
+				}else{
+					//cases of no SLINK, where mask is not applicable
+					resolvedMasks = resolvedMasks +"false";
+				}
 			}
-			
+
 			//add to map
 			fedByExpectedIdToMaskingFlags.put(fedSrcId, resolvedMasks);
 		}
-		
+
 	}
 
 
 	public Map<Integer, String> getFedByExpectedIdToMaskingFlags() {
 		return fedByExpectedIdToMaskingFlags;
 	}
-	
-	
+
+
 }
