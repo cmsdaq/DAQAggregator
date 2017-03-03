@@ -124,16 +124,11 @@ public class FlashlistDispatcher {
 				for (Entry<Integer, FED> fedEntry : mappingManager.getObjectMapper().fedsByExpectedId.entrySet()) {
 					total++;
 					if (maskedFlagsByFed.containsKey(fedEntry.getKey())) {
-						String[] maskingFlags = maskedFlagsByFed.get(fedEntry.getKey()).split("-"); // string
-						// from
-						// map
-						// contains
-						// two
-						// dash-separated
-						// flags
-						// as
-						// substrings
+						String[] maskingFlags = maskedFlagsByFed.get(fedEntry.getKey()).split("-");
 
+						if (fedEntry.getKey() == 890){
+							System.out.println(maskingFlags[0]+" , "+maskingFlags[1]);
+						}
 						fedEntry.getValue().setFmmMasked(Boolean.parseBoolean(maskingFlags[0]));
 						fedEntry.getValue().setFrlMasked(Boolean.parseBoolean(maskingFlags[1]));
 
