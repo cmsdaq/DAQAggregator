@@ -68,10 +68,10 @@ public class FEDEnableMaskParser {
 				//FED has TTS output and TTS output is active
 				resolvedMasks = resolvedMasks +"false"; //fmm masked false
 			}else{
-				if (lowerBits[0]==1 && lowerBits[2]==0){
-					resolvedMasks = resolvedMasks +"true"; //fmm masked true
+				if (lowerBits[2]==0){
+					resolvedMasks = resolvedMasks +"true"; //fmm masked true (TTS output inactive or permanently masked)
 				}else{
-					//cases of no or inactive TTS output (mask flag not applicable?) TODO: make the diff between real mask false and this case
+					//cases of no TTS output, where mask is not applicable
 					resolvedMasks = resolvedMasks +"false";
 				}
 			}
@@ -82,10 +82,10 @@ public class FEDEnableMaskParser {
 				//FED has SLINK and SLINK is active
 				resolvedMasks = resolvedMasks +"false"; //frl masked false
 			}else{
-				if (lowerBits[1]==1 && lowerBits[3]==0){
-					resolvedMasks = resolvedMasks +"true"; //frl masked true
+				if (lowerBits[3]==0){
+					resolvedMasks = resolvedMasks +"true"; //frl masked true (SLINK inactive or permanently masked)
 				}else{
-					//cases of no or inactive SLINK (mask flag not applicable?) TODO: make the diff between real mask false and this case
+					//cases of no SLINK, where mask is not applicable
 					resolvedMasks = resolvedMasks +"false";
 				}
 			}
