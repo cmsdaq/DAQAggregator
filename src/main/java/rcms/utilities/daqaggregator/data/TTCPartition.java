@@ -139,7 +139,7 @@ public class TTCPartition implements FlashlistUpdatable, Derivable {
 		int all = 0;
 		for (FED fed : feds) {
 			all++;
-			if (fed.isFmmMasked()) {
+			if (fed.isFmmMasked() || !fed.isHasTTS()) {
 				maskedFeds++;
 			}
 		}
