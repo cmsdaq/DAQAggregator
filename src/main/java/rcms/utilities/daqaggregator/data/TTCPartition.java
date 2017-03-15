@@ -135,20 +135,18 @@ public class TTCPartition implements FlashlistUpdatable, Derivable {
 
 	@Override
 	public void calculateDerivedValues() {
-		int maskedFeds = 0;
-		int all = 0;
+		
+		masked = true;
+		
+		/* TTCPartition is mask if all FEDs with TTS output are masked */
 		for (FED fed : feds) {
-			all++;
-			if (fed.isFmmMasked() || !fed.isHasTTS()) {
-				maskedFeds++;
+			if (fed.isHasTTS()){
+				if (!fed.isFmmMasked()){
+					masked = false;
+					break;
+				}
 			}
 		}
-
-		/* TTCPartition is mask if all FEDs are masked */
-		if (maskedFeds == all) {
-			masked = true;
-		}
-
 	}
 
 	@Override
