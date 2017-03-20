@@ -12,6 +12,8 @@ import org.apache.log4j.Logger;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 
+import rcms.utilities.daqaggregator.Application;
+import rcms.utilities.daqaggregator.Settings;
 import rcms.utilities.daqaggregator.data.FED;
 import rcms.utilities.daqaggregator.data.GlobalTTSState;
 import rcms.utilities.daqaggregator.data.RU;
@@ -55,7 +57,8 @@ public class FlashlistDispatcher {
 		/**TCDS service name*/
 		String tcds_serviceField = mappingManager.getTcdsFmInfoRetriever().getTcdsfm_pmService();
 		String tcds_url = mappingManager.getTcdsFmInfoRetriever().getTcdsfm_pmContext();
-
+		
+		String filter1 = Application.get().getProp(Settings.SESSION_L0FILTER1);
 
 		logger.debug("Received "+tcds_serviceField+" TCDS PM service name");
 
@@ -151,11 +154,12 @@ public class FlashlistDispatcher {
 			break;
 
 		case LEVEL_ZERO_FM_SUBSYS: // TODO: SID column
+			
 			for (JsonNode rowNode : flashlist.getRowsNode()) {
 
 				String subsystemName = rowNode.get("SUBSYS").asText();
 
-				if (subsystemName.equals("DAQ") && rowNode.get("FMURL").asText().contains("toppro")) {
+				if (subsystemName.equals("DAQ") && rowNode.get("FMURL").asText().contains(filter1)) {
 					mappingManager.getObjectMapper().daq.updateFromFlashlist(flashlist.getFlashlistType(), rowNode);
 				}
 
@@ -167,8 +171,9 @@ public class FlashlistDispatcher {
 			}
 			break;
 		case LEVEL_ZERO_FM_DYNAMIC:
+			
 			for (JsonNode rowNode : flashlist.getRowsNode()) {
-				if (rowNode.get("FMURL").asText().contains("toppro")) {
+				if (rowNode.get("FMURL").asText().contains(filter1)) {
 					mappingManager.getObjectMapper().daq.updateFromFlashlist(flashlist.getFlashlistType(), rowNode);
 				}
 			}
