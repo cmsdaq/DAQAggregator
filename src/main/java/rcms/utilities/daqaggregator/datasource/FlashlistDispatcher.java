@@ -57,7 +57,7 @@ public class FlashlistDispatcher {
 		/**TCDS service name*/
 		String tcds_serviceField = mappingManager.getTcdsFmInfoRetriever().getTcdsfm_pmService();
 		String tcds_url = mappingManager.getTcdsFmInfoRetriever().getTcdsfm_pmContext();
-		
+
 		String filter1 = Application.get().getProp(Settings.SESSION_L0FILTER1);
 
 		logger.debug("Received "+tcds_serviceField+" TCDS PM service name");
@@ -111,37 +111,6 @@ public class FlashlistDispatcher {
 
 			break;
 		case LEVEL_ZERO_FM_STATIC:
-			if (flashlist.getRowsNode().isArray() && flashlist.getRowsNode().size() > 0) {
-				String fedEnMask = "";
-				//concatenates fed_enabled_mask from all rows
-				for (int i = 0; i < flashlist.getRowsNode().size() ; i++){
-					fedEnMask += flashlist.getRowsNode().get(i).get("FED_ENABLE_MASK").asText();
-				}
-				
-				FEDEnableMaskParser parser = new FEDEnableMaskParser(fedEnMask);
-				Map<Integer, String> maskedFlagsByFed = parser.getFedByExpectedIdToMaskingFlags();
-
-				int notFound = 0;
-				int total = 0;
-
-				for (Entry<Integer, FED> fedEntry : mappingManager.getObjectMapper().fedsByExpectedId.entrySet()) {
-					total++;
-					if (maskedFlagsByFed.containsKey(fedEntry.getKey())) {
-						String[] maskingFlags = maskedFlagsByFed.get(fedEntry.getKey()).split("-");
-						
-						fedEntry.getValue().setFmmMasked(Boolean.parseBoolean(maskingFlags[0]));
-						fedEntry.getValue().setFrlMasked(Boolean.parseBoolean(maskingFlags[1]));
-
-					} else {
-						notFound++;
-					}
-				}
-				logger.debug("Could not find " + notFound + " out of " + total
-						+ " FEDs in the FED_ENABLE_MASK and mask flags were not set");
-				logger.debug("Successfully got FED_ENABLE_MASK info for " + (total - notFound) + " FEDs");
-			} else {
-				logger.error("FED_ENABLE_MASK problem " + flashlist.getRowsNode());
-			}
 			break;
 		case JOB_CONTROL:
 			// TODO: dispatch by context (in the future) (multiple context by
@@ -154,7 +123,7 @@ public class FlashlistDispatcher {
 			break;
 
 		case LEVEL_ZERO_FM_SUBSYS: // TODO: SID column
-			
+
 			for (JsonNode rowNode : flashlist.getRowsNode()) {
 
 				String subsystemName = rowNode.get("SUBSYS").asText();
@@ -171,7 +140,7 @@ public class FlashlistDispatcher {
 			}
 			break;
 		case LEVEL_ZERO_FM_DYNAMIC:
-			
+
 			for (JsonNode rowNode : flashlist.getRowsNode()) {
 				if (rowNode.get("FMURL").asText().contains(filter1)) {
 					mappingManager.getObjectMapper().daq.updateFromFlashlist(flashlist.getFlashlistType(), rowNode);
@@ -199,7 +168,7 @@ public class FlashlistDispatcher {
 
 			String typeField1 = "tts_ici";
 			String typeField2 = "tts_apve";
-			
+
 			if (tcds_serviceField == null || tcds_url == null){
 				return;
 			}
