@@ -184,7 +184,7 @@ public class FlashlistDispatcher {
 			// according to the code in 'value' flash column
 			// .. retrieve this value from map above, specifying pmNr, iciNr
 			// info, which are already stored in the ttcpartitions, in field
-			// topFMMInfo
+			// tcdsPartitionInfo
 			// .. decode the value from map using
 			// rcms.utilities.daqaggregator.mappers.helper.TTSStateDecoder.decodeTCDSTTSState(int
 			// tts_value)
@@ -192,17 +192,10 @@ public class FlashlistDispatcher {
 			for (Entry<Integer, TTCPartition> ttcpEntry : mappingManager.getObjectMapper().ttcPartitions.entrySet()) {
 				TTCPartition ttcp = ttcpEntry.getValue(); // ref to ttcp object
 
-				/*this happens if the fmm was null but there is further information on the reason*/
-				if (ttcp.getTopFMMInfo().getNullCause() != null) {
-					// topFMM was null for this ttcp and ici/pi info were not
-					// filled, therefore there are no keys to get tcds_tts_state
-					// from flashlist data
-					// in this case, the nullCause String field of associated
-					// FMMInfo is not null and contains more information on why
-					// this ttcp's topFMM was null
-
-					ttcp.setTcds_pm_ttsState(ttcp.getTopFMMInfo().getNullCause());
-					ttcp.setTcds_apv_pm_ttsState(ttcp.getTopFMMInfo().getNullCause());
+				/*if no tcds ici/pi information could be found*/
+				if (ttcp.getTcdsPartitionInfo().getNullCause() != null) {
+					ttcp.setTcds_pm_ttsState(ttcp.getTcdsPartitionInfo().getNullCause());
+					ttcp.setTcds_apv_pm_ttsState(ttcp.getTcdsPartitionInfo().getNullCause());
 
 					continue;
 				}

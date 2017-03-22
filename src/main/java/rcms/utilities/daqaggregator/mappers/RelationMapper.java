@@ -465,7 +465,7 @@ public class RelationMapper implements Serializable {
 				return tcdsPartitionInfo;
 			}
 
-			//reaches when there is both PI and ICI
+			//reaches when there is both PI and ICI (at which point the nullCause should never have been set)
 			tcdsPartitionInfo.setPMNr(ici.getPMNr());
 			tcdsPartitionInfo.setICINr(ici.getICINr());
 
