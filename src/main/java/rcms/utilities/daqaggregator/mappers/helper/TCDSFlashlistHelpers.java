@@ -11,6 +11,7 @@ import rcms.utilities.daqaggregator.datasource.Flashlist;
 
 public class TCDSFlashlistHelpers {
 
+	/**Decodes TTS states. Check with RCMS devs for info*/
 	public static String decodeTCDSTTSState(int tts_value) {
 
 		// now need to decode pm tts value
@@ -53,6 +54,7 @@ public class TCDSFlashlistHelpers {
 
 	}
 
+	//TCDS PM TTS channel flahslist is essentially a hierarchical index. The following method returns a 'tree' with the levels: S-T-P-I. The deepest level is directly linked to the leaves, aka the rest columns of the flashlist table.
 	public static Map<String, Map<String, Map<Integer, Map<Integer, Map<String, String>>>>> getTreeFromFlashlist(
 			Flashlist flashlist) {
 

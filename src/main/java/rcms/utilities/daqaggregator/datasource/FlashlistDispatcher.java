@@ -209,11 +209,11 @@ public class FlashlistDispatcher {
 
 				if (stpiDataFromFlashlist.containsKey(tcds_serviceField)  &&
 						stpiDataFromFlashlist.get(tcds_serviceField).containsKey(typeField1) &&
-						stpiDataFromFlashlist.get(tcds_serviceField).get(typeField1).containsKey( ttcp.getTopFMMInfo().getPMNr() ) && 
-						stpiDataFromFlashlist.get(tcds_serviceField).get(typeField1).get( ttcp.getTopFMMInfo().getPMNr() ).containsKey( ttcp.getTopFMMInfo().getICINr() ) )  {
+						stpiDataFromFlashlist.get(tcds_serviceField).get(typeField1).containsKey( ttcp.getTcdsPartitionInfo().getPMNr() ) && 
+						stpiDataFromFlashlist.get(tcds_serviceField).get(typeField1).get( ttcp.getTcdsPartitionInfo().getPMNr() ).containsKey( ttcp.getTcdsPartitionInfo().getICINr() ) )  {
 
 					int stateCode = Integer.parseInt(stpiDataFromFlashlist.get(tcds_serviceField).get(typeField1)
-							.get(ttcp.getTopFMMInfo().getPMNr()).get(ttcp.getTopFMMInfo().getICINr()).get("value"));
+							.get(ttcp.getTcdsPartitionInfo().getPMNr()).get(ttcp.getTcdsPartitionInfo().getICINr()).get("value"));
 
 					ttcp.setTcds_pm_ttsState(TCDSFlashlistHelpers.decodeTCDSTTSState(stateCode));
 				}
@@ -221,19 +221,19 @@ public class FlashlistDispatcher {
 
 				if (stpiDataFromFlashlist.containsKey(tcds_serviceField)  &&
 						stpiDataFromFlashlist.get(tcds_serviceField).containsKey(typeField2) &&
-						stpiDataFromFlashlist.get(tcds_serviceField).get(typeField2).containsKey( ttcp.getTopFMMInfo().getPMNr() ) && 
-						stpiDataFromFlashlist.get(tcds_serviceField).get(typeField2).get( ttcp.getTopFMMInfo().getPMNr() ).containsKey( ttcp.getTopFMMInfo().getICINr() ) )  {
+						stpiDataFromFlashlist.get(tcds_serviceField).get(typeField2).containsKey( ttcp.getTcdsPartitionInfo().getPMNr() ) && 
+						stpiDataFromFlashlist.get(tcds_serviceField).get(typeField2).get( ttcp.getTcdsPartitionInfo().getPMNr() ).containsKey( ttcp.getTcdsPartitionInfo().getICINr() ) )  {
 
 
 
 					String label = stpiDataFromFlashlist.get(tcds_serviceField).get(typeField2)
-							.get(ttcp.getTopFMMInfo().getPMNr()).get(ttcp.getTopFMMInfo().getICINr()).get("label");
+							.get(ttcp.getTcdsPartitionInfo().getPMNr()).get(ttcp.getTcdsPartitionInfo().getICINr()).get("label");
 
 					if (label.equalsIgnoreCase("Unused")){
 						ttcp.setTcds_apv_pm_ttsState("x");
 					}else{
 						int stateCode = Integer.parseInt(stpiDataFromFlashlist.get(tcds_serviceField).get(typeField2)
-								.get(ttcp.getTopFMMInfo().getPMNr()).get(ttcp.getTopFMMInfo().getICINr()).get("value"));
+								.get(ttcp.getTcdsPartitionInfo().getPMNr()).get(ttcp.getTcdsPartitionInfo().getICINr()).get("value"));
 
 						ttcp.setTcds_apv_pm_ttsState(TCDSFlashlistHelpers.decodeTCDSTTSState(stateCode));
 					}

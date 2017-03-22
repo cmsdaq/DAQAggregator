@@ -33,6 +33,9 @@ public class TTCPartition implements FlashlistUpdatable, Derivable {
 	/** Info for the topFMM, or meta-info in case topFMM is null*/
 	private FMMInfo topFMMInfo;
 	
+	/** Info for the trigger, or meta-info in case it was not found*/
+	private TCDSPartitionInfo tcdsPartitionInfo;
+	
 	private String tcds_pm_ttsState;
 	
 	private String tcds_apv_pm_ttsState;
@@ -197,7 +200,13 @@ public class TTCPartition implements FlashlistUpdatable, Derivable {
 		this.feds = feds;
 	}
 
+	public TCDSPartitionInfo getTcdsPartitionInfo() {
+		return tcdsPartitionInfo;
+	}
 
+	public void setTcdsPartitionInfo(TCDSPartitionInfo tcdsPartitionInfo) {
+		this.tcdsPartitionInfo = tcdsPartitionInfo;
+	}
 
 	@Override
 	public int hashCode() {
