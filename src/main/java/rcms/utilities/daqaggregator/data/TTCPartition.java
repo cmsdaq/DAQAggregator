@@ -33,6 +33,9 @@ public class TTCPartition implements FlashlistUpdatable, Derivable {
 	/** Info for the topFMM, or meta-info in case topFMM is null*/
 	private FMMInfo topFMMInfo;
 	
+	/** Info for the trigger, or meta-info in case it was not found*/
+	private TCDSPartitionInfo tcdsPartitionInfo;
+	
 	private String tcds_pm_ttsState;
 	
 	private String tcds_apv_pm_ttsState;
@@ -135,20 +138,18 @@ public class TTCPartition implements FlashlistUpdatable, Derivable {
 
 	@Override
 	public void calculateDerivedValues() {
-		int maskedFeds = 0;
-		int all = 0;
+		
+		masked = true;
+		
+		/* TTCPartition is mask if all FEDs with TTS output are masked */
 		for (FED fed : feds) {
-			all++;
-			if (fed.isFmmMasked() || !fed.isHasTTS()) {
-				maskedFeds++;
+			if (fed.isHasTTS()){
+				if (!fed.isFmmMasked()){
+					masked = false;
+					break;
+				}
 			}
 		}
-
-		/* TTCPartition is mask if all FEDs are masked */
-		if (maskedFeds == all) {
-			masked = true;
-		}
-
 	}
 
 	@Override
@@ -199,7 +200,13 @@ public class TTCPartition implements FlashlistUpdatable, Derivable {
 		this.feds = feds;
 	}
 
+	public TCDSPartitionInfo getTcdsPartitionInfo() {
+		return tcdsPartitionInfo;
+	}
 
+	public void setTcdsPartitionInfo(TCDSPartitionInfo tcdsPartitionInfo) {
+		this.tcdsPartitionInfo = tcdsPartitionInfo;
+	}
 
 	@Override
 	public int hashCode() {

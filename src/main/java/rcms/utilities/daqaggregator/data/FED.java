@@ -50,7 +50,7 @@ public class FED implements FlashlistUpdatable {
 	private int srcIdReceived;
 
 	private float percentBackpressure;
-	
+
 	private double frl_AccBIFIBackpressureSeconds;
 
 	private float percentWarning;
@@ -84,7 +84,7 @@ public class FED implements FlashlistUpdatable {
 	private boolean ruFedWithoutFragments;
 
 	private double frl_AccSlinkFullSec;
-	
+
 	private double frl_AccLatchedFerol40ClockSeconds;
 
 	@JsonIgnore
@@ -119,7 +119,7 @@ public class FED implements FlashlistUpdatable {
 	{"key":"sessionid","type":"string"},
 	{"key":"timestamp","type":"time"},
 	{"key":"timeTag","type":"unsigned int 64"}] 
-	
+
 	 * }
 	 * </pre>
 	 * 
@@ -152,7 +152,7 @@ public class FED implements FlashlistUpdatable {
 	{"key":"TriggerNumber","type":"unsigned int 32"},
 	{"key":"WrongFEDId","type":"unsigned int 32"},
 	{"key":"WrongFEDIdDetected","type":"unsigned int 32"}] 
-	
+
 	 * }
 	 * </pre>
 	 * 
@@ -165,8 +165,7 @@ public class FED implements FlashlistUpdatable {
 			this.percentWarning = (float) (flashlistRow.get("fractionWarning").asDouble() * 100);
 			this.percentBusy = (float) (flashlistRow.get("fractionBusy").asDouble() * 100);
 			this.ttsState = flashlistRow.get("inputState").asText();
-			// this.fmmMasked = !flashlistRow.get("isActive").asBoolean();
-			// //covered
+			this.fmmMasked = !flashlistRow.get("isActive").asBoolean();
 
 		} else if (flashlistType == FlashlistType.FEROL_INPUT_STREAM) {
 
@@ -191,17 +190,16 @@ public class FED implements FlashlistUpdatable {
 
 		} else if (flashlistType == FlashlistType.FEROL_CONFIGURATION) {
 
-			/*
-			 * if (this.frlIO == 0) this.frlMasked =
-			 * !flashlistRow.get("enableStream0").asBoolean();
-			 * 
-			 * else if (this.frlIO == 1) this.frlMasked =
-			 * !flashlistRow.get("enableStream1").asBoolean();
-			 */ // covered
+			if (this.frlIO == 0){
+				this.frlMasked = !flashlistRow.get("enableStream0").asBoolean();
+			}else if (this.frlIO == 1){
+				this.frlMasked = !flashlistRow.get("enableStream1").asBoolean();
+			}
+
 		} else if (flashlistType == FlashlistType.FEROL40_STREAM_CONFIGURATION) {
-		
-			 this.frlMasked = !flashlistRow.get("enable").asBoolean();
-			 
+
+			this.frlMasked = !flashlistRow.get("enable").asBoolean();
+
 		} else if (flashlistType == FlashlistType.FRL_MONITORING) {
 
 			if (this.frlIO == 0)
@@ -252,13 +250,13 @@ public class FED implements FlashlistUpdatable {
 			 * should be used to convert accumulated backpressure from flashlist
 			 */
 			this.frl_AccLatchedFerol40ClockSeconds  = flashlistRow.get("LatchedFerol40ClockSeconds").asDouble();
-			
-			
+
+
 			this.percentBackpressure = converter.calculatePercent(flashlistRow.get("AccBackpressureSeconds").asDouble(),
 					flashlistRow.get("timestamp").asText()); //to be replaced with latchedSeconds (unit is seconds)
-			
+
 			this.frl_AccSlinkFullSec = flashlistRow.get("AccSlinkFullSeconds").asDouble();
-			
+
 			this.frl_AccBIFIBackpressureSeconds = flashlistRow.get("AccBIFIBackpressureSeconds").asDouble();
 
 		}

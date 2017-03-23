@@ -12,6 +12,8 @@ import org.apache.log4j.Logger;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 
+import rcms.utilities.daqaggregator.Application;
+import rcms.utilities.daqaggregator.Settings;
 import rcms.utilities.daqaggregator.data.FED;
 import rcms.utilities.daqaggregator.data.GlobalTTSState;
 import rcms.utilities.daqaggregator.data.RU;
@@ -56,6 +58,7 @@ public class FlashlistDispatcher {
 		String tcds_serviceField = mappingManager.getTcdsFmInfoRetriever().getTcdsfm_pmService();
 		String tcds_url = mappingManager.getTcdsFmInfoRetriever().getTcdsfm_pmContext();
 
+		String filter1 = Application.get().getProp(Settings.SESSION_L0FILTER1);
 
 		logger.debug("Received "+tcds_serviceField+" TCDS PM service name");
 
@@ -108,37 +111,6 @@ public class FlashlistDispatcher {
 
 			break;
 		case LEVEL_ZERO_FM_STATIC:
-			if (flashlist.getRowsNode().isArray() && flashlist.getRowsNode().size() > 0) {
-				String fedEnMask = "";
-				//concatenates fed_enabled_mask from all rows
-				for (int i = 0; i < flashlist.getRowsNode().size() ; i++){
-					fedEnMask += flashlist.getRowsNode().get(i).get("FED_ENABLE_MASK").asText();
-				}
-				
-				FEDEnableMaskParser parser = new FEDEnableMaskParser(fedEnMask);
-				Map<Integer, String> maskedFlagsByFed = parser.getFedByExpectedIdToMaskingFlags();
-
-				int notFound = 0;
-				int total = 0;
-
-				for (Entry<Integer, FED> fedEntry : mappingManager.getObjectMapper().fedsByExpectedId.entrySet()) {
-					total++;
-					if (maskedFlagsByFed.containsKey(fedEntry.getKey())) {
-						String[] maskingFlags = maskedFlagsByFed.get(fedEntry.getKey()).split("-");
-						
-						fedEntry.getValue().setFmmMasked(Boolean.parseBoolean(maskingFlags[0]));
-						fedEntry.getValue().setFrlMasked(Boolean.parseBoolean(maskingFlags[1]));
-
-					} else {
-						notFound++;
-					}
-				}
-				logger.debug("Could not find " + notFound + " out of " + total
-						+ " FEDs in the FED_ENABLE_MASK and mask flags were not set");
-				logger.debug("Successfully got FED_ENABLE_MASK info for " + (total - notFound) + " FEDs");
-			} else {
-				logger.error("FED_ENABLE_MASK problem " + flashlist.getRowsNode());
-			}
 			break;
 		case JOB_CONTROL:
 			// TODO: dispatch by context (in the future) (multiple context by
@@ -151,11 +123,12 @@ public class FlashlistDispatcher {
 			break;
 
 		case LEVEL_ZERO_FM_SUBSYS: // TODO: SID column
+
 			for (JsonNode rowNode : flashlist.getRowsNode()) {
 
 				String subsystemName = rowNode.get("SUBSYS").asText();
 
-				if (subsystemName.equals("DAQ") && rowNode.get("FMURL").asText().contains("toppro")) {
+				if (subsystemName.equals("DAQ") && rowNode.get("FMURL").asText().contains(filter1)) {
 					mappingManager.getObjectMapper().daq.updateFromFlashlist(flashlist.getFlashlistType(), rowNode);
 				}
 
@@ -167,8 +140,9 @@ public class FlashlistDispatcher {
 			}
 			break;
 		case LEVEL_ZERO_FM_DYNAMIC:
+
 			for (JsonNode rowNode : flashlist.getRowsNode()) {
-				if (rowNode.get("FMURL").asText().contains("toppro")) {
+				if (rowNode.get("FMURL").asText().contains(filter1)) {
 					mappingManager.getObjectMapper().daq.updateFromFlashlist(flashlist.getFlashlistType(), rowNode);
 				}
 			}
@@ -194,7 +168,7 @@ public class FlashlistDispatcher {
 
 			String typeField1 = "tts_ici";
 			String typeField2 = "tts_apve";
-			
+
 			if (tcds_serviceField == null || tcds_url == null){
 				return;
 			}
@@ -210,7 +184,7 @@ public class FlashlistDispatcher {
 			// according to the code in 'value' flash column
 			// .. retrieve this value from map above, specifying pmNr, iciNr
 			// info, which are already stored in the ttcpartitions, in field
-			// topFMMInfo
+			// tcdsPartitionInfo
 			// .. decode the value from map using
 			// rcms.utilities.daqaggregator.mappers.helper.TTSStateDecoder.decodeTCDSTTSState(int
 			// tts_value)
@@ -218,28 +192,21 @@ public class FlashlistDispatcher {
 			for (Entry<Integer, TTCPartition> ttcpEntry : mappingManager.getObjectMapper().ttcPartitions.entrySet()) {
 				TTCPartition ttcp = ttcpEntry.getValue(); // ref to ttcp object
 
-				/*this happens if the fmm was null but there is further information on the reason*/
-				if (ttcp.getTopFMMInfo().getNullCause() != null) {
-					// topFMM was null for this ttcp and ici/pi info were not
-					// filled, therefore there are no keys to get tcds_tts_state
-					// from flashlist data
-					// in this case, the nullCause String field of associated
-					// FMMInfo is not null and contains more information on why
-					// this ttcp's topFMM was null
-
-					ttcp.setTcds_pm_ttsState(ttcp.getTopFMMInfo().getNullCause());
-					ttcp.setTcds_apv_pm_ttsState(ttcp.getTopFMMInfo().getNullCause());
+				/*if no tcds ici/pi information could be found*/
+				if (ttcp.getTcdsPartitionInfo().getNullCause() != null) {
+					ttcp.setTcds_pm_ttsState(ttcp.getTcdsPartitionInfo().getNullCause());
+					ttcp.setTcds_apv_pm_ttsState(ttcp.getTcdsPartitionInfo().getNullCause());
 
 					continue;
 				}
 
 				if (stpiDataFromFlashlist.containsKey(tcds_serviceField)  &&
 						stpiDataFromFlashlist.get(tcds_serviceField).containsKey(typeField1) &&
-						stpiDataFromFlashlist.get(tcds_serviceField).get(typeField1).containsKey( ttcp.getTopFMMInfo().getPMNr() ) && 
-						stpiDataFromFlashlist.get(tcds_serviceField).get(typeField1).get( ttcp.getTopFMMInfo().getPMNr() ).containsKey( ttcp.getTopFMMInfo().getICINr() ) )  {
+						stpiDataFromFlashlist.get(tcds_serviceField).get(typeField1).containsKey( ttcp.getTcdsPartitionInfo().getPMNr() ) && 
+						stpiDataFromFlashlist.get(tcds_serviceField).get(typeField1).get( ttcp.getTcdsPartitionInfo().getPMNr() ).containsKey( ttcp.getTcdsPartitionInfo().getICINr() ) )  {
 
 					int stateCode = Integer.parseInt(stpiDataFromFlashlist.get(tcds_serviceField).get(typeField1)
-							.get(ttcp.getTopFMMInfo().getPMNr()).get(ttcp.getTopFMMInfo().getICINr()).get("value"));
+							.get(ttcp.getTcdsPartitionInfo().getPMNr()).get(ttcp.getTcdsPartitionInfo().getICINr()).get("value"));
 
 					ttcp.setTcds_pm_ttsState(TCDSFlashlistHelpers.decodeTCDSTTSState(stateCode));
 				}
@@ -247,19 +214,19 @@ public class FlashlistDispatcher {
 
 				if (stpiDataFromFlashlist.containsKey(tcds_serviceField)  &&
 						stpiDataFromFlashlist.get(tcds_serviceField).containsKey(typeField2) &&
-						stpiDataFromFlashlist.get(tcds_serviceField).get(typeField2).containsKey( ttcp.getTopFMMInfo().getPMNr() ) && 
-						stpiDataFromFlashlist.get(tcds_serviceField).get(typeField2).get( ttcp.getTopFMMInfo().getPMNr() ).containsKey( ttcp.getTopFMMInfo().getICINr() ) )  {
+						stpiDataFromFlashlist.get(tcds_serviceField).get(typeField2).containsKey( ttcp.getTcdsPartitionInfo().getPMNr() ) && 
+						stpiDataFromFlashlist.get(tcds_serviceField).get(typeField2).get( ttcp.getTcdsPartitionInfo().getPMNr() ).containsKey( ttcp.getTcdsPartitionInfo().getICINr() ) )  {
 
 
 
 					String label = stpiDataFromFlashlist.get(tcds_serviceField).get(typeField2)
-							.get(ttcp.getTopFMMInfo().getPMNr()).get(ttcp.getTopFMMInfo().getICINr()).get("label");
+							.get(ttcp.getTcdsPartitionInfo().getPMNr()).get(ttcp.getTcdsPartitionInfo().getICINr()).get("label");
 
 					if (label.equalsIgnoreCase("Unused")){
 						ttcp.setTcds_apv_pm_ttsState("x");
 					}else{
 						int stateCode = Integer.parseInt(stpiDataFromFlashlist.get(tcds_serviceField).get(typeField2)
-								.get(ttcp.getTopFMMInfo().getPMNr()).get(ttcp.getTopFMMInfo().getICINr()).get("value"));
+								.get(ttcp.getTcdsPartitionInfo().getPMNr()).get(ttcp.getTcdsPartitionInfo().getICINr()).get("value"));
 
 						ttcp.setTcds_apv_pm_ttsState(TCDSFlashlistHelpers.decodeTCDSTTSState(stateCode));
 					}

@@ -31,6 +31,8 @@ public class BU implements FlashlistUpdatable {
 	// fields updated periodically
 	// ----------------------------------------
 
+	private boolean crashed;
+	
 	private String stateName;
 
 	private String errorMsg;
@@ -152,6 +154,24 @@ public class BU implements FlashlistUpdatable {
 			this.stateName = flashlistRow.get("stateName").asText();
 
 		}
+		
+		if (flashlistType == FlashlistType.JOB_CONTROL) {
+			JsonNode jobTable = flashlistRow.get("jobTable");
+
+			JsonNode rows = jobTable.get("rows");
+
+			for (JsonNode row : rows) {
+				//TODO: get the row with matching jid to the context (additional field)
+				String status = row.get("status").asText();
+
+				// if not alive than crashed, if no data than default value
+				// witch is not crashed
+				if (!status.equalsIgnoreCase("alive"))
+					this.crashed = true;
+
+			}
+
+		}
 	}
 
 	@Override
@@ -167,6 +187,14 @@ public class BU implements FlashlistUpdatable {
 			// assume both are non-null
 			return bu1.getHostname().compareTo(bu2.getHostname());
 		}
+	}
+
+	public boolean isCrashed() {
+		return crashed;
+	}
+
+	public void setCrashed(boolean crashed) {
+		this.crashed = crashed;
 	}
 
 	public DAQ getDaq() {

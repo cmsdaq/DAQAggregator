@@ -15,7 +15,7 @@ import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
 public class TCDSGlobalInfo implements FlashlistUpdatable{
 
 	/**
-	 * Container of global information from the TCDS flashlists
+	 * Container of global (as in no TTCP specific) information from the TCDS flashlists
 	 *
 	 * @author Michail Vougioukas (michail.vougioukas@cern.ch)
 	 */
