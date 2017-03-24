@@ -458,6 +458,15 @@ public class DAQ implements FlashlistUpdatable {
 	public void setHltKeyDescription(String hltKeyDescription) {
 		this.hltKeyDescription = hltKeyDescription;
 	}
+	
+
+	public String getDaqAggregatorBinaryName() {
+		return daqAggregatorBinaryName;
+	}
+
+	public void setDaqAggregatorBinaryName(String daqAggregatorBinaryName) {
+		this.daqAggregatorBinaryName = daqAggregatorBinaryName;
+	}
 
 	@Override
 	public String toString() {
