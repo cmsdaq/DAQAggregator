@@ -68,7 +68,7 @@ public class SessionDetectorTest {
 	}
 
 	public static Flashlist createFlashlist(String hwcfg, int sid) {
-		Flashlist flashlist = new Flashlist(FlashlistType.LEVEL_ZERO_FM_STATIC);
+		Flashlist flashlist = new Flashlist(FlashlistType.LEVEL_ZERO_FM_DYNAMIC);
 		ArrayNode rowsNode = JsonNodeFactory.instance.arrayNode();
 		ObjectNode row = JsonNodeFactory.instance.objectNode();
 		row.set(SessionRetriever.FMURL_COLUMN_NAME, JsonNodeFactory.instance.textNode(filter1 + filter2));
