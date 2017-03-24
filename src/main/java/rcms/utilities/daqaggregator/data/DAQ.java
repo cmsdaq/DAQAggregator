@@ -1,11 +1,14 @@
 package rcms.utilities.daqaggregator.data;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import rcms.utilities.daqaggregator.datasource.DateParser;
 import rcms.utilities.daqaggregator.datasource.FlashlistType;
 import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
 
@@ -14,9 +17,12 @@ import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
  * 
  * @author Andre Georg Holzner (andre.georg.holzner@cern.ch)
  * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
- * 
+ * @author Michail Vougioukas (michail.vougioukas@cern.ch)
  */
 public class DAQ implements FlashlistUpdatable {
+	
+	//Binary name of the DAQAggregator which produced this DAQ representation (name, by convention, contains reference to version number)
+	private String daqAggregatorBinaryName;
 
 	// ----------------------------------------
 	// fields set at beginning of session
@@ -31,6 +37,8 @@ public class DAQ implements FlashlistUpdatable {
 	// ----------------------------------------
 
 	private int runNumber;
+	private long runStart;
+	private long runDurationInMillis;
 
 	/** timestamp */
 	private long lastUpdate;
@@ -38,6 +46,7 @@ public class DAQ implements FlashlistUpdatable {
 	private String daqState;
 
 	private String levelZeroState;
+	private long levelZeroStateEntry;
 	private String lhcMachineMode;
 	private String lhcBeamMode;
 
@@ -58,8 +67,17 @@ public class DAQ implements FlashlistUpdatable {
 	private TCDSGlobalInfo tcdsGlobalInfo;
 	
 	private Double hltRate;
+	private String hltKey;
+	private String hltKeyDescription;
 
-
+	public DAQ(){
+		try {
+			String execPath = URLDecoder.decode(DAQ.class.getProtectionDomain().getCodeSource().getLocation().getPath(), "UTF-8");
+			String [] tokens = execPath.split("/");
+			this.daqAggregatorBinaryName = tokens[tokens.length-1];
+		} catch (UnsupportedEncodingException e2) {}
+	}
+	
 	public BUSummary getBuSummary() {
 		return buSummary;
 	}
@@ -212,6 +230,22 @@ public class DAQ implements FlashlistUpdatable {
 			this.levelZeroState = flashlistRow.get("STATE").asText();
 			this.lhcBeamMode = flashlistRow.get("LHC_BEAM_MODE").asText();
 			this.lhcMachineMode = flashlistRow.get("LHC_MACHINE_MODE").asText();
+			this.hltKey = flashlistRow.get("HLT_KEY").asText();
+			this.hltKeyDescription = flashlistRow.get("HLT_KEY_DESCRIPTION").asText();
+			
+			String runStart = flashlistRow.get("RUN_START_TIME").asText();
+			String stateEntry = flashlistRow.get("STATE_ENTRY_TIME").asText();
+			
+			Date date = DateParser.parseDateTransparently(runStart);
+			if (date != null) {
+				this.runStart = date.getTime();
+				this.runDurationInMillis = (new Date()).getTime() - date.getTime();
+			}
+			
+			date = DateParser.parseDateTransparently(stateEntry);
+			if (date != null) {
+				this.levelZeroStateEntry = date.getTime();
+			}
 		}
 
 	}
@@ -380,5 +414,63 @@ public class DAQ implements FlashlistUpdatable {
 	public void setHltRate(Double hltRate) {
 		this.hltRate = hltRate;
 	}
+
+	public long getRunStart() {
+		return runStart;
+	}
+
+	public void setRunStart(long runStart) {
+		this.runStart = runStart;
+	}
+
+	public long getLevelZeroStateEntry() {
+		return levelZeroStateEntry;
+	}
+
+	public void setLevelZeroStateEntry(long levelZeroStateEntry) {
+		this.levelZeroStateEntry = levelZeroStateEntry;
+	}
+
+	public void setRunDurationInMillis(long runDurationInMillis) {
+		this.runDurationInMillis = runDurationInMillis;
+	}
+
+	public Long getRunDurationInMillis() {
+		return runDurationInMillis;
+	}
+
+	public void setRunDurationInMillis(Long runDurationInMillis) {
+		this.runDurationInMillis = runDurationInMillis;
+	}
+
+	public String getHltKey() {
+		return hltKey;
+	}
+
+	public void setHltKey(String hltKey) {
+		this.hltKey = hltKey;
+	}
+
+	public String getHltKeyDescription() {
+		return hltKeyDescription;
+	}
+
+	public void setHltKeyDescription(String hltKeyDescription) {
+		this.hltKeyDescription = hltKeyDescription;
+	}
+
+	@Override
+	public String toString() {
+		return "DAQ [sessionId=" + sessionId + ", dpsetPath=" + dpsetPath + ", runNumber=" + runNumber + ", runStart="
+				+ runStart + ", runDurationInMillis=" + runDurationInMillis + ", lastUpdate=" + lastUpdate
+				+ ", daqState=" + daqState + ", levelZeroState=" + levelZeroState + ", levelZeroStateEntry="
+				+ levelZeroStateEntry + ", lhcMachineMode=" + lhcMachineMode + ", lhcBeamMode=" + lhcBeamMode
+				+ ", buSummary=" + buSummary + ", fedBuilderSummary=" + fedBuilderSummary + ", subSystems=" + subSystems
+				+ ", ttcPartitions=" + ttcPartitions + ", bus=" + bus + ", rus=" + rus + ", fedBuilders=" + fedBuilders
+				+ ", fmmApplications=" + fmmApplications + ", fmms=" + fmms + ", frlPcs=" + frlPcs + ", frls=" + frls
+				+ ", subFEDBuilders=" + subFEDBuilders + ", feds=" + feds + ", tcdsGlobalInfo=" + tcdsGlobalInfo
+				+ ", hltRate=" + hltRate + ", hltKey=" + hltKey + ", hltKeyDescription=" + hltKeyDescription + "]";
+	}
+	
 
 }

@@ -1,6 +1,8 @@
 package rcms.utilities.daqaggregator;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -31,11 +33,20 @@ public class DAQAggregator {
 	private static final Logger logger = Logger.getLogger(DAQAggregator.class);
 
 	public static void main(String[] args) {
+		
 		try {
 			String propertiesFile = "DAQAggregator.properties";
 			if (args.length > 0)
 				propertiesFile = args[0];
 			logger.info("DAQAggregator started with properties file '" + propertiesFile + "'");
+			
+			try {
+				String execPath = URLDecoder.decode(DAQ.class.getProtectionDomain().getCodeSource().getLocation().getPath(), "UTF-8");
+				logger.info("Path of current executable: "+execPath);
+				
+			} catch (UnsupportedEncodingException e2) {
+			
+			}
 
 			try {
 				Application.initialize(propertiesFile);
