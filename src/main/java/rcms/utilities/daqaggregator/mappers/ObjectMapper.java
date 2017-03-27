@@ -1,5 +1,7 @@
 package rcms.utilities.daqaggregator.mappers;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -88,8 +90,12 @@ public class ObjectMapper {
 	public void mapAllObjects(DAQPartition daqPartition) {
 
 		daq = new DAQ();
+		try {
+			String execPath = URLDecoder.decode(DAQ.class.getProtectionDomain().getCodeSource().getLocation().getPath(), "UTF-8");
+			String [] tokens = execPath.split("/");
+			daq.setDaqAggregatorProducer(tokens[tokens.length-1]);
+		} catch (UnsupportedEncodingException e2) {}
 
-		// TODO: this is for flashlist mapping, refactor me
 		rusById = new HashMap<>();
 		busById = new HashMap<>();
 		fedsById = new HashMap<>();

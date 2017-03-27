@@ -40,6 +40,8 @@ public class RU implements FlashlistUpdatable, Derivable {
 	// ----------------------------------------
 	// fields updated periodically
 	// ----------------------------------------
+	
+	private boolean crashed;
 
 	private String stateName;
 
@@ -89,6 +91,13 @@ public class RU implements FlashlistUpdatable, Derivable {
 	
 	private double allocateRetryRate;
 	
+	public boolean isCrashed() {
+		return crashed;
+	}
+
+	public void setCrashed(boolean crashed) {
+		this.crashed = crashed;
+	}
 
 	public String getStateName() {
 		return stateName;
@@ -397,6 +406,24 @@ public class RU implements FlashlistUpdatable, Derivable {
 				this.allocateRate = flashlistRow.get("allocateRate").asInt();
 				this.allocateRetryRate = flashlistRow.get("allocateRate").asDouble();
 			}
+		}
+		
+		if (flashlistType == FlashlistType.JOB_CONTROL) {
+			JsonNode jobTable = flashlistRow.get("jobTable");
+
+			JsonNode rows = jobTable.get("rows");
+
+			for (JsonNode row : rows) {
+				//TODO: get the row with matching jid to the context (additional field)
+				String status = row.get("status").asText();
+
+				// if not alive than crashed, if no data than default value
+				// witch is not crashed
+				if (!status.equalsIgnoreCase("alive"))
+					this.crashed = true;
+
+			}
+
 		}
 	}
 

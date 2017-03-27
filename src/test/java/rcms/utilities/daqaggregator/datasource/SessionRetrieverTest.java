@@ -55,7 +55,7 @@ public class SessionRetrieverTest {
 	public void emptyFlashlistTest() {
 		thrown.expect(DAQException.class);
 		thrown.expect(hasProperty("code", is(DAQExceptionCode.EmptyFlashlistDetectingSession)));
-		Flashlist flashlist = new Flashlist(FlashlistType.LEVEL_ZERO_FM_STATIC);
+		Flashlist flashlist = new Flashlist(FlashlistType.LEVEL_ZERO_FM_DYNAMIC);
 		flashlist.retrievalDate = new Date(1L);
 		sr.retrieveSession(flashlist);
 	}
@@ -64,7 +64,7 @@ public class SessionRetrieverTest {
 	public void missingRowSatisfingFiltersTest() {
 		thrown.expect(DAQException.class);
 		thrown.expect(hasProperty("code", is(DAQExceptionCode.MissingRowDetectingSession)));
-		Flashlist flashlist = new Flashlist(FlashlistType.LEVEL_ZERO_FM_STATIC);
+		Flashlist flashlist = new Flashlist(FlashlistType.LEVEL_ZERO_FM_DYNAMIC);
 		ArrayNode rowsNode = JsonNodeFactory.instance.arrayNode();
 		ObjectNode row = JsonNodeFactory.instance.objectNode();
 		row.set(SessionRetriever.FMURL_COLUMN_NAME, JsonNodeFactory.instance.textNode(""));
@@ -80,7 +80,7 @@ public class SessionRetrieverTest {
 	public void problemParsingTimestampTest() {
 		thrown.expect(DAQException.class);
 		thrown.expect(hasProperty("code", is(DAQExceptionCode.ProblemDetectingSession)));
-		Flashlist flashlist = new Flashlist(FlashlistType.LEVEL_ZERO_FM_STATIC);
+		Flashlist flashlist = new Flashlist(FlashlistType.LEVEL_ZERO_FM_DYNAMIC);
 		ArrayNode rowsNode = JsonNodeFactory.instance.arrayNode();
 		ObjectNode row = JsonNodeFactory.instance.objectNode();
 		row.set(SessionRetriever.FMURL_COLUMN_NAME, JsonNodeFactory.instance.textNode(fmURLFilter1 + fmURLFilter2));
@@ -94,7 +94,7 @@ public class SessionRetrieverTest {
 
 	@Test
 	public void simpleTest() {
-		Flashlist flashlist = new Flashlist(FlashlistType.LEVEL_ZERO_FM_STATIC);
+		Flashlist flashlist = new Flashlist(FlashlistType.LEVEL_ZERO_FM_DYNAMIC);
 		ArrayNode rowsNode = JsonNodeFactory.instance.arrayNode();
 		ObjectNode row = JsonNodeFactory.instance.objectNode();
 		row.set(SessionRetriever.FMURL_COLUMN_NAME, JsonNodeFactory.instance.textNode(fmURLFilter1 + fmURLFilter2));
