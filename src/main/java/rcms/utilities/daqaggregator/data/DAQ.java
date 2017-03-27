@@ -21,8 +21,7 @@ import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
  */
 public class DAQ implements FlashlistUpdatable {
 	
-	//Binary name of the DAQAggregator which produced this DAQ representation (name, by convention, contains reference to version number)
-	private String daqAggregatorBinaryName;
+	private String daqAggregatorProducer;
 
 	// ----------------------------------------
 	// fields set at beginning of session
@@ -69,14 +68,6 @@ public class DAQ implements FlashlistUpdatable {
 	private Double hltRate;
 	private String hltKey;
 	private String hltKeyDescription;
-
-	public DAQ(){
-		try {
-			String execPath = URLDecoder.decode(DAQ.class.getProtectionDomain().getCodeSource().getLocation().getPath(), "UTF-8");
-			String [] tokens = execPath.split("/");
-			this.daqAggregatorBinaryName = tokens[tokens.length-1];
-		} catch (UnsupportedEncodingException e2) {}
-	}
 	
 	public BUSummary getBuSummary() {
 		return buSummary;
@@ -458,14 +449,13 @@ public class DAQ implements FlashlistUpdatable {
 	public void setHltKeyDescription(String hltKeyDescription) {
 		this.hltKeyDescription = hltKeyDescription;
 	}
-	
 
-	public String getDaqAggregatorBinaryName() {
-		return daqAggregatorBinaryName;
+	public String getDaqAggregatorProducer() {
+		return daqAggregatorProducer;
 	}
 
-	public void setDaqAggregatorBinaryName(String daqAggregatorBinaryName) {
-		this.daqAggregatorBinaryName = daqAggregatorBinaryName;
+	public void setDaqAggregatorProducer(String daqAggregatorProducer) {
+		this.daqAggregatorProducer = daqAggregatorProducer;
 	}
 
 	@Override
