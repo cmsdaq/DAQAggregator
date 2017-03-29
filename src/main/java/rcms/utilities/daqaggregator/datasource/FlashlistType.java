@@ -59,15 +59,7 @@ public enum FlashlistType {
 	}
 
 	private FlashlistType(LiveAccessService las, String name, boolean sessionContext, String sessionIdColumnName) {
-
-		/**If no URL has been specified for predefined LAS in the config file, then try to use the primary LAS URL
-		 * (case for minidaqs, where DAQ flashlists live in a single LAS).*/
-		if (!las.getUrl().contains("http")){
-			this.las = LiveAccessService.PRIMARY;
-		}else{
-			this.las = las;
-		}
-		
+		this.las = las;
 		this.flashlistName = name;
 		this.sessionContext = sessionContext;
 		this.sessionIdColumnName = sessionIdColumnName;
