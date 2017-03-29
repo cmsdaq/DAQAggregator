@@ -1,7 +1,5 @@
 package rcms.utilities.daqaggregator.data;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
