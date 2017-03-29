@@ -154,7 +154,9 @@ public class TTCPartition implements FlashlistUpdatable, Derivable {
 
 	@Override
 	public void clean() {
-		masked = false;
+		this.percentBusy = 0;
+		this.percentWarning = 0;
+		this.ttsState = null;
 	}
 
 	@Override

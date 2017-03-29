@@ -119,7 +119,9 @@ public class FRL implements FlashlistUpdatable {
 
 	@Override
 	public void clean() {
-		// nothing to do
+		state = null;
+		substate = null;
+		url = null;
 	}
 
 	public FRLPc getFrlPc() {

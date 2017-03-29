@@ -293,7 +293,7 @@ public class DAQ implements FlashlistUpdatable {
 	
 	@Override
 	public void clean() {
-		// nothing to do
+		this.daqState = "Unknown";
 	}
 
 	@Override

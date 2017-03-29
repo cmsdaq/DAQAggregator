@@ -176,7 +176,42 @@ public class BU implements FlashlistUpdatable {
 
 	@Override
 	public void clean() {
-		// nothing to do
+		this.stateName = null;
+		this.port = 0;
+		this.errorMsg = null;
+		this.rate = 0;
+		this.throughput = 0;
+		this.eventSizeMean = 0;
+		this.eventSizeStddev = 0;
+		this.numEvents = 0;
+		this.numEventsInBU = 0;
+		this.priority = 0;
+		this.numRequestsSent = 0;
+		this.numRequestsUsed = 0;
+		this.numRequestsBlocked = 0;
+		this.numFUsHLT = 0;
+		this.numFUsCrashed = 0;
+		this.numFUsStale = 0;
+		this.numFUsCloud = 0;
+		this.ramDiskUsage = 0;
+		this.ramDiskTotal = 0;
+		this.numFiles = 0;
+		this.numLumisectionsWithFiles = 0;
+		this.currentLumisection = 0;
+		this.numLumisectionsForHLT = 0;
+		this.numLumisectionsOutHLT = 0;
+		this.fuOutputBandwidthInMB = 0;
+		this.requestRate = 0;
+		this.requestRetryRate = 0;
+
+		this.fragmentCount = 0;
+		this.slowestRUtid = 0;
+		this.nbCorruptedEvents = 0;
+		this.nbEventsMissingData = 0;
+		this.nbEventsWithCRCerrors = 0;
+		this.nbTotalResources = 0;
+		
+		this.crashed = false;
 	}
 
 	// ----------------------------------------------------------------------

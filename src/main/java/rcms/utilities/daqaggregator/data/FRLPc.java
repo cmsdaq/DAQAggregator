@@ -104,6 +104,7 @@ public class FRLPc implements FlashlistUpdatable, Derivable {
 
 	@Override
 	public void clean() {
+		port = 0;
 		crashed = false;
 	}
 
