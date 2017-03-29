@@ -41,7 +41,6 @@ public enum FlashlistType {
 
 	TCDSFM(LiveAccessService.PRIMARY, "tcdsFM");
 
-	private static Logger logger = Logger.getLogger(FlashlistType.class);
 
 	private final String flashlistName;
 
@@ -61,8 +60,8 @@ public enum FlashlistType {
 
 	private FlashlistType(LiveAccessService las, String name, boolean sessionContext, String sessionIdColumnName) {
 
-		/**If no URL has been specified for this LAS in the config file, then try to use the primary LAS 
-		 * (case for minidaqs, where all flashlists live in a single LAS).*/
+		/**If no URL has been specified for predefined LAS in the config file, then try to use the primary LAS URL
+		 * (case for minidaqs, where DAQ flashlists live in a single LAS).*/
 		if (!las.getUrl().contains("http")){
 			this.las = LiveAccessService.PRIMARY;
 		}else{
