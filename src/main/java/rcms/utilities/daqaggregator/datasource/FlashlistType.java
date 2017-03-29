@@ -26,19 +26,19 @@ public enum FlashlistType {
 	DISK_INFO(LiveAccessService.SECONDARY, "diskInfo", "sessionid"),
 	FMM_PARTITION_DEAD_TIME(LiveAccessService.SECONDARY, "FMMPartitionDeadTime"),
 	FMM_FED_DEAD_TIME(LiveAccessService.SECONDARY, "FMMFEDDeadTime"),
-	
+
 	TCDS_CPM_COUNTS(LiveAccessService.ADDITIONAL, "tcds_cpm_counts"),
 	TCDS_CPM_DEADTIMES(LiveAccessService.ADDITIONAL, "tcds_cpm_deadtimes"),
 	TCDS_CPM_RATES(LiveAccessService.ADDITIONAL, "tcds_cpm_rates"),
 	TCDS_PM_ACTION_COUNTS(LiveAccessService.ADDITIONAL, "tcds_pm_action_counts"),
 	TCDS_PM_TTS_CHANNEL(LiveAccessService.ADDITIONAL, "tcds_pm_tts_channel"),
-	
+
 	FEROL40_CONFIGURATION(LiveAccessService.PRIMARY, "ferol40Configuration"),
 	FEROL40_INPUT_STREAM(LiveAccessService.PRIMARY, "ferol40InputStream"),
 	FEROL40_STATUS(LiveAccessService.PRIMARY, "ferol40Status"),
 	FEROL40_STREAM_CONFIGURATION(LiveAccessService.PRIMARY, "ferol40StreamConfiguration"),
 	FEROL40_TCP_STREAM(LiveAccessService.PRIMARY, "ferol40TcpStream"),
-	
+
 	TCDSFM(LiveAccessService.PRIMARY, "tcdsFM");
 
 	private static Logger logger = Logger.getLogger(FlashlistType.class);
@@ -60,7 +60,15 @@ public enum FlashlistType {
 	}
 
 	private FlashlistType(LiveAccessService las, String name, boolean sessionContext, String sessionIdColumnName) {
-		this.las = las;
+
+		/**If no URL has been specified for this LAS in the config file, then try to use the primary LAS 
+		 * (case for minidaqs, where all flashlists live in a single LAS).*/
+		if (!las.getUrl().contains("http")){
+			this.las = LiveAccessService.PRIMARY;
+		}else{
+			this.las = las;
+		}
+		
 		this.flashlistName = name;
 		this.sessionContext = sessionContext;
 		this.sessionIdColumnName = sessionIdColumnName;
