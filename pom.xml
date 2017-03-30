@@ -8,7 +8,7 @@
 		<repository>
 			<id>libs-release-local</id>
 			<url>http://dev-daq-expert.cern.ch/artifactory/libs-release-local</url>
-			<snapshots>
+	  		<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
 		</repository>
