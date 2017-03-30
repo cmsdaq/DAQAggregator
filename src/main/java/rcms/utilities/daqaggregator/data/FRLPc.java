@@ -82,8 +82,6 @@ public class FRLPc implements FlashlistUpdatable, Derivable {
 
 		if (flashlistType == FlashlistType.JOB_CONTROL) {
 			
-			this.port = Integer.parseInt(flashlistRow.get("context").asText().split(":")[2]);
-			
 			JsonNode jobTable = flashlistRow.get("jobTable");
 			JsonNode rows = jobTable.get("rows");
 			
@@ -99,6 +97,8 @@ public class FRLPc implements FlashlistUpdatable, Derivable {
 				
 
 			}
+		}else if (flashlistType == FlashlistType.FEROL_CONFIGURATION) {
+			this.port = Integer.parseInt(flashlistRow.get("context").asText().split(":")[2]);
 		}
 	}
 

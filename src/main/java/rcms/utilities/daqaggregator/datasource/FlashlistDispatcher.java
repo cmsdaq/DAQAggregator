@@ -111,8 +111,6 @@ public class FlashlistDispatcher {
 		case LEVEL_ZERO_FM_STATIC:
 			break;
 		case JOB_CONTROL:
-			// TODO: dispatch by context (in the future) (multiple context by
-			// hostname)
 			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().frlPcByHostname, "context");
 			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().fmmApplicationByHostname, "context");
 			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().rusByHostname, "context");
@@ -154,7 +152,6 @@ public class FlashlistDispatcher {
 			}
 			break;
 		case FEROL_CONFIGURATION:
-			// TODO: future - use frlpc.context for mapping
 			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().frlPcByHostname, "context");
 			dispatchRowsByGeo(flashlist, mappingManager.getObjectMapper().fedsById.values(),
 					new FedInFrlGeoFinder("io"));
