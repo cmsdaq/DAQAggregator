@@ -1,7 +1,5 @@
 package rcms.utilities.daqaggregator.data;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -298,7 +296,7 @@ public class DAQ implements FlashlistUpdatable {
 	
 	@Override
 	public void clean() {
-		// nothing to do
+		this.daqState = "Unknown";
 	}
 
 	@Override

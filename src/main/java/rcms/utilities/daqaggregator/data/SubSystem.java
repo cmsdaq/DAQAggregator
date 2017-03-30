@@ -50,7 +50,7 @@ public class SubSystem implements FlashlistUpdatable {
 
 	@Override
 	public void clean() {
-		// nothing to do
+		this.status = "Unknown";
 
 	}
 

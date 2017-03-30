@@ -115,11 +115,10 @@ public class FlashlistDispatcher {
 		case JOB_CONTROL:
 			// TODO: dispatch by context (in the future) (multiple context by
 			// hostname)
-			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().frlPcByHostname, "hostname");
-			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().fmmApplicationByHostname, "hostname");
-			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().rusByHostname, "hostname");
-			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().busByHostname, "hostname");
-			// TODO: should go to RU, BU
+			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().frlPcByHostname, "context");
+			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().fmmApplicationByHostname, "context");
+			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().rusByHostname, "context");
+			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().busByHostname, "context");
 			break;
 
 		case LEVEL_ZERO_FM_SUBSYS: // TODO: SID column

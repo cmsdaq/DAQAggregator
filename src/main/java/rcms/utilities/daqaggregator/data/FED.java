@@ -269,10 +269,22 @@ public class FED implements FlashlistUpdatable {
 		ruFedCRCError = 0;
 		ruFedDataCorruption = 0;
 		ruFedOutOfSync = 0;
-
 		ruFedInError = false;
 		ruFedWithoutFragments = false;
-
+		percentWarning = 0;
+		percentBusy = 0;
+		ttsState = null;
+		fmmMasked = true;
+		srcIdReceived = 0;
+		numSCRCerrors = 0;
+		numFCRCerrors = 0;
+		numTriggers = 0;
+		eventCounter = 0;
+		percentBackpressure = 0;
+		frlMasked = true;
+		frl_AccSlinkFullSec = 0;
+		frl_AccLatchedFerol40ClockSeconds  = 0;
+		frl_AccBIFIBackpressureSeconds = 0;
 	}
 
 	public int getSrcIdReceived() {

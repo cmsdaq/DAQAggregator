@@ -125,7 +125,8 @@ public class FMM implements FlashlistUpdatable {
 
 	@Override
 	public void clean() {
-		// nothing to do
+		url = null;
+		stateName = null;
 	}
 
 	@Override

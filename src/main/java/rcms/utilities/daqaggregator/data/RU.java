@@ -314,6 +314,7 @@ public class RU implements FlashlistUpdatable, Derivable {
 		int maskedFeds = 0;
 		int allFeds = 0;
 
+		//this will iterate over FEDs which are not pseudoFEDs, so no need to check if they have SLINK
 		for (SubFEDBuilder subFedBuilder : fedBuilder.getSubFedbuilders()) {
 			for (FRL frl : subFedBuilder.getFrls()) {
 				for (FED fed : frl.getFeds().values()) {
@@ -430,7 +431,30 @@ public class RU implements FlashlistUpdatable, Derivable {
 
 	@Override
 	public void clean() {
-		// nothing to do
+		this.setStateName(null);
+		this.setErrorMsg(null);
+		this.requests = 0;
+		this.port = 0;
+		this.rate = 0;
+		this.eventsInRU = 0;
+		this.eventCount = 0;
+		this.superFragmentSizeMean = 0;
+		this.superFragmentSizeStddev = 0;
+		this.incompleteSuperFragmentCount = 0;
+		this.fragmentsInRU = 0;
+		
+		this.throughput = rate * superFragmentSizeMean;
+		
+		// values per BU
+		this.throughputPerBU = new ArrayList<Long>();
+		this.buTids = new ArrayList<Integer>();
+		this.fragmentRatePerBU = new ArrayList<Integer>();
+		this.retryRatePerBU = new ArrayList<Double>();
+
+		this.allocateRate = 0;
+		this.allocateRetryRate = 0;
+			
+		this.crashed = false;
 	}
 
 	@Override
