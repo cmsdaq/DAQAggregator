@@ -142,13 +142,13 @@ public class FlashlistDispatcher {
 		case FEROL_CONFIGURATION:
 			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().frlPcByHostname, "context");
 			dispatchRowsByGeo(flashlist, mappingManager.getObjectMapper().fedsById.values(),
-					new FedInFrlGeoFinder("io"));
+					new FedInFrlGeoFinder("io", false));
 			break;
 		case FRL_MONITORING:
 			// TODO: future - use frlpc.context for mapping
 			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().frlPcByHostname, "context");
 			dispatchRowsByGeo(flashlist, mappingManager.getObjectMapper().fedsById.values(),
-					new FedInFrlGeoFinder("io"));
+					new FedInFrlGeoFinder("io", false));
 			break;
 		case FMM_STATUS:
 			dispatchRowsByGeo(flashlist, mappingManager.getObjectMapper().fmms.values(), new FMMGeoMatcher());
@@ -329,11 +329,11 @@ public class FlashlistDispatcher {
 			break;
 		case FEROL40_STREAM_CONFIGURATION:
 			dispatchRowsByGeo(flashlist, mappingManager.getObjectMapper().fedsById.values(),
-					new FedInFrlGeoFinder("io"));
+					new FedInFrlGeoFinder("io", true));
 			break;
 		case FEROL40_INPUT_STREAM:
 			dispatchRowsByGeo(flashlist, mappingManager.getObjectMapper().fedsById.values(),
-					new FedInFrlGeoFinder("io"));
+					new FedInFrlGeoFinder("io", true));
 			break;
 		case FEROL40_STATUS:
 			dispatchRowsByGeo(flashlist, mappingManager.getObjectMapper().frls.values(), new FRLGeoFinder());
