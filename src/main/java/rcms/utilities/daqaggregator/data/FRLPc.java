@@ -97,7 +97,7 @@ public class FRLPc implements FlashlistUpdatable, Derivable {
 				
 
 			}
-		}else if (flashlistType == FlashlistType.FEROL_CONFIGURATION) {
+		}else if (flashlistType == FlashlistType.FEROL_CONFIGURATION || flashlistType == FlashlistType.FEROL40_CONFIGURATION) {
 			this.port = Integer.parseInt(flashlistRow.get("context").asText().split(":")[2]);
 		}
 	}
