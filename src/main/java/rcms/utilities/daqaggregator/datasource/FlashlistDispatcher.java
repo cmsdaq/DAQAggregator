@@ -138,6 +138,7 @@ public class FlashlistDispatcher {
 				}
 			}
 			break;
+		
 		case FEROL_CONFIGURATION:
 			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().frlPcByHostname, "context");
 			dispatchRowsByGeo(flashlist, mappingManager.getObjectMapper().fedsById.values(),
@@ -325,6 +326,20 @@ public class FlashlistDispatcher {
 				}
 			}
 
+			break;
+		case FEROL40_STREAM_CONFIGURATION:
+			dispatchRowsByGeo(flashlist, mappingManager.getObjectMapper().fedsById.values(),
+					new FedInFrlGeoFinder("io"));
+			break;
+		case FEROL40_INPUT_STREAM:
+			dispatchRowsByGeo(flashlist, mappingManager.getObjectMapper().fedsById.values(),
+					new FedInFrlGeoFinder("io"));
+			break;
+		case FEROL40_STATUS:
+			dispatchRowsByGeo(flashlist, mappingManager.getObjectMapper().frls.values(), new FRLGeoFinder());
+			break;
+		case FEROL40_CONFIGURATION:
+			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().frlPcByHostname, "context");
 			break;
 		default:
 			break;
