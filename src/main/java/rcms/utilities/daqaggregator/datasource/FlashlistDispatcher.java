@@ -92,15 +92,9 @@ public class FlashlistDispatcher {
 		case EVM:
 			if (flashlist.getRowsNode().isArray() && flashlist.getRowsNode().size() > 0) {
 
-				int runNumber = flashlist.getRowsNode().get(0).get("runNumber").asInt();
-				mappingManager.getObjectMapper().daq.setRunNumber(runNumber);
-				logger.debug("Successfully got runnumber: " + runNumber);
-
 				for (RU ru : mappingManager.getObjectMapper().rus.values()) {
 					if (ru.isEVM())
 						ru.updateFromFlashlist(flashlist.getFlashlistType(), flashlist.getRowsNode().get(0));
-					// additional check hostname
-
 				}
 
 			} else {

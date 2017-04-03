@@ -221,6 +221,7 @@ public class DAQ implements FlashlistUpdatable {
 			this.lhcMachineMode = flashlistRow.get("LHC_MACHINE_MODE").asText();
 			this.hltKey = flashlistRow.get("HLT_KEY").asText();
 			this.hltKeyDescription = flashlistRow.get("HLT_KEY_DESCRIPTION").asText();
+			this.runNumber = flashlistRow.get("RUN_NUMBER").asInt();
 			
 			String runStart = flashlistRow.get("RUN_START_TIME").asText();
 			String stateEntry = flashlistRow.get("STATE_ENTRY_TIME").asText();
