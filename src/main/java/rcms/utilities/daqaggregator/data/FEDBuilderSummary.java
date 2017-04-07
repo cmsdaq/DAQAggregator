@@ -144,6 +144,10 @@ public class FEDBuilderSummary implements Derivable {
 		for (FEDBuilder fb : daq.getFedBuilders()) {
 			RU ru = fb.getRu();
 			
+			if(nullValuesAtRu(ru)){
+				continue;
+			}
+			
 			/* do not take into account masked rus*/
 			if (ru.isMasked()){
 				continue;
@@ -185,6 +189,26 @@ public class FEDBuilderSummary implements Derivable {
 		this.setSuperFragmentSizeStddev(superFragmentSizeStddev);
 		this.setThroughput(throughput);
 
+	}
+
+	private boolean nullValuesAtRu(RU ru) {
+		boolean ret = false;
+		
+		if (ru.getRate()==null||
+				ru.getThroughput()==null||
+				ru.getSuperFragmentSizeMean()==null||
+				ru.getSuperFragmentSizeStddev()==null||
+				ru.getEventCount()==null||
+				ru.getFragmentsInRU()==null||
+				ru.getEventsInRU()==null||
+				ru.getRequests()==null||
+				ru.isMasked()==null)
+		{
+			return true;
+		}
+		
+		
+		return ret;
 	}
 
 	@Override

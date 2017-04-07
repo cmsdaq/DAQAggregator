@@ -26,13 +26,13 @@ public class TCDSGlobalInfo implements FlashlistUpdatable{
 	/*cpm counts*/
 
 	//lumi section to which counts monitoring data correspond
-	private int sectionNumber_counts;
+	private Integer sectionNumber_counts;
 
 	//totals
-	private int sup_trg_cnt_beamactive_total;
-	private int sup_trg_cnt_total;
-	private int trg_cnt_beamactive_total;
-	private int trg_cnt_total;
+	private Integer sup_trg_cnt_beamactive_total;
+	private Integer sup_trg_cnt_total;
+	private Integer trg_cnt_beamactive_total;
+	private Integer trg_cnt_total;
 
 	//arrays of count values tt[i], where i=0,...,k (tt0 always at array position 0 etc.)
 	private List<Integer> sup_trg_cnt_beamactive_tt_values;
@@ -43,9 +43,9 @@ public class TCDSGlobalInfo implements FlashlistUpdatable{
 	/*cpm deadtimes*/
 
 	//lumi section to which deadtimes monitoring data correspond
-	private int sectionNumber_deadtimes;
+	private Integer sectionNumber_deadtimes;
 
-	private int fillNumber;
+	private Integer fillNumber;
 
 	//map with all deadtime values, indexed by their flashlist column name
 	private Map<String, Double> deadTimes;
@@ -53,13 +53,13 @@ public class TCDSGlobalInfo implements FlashlistUpdatable{
 	/*cpm rates*/
 
 	//lumi section to which rates monitoring data correspond
-	private int sectionNumber_rates;
+	private Integer sectionNumber_rates;
 
 	//totals
-	private double sup_trg_rate_beamactive_total;
-	private double sup_trg_rate_total;
-	private double trg_rate_beamactive_total;
-	private double trg_rate_total;
+	private Double sup_trg_rate_beamactive_total;
+	private Double sup_trg_rate_total;
+	private Double trg_rate_beamactive_total;
+	private Double trg_rate_total;
 
 	//arrays of rate values tt[i], where i=0,...,k (tt0 always at array position 0 etc.)
 	private List<Double> sup_trg_rate_beamactive_tt_values;
@@ -101,37 +101,7 @@ public class TCDSGlobalInfo implements FlashlistUpdatable{
 		this.globalTtsStates = globalTtsStates;
 	}
 
-	public int getSup_trg_cnt_beamactive_total() {
-		return sup_trg_cnt_beamactive_total;
-	}
 
-	public void setSup_trg_cnt_beamactive_total(int sup_trg_cnt_beamactive_total) {
-		this.sup_trg_cnt_beamactive_total = sup_trg_cnt_beamactive_total;
-	}
-
-	public int getSup_trg_cnt_total() {
-		return sup_trg_cnt_total;
-	}
-
-	public void setSup_trg_cnt_total(int sup_trg_cnt_total) {
-		this.sup_trg_cnt_total = sup_trg_cnt_total;
-	}
-
-	public int getTrg_cnt_beamactive_total() {
-		return trg_cnt_beamactive_total;
-	}
-
-	public void setTrg_cnt_beamactive_total(int trg_cnt_beamactive_total) {
-		this.trg_cnt_beamactive_total = trg_cnt_beamactive_total;
-	}
-
-	public int getTrg_cnt_total() {
-		return trg_cnt_total;
-	}
-
-	public void setTrg_cnt_total(int trg_cnt_total) {
-		this.trg_cnt_total = trg_cnt_total;
-	}
 
 	public List<Integer> getSup_trg_cnt_beamactive_tt_values() {
 		return sup_trg_cnt_beamactive_tt_values;
@@ -165,52 +135,12 @@ public class TCDSGlobalInfo implements FlashlistUpdatable{
 		this.trg_cnt_tt_values = trg_cnt_tt_values;
 	}
 
-	public int getFillNumber() {
-		return fillNumber;
-	}
-
-	public void setFillNumber(int fillNumber) {
-		this.fillNumber = fillNumber;
-	}
-
 	public Map<String, Double> getDeadTimes() {
 		return deadTimes;
 	}
 
 	public void setDeadTimes(Map<String, Double> deadTimes) {
 		this.deadTimes = deadTimes;
-	}
-
-	public double getSup_trg_rate_beamactive_total() {
-		return sup_trg_rate_beamactive_total;
-	}
-
-	public void setSup_trg_rate_beamactive_total(double sup_trg_rate_beamactive_total) {
-		this.sup_trg_rate_beamactive_total = sup_trg_rate_beamactive_total;
-	}
-
-	public double getSup_trg_rate_total() {
-		return sup_trg_rate_total;
-	}
-
-	public void setSup_trg_rate_total(double sup_trg_rate_total) {
-		this.sup_trg_rate_total = sup_trg_rate_total;
-	}
-
-	public double getTrg_rate_beamactive_total() {
-		return trg_rate_beamactive_total;
-	}
-
-	public void setTrg_rate_beamactive_total(double trg_rate_beamactive_total) {
-		this.trg_rate_beamactive_total = trg_rate_beamactive_total;
-	}
-
-	public double getTrg_rate_total() {
-		return trg_rate_total;
-	}
-
-	public void setTrg_rate_total(double trg_rate_total) {
-		this.trg_rate_total = trg_rate_total;
 	}
 
 	public List<Double> getSup_trg_rate_beamactive_tt_values() {
@@ -253,26 +183,6 @@ public class TCDSGlobalInfo implements FlashlistUpdatable{
 		this.actionCounts = actionCounts;
 	}
 
-	public int getSectionNumber_counts() {
-		return sectionNumber_counts;
-	}
-
-	public void setSectionNumber_counts(int sectionNumber_counts) {
-		this.sectionNumber_counts = sectionNumber_counts;
-	}
-
-	public int getSectionNumber_deadtimes() {
-		return sectionNumber_deadtimes;
-	}
-
-	public void setSectionNumber_deadtimes(int sectionNumber_deadtimes) {
-		this.sectionNumber_deadtimes = sectionNumber_deadtimes;
-	}
-
-	public int getSectionNumber_rates() {
-		return sectionNumber_rates;
-	}
-
 	public void setSectionNumber_rates(int sectionNumber_rates) {
 		this.sectionNumber_rates = sectionNumber_rates;
 	}
@@ -291,6 +201,102 @@ public class TCDSGlobalInfo implements FlashlistUpdatable{
 
 	public void setTcdsControllerServiceName(String tcdsControllerServiceName) {
 		this.tcdsControllerServiceName = tcdsControllerServiceName;
+	}
+
+	public Integer getSectionNumber_counts() {
+		return sectionNumber_counts;
+	}
+
+	public void setSectionNumber_counts(Integer sectionNumber_counts) {
+		this.sectionNumber_counts = sectionNumber_counts;
+	}
+
+	public Integer getSup_trg_cnt_beamactive_total() {
+		return sup_trg_cnt_beamactive_total;
+	}
+
+	public void setSup_trg_cnt_beamactive_total(Integer sup_trg_cnt_beamactive_total) {
+		this.sup_trg_cnt_beamactive_total = sup_trg_cnt_beamactive_total;
+	}
+
+	public Integer getSup_trg_cnt_total() {
+		return sup_trg_cnt_total;
+	}
+
+	public void setSup_trg_cnt_total(Integer sup_trg_cnt_total) {
+		this.sup_trg_cnt_total = sup_trg_cnt_total;
+	}
+
+	public Integer getTrg_cnt_beamactive_total() {
+		return trg_cnt_beamactive_total;
+	}
+
+	public void setTrg_cnt_beamactive_total(Integer trg_cnt_beamactive_total) {
+		this.trg_cnt_beamactive_total = trg_cnt_beamactive_total;
+	}
+
+	public Integer getTrg_cnt_total() {
+		return trg_cnt_total;
+	}
+
+	public void setTrg_cnt_total(Integer trg_cnt_total) {
+		this.trg_cnt_total = trg_cnt_total;
+	}
+
+	public Integer getSectionNumber_deadtimes() {
+		return sectionNumber_deadtimes;
+	}
+
+	public void setSectionNumber_deadtimes(Integer sectionNumber_deadtimes) {
+		this.sectionNumber_deadtimes = sectionNumber_deadtimes;
+	}
+
+	public Integer getFillNumber() {
+		return fillNumber;
+	}
+
+	public void setFillNumber(Integer fillNumber) {
+		this.fillNumber = fillNumber;
+	}
+
+	public Integer getSectionNumber_rates() {
+		return sectionNumber_rates;
+	}
+
+	public void setSectionNumber_rates(Integer sectionNumber_rates) {
+		this.sectionNumber_rates = sectionNumber_rates;
+	}
+
+	public Double getSup_trg_rate_beamactive_total() {
+		return sup_trg_rate_beamactive_total;
+	}
+
+	public void setSup_trg_rate_beamactive_total(Double sup_trg_rate_beamactive_total) {
+		this.sup_trg_rate_beamactive_total = sup_trg_rate_beamactive_total;
+	}
+
+	public Double getSup_trg_rate_total() {
+		return sup_trg_rate_total;
+	}
+
+	public void setSup_trg_rate_total(Double sup_trg_rate_total) {
+		this.sup_trg_rate_total = sup_trg_rate_total;
+	}
+
+	public Double getTrg_rate_beamactive_total() {
+		return trg_rate_beamactive_total;
+	}
+
+	public void setTrg_rate_beamactive_total(Double trg_rate_beamactive_total) {
+		this.trg_rate_beamactive_total = trg_rate_beamactive_total;
+	}
+
+	public Double getTrg_rate_total() {
+		return trg_rate_total;
+	}
+
+	public void setTrg_rate_total(Double trg_rate_total) {
+		this.trg_rate_total = trg_rate_total;
 	}
 
 	@Override
@@ -575,22 +581,22 @@ public class TCDSGlobalInfo implements FlashlistUpdatable{
 		sup_trg_cnt_tt_values = new ArrayList<Integer>();
 		trg_cnt_beamactive_tt_values = new ArrayList<Integer>();
 		trg_cnt_tt_values = new ArrayList<Integer>();
-		sectionNumber_counts = 0;
-		sup_trg_cnt_beamactive_total = 0;
-		sup_trg_cnt_total = 0;
-		trg_cnt_beamactive_total = 0;
-		trg_cnt_total = 0;
+		sectionNumber_counts = null;
+		sup_trg_cnt_beamactive_total = null;
+		sup_trg_cnt_total = null;
+		trg_cnt_beamactive_total = null;
+		trg_cnt_total = null;
 		sup_trg_rate_beamactive_tt_values = new ArrayList<Double>();
 		sup_trg_rate_tt_values = new ArrayList<Double>();
 		trg_rate_beamactive_tt_values = new ArrayList<Double>();
 		trg_rate_tt_values = new ArrayList<Double>();
-		sectionNumber_rates = 0;
-		sup_trg_rate_beamactive_total = 0;
-		sup_trg_rate_total = 0;
-		trg_rate_beamactive_total = 0;
-		trg_rate_total = 0;
-		fillNumber = 0;
-		sectionNumber_deadtimes = 0;
+		sectionNumber_rates = null;
+		sup_trg_rate_beamactive_total = null;
+		sup_trg_rate_total = null;
+		trg_rate_beamactive_total = null;
+		trg_rate_total = null;
+		fillNumber = null;
+		sectionNumber_deadtimes = null;
 
 		deadTimes = new HashMap<String, Double>();
 		actionCounts = new ArrayList<Integer>();

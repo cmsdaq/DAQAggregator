@@ -53,7 +53,7 @@ public class Compatibility {
 
 		// 3 test snapshot
 		Assert.assertNotNull(snapshot1.getLeft());
-		Assert.assertEquals(timestamp, snapshot1.getLeft().getLastUpdate());
+		Assert.assertEquals(timestamp, snapshot1.getLeft().getLastUpdate().longValue());
 		Assert.assertEquals(sumEvents, snapshot1.getLeft().getFedBuilderSummary().getSumEventsInRU());
 
 	}
