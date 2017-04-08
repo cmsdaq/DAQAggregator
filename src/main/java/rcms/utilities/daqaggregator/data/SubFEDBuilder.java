@@ -100,7 +100,7 @@ public class SubFEDBuilder {
 				total++;
 				
 				//do not take into account masked FEDs in this aggregation
-				if (fed.isFrlMasked()){
+				if (fed.isFrlMasked()==null||fed.isFrlMasked()){
 					masked++;
 					continue;
 				}

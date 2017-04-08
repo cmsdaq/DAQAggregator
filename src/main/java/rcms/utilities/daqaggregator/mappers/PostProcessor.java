@@ -69,13 +69,13 @@ public class PostProcessor {
 	private void summarizeCrashed() {
 		int frlPcsCrashed = 0;
 		for (FRLPc frlPc : daq.getFrlPcs()) {
-			if (frlPc.isCrashed())
+			if (frlPc.isCrashed()!=null&&frlPc.isCrashed())
 				frlPcsCrashed++;
 		}
 
 		int fmmappCrashed = 0;
 		for (FMMApplication fmma : daq.getFmmApplications()) {
-			if (fmma.isCrashed())
+			if (fmma.isCrashed()!=null&&fmma.isCrashed())
 				fmmappCrashed++;
 		}
 
@@ -93,13 +93,13 @@ public class PostProcessor {
 			for (FMM fmm : fmma.getFmms()) {
 				for (FED fed : fmm.getFeds()) {
 					feds++;
-					if (fed.isFmmMasked())
+					if (fed.isFmmMasked()!=null&&fed.isFmmMasked())
 						fedsFmmMasked++;
-					if (fed.isFrlMasked())
+					if (fed.isFrlMasked()!=null&&fed.isFrlMasked())
 						fedsFrlMasked++;
-					if (fed.isRuFedInError())
+					if (fed.isRuFedInError()!=null&&fed.isRuFedInError())
 						fedsInError++;
-					if (fed.isRuFedWithoutFragments())
+					if (fed.isRuFedWithoutFragments()!=null&&fed.isRuFedWithoutFragments())
 						fedsFragmentMissing++;
 				}
 			}
