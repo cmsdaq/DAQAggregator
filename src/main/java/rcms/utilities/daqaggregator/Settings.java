@@ -5,9 +5,13 @@ public enum Settings {
 	RUN_MODE("run.mode", true),
 
 	// flashlists
-	FLASHLIST_PRIMARY_URL("flashlist.primary.url", true),
+	FLASHLIST_PRIMARY_URL("flashlist.primary.url", true), // L0
 	FLASHLIST_SECONDARY_URL("flashlist.secondary.url", true),
 	FLASHLIST_ADDITIONAL_URL("flashlist.additional.url", true),
+	FLASHLIST_ADDITIONAL2_URL("flashlist.additional2.url", true),
+	FLASHLIST_ADDITIONAL3_URL("flashlist.additional3.url", true),
+	FLASHLIST_ADDITIONAL4_URL("flashlist.additional4.url", true),
+	FLASHLIST_ADDITIONAL5_URL("flashlist.additional5.url", true), // TCDS
 
 	// settings concerning session definition
 	SESSION_L0FILTER1("session.l0filter1"),

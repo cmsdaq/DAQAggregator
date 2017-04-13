@@ -2,7 +2,7 @@ package rcms.utilities.daqaggregator.datasource;
 
 public enum LiveAccessService {
 
-	PRIMARY, SECONDARY, ADDITIONAL;
+	PRIMARY, SECONDARY, ADDITIONAL, ADDITIONAL2, ADDITIONAL3, ADDITIONAL4, ADDITIONAL5;
 
 	private String url;
 

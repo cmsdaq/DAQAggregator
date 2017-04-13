@@ -66,6 +66,10 @@ public class Application {
 		LiveAccessService.PRIMARY.setUrl(Application.get().getProp(Settings.FLASHLIST_PRIMARY_URL));
 		LiveAccessService.SECONDARY.setUrl(Application.get().getProp(Settings.FLASHLIST_SECONDARY_URL));
 		LiveAccessService.ADDITIONAL.setUrl(Application.get().getProp(Settings.FLASHLIST_ADDITIONAL_URL));
+		LiveAccessService.ADDITIONAL2.setUrl(Application.get().getProp(Settings.FLASHLIST_ADDITIONAL2_URL));
+		LiveAccessService.ADDITIONAL3.setUrl(Application.get().getProp(Settings.FLASHLIST_ADDITIONAL3_URL));
+		LiveAccessService.ADDITIONAL4.setUrl(Application.get().getProp(Settings.FLASHLIST_ADDITIONAL4_URL));
+		LiveAccessService.ADDITIONAL5.setUrl(Application.get().getProp(Settings.FLASHLIST_ADDITIONAL5_URL));
 	}
 
 	public String getProp(Settings setting) {
