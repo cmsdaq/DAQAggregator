@@ -218,11 +218,6 @@ public class DAQAggregator {
 		hardwareConnector.initialize(url, host, port, sid, user, passwd);
 
 		/*
-		 * Setup proxy
-		 */
-		ProxyManager.get().startProxy();
-
-		/*
 		 * Get persistence dirs
 		 */
 		String snapshotPersistenceDir = Application.get().getProp(Settings.PERSISTENCE_SNAPSHOT_DIR);

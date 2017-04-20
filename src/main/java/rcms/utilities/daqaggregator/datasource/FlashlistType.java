@@ -1,46 +1,43 @@
 package rcms.utilities.daqaggregator.datasource;
 
-import org.apache.log4j.Logger;
-
 public enum FlashlistType {
 
 	// fsname, sessionContext?, download?, sessionIdColName
-	BU(LiveAccessService.PRIMARY, "BU", "sessionid"),
-	EVM(LiveAccessService.PRIMARY, "EVM", "sessionid"),
-	FMM_INPUT(LiveAccessService.PRIMARY, "FMMInput", "sessionid"),
-	FMM_INPUT_DETAIL(LiveAccessService.PRIMARY, "FMMInputDetail", "sessionid"),
-	FMM_STATUS(LiveAccessService.PRIMARY, "FMMStatus", "sessionid"),
-	RU(LiveAccessService.PRIMARY, "RU", "sessionid"),
-	FEROL_CONFIGURATION(LiveAccessService.PRIMARY, "ferolConfiguration", "sessionid"),
-	FEROL_INPUT_STREAM(LiveAccessService.PRIMARY, "ferolInputStream", "sessionid"),
-	FEROL_MONITORING(LiveAccessService.PRIMARY, "ferolMonitoring", "sessionid"),
-	FEROL_STATUS(LiveAccessService.PRIMARY, "ferolStatus", "sessionid"),
-	FEROL_TCP_STREAM(LiveAccessService.PRIMARY, "ferolTcpStream", "sessionid"),
-	FRL_MONITORING(LiveAccessService.PRIMARY, "frlMonitoring", "sessionid"),
-	HOST_INFO(LiveAccessService.PRIMARY, "hostInfo", "sessionid"),
-	LEVEL_ZERO_FM_DYNAMIC(LiveAccessService.PRIMARY, "levelZeroFM_dynamic"),
-	LEVEL_ZERO_FM_STATIC(LiveAccessService.PRIMARY, "levelZeroFM_static"),
-	LEVEL_ZERO_FM_SUBSYS(LiveAccessService.PRIMARY, "levelZeroFM_subsys"),
+	BU("BU", "sessionid"),
+	EVM("EVM", "sessionid"),
+	FMM_INPUT("FMMInput", "sessionid"),
+	FMM_INPUT_DETAIL("FMMInputDetail", "sessionid"),
+	FMM_STATUS("FMMStatus", "sessionid"),
+	RU("RU", "sessionid"),
+	FEROL_CONFIGURATION("ferolConfiguration", "sessionid"),
+	FEROL_INPUT_STREAM("ferolInputStream", "sessionid"),
+	FEROL_MONITORING("ferolMonitoring", "sessionid"),
+	FEROL_STATUS("ferolStatus", "sessionid"),
+	FEROL_TCP_STREAM("ferolTcpStream", "sessionid"),
+	FRL_MONITORING("frlMonitoring", "sessionid"),
+	HOST_INFO("hostInfo", "sessionid"),
+	LEVEL_ZERO_FM_DYNAMIC("levelZeroFM_dynamic"),
+	LEVEL_ZERO_FM_STATIC("levelZeroFM_static"),
+	LEVEL_ZERO_FM_SUBSYS("levelZeroFM_subsys"),
 
-	JOB_CONTROL(LiveAccessService.SECONDARY, "jobcontrol"),
-	DISK_INFO(LiveAccessService.SECONDARY, "diskInfo", "sessionid"),
-	FMM_PARTITION_DEAD_TIME(LiveAccessService.SECONDARY, "FMMPartitionDeadTime"),
-	FMM_FED_DEAD_TIME(LiveAccessService.SECONDARY, "FMMFEDDeadTime"),
+	JOB_CONTROL("jobcontrol"),
+	DISK_INFO("diskInfo", "sessionid"),
+	//FMM_PARTITION_DEAD_TIME("FMMPartitionDeadTime"),
+	//FMM_FED_DEAD_TIME("FMMFEDDeadTime"),
 
-	TCDS_CPM_COUNTS(LiveAccessService.ADDITIONAL, "tcds_cpm_counts"),
-	TCDS_CPM_DEADTIMES(LiveAccessService.ADDITIONAL, "tcds_cpm_deadtimes"),
-	TCDS_CPM_RATES(LiveAccessService.ADDITIONAL, "tcds_cpm_rates"),
-	TCDS_PM_ACTION_COUNTS(LiveAccessService.ADDITIONAL, "tcds_pm_action_counts"),
-	TCDS_PM_TTS_CHANNEL(LiveAccessService.ADDITIONAL, "tcds_pm_tts_channel"),
+	TCDS_CPM_COUNTS("tcds_cpm_counts"),
+	TCDS_CPM_DEADTIMES("tcds_cpm_deadtimes"),
+	TCDS_CPM_RATES("tcds_cpm_rates"),
+	TCDS_PM_ACTION_COUNTS("tcds_pm_action_counts"),
+	TCDS_PM_TTS_CHANNEL("tcds_pm_tts_channel"),
 
-	FEROL40_CONFIGURATION(LiveAccessService.PRIMARY, "ferol40Configuration"),
-	FEROL40_INPUT_STREAM(LiveAccessService.PRIMARY, "ferol40InputStream"),
-	FEROL40_STATUS(LiveAccessService.PRIMARY, "ferol40Status"),
-	FEROL40_STREAM_CONFIGURATION(LiveAccessService.PRIMARY, "ferol40StreamConfiguration"),
-	FEROL40_TCP_STREAM(LiveAccessService.PRIMARY, "ferol40TcpStream"),
+	FEROL40_CONFIGURATION("ferol40Configuration"),
+	FEROL40_INPUT_STREAM("ferol40InputStream"),
+	FEROL40_STATUS("ferol40Status"),
+	FEROL40_STREAM_CONFIGURATION("ferol40StreamConfiguration"),
+	FEROL40_TCP_STREAM("ferol40TcpStream"),
 
-	TCDSFM(LiveAccessService.PRIMARY, "tcdsFM");
-
+	TCDSFM("tcdsFM");
 
 	private final String flashlistName;
 
@@ -52,21 +49,37 @@ public enum FlashlistType {
 
 	private final String sessionIdColumnName;
 
-	private final LiveAccessService las;
+	/**
+	 * This field is autodiscovered since the configuration of LAS may change
+	 * (flashlist may be hosted by differed LAS)
+	 */
+	private String url;
 
-	private FlashlistType(LiveAccessService las, String name, String sessionIdColumnName) {
-		this(las, name, true, sessionIdColumnName);
+	public String getUrl() {
+		return url;
 	}
 
-	private FlashlistType(LiveAccessService las, String name, boolean sessionContext, String sessionIdColumnName) {
-		this.las = las;
+	public void setUrl(String url) {
+		this.url = url;
+	}
+
+	private FlashlistType(String name, String sessionIdColumnName) {
+		this(name, true, sessionIdColumnName);
+	}
+
+	private FlashlistType(String name, boolean sessionContext, String sessionIdColumnName) {
 		this.flashlistName = name;
 		this.sessionContext = sessionContext;
 		this.sessionIdColumnName = sessionIdColumnName;
 	}
 
-	private FlashlistType(LiveAccessService las, String name) {
-		this(las, name, false, null);
+	/**
+	 * 
+	 * @param name
+	 *            name of the flashlist used for auto discovery
+	 */
+	private FlashlistType(String name) {
+		this(name, false, null);
 	}
 
 	public boolean isSessionContext() {
@@ -79,10 +92,6 @@ public enum FlashlistType {
 
 	public String getFlashlistName() {
 		return flashlistName;
-	}
-
-	public LiveAccessService getLas() {
-		return las;
 	}
 
 }

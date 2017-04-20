@@ -5,9 +5,7 @@ public enum Settings {
 	RUN_MODE("run.mode", true),
 
 	// flashlists
-	FLASHLIST_PRIMARY_URL("flashlist.primary.url", true),
-	FLASHLIST_SECONDARY_URL("flashlist.secondary.url", true),
-	FLASHLIST_ADDITIONAL_URL("flashlist.additional.url", true),
+	LAS_URL("flashlist.urls",true),
 
 	// settings concerning session definition
 	SESSION_L0FILTER1("session.l0filter1"),
@@ -35,7 +33,7 @@ public enum Settings {
 	PERSISTENCE_SNAPSHOT_DIR("persistence.snapshot.dir"),
 	PERSISTENCE_FLASHLIST_FORMAT("persistence.flashlist.format"),
 	PERSISTENCE_SNAPSHOT_FORMAT("persistence.snapshot.format"),
-	PERSISTENCE_LIMIT("persistence.flashlist.explore.start");
+	PERSISTENCE_LIMIT("persistence.flashlist.explore.start"), ;
 
 	private Settings(String key, boolean required) {
 		this.key = key;

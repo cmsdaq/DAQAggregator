@@ -12,6 +12,10 @@ import org.apache.log4j.Logger;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
+import rcms.utilities.daqaggregator.DAQAggregator;
+import rcms.utilities.daqaggregator.DAQException;
+import rcms.utilities.daqaggregator.DAQExceptionCode;
+
 public class LiveAccessServiceExplorer {
 
 	/**
@@ -46,36 +50,43 @@ public class LiveAccessServiceExplorer {
 	private void exploreLiveAccessService(String url) throws IOException {
 		Pair<Integer, List<String>> a = connector.retrieveLines(url + "/retrieveCatalog?fmt=json");
 
-		com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
-		JsonNode rootNode = mapper.readValue(a.getRight().get(0), JsonNode.class);
+		if (a.getLeft() == 200) {
 
-		JsonNode rowsNode = rootNode.get("table").get("rows");
-		if (rowsNode.isArray()) {
-			ArrayNode arrayNode = (ArrayNode) rowsNode;
-			for (JsonNode b : arrayNode) {
+			com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+			JsonNode rootNode = mapper.readValue(a.getRight().get(0), JsonNode.class);
 
-				String name = b.get("Name").asText();
-				if (name.startsWith("urn:xdaq-flashlist:")) {
-					String shortName = name.substring(19);
-					// System.out.println(shortName + ": " + b);
+			JsonNode rowsNode = rootNode.get("table").get("rows");
+			if (rowsNode.isArray()) {
+				ArrayNode arrayNode = (ArrayNode) rowsNode;
+				for (JsonNode b : arrayNode) {
 
-					if (flashlistToUrl.containsKey(shortName)) {
-						logger.warn("Name colision across differend LAS for flashlist: " + shortName);
-						logger.warn(
-								"LAS url for flashlist " + shortName + " with be ignored, first match will be used");
-						logger.warn(" - first match: " + flashlistToUrl.get(shortName));
-						logger.warn(" - ignored:     " + url);
+					String name = b.get("Name").asText();
+					if (name.startsWith("urn:xdaq-flashlist:")) {
+						String shortName = name.substring(19);
+						// System.out.println(shortName + ": " + b);
 
-					} else {
-						flashlistToUrl.put(shortName, url);
+						if (flashlistToUrl.containsKey(shortName)) {
+							logger.warn("Name colision across differend LAS for flashlist: " + shortName);
+							logger.warn("LAS url for flashlist " + shortName
+									+ " with be ignored, first match will be used");
+							logger.warn(" - first match: " + flashlistToUrl.get(shortName));
+							logger.warn(" - ignored:     " + url);
+
+						} else {
+							flashlistToUrl.put(shortName, url);
+						}
 					}
 				}
+
+				logger.info("Explored " + arrayNode.size() + " flashlists");
+
+			} else {
+				throw new DAQException(DAQExceptionCode.ProblemExploringLAS, "Problem exploring LAS with url: " + url);
 			}
 
-			logger.info("Explored " + arrayNode.size() + " flashlists");
-
 		} else {
-			throw new ExportException("Problem exploring LAS with url: " + url);
+			throw new DAQException(DAQExceptionCode.ProblemExploringLAS,
+					"Request to LAS catalog returned with http status: " + a.getLeft());
 		}
 	}
 
