@@ -66,7 +66,7 @@ public class LiveAccessServiceExplorer {
 						// System.out.println(shortName + ": " + b);
 
 						if (flashlistToUrl.containsKey(shortName)) {
-							logger.warn("Name colision across differend LAS for flashlist: " + shortName);
+							logger.warn("Name collision across different LAS for flashlist: " + shortName);
 							logger.warn("LAS url for flashlist " + shortName
 									+ " with be ignored, first match will be used");
 							logger.warn(" - first match: " + flashlistToUrl.get(shortName));
