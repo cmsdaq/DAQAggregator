@@ -23,8 +23,8 @@ public class FRLPc implements FlashlistUpdatable, Derivable {
 	// ----------------------------------------
 
 	private String hostname;
-
-	private Integer port;
+	
+	private int port;
 
 	private boolean masked;
 
@@ -33,15 +33,15 @@ public class FRLPc implements FlashlistUpdatable, Derivable {
 	// ----------------------------------------
 	// fields updated periodically
 	// ----------------------------------------
-	private Boolean crashed;
+	private boolean crashed;
 
 	// ----------------------------------------------------------------------
 
-	public Boolean isCrashed() {
+	public boolean isCrashed() {
 		return crashed;
 	}
 
-	public void setCrashed(Boolean crashed) {
+	public void setCrashed(boolean crashed) {
 		this.crashed = crashed;
 	}
 
@@ -57,11 +57,11 @@ public class FRLPc implements FlashlistUpdatable, Derivable {
 		this.hostname = hostname;
 	}
 
-	public Integer getPort() {
+	public int getPort() {
 		return port;
 	}
 
-	public void setPort(Integer port) {
+	public void setPort(int port) {
 		this.port = port;
 	}
 
@@ -81,28 +81,31 @@ public class FRLPc implements FlashlistUpdatable, Derivable {
 	public void updateFromFlashlist(FlashlistType flashlistType, JsonNode flashlistRow) {
 
 		if (flashlistType == FlashlistType.JOB_CONTROL) {
-
+			
+			this.port = Integer.parseInt(flashlistRow.get("context").asText().split(":")[2]);
+			
 			JsonNode jobTable = flashlistRow.get("jobTable");
 			JsonNode rows = jobTable.get("rows");
-			this.crashed = false;
+			
 			for (JsonNode row : rows) {
 
 				String status = row.get("status").asText();
-
+				
 				// if not alive than crashed, if no data than default value
 				// witch is not crashed
 				if (!status.equalsIgnoreCase("alive"))
 					this.crashed = true;
+				
+				
+
 			}
-		}else if (flashlistType == FlashlistType.FEROL_CONFIGURATION || flashlistType == FlashlistType.FEROL40_CONFIGURATION) {
-			this.port = Integer.parseInt(flashlistRow.get("context").asText().split(":")[2]);
 		}
 	}
 
 	@Override
 	public void clean() {
-		port = null;
-		crashed = null;
+		port = 0;
+		crashed = false;
 	}
 
 	@Override
@@ -115,12 +118,8 @@ public class FRLPc implements FlashlistUpdatable, Derivable {
 		for (FRL frl : frls) {
 			for (FED fed : frl.getFeds().values()) {
 				allFeds++;
-				if (fed.isFrlMasked()==null) {
+				if (fed.isFrlMasked()) {
 					maskedFeds++;
-				}else{
-					if (fed.isFrlMasked()) {
-						maskedFeds++;
-					}
 				}
 			}
 		}
@@ -136,10 +135,10 @@ public class FRLPc implements FlashlistUpdatable, Derivable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((crashed == null) ? 0 : crashed.hashCode());
+		result = prime * result + (crashed ? 1231 : 1237);
 		result = prime * result + ((hostname == null) ? 0 : hostname.hashCode());
 		result = prime * result + (masked ? 1231 : 1237);
-		result = prime * result + ((port == null) ? 0 : port.hashCode());
+		result = prime * result + port;
 		return result;
 	}
 
@@ -152,10 +151,9 @@ public class FRLPc implements FlashlistUpdatable, Derivable {
 		if (getClass() != obj.getClass())
 			return false;
 		FRLPc other = (FRLPc) obj;
-		if (crashed == null) {
-			if (other.crashed != null)
-				return false;
-		} else if (!crashed.equals(other.crashed))
+		if (crashed != other.crashed)
+			return false;
+		if (port != other.port)
 			return false;
 		if (hostname == null) {
 			if (other.hostname != null)
@@ -164,14 +162,7 @@ public class FRLPc implements FlashlistUpdatable, Derivable {
 			return false;
 		if (masked != other.masked)
 			return false;
-		if (port == null) {
-			if (other.port != null)
-				return false;
-		} else if (!port.equals(other.port))
-			return false;
 		return true;
 	}
-	
-	
 
 }

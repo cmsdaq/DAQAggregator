@@ -11,12 +11,15 @@ import rcms.utilities.daqaggregator.datasource.Flashlist;
 /**
  * FED geolocation finder in FRL tree
  * 
+ * For more information see {@link ThreeElementGeoMatcher} documentation
  * 
+ * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
+ *
  */
 public class FedInFrlGeoFinder extends ThreeElementGeoMatcher<FED> {
-
+	
 	private final String ioKey;
-
+	
 	public FedInFrlGeoFinder(String ioKey){
 		this.ioKey = ioKey;
 	}
@@ -82,7 +85,6 @@ public class FedInFrlGeoFinder extends ThreeElementGeoMatcher<FED> {
 			flashlistMap.get(hostname).get(geoslot).put(1, row);
 
 		}
-
 		return flashlistMap;
 	}
 

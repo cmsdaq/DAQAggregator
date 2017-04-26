@@ -25,83 +25,83 @@ public class BU implements FlashlistUpdatable {
 
 	private String hostname;
 	
-	private Integer port;
+	private int port;
 
 	// ----------------------------------------
 	// fields updated periodically
 	// ----------------------------------------
 
-	private Boolean crashed;
+	private boolean crashed;
 	
 	private String stateName;
 
 	private String errorMsg;
 
 	/** event rate in Hz */
-	private Long rate;
+	private long rate;
 
 	/** throughput in Byte/s */
-	private Long throughput;
+	private long throughput;
 
 	/** in Byte */
-	private Integer eventSizeMean;
-	private Integer eventSizeStddev;
+	private int eventSizeMean;
+	private int eventSizeStddev;
 
 	/** events processed */
-	private Long numEvents;
+	private long numEvents;
 
-	private Long numEventsInBU;
+	private long numEventsInBU;
 
-	private Integer priority;
+	private int priority;
 
-	private Integer numRequestsSent;
+	private int numRequestsSent;
 
-	private Integer numRequestsUsed;
+	private int numRequestsUsed;
 
-	private Integer numRequestsBlocked;
+	private int numRequestsBlocked;
 
-	private Integer numFUsHLT;
+	private int numFUsHLT;
 
-	private Integer numFUsCrashed;
+	private int numFUsCrashed;
 
-	private Integer numFUsStale;
+	private int numFUsStale;
 
-	private Integer numFUsCloud;
+	private int numFUsCloud;
 
 	/** in percent */
-	private Double ramDiskUsage;
+	private double ramDiskUsage;
 
 	/** total amount of ramdisk in GB */
-	private Double ramDiskTotal;
+	private double ramDiskTotal;
 
 	/** total number of files written */
-	private Integer numFiles;
+	private int numFiles;
 
-	private Integer numLumisectionsWithFiles;
+	private int numLumisectionsWithFiles;
 
-	private Integer currentLumisection;
+	private int currentLumisection;
 
-	private Integer numLumisectionsForHLT;
+	private int numLumisectionsForHLT;
 
-	private Integer numLumisectionsOutHLT;
+	private int numLumisectionsOutHLT;
 
-	private Double fuOutputBandwidthInMB;
+	private double fuOutputBandwidthInMB;
 
-	private Integer fragmentCount;
+	private int fragmentCount;
 
-	private Integer nbCorruptedEvents;
+	private int nbCorruptedEvents;
 
-	private Integer nbEventsMissingData;
+	private int nbEventsMissingData;
 
-	private Integer nbEventsWithCRCerrors;
+	private int nbEventsWithCRCerrors;
 
-	private Integer nbTotalResources;
+	private int nbTotalResources;
 
-	private Integer requestRate;
+	private int requestRate;
 
-	private Double requestRetryRate;
+	private double requestRetryRate;
 
-	private Integer slowestRUtid;
+	private int slowestRUtid;
 
 	// ----------------------------------------------------------------------
 
@@ -120,8 +120,8 @@ public class BU implements FlashlistUpdatable {
 			this.stateName = flashlistRow.get("stateName").asText();
 			this.port = Integer.parseInt(flashlistRow.get("context").asText().split(":")[2]);
 			this.errorMsg = flashlistRow.get("errorMsg").asText();
-			this.rate = flashlistRow.get("eventRate").asLong();
-			this.throughput = flashlistRow.get("throughput").asLong();
+			this.rate = flashlistRow.get("eventRate").asInt();
+			this.throughput = flashlistRow.get("throughput").asInt();
 			this.eventSizeMean = flashlistRow.get("eventSize").asInt();
 			this.eventSizeStddev = flashlistRow.get("eventSizeStdDev").asInt();
 			this.numEvents = flashlistRow.get("nbEventsBuilt").asLong();
@@ -159,7 +159,7 @@ public class BU implements FlashlistUpdatable {
 			JsonNode jobTable = flashlistRow.get("jobTable");
 
 			JsonNode rows = jobTable.get("rows");
-			this.crashed = false;
+
 			for (JsonNode row : rows) {
 				//TODO: get the row with matching jid to the context (additional field)
 				String status = row.get("status").asText();
@@ -177,41 +177,41 @@ public class BU implements FlashlistUpdatable {
 	@Override
 	public void clean() {
 		this.stateName = null;
-		this.port = null;
+		this.port = 0;
 		this.errorMsg = null;
-		this.rate = null;
-		this.throughput = null;
-		this.eventSizeMean = null;
-		this.eventSizeStddev = null;
-		this.numEvents = null;
-		this.numEventsInBU = null;
-		this.priority = null;
-		this.numRequestsSent = null;
-		this.numRequestsUsed = null;
-		this.numRequestsBlocked = null;
-		this.numFUsHLT = null;
-		this.numFUsCrashed = null;
-		this.numFUsStale = null;
-		this.numFUsCloud = null;
-		this.ramDiskUsage = null;
-		this.ramDiskTotal = null;
-		this.numFiles = null;
-		this.numLumisectionsWithFiles = null;
-		this.currentLumisection = null;
-		this.numLumisectionsForHLT = null;
-		this.numLumisectionsOutHLT = null;
-		this.fuOutputBandwidthInMB = null;
-		this.requestRate = null;
-		this.requestRetryRate = null;
+		this.rate = 0;
+		this.throughput = 0;
+		this.eventSizeMean = 0;
+		this.eventSizeStddev = 0;
+		this.numEvents = 0;
+		this.numEventsInBU = 0;
+		this.priority = 0;
+		this.numRequestsSent = 0;
+		this.numRequestsUsed = 0;
+		this.numRequestsBlocked = 0;
+		this.numFUsHLT = 0;
+		this.numFUsCrashed = 0;
+		this.numFUsStale = 0;
+		this.numFUsCloud = 0;
+		this.ramDiskUsage = 0;
+		this.ramDiskTotal = 0;
+		this.numFiles = 0;
+		this.numLumisectionsWithFiles = 0;
+		this.currentLumisection = 0;
+		this.numLumisectionsForHLT = 0;
+		this.numLumisectionsOutHLT = 0;
+		this.fuOutputBandwidthInMB = 0;
+		this.requestRate = 0;
+		this.requestRetryRate = 0;
 
-		this.fragmentCount = null;
-		this.slowestRUtid = null;
-		this.nbCorruptedEvents = null;
-		this.nbEventsMissingData = null;
-		this.nbEventsWithCRCerrors = null;
-		this.nbTotalResources = null;
+		this.fragmentCount = 0;
+		this.slowestRUtid = 0;
+		this.nbCorruptedEvents = 0;
+		this.nbEventsMissingData = 0;
+		this.nbEventsWithCRCerrors = 0;
+		this.nbTotalResources = 0;
 		
-		this.crashed = null;
+		this.crashed = false;
 	}
 
 	// ----------------------------------------------------------------------
@@ -222,6 +222,14 @@ public class BU implements FlashlistUpdatable {
 			// assume both are non-null
 			return bu1.getHostname().compareTo(bu2.getHostname());
 		}
+	}
+
+	public boolean isCrashed() {
+		return crashed;
+	}
+
+	public void setCrashed(boolean crashed) {
+		this.crashed = crashed;
 	}
 
 	public DAQ getDaq() {
@@ -240,6 +248,14 @@ public class BU implements FlashlistUpdatable {
 		this.hostname = hostname;
 	}
 
+	public int getPort() {
+		return port;
+	}
+
+	public void setPort(int port) {
+		this.port = port;
+	}
+
 	public String getStateName() {
 		return stateName;
 	}
@@ -255,260 +271,244 @@ public class BU implements FlashlistUpdatable {
 	public void setErrorMsg(String errorMsg) {
 		this.errorMsg = errorMsg;
 	}
-	
-	public Integer getPort() {
-		return port;
-	}
 
-	public void setPort(Integer port) {
-		this.port = port;
-	}
-
-	public Boolean getCrashed() {
-		return crashed;
-	}
-
-	public void setCrashed(Boolean crashed) {
-		this.crashed = crashed;
-	}
-
-	public Long getRate() {
+	public long getRate() {
 		return rate;
 	}
 
-	public void setRate(Long rate) {
+	public void setRate(long rate) {
 		this.rate = rate;
 	}
 
-	public Long getThroughput() {
+	public long getThroughput() {
 		return throughput;
 	}
 
-	public void setThroughput(Long throughput) {
+	public void setThroughput(long throughput) {
 		this.throughput = throughput;
 	}
 
-	public Integer getEventSizeMean() {
+	public int getEventSizeMean() {
 		return eventSizeMean;
 	}
 
-	public void setEventSizeMean(Integer eventSizeMean) {
+	public void setEventSizeMean(int eventSizeMean) {
 		this.eventSizeMean = eventSizeMean;
 	}
 
-	public Integer getEventSizeStddev() {
+	public int getEventSizeStddev() {
 		return eventSizeStddev;
 	}
 
-	public void setEventSizeStddev(Integer eventSizeStddev) {
+	public void setEventSizeStddev(int eventSizeStddev) {
 		this.eventSizeStddev = eventSizeStddev;
 	}
 
-	public Long getNumEvents() {
+	public long getNumEvents() {
 		return numEvents;
 	}
 
-	public void setNumEvents(Long numEvents) {
+	public void setNumEvents(long numEvents) {
 		this.numEvents = numEvents;
 	}
 
-	public Long getNumEventsInBU() {
+	public long getNumEventsInBU() {
 		return numEventsInBU;
 	}
 
-	public void setNumEventsInBU(Long numEventsInBU) {
+	public void setNumEventsInBU(long numEventsInBU) {
 		this.numEventsInBU = numEventsInBU;
 	}
 
-	public Integer getPriority() {
+	public int getPriority() {
 		return priority;
 	}
 
-	public void setPriority(Integer priority) {
+	public void setPriority(int priority) {
 		this.priority = priority;
 	}
 
-	public Integer getNumRequestsSent() {
+	public int getNumRequestsSent() {
 		return numRequestsSent;
 	}
 
-	public void setNumRequestsSent(Integer numRequestsSent) {
+	public void setNumRequestsSent(int numRequestsSent) {
 		this.numRequestsSent = numRequestsSent;
 	}
 
-	public Integer getNumRequestsUsed() {
+	public int getNumRequestsUsed() {
 		return numRequestsUsed;
 	}
 
-	public void setNumRequestsUsed(Integer numRequestsUsed) {
+	public void setNumRequestsUsed(int numRequestsUsed) {
 		this.numRequestsUsed = numRequestsUsed;
 	}
 
-	public Integer getNumRequestsBlocked() {
+	public int getNumRequestsBlocked() {
 		return numRequestsBlocked;
 	}
 
-	public void setNumRequestsBlocked(Integer numRequestsBlocked) {
+	public void setNumRequestsBlocked(int numRequestsBlocked) {
 		this.numRequestsBlocked = numRequestsBlocked;
 	}
 
-	public Integer getNumFUsHLT() {
+	public int getNumFUsHLT() {
 		return numFUsHLT;
 	}
 
-	public void setNumFUsHLT(Integer numFUsHLT) {
+	public void setNumFUsHLT(int numFUsHLT) {
 		this.numFUsHLT = numFUsHLT;
 	}
 
-	public Integer getNumFUsCrashed() {
+	public int getNumFUsCrashed() {
 		return numFUsCrashed;
 	}
 
-	public void setNumFUsCrashed(Integer numFUsCrashed) {
+	public void setNumFUsCrashed(int numFUsCrashed) {
 		this.numFUsCrashed = numFUsCrashed;
 	}
 
-	public Integer getNumFUsStale() {
+	public int getNumFUsStale() {
 		return numFUsStale;
 	}
 
-	public void setNumFUsStale(Integer numFUsStale) {
+	public void setNumFUsStale(int numFUsStale) {
 		this.numFUsStale = numFUsStale;
 	}
 
-	public Integer getNumFUsCloud() {
+	public int getNumFUsCloud() {
 		return numFUsCloud;
 	}
 
-	public void setNumFUsCloud(Integer numFUsCloud) {
+	public void setNumFUsCloud(int numFUsCloud) {
 		this.numFUsCloud = numFUsCloud;
 	}
 
-	public Double getRamDiskUsage() {
+	public double getRamDiskUsage() {
 		return ramDiskUsage;
 	}
 
-	public void setRamDiskUsage(Double ramDiskUsage) {
+	public void setRamDiskUsage(double ramDiskUsage) {
 		this.ramDiskUsage = ramDiskUsage;
 	}
 
-	public Double getRamDiskTotal() {
+	public double getRamDiskTotal() {
 		return ramDiskTotal;
 	}
 
-	public void setRamDiskTotal(Double ramDiskTotal) {
+	public void setRamDiskTotal(double ramDiskTotal) {
 		this.ramDiskTotal = ramDiskTotal;
 	}
 
-	public Integer getNumFiles() {
+	public int getNumFiles() {
 		return numFiles;
 	}
 
-	public void setNumFiles(Integer numFiles) {
+	public void setNumFiles(int numFiles) {
 		this.numFiles = numFiles;
 	}
 
-	public Integer getNumLumisectionsWithFiles() {
+	public int getNumLumisectionsWithFiles() {
 		return numLumisectionsWithFiles;
 	}
 
-	public void setNumLumisectionsWithFiles(Integer numLumisectionsWithFiles) {
+	public void setNumLumisectionsWithFiles(int numLumisectionsWithFiles) {
 		this.numLumisectionsWithFiles = numLumisectionsWithFiles;
 	}
 
-	public Integer getCurrentLumisection() {
+	public int getCurrentLumisection() {
 		return currentLumisection;
 	}
 
-	public void setCurrentLumisection(Integer currentLumisection) {
+	public void setCurrentLumisection(int currentLumisection) {
 		this.currentLumisection = currentLumisection;
 	}
 
-	public Integer getNumLumisectionsForHLT() {
+	public int getNumLumisectionsForHLT() {
 		return numLumisectionsForHLT;
 	}
 
-	public void setNumLumisectionsForHLT(Integer numLumisectionsForHLT) {
+	public void setNumLumisectionsForHLT(int numLumisectionsForHLT) {
 		this.numLumisectionsForHLT = numLumisectionsForHLT;
 	}
 
-	public Integer getNumLumisectionsOutHLT() {
+	public int getNumLumisectionsOutHLT() {
 		return numLumisectionsOutHLT;
 	}
 
-	public void setNumLumisectionsOutHLT(Integer numLumisectionsOutHLT) {
+	public void setNumLumisectionsOutHLT(int numLumisectionsOutHLT) {
 		this.numLumisectionsOutHLT = numLumisectionsOutHLT;
 	}
 
-	public Double getFuOutputBandwidthInMB() {
+	public double getFuOutputBandwidthInMB() {
 		return fuOutputBandwidthInMB;
 	}
 
-	public void setFuOutputBandwidthInMB(Double fuOutputBandwidthInMB) {
+	public void setFuOutputBandwidthInMB(double fuOutputBandwidthInMB) {
 		this.fuOutputBandwidthInMB = fuOutputBandwidthInMB;
 	}
 
-	public Integer getFragmentCount() {
+	public int getFragmentCount() {
 		return fragmentCount;
 	}
 
-	public void setFragmentCount(Integer fragmentCount) {
+	public void setFragmentCount(int fragmentCount) {
 		this.fragmentCount = fragmentCount;
 	}
 
-	public Integer getNbCorruptedEvents() {
+	public int getNbCorruptedEvents() {
 		return nbCorruptedEvents;
 	}
 
-	public void setNbCorruptedEvents(Integer nbCorruptedEvents) {
+	public void setNbCorruptedEvents(int nbCorruptedEvents) {
 		this.nbCorruptedEvents = nbCorruptedEvents;
 	}
 
-	public Integer getNbEventsMissingData() {
+	public int getNbEventsMissingData() {
 		return nbEventsMissingData;
 	}
 
-	public void setNbEventsMissingData(Integer nbEventsMissingData) {
+	public void setNbEventsMissingData(int nbEventsMissingData) {
 		this.nbEventsMissingData = nbEventsMissingData;
 	}
 
-	public Integer getNbEventsWithCRCerrors() {
+	public int getNbEventsWithCRCerrors() {
 		return nbEventsWithCRCerrors;
 	}
 
-	public void setNbEventsWithCRCerrors(Integer nbEventsWithCRCerrors) {
+	public void setNbEventsWithCRCerrors(int nbEventsWithCRCerrors) {
 		this.nbEventsWithCRCerrors = nbEventsWithCRCerrors;
 	}
 
-	public Integer getNbTotalResources() {
+	public int getNbTotalResources() {
 		return nbTotalResources;
 	}
 
-	public void setNbTotalResources(Integer nbTotalResources) {
+	public void setNbTotalResources(int nbTotalResources) {
 		this.nbTotalResources = nbTotalResources;
 	}
 
-	public Integer getRequestRate() {
+	public int getRequestRate() {
 		return requestRate;
 	}
 
-	public void setRequestRate(Integer requestRate) {
+	public void setRequestRate(int requestRate) {
 		this.requestRate = requestRate;
 	}
 
-	public Double getRequestRetryRate() {
+	public double getRequestRetryRate() {
 		return requestRetryRate;
 	}
 
-	public void setRequestRetryRate(Double requestRetryRate) {
+	public void setRequestRetryRate(double requestRetryRate) {
 		this.requestRetryRate = requestRetryRate;
 	}
 
-	public Integer getSlowestRUtid() {
+	public int getSlowestRUtid() {
 		return slowestRUtid;
 	}
 
-	public void setSlowestRUtid(Integer slowestRUtid) {
+	public void setSlowestRUtid(int slowestRUtid) {
 		this.slowestRUtid = slowestRUtid;
 	}
 
@@ -516,41 +516,45 @@ public class BU implements FlashlistUpdatable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((crashed == null) ? 0 : crashed.hashCode());
-		result = prime * result + ((currentLumisection == null) ? 0 : currentLumisection.hashCode());
+		result = prime * result + currentLumisection;
 		result = prime * result + ((errorMsg == null) ? 0 : errorMsg.hashCode());
-		result = prime * result + ((eventSizeMean == null) ? 0 : eventSizeMean.hashCode());
-		result = prime * result + ((eventSizeStddev == null) ? 0 : eventSizeStddev.hashCode());
-		result = prime * result + ((fragmentCount == null) ? 0 : fragmentCount.hashCode());
-		result = prime * result + ((fuOutputBandwidthInMB == null) ? 0 : fuOutputBandwidthInMB.hashCode());
+		result = prime * result + eventSizeMean;
+		result = prime * result + eventSizeStddev;
+		result = prime * result + fragmentCount;
+		long temp;
+		temp = Double.doubleToLongBits(fuOutputBandwidthInMB);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
 		result = prime * result + ((hostname == null) ? 0 : hostname.hashCode());
-		result = prime * result + ((nbCorruptedEvents == null) ? 0 : nbCorruptedEvents.hashCode());
-		result = prime * result + ((nbEventsMissingData == null) ? 0 : nbEventsMissingData.hashCode());
-		result = prime * result + ((nbEventsWithCRCerrors == null) ? 0 : nbEventsWithCRCerrors.hashCode());
-		result = prime * result + ((nbTotalResources == null) ? 0 : nbTotalResources.hashCode());
-		result = prime * result + ((numEvents == null) ? 0 : numEvents.hashCode());
-		result = prime * result + ((numEventsInBU == null) ? 0 : numEventsInBU.hashCode());
-		result = prime * result + ((numFUsCloud == null) ? 0 : numFUsCloud.hashCode());
-		result = prime * result + ((numFUsCrashed == null) ? 0 : numFUsCrashed.hashCode());
-		result = prime * result + ((numFUsHLT == null) ? 0 : numFUsHLT.hashCode());
-		result = prime * result + ((numFUsStale == null) ? 0 : numFUsStale.hashCode());
-		result = prime * result + ((numFiles == null) ? 0 : numFiles.hashCode());
-		result = prime * result + ((numLumisectionsForHLT == null) ? 0 : numLumisectionsForHLT.hashCode());
-		result = prime * result + ((numLumisectionsOutHLT == null) ? 0 : numLumisectionsOutHLT.hashCode());
-		result = prime * result + ((numLumisectionsWithFiles == null) ? 0 : numLumisectionsWithFiles.hashCode());
-		result = prime * result + ((numRequestsBlocked == null) ? 0 : numRequestsBlocked.hashCode());
-		result = prime * result + ((numRequestsSent == null) ? 0 : numRequestsSent.hashCode());
-		result = prime * result + ((numRequestsUsed == null) ? 0 : numRequestsUsed.hashCode());
-		result = prime * result + ((port == null) ? 0 : port.hashCode());
-		result = prime * result + ((priority == null) ? 0 : priority.hashCode());
-		result = prime * result + ((ramDiskTotal == null) ? 0 : ramDiskTotal.hashCode());
-		result = prime * result + ((ramDiskUsage == null) ? 0 : ramDiskUsage.hashCode());
-		result = prime * result + ((rate == null) ? 0 : rate.hashCode());
-		result = prime * result + ((requestRate == null) ? 0 : requestRate.hashCode());
-		result = prime * result + ((requestRetryRate == null) ? 0 : requestRetryRate.hashCode());
-		result = prime * result + ((slowestRUtid == null) ? 0 : slowestRUtid.hashCode());
+		result = prime * result + port;
+		result = prime * result + nbCorruptedEvents;
+		result = prime * result + nbEventsMissingData;
+		result = prime * result + nbEventsWithCRCerrors;
+		result = prime * result + nbTotalResources;
+		result = prime * result + (int) (numEvents ^ (numEvents >>> 32));
+		result = prime * result + (int) (numEventsInBU ^ (numEventsInBU >>> 32));
+		result = prime * result + numFUsCloud;
+		result = prime * result + numFUsCrashed;
+		result = prime * result + numFUsHLT;
+		result = prime * result + numFUsStale;
+		result = prime * result + numFiles;
+		result = prime * result + numLumisectionsForHLT;
+		result = prime * result + numLumisectionsOutHLT;
+		result = prime * result + numLumisectionsWithFiles;
+		result = prime * result + numRequestsBlocked;
+		result = prime * result + numRequestsSent;
+		result = prime * result + numRequestsUsed;
+		result = prime * result + priority;
+		temp = Double.doubleToLongBits(ramDiskTotal);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		temp = Double.doubleToLongBits(ramDiskUsage);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		result = prime * result + (int) (rate ^ (rate >>> 32));
+		result = prime * result + requestRate;
+		temp = Double.doubleToLongBits(requestRetryRate);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		result = prime * result + slowestRUtid;
 		result = prime * result + ((stateName == null) ? 0 : stateName.hashCode());
-		result = prime * result + ((throughput == null) ? 0 : throughput.hashCode());
+		result = prime * result + (int) (throughput ^ (throughput >>> 32));
 		return result;
 	}
 
@@ -563,187 +567,89 @@ public class BU implements FlashlistUpdatable {
 		if (getClass() != obj.getClass())
 			return false;
 		BU other = (BU) obj;
-		if (crashed == null) {
-			if (other.crashed != null)
-				return false;
-		} else if (!crashed.equals(other.crashed))
-			return false;
-		if (currentLumisection == null) {
-			if (other.currentLumisection != null)
-				return false;
-		} else if (!currentLumisection.equals(other.currentLumisection))
+		if (currentLumisection != other.currentLumisection)
 			return false;
 		if (errorMsg == null) {
 			if (other.errorMsg != null)
 				return false;
 		} else if (!errorMsg.equals(other.errorMsg))
 			return false;
-		if (eventSizeMean == null) {
-			if (other.eventSizeMean != null)
-				return false;
-		} else if (!eventSizeMean.equals(other.eventSizeMean))
+		if (eventSizeMean != other.eventSizeMean)
 			return false;
-		if (eventSizeStddev == null) {
-			if (other.eventSizeStddev != null)
-				return false;
-		} else if (!eventSizeStddev.equals(other.eventSizeStddev))
+		if (eventSizeStddev != other.eventSizeStddev)
 			return false;
-		if (fragmentCount == null) {
-			if (other.fragmentCount != null)
-				return false;
-		} else if (!fragmentCount.equals(other.fragmentCount))
+		if (fragmentCount != other.fragmentCount)
 			return false;
-		if (fuOutputBandwidthInMB == null) {
-			if (other.fuOutputBandwidthInMB != null)
-				return false;
-		} else if (!fuOutputBandwidthInMB.equals(other.fuOutputBandwidthInMB))
+		if (Double.doubleToLongBits(fuOutputBandwidthInMB) != Double.doubleToLongBits(other.fuOutputBandwidthInMB))
 			return false;
 		if (hostname == null) {
 			if (other.hostname != null)
 				return false;
 		} else if (!hostname.equals(other.hostname))
 			return false;
-		if (nbCorruptedEvents == null) {
-			if (other.nbCorruptedEvents != null)
-				return false;
-		} else if (!nbCorruptedEvents.equals(other.nbCorruptedEvents))
+		if (port != other.port)
 			return false;
-		if (nbEventsMissingData == null) {
-			if (other.nbEventsMissingData != null)
-				return false;
-		} else if (!nbEventsMissingData.equals(other.nbEventsMissingData))
+		if (nbCorruptedEvents != other.nbCorruptedEvents)
 			return false;
-		if (nbEventsWithCRCerrors == null) {
-			if (other.nbEventsWithCRCerrors != null)
-				return false;
-		} else if (!nbEventsWithCRCerrors.equals(other.nbEventsWithCRCerrors))
+		if (nbEventsMissingData != other.nbEventsMissingData)
 			return false;
-		if (nbTotalResources == null) {
-			if (other.nbTotalResources != null)
-				return false;
-		} else if (!nbTotalResources.equals(other.nbTotalResources))
+		if (nbEventsWithCRCerrors != other.nbEventsWithCRCerrors)
 			return false;
-		if (numEvents == null) {
-			if (other.numEvents != null)
-				return false;
-		} else if (!numEvents.equals(other.numEvents))
+		if (nbTotalResources != other.nbTotalResources)
 			return false;
-		if (numEventsInBU == null) {
-			if (other.numEventsInBU != null)
-				return false;
-		} else if (!numEventsInBU.equals(other.numEventsInBU))
+		if (numEvents != other.numEvents)
 			return false;
-		if (numFUsCloud == null) {
-			if (other.numFUsCloud != null)
-				return false;
-		} else if (!numFUsCloud.equals(other.numFUsCloud))
+		if (numEventsInBU != other.numEventsInBU)
 			return false;
-		if (numFUsCrashed == null) {
-			if (other.numFUsCrashed != null)
-				return false;
-		} else if (!numFUsCrashed.equals(other.numFUsCrashed))
+		if (numFUsCloud != other.numFUsCloud)
 			return false;
-		if (numFUsHLT == null) {
-			if (other.numFUsHLT != null)
-				return false;
-		} else if (!numFUsHLT.equals(other.numFUsHLT))
+		if (numFUsCrashed != other.numFUsCrashed)
 			return false;
-		if (numFUsStale == null) {
-			if (other.numFUsStale != null)
-				return false;
-		} else if (!numFUsStale.equals(other.numFUsStale))
+		if (numFUsHLT != other.numFUsHLT)
 			return false;
-		if (numFiles == null) {
-			if (other.numFiles != null)
-				return false;
-		} else if (!numFiles.equals(other.numFiles))
+		if (numFUsStale != other.numFUsStale)
 			return false;
-		if (numLumisectionsForHLT == null) {
-			if (other.numLumisectionsForHLT != null)
-				return false;
-		} else if (!numLumisectionsForHLT.equals(other.numLumisectionsForHLT))
+		if (numFiles != other.numFiles)
 			return false;
-		if (numLumisectionsOutHLT == null) {
-			if (other.numLumisectionsOutHLT != null)
-				return false;
-		} else if (!numLumisectionsOutHLT.equals(other.numLumisectionsOutHLT))
+		if (numLumisectionsForHLT != other.numLumisectionsForHLT)
 			return false;
-		if (numLumisectionsWithFiles == null) {
-			if (other.numLumisectionsWithFiles != null)
-				return false;
-		} else if (!numLumisectionsWithFiles.equals(other.numLumisectionsWithFiles))
+		if (numLumisectionsOutHLT != other.numLumisectionsOutHLT)
 			return false;
-		if (numRequestsBlocked == null) {
-			if (other.numRequestsBlocked != null)
-				return false;
-		} else if (!numRequestsBlocked.equals(other.numRequestsBlocked))
+		if (numLumisectionsWithFiles != other.numLumisectionsWithFiles)
 			return false;
-		if (numRequestsSent == null) {
-			if (other.numRequestsSent != null)
-				return false;
-		} else if (!numRequestsSent.equals(other.numRequestsSent))
+		if (numRequestsBlocked != other.numRequestsBlocked)
 			return false;
-		if (numRequestsUsed == null) {
-			if (other.numRequestsUsed != null)
-				return false;
-		} else if (!numRequestsUsed.equals(other.numRequestsUsed))
+		if (numRequestsSent != other.numRequestsSent)
 			return false;
-		if (port == null) {
-			if (other.port != null)
-				return false;
-		} else if (!port.equals(other.port))
+		if (numRequestsUsed != other.numRequestsUsed)
 			return false;
-		if (priority == null) {
-			if (other.priority != null)
-				return false;
-		} else if (!priority.equals(other.priority))
+		if (priority != other.priority)
 			return false;
-		if (ramDiskTotal == null) {
-			if (other.ramDiskTotal != null)
-				return false;
-		} else if (!ramDiskTotal.equals(other.ramDiskTotal))
+		if (Double.doubleToLongBits(ramDiskTotal) != Double.doubleToLongBits(other.ramDiskTotal))
 			return false;
-		if (ramDiskUsage == null) {
-			if (other.ramDiskUsage != null)
-				return false;
-		} else if (!ramDiskUsage.equals(other.ramDiskUsage))
+		if (Double.doubleToLongBits(ramDiskUsage) != Double.doubleToLongBits(other.ramDiskUsage))
 			return false;
-		if (rate == null) {
-			if (other.rate != null)
-				return false;
-		} else if (!rate.equals(other.rate))
+		if (rate != other.rate)
 			return false;
-		if (requestRate == null) {
-			if (other.requestRate != null)
-				return false;
-		} else if (!requestRate.equals(other.requestRate))
+		if (requestRate != other.requestRate)
 			return false;
-		if (requestRetryRate == null) {
-			if (other.requestRetryRate != null)
-				return false;
-		} else if (!requestRetryRate.equals(other.requestRetryRate))
+		if (Double.doubleToLongBits(requestRetryRate) != Double.doubleToLongBits(other.requestRetryRate))
 			return false;
-		if (slowestRUtid == null) {
-			if (other.slowestRUtid != null)
-				return false;
-		} else if (!slowestRUtid.equals(other.slowestRUtid))
+		if (slowestRUtid != other.slowestRUtid)
 			return false;
 		if (stateName == null) {
 			if (other.stateName != null)
 				return false;
 		} else if (!stateName.equals(other.stateName))
 			return false;
-		if (throughput == null) {
-			if (other.throughput != null)
-				return false;
-		} else if (!throughput.equals(other.throughput))
+		if (throughput != other.throughput)
 			return false;
 		return true;
 	}
 
+	
+	
 
 	// ----------------------------------------------------------------------
-	
-	
 
 }

@@ -90,7 +90,7 @@ public class MonitorManagerTest {
 	 */
 	private void testSnapshot(DAQ snapshot, long expectedTime, int expectedEvents) {
 		Assert.assertNotNull(snapshot);
-		Assert.assertEquals(expectedTime, snapshot.getLastUpdate().longValue());
+		Assert.assertEquals(expectedTime, snapshot.getLastUpdate());
 		Assert.assertEquals(expectedEvents, snapshot.getFedBuilderSummary().getSumEventsInRU());
 
 	}

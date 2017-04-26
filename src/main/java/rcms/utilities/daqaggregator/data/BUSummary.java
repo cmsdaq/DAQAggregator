@@ -128,11 +128,6 @@ public class BUSummary implements Derivable {
 
 		this.setDaq(daq);
 		for (BU bu : daq.getBus()) {
-			
-			if(nullValuesAtBu(bu)){
-				continue;
-			}
-			
 			numEvents += bu.getNumEvents();
 			numEventsInBU += bu.getNumEventsInBU();
 			numFiles += bu.getNumFiles();
@@ -198,39 +193,6 @@ public class BUSummary implements Derivable {
 		this.setThroughput(throughput);
 		this.setFuOutputBandwidthInMB(fuOutputBandwidthInMB);
 		
-	}
-
-	private boolean nullValuesAtBu(BU bu) {
-		boolean ret = false;
-		
-		if (bu.getRate()==null||
-				bu.getThroughput()==null||
-				bu.getEventSizeMean()==null||
-				bu.getEventSizeStddev()==null||
-				bu.getNumEvents()==null||
-				bu.getNumEventsInBU()==null||
-				bu.getPriority()==null||
-				bu.getNumRequestsSent()==null||
-				bu.getNumRequestsUsed()==null||
-				bu.getNumRequestsBlocked()==null||
-				bu.getNumFUsHLT()==null||
-				bu.getNumFUsCrashed()==null||
-				bu.getNumFUsStale()==null||
-				bu.getNumFUsCloud()==null||
-				bu.getRamDiskUsage()==null||
-				bu.getRamDiskTotal()==null||
-				bu.getNumFiles()==null||
-				bu.getNumLumisectionsWithFiles()==null||
-				bu.getCurrentLumisection()==null||
-				bu.getNumLumisectionsForHLT()==null||
-				bu.getNumLumisectionsOutHLT()==null||
-				bu.getFuOutputBandwidthInMB()==null)
-		{
-			return true;
-		}
-		
-		
-		return ret;
 	}
 
 	public DAQ getDaq() {

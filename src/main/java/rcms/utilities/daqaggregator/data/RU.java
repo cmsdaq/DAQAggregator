@@ -29,11 +29,11 @@ public class RU implements FlashlistUpdatable, Derivable {
 
 	private String hostname;
 	
-	private Integer port;
+	private int port;
 
 	private boolean isEVM;
 
-	private Boolean masked;
+	private boolean masked;
 
 	private int instance;
 
@@ -41,7 +41,7 @@ public class RU implements FlashlistUpdatable, Derivable {
 	// fields updated periodically
 	// ----------------------------------------
 	
-	private Boolean crashed;
+	private boolean crashed;
 
 	private String stateName;
 
@@ -52,30 +52,30 @@ public class RU implements FlashlistUpdatable, Derivable {
 	private String infoMsg;
 
 	/** events rate in kHz ? */
-	private Float rate;
+	private float rate;
 
 	/** MByte per second ? */
-	private Float throughput;
+	private float throughput;
 
 	/**
 	 * TODO: mean superfragment size in kByte?, TODO: mean over what period ?
 	 */
-	private Float superFragmentSizeMean;
+	private float superFragmentSizeMean;
 
 	/** spread of superfragment size in kByte ? */
-	private Float superFragmentSizeStddev;
+	private float superFragmentSizeStddev;
 
 	/** total rate of fragment messages going to the BUs */
-	private Integer fragmentsInRU;
+	private int fragmentsInRU;
 
-	private Integer eventsInRU;
+	private int eventsInRU;
 
-	private Long eventCount;
+	private long eventCount;
 
 	/** requests from BUs */
-	private Integer requests;
+	private int requests;
 
-	private Integer incompleteSuperFragmentCount;
+	private int incompleteSuperFragmentCount;
 	
 	/** per-BU lists, all subject to the same order of BUs */
 	private List<Long> throughputPerBU;
@@ -87,15 +87,15 @@ public class RU implements FlashlistUpdatable, Derivable {
 	private List<Double> retryRatePerBU;
 
 	/** only for the EVM case */
-	private Integer allocateRate;
+	private int allocateRate;
 	
-	private Double allocateRetryRate;
+	private double allocateRetryRate;
 	
-	public Boolean isCrashed() {
+	public boolean isCrashed() {
 		return crashed;
 	}
 
-	public void setCrashed(Boolean crashed) {
+	public void setCrashed(boolean crashed) {
 		this.crashed = crashed;
 	}
 
@@ -131,67 +131,67 @@ public class RU implements FlashlistUpdatable, Derivable {
 		this.infoMsg = infoMsg;
 	}
 
-	public Float getRate() {
+	public float getRate() {
 		return rate;
 	}
 
-	public void setRate(Float rate) {
+	public void setRate(float rate) {
 		this.rate = rate;
 	}
 
-	public Float getThroughput() {
+	public float getThroughput() {
 		return throughput;
 	}
 
-	public void setThroughput(Float throughput) {
+	public void setThroughput(float throughput) {
 		this.throughput = throughput;
 	}
 
-	public Float getSuperFragmentSizeMean() {
+	public float getSuperFragmentSizeMean() {
 		return superFragmentSizeMean;
 	}
 
-	public void setSuperFragmentSizeMean(Float superFragmentSizeMean) {
+	public void setSuperFragmentSizeMean(float superFragmentSizeMean) {
 		this.superFragmentSizeMean = superFragmentSizeMean;
 	}
 
-	public Float getSuperFragmentSizeStddev() {
+	public float getSuperFragmentSizeStddev() {
 		return superFragmentSizeStddev;
 	}
 
-	public void setSuperFragmentSizeStddev(Float superFragmentSizeStddev) {
+	public void setSuperFragmentSizeStddev(float superFragmentSizeStddev) {
 		this.superFragmentSizeStddev = superFragmentSizeStddev;
 	}
 
-	public Integer getFragmentsInRU() {
+	public int getFragmentsInRU() {
 		return fragmentsInRU;
 	}
 
-	public void setFragmentsInRU(Integer fragmentsInRU) {
+	public void setFragmentsInRU(int fragmentsInRU) {
 		this.fragmentsInRU = fragmentsInRU;
 	}
 
-	public Integer getEventsInRU() {
+	public int getEventsInRU() {
 		return eventsInRU;
 	}
 
-	public void setEventsInRU(Integer eventsInRU) {
+	public void setEventsInRU(int eventsInRU) {
 		this.eventsInRU = eventsInRU;
 	}
 
-	public Long getEventCount() {
+	public long getEventCount() {
 		return eventCount;
 	}
 
-	public void setEventCount(Long eventCount) {
+	public void setEventCount(long eventCount) {
 		this.eventCount = eventCount;
 	}
 
-	public Integer getRequests() {
+	public int getRequests() {
 		return requests;
 	}
 
-	public void setRequests(Integer requests) {
+	public void setRequests(int requests) {
 		this.requests = requests;
 	}
 
@@ -207,7 +207,7 @@ public class RU implements FlashlistUpdatable, Derivable {
 		return isEVM;
 	}
 
-	public Boolean isMasked() {
+	public boolean isMasked() {
 		return masked;
 	}
 
@@ -219,11 +219,11 @@ public class RU implements FlashlistUpdatable, Derivable {
 		this.hostname = hostname;
 	}
 
-	public Integer getPort() {
+	public int getPort() {
 		return port;
 	}
 
-	public void setPort(Integer port) {
+	public void setPort(int port) {
 		this.port = port;
 	}
 
@@ -231,7 +231,7 @@ public class RU implements FlashlistUpdatable, Derivable {
 		this.isEVM = isEVM;
 	}
 
-	public void setMasked(Boolean masked) {
+	public void setMasked(boolean masked) {
 		this.masked = masked;
 	}
 
@@ -275,19 +275,19 @@ public class RU implements FlashlistUpdatable, Derivable {
 		this.retryRatePerBU = retryRatePerBU;
 	}
 
-	public Integer getAllocateRate() {
+	public int getAllocateRate() {
 		return allocateRate;
 	}
 
-	public void setAllocateRate(Integer allocateRate) {
+	public void setAllocateRate(int allocateRate) {
 		this.allocateRate = allocateRate;
 	}
 
-	public Double getAllocateRetryRate() {
+	public double getAllocateRetryRate() {
 		return allocateRetryRate;
 	}
 
-	public void setAllocateRetryRate(Double allocateRetryRate) {
+	public void setAllocateRetryRate(double allocateRetryRate) {
 		this.allocateRetryRate = allocateRetryRate;
 	}
 
@@ -299,11 +299,11 @@ public class RU implements FlashlistUpdatable, Derivable {
 	}
 
 
-	public Integer getIncompleteSuperFragmentCount() {
+	public int getIncompleteSuperFragmentCount() {
 		return incompleteSuperFragmentCount;
 	}
 
-	public void setIncompleteSuperFragmentCount(Integer incompleteSuperFragmentCount) {
+	public void setIncompleteSuperFragmentCount(int incompleteSuperFragmentCount) {
 		this.incompleteSuperFragmentCount = incompleteSuperFragmentCount;
 	}
 
@@ -319,12 +319,8 @@ public class RU implements FlashlistUpdatable, Derivable {
 			for (FRL frl : subFedBuilder.getFrls()) {
 				for (FED fed : frl.getFeds().values()) {
 					allFeds++;
-					if (fed.isFrlMasked()==null) {
+					if (fed.isFrlMasked()) {
 						maskedFeds++;
-					}else{
-						if (fed.isFrlMasked()) {
-							maskedFeds++;
-						}
 					}
 				}
 			}
@@ -361,11 +357,11 @@ public class RU implements FlashlistUpdatable, Derivable {
 			this.setErrorMsg(flashlistRow.get("errorMsg").asText());
 			this.requests = flashlistRow.get("activeRequests").asInt();
 			this.port = Integer.parseInt(flashlistRow.get("context").asText().split(":")[2]);
-			this.rate = (float)flashlistRow.get("eventRate").asDouble();
+			this.rate = flashlistRow.get("eventRate").asInt();
 			this.eventsInRU = flashlistRow.get("eventsInRU").asInt();
 			this.eventCount = flashlistRow.get("eventCount").asLong();
-			this.superFragmentSizeMean = (float)flashlistRow.get("superFragmentSize").asDouble();
-			this.superFragmentSizeStddev = (float)flashlistRow.get("superFragmentSizeStdDev").asDouble();
+			this.superFragmentSizeMean = flashlistRow.get("superFragmentSize").asInt();
+			this.superFragmentSizeStddev = flashlistRow.get("superFragmentSizeStdDev").asInt();
 			this.incompleteSuperFragmentCount = flashlistRow.get("incompleteSuperFragmentCount").asInt();
 			this.fragmentsInRU = flashlistRow.get("incompleteSuperFragmentCount").asInt();
 
@@ -417,7 +413,7 @@ public class RU implements FlashlistUpdatable, Derivable {
 			JsonNode jobTable = flashlistRow.get("jobTable");
 
 			JsonNode rows = jobTable.get("rows");
-			this.crashed = false;
+
 			for (JsonNode row : rows) {
 				//TODO: get the row with matching jid to the context (additional field)
 				String status = row.get("status").asText();
@@ -435,20 +431,19 @@ public class RU implements FlashlistUpdatable, Derivable {
 
 	@Override
 	public void clean() {
-		
 		this.setStateName(null);
 		this.setErrorMsg(null);
-		this.requests = null;
-		this.port = null;
-		this.rate = null;
-		this.eventsInRU = null;
-		this.eventCount = null;
-		this.superFragmentSizeMean = null;
-		this.superFragmentSizeStddev = null;
-		this.incompleteSuperFragmentCount = null;
-		this.fragmentsInRU = null;
+		this.requests = 0;
+		this.port = 0;
+		this.rate = 0;
+		this.eventsInRU = 0;
+		this.eventCount = 0;
+		this.superFragmentSizeMean = 0;
+		this.superFragmentSizeStddev = 0;
+		this.incompleteSuperFragmentCount = 0;
+		this.fragmentsInRU = 0;
 		
-		this.throughput = null;
+		this.throughput = rate * superFragmentSizeMean;
 		
 		// values per BU
 		this.throughputPerBU = new ArrayList<Long>();
@@ -456,42 +451,40 @@ public class RU implements FlashlistUpdatable, Derivable {
 		this.fragmentRatePerBU = new ArrayList<Integer>();
 		this.retryRatePerBU = new ArrayList<Double>();
 
-		
-		this.allocateRate = null;
-		this.allocateRetryRate = null;
+		this.allocateRate = 0;
+		this.allocateRetryRate = 0;
 			
-		this.crashed = null;
-		
+		this.crashed = false;
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((allocateRate == null) ? 0 : allocateRate.hashCode());
-		result = prime * result + ((allocateRetryRate == null) ? 0 : allocateRetryRate.hashCode());
+		result = prime * result + allocateRate;
+		long temp;
+		temp = Double.doubleToLongBits(allocateRetryRate);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
 		result = prime * result + ((buTids == null) ? 0 : buTids.hashCode());
-		result = prime * result + ((crashed == null) ? 0 : crashed.hashCode());
 		result = prime * result + ((errorMsg == null) ? 0 : errorMsg.hashCode());
-		result = prime * result + ((eventCount == null) ? 0 : eventCount.hashCode());
-		result = prime * result + ((eventsInRU == null) ? 0 : eventsInRU.hashCode());
+		result = prime * result + (int) (eventCount ^ (eventCount >>> 32));
+		result = prime * result + eventsInRU;
 		result = prime * result + ((fragmentRatePerBU == null) ? 0 : fragmentRatePerBU.hashCode());
-		result = prime * result + ((fragmentsInRU == null) ? 0 : fragmentsInRU.hashCode());
+		result = prime * result + fragmentsInRU;
 		result = prime * result + ((hostname == null) ? 0 : hostname.hashCode());
-		result = prime * result
-				+ ((incompleteSuperFragmentCount == null) ? 0 : incompleteSuperFragmentCount.hashCode());
+		result = prime * result + port;
+		result = prime * result + incompleteSuperFragmentCount;
 		result = prime * result + ((infoMsg == null) ? 0 : infoMsg.hashCode());
 		result = prime * result + instance;
 		result = prime * result + (isEVM ? 1231 : 1237);
-		result = prime * result + ((masked == null) ? 0 : masked.hashCode());
-		result = prime * result + ((port == null) ? 0 : port.hashCode());
-		result = prime * result + ((rate == null) ? 0 : rate.hashCode());
-		result = prime * result + ((requests == null) ? 0 : requests.hashCode());
+		result = prime * result + (masked ? 1231 : 1237);
+		result = prime * result + Float.floatToIntBits(rate);
+		result = prime * result + requests;
 		result = prime * result + ((retryRatePerBU == null) ? 0 : retryRatePerBU.hashCode());
 		result = prime * result + ((stateName == null) ? 0 : stateName.hashCode());
-		result = prime * result + ((superFragmentSizeMean == null) ? 0 : superFragmentSizeMean.hashCode());
-		result = prime * result + ((superFragmentSizeStddev == null) ? 0 : superFragmentSizeStddev.hashCode());
-		result = prime * result + ((throughput == null) ? 0 : throughput.hashCode());
+		result = prime * result + Float.floatToIntBits(superFragmentSizeMean);
+		result = prime * result + Float.floatToIntBits(superFragmentSizeStddev);
+		result = prime * result + Float.floatToIntBits(throughput);
 		result = prime * result + ((throughputPerBU == null) ? 0 : throughputPerBU.hashCode());
 		result = prime * result + ((warnMsg == null) ? 0 : warnMsg.hashCode());
 		return result;
@@ -506,60 +499,39 @@ public class RU implements FlashlistUpdatable, Derivable {
 		if (getClass() != obj.getClass())
 			return false;
 		RU other = (RU) obj;
-		if (allocateRate == null) {
-			if (other.allocateRate != null)
-				return false;
-		} else if (!allocateRate.equals(other.allocateRate))
+		if (allocateRate != other.allocateRate)
 			return false;
-		if (allocateRetryRate == null) {
-			if (other.allocateRetryRate != null)
-				return false;
-		} else if (!allocateRetryRate.equals(other.allocateRetryRate))
+		if (Double.doubleToLongBits(allocateRetryRate) != Double.doubleToLongBits(other.allocateRetryRate))
 			return false;
 		if (buTids == null) {
 			if (other.buTids != null)
 				return false;
 		} else if (!buTids.equals(other.buTids))
 			return false;
-		if (crashed == null) {
-			if (other.crashed != null)
-				return false;
-		} else if (!crashed.equals(other.crashed))
-			return false;
 		if (errorMsg == null) {
 			if (other.errorMsg != null)
 				return false;
 		} else if (!errorMsg.equals(other.errorMsg))
 			return false;
-		if (eventCount == null) {
-			if (other.eventCount != null)
-				return false;
-		} else if (!eventCount.equals(other.eventCount))
+		if (eventCount != other.eventCount)
 			return false;
-		if (eventsInRU == null) {
-			if (other.eventsInRU != null)
-				return false;
-		} else if (!eventsInRU.equals(other.eventsInRU))
+		if (eventsInRU != other.eventsInRU)
 			return false;
 		if (fragmentRatePerBU == null) {
 			if (other.fragmentRatePerBU != null)
 				return false;
 		} else if (!fragmentRatePerBU.equals(other.fragmentRatePerBU))
 			return false;
-		if (fragmentsInRU == null) {
-			if (other.fragmentsInRU != null)
-				return false;
-		} else if (!fragmentsInRU.equals(other.fragmentsInRU))
+		if (fragmentsInRU != other.fragmentsInRU)
 			return false;
 		if (hostname == null) {
 			if (other.hostname != null)
 				return false;
 		} else if (!hostname.equals(other.hostname))
 			return false;
-		if (incompleteSuperFragmentCount == null) {
-			if (other.incompleteSuperFragmentCount != null)
-				return false;
-		} else if (!incompleteSuperFragmentCount.equals(other.incompleteSuperFragmentCount))
+		if (incompleteSuperFragmentCount != other.incompleteSuperFragmentCount)
+			return false;
+		if (port != other.port)
 			return false;
 		if (infoMsg == null) {
 			if (other.infoMsg != null)
@@ -570,25 +542,11 @@ public class RU implements FlashlistUpdatable, Derivable {
 			return false;
 		if (isEVM != other.isEVM)
 			return false;
-		if (masked == null) {
-			if (other.masked != null)
-				return false;
-		} else if (!masked.equals(other.masked))
+		if (masked != other.masked)
 			return false;
-		if (port == null) {
-			if (other.port != null)
-				return false;
-		} else if (!port.equals(other.port))
+		if (Float.floatToIntBits(rate) != Float.floatToIntBits(other.rate))
 			return false;
-		if (rate == null) {
-			if (other.rate != null)
-				return false;
-		} else if (!rate.equals(other.rate))
-			return false;
-		if (requests == null) {
-			if (other.requests != null)
-				return false;
-		} else if (!requests.equals(other.requests))
+		if (requests != other.requests)
 			return false;
 		if (retryRatePerBU == null) {
 			if (other.retryRatePerBU != null)
@@ -600,20 +558,11 @@ public class RU implements FlashlistUpdatable, Derivable {
 				return false;
 		} else if (!stateName.equals(other.stateName))
 			return false;
-		if (superFragmentSizeMean == null) {
-			if (other.superFragmentSizeMean != null)
-				return false;
-		} else if (!superFragmentSizeMean.equals(other.superFragmentSizeMean))
+		if (Float.floatToIntBits(superFragmentSizeMean) != Float.floatToIntBits(other.superFragmentSizeMean))
 			return false;
-		if (superFragmentSizeStddev == null) {
-			if (other.superFragmentSizeStddev != null)
-				return false;
-		} else if (!superFragmentSizeStddev.equals(other.superFragmentSizeStddev))
+		if (Float.floatToIntBits(superFragmentSizeStddev) != Float.floatToIntBits(other.superFragmentSizeStddev))
 			return false;
-		if (throughput == null) {
-			if (other.throughput != null)
-				return false;
-		} else if (!throughput.equals(other.throughput))
+		if (Float.floatToIntBits(throughput) != Float.floatToIntBits(other.throughput))
 			return false;
 		if (throughputPerBU == null) {
 			if (other.throughputPerBU != null)
@@ -627,6 +576,6 @@ public class RU implements FlashlistUpdatable, Derivable {
 			return false;
 		return true;
 	}
-	
+
 	
 }

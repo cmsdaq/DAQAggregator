@@ -47,45 +47,45 @@ public class FED implements FlashlistUpdatable {
 	// fields updated periodically
 	// ----------------------------------------
 
-	private Integer srcIdReceived;
+	private int srcIdReceived;
 
-	private Float percentBackpressure;
+	private float percentBackpressure;
 
-	private Double frl_AccBIFIBackpressureSeconds;
+	private double frl_AccBIFIBackpressureSeconds;
 
-	private Float percentWarning;
+	private float percentWarning;
 
-	private Float percentBusy;
+	private float percentBusy;
 
 	private String ttsState;
 
-	private Long numSCRCerrors;
+	private long numSCRCerrors;
 
-	private Long numFCRCerrors;
+	private long numFCRCerrors;
 
-	private Long numTriggers;
+	private long numTriggers;
 
-	private Long eventCounter;
+	private long eventCounter;
 
-	private Boolean fmmMasked;
+	private boolean fmmMasked;
 
-	private Boolean frlMasked;
+	private boolean frlMasked;
 
 	private boolean hasSLINK;
 
 	private boolean hasTTS;
 
-	private Boolean ruFedInError;
-	private Integer ruFedBXError;
-	private Integer ruFedCRCError;
-	private Integer ruFedDataCorruption;
-	private Integer ruFedOutOfSync;
+	private boolean ruFedInError;
+	private int ruFedBXError;
+	private int ruFedCRCError;
+	private int ruFedDataCorruption;
+	private int ruFedOutOfSync;
 
-	private Boolean ruFedWithoutFragments;
+	private boolean ruFedWithoutFragments;
 
-	private Double frl_AccSlinkFullSec;
+	private double frl_AccSlinkFullSec;
 
-	private Double frl_AccLatchedFerol40ClockSeconds;
+	private double frl_AccLatchedFerol40ClockSeconds;
 
 	@JsonIgnore
 	private BackpressureConverter converter = new BackpressureConverter();
@@ -177,9 +177,9 @@ public class FED implements FlashlistUpdatable {
 				this.srcIdReceived = flashlistRow.get("WrongFEDId").asInt();
 			}
 
-			this.numSCRCerrors = flashlistRow.get("LinkCRCError").asLong();
-			this.numFCRCerrors = flashlistRow.get("FEDCRCError").asLong();
-			this.numTriggers = flashlistRow.get("TriggerNumber").asLong();
+			this.numSCRCerrors = flashlistRow.get("LinkCRCError").asInt();
+			this.numFCRCerrors = flashlistRow.get("FEDCRCError").asInt();
+			this.numTriggers = flashlistRow.get("TriggerNumber").asInt();
 			this.eventCounter = flashlistRow.get("EventCounter").asLong();
 
 			/*
@@ -217,7 +217,6 @@ public class FED implements FlashlistUpdatable {
 					myPositionInErrorArray = currentPosition;
 				currentPosition++;
 			}
-			ruFedInError = false;
 			if (myPositionInErrorArray >= 0) {
 				ruFedInError = true;
 				ruFedBXError = flashlistRow.get("fedBXerrors").get(myPositionInErrorArray).asInt();
@@ -226,7 +225,6 @@ public class FED implements FlashlistUpdatable {
 				ruFedOutOfSync = flashlistRow.get("fedOutOfSync").get(myPositionInErrorArray).asInt();
 			}
 
-			ruFedWithoutFragments = false;
 			for (JsonNode fedIdWithError : flashlistRow.get("fedIdsWithoutFragments")) {
 				if (srcIdExpected == fedIdWithError.asInt()) {
 					ruFedWithoutFragments = true;
@@ -243,9 +241,9 @@ public class FED implements FlashlistUpdatable {
 				this.srcIdReceived = flashlistRow.get("WrongFEDId").asInt();
 			}
 
-			this.numSCRCerrors = flashlistRow.get("LinkCRCError").asLong();
-			this.numFCRCerrors = flashlistRow.get("FEDCRCError").asLong();
-			this.numTriggers = flashlistRow.get("TriggerNumber").asLong();
+			this.numSCRCerrors = flashlistRow.get("LinkCRCError").asInt();
+			this.numFCRCerrors = flashlistRow.get("FEDCRCError").asInt();
+			this.numTriggers = flashlistRow.get("TriggerNumber").asInt();
 			this.eventCounter = flashlistRow.get("EventCounter").asLong();
 
 			/*
@@ -267,28 +265,75 @@ public class FED implements FlashlistUpdatable {
 
 	@Override
 	public void clean() {
-		ruFedBXError = null;
-		ruFedCRCError = null;
-		ruFedDataCorruption = null;
-		ruFedOutOfSync = null;
-		ruFedInError = null;
-		ruFedWithoutFragments = null;
-		percentWarning = null;
-		percentBusy = null;
+		ruFedBXError = 0;
+		ruFedCRCError = 0;
+		ruFedDataCorruption = 0;
+		ruFedOutOfSync = 0;
+		ruFedInError = false;
+		ruFedWithoutFragments = false;
+		percentWarning = 0;
+		percentBusy = 0;
 		ttsState = null;
-		fmmMasked = null;
-		srcIdReceived = null;
-		numSCRCerrors = null;
-		numFCRCerrors = null;
-		numTriggers = null;
-		eventCounter = null;
-		percentBackpressure = null;
-		frlMasked = null;
-		frl_AccSlinkFullSec = null;
-		frl_AccLatchedFerol40ClockSeconds  = null;
-		frl_AccBIFIBackpressureSeconds = null;
+		fmmMasked = true;
+		srcIdReceived = 0;
+		numSCRCerrors = 0;
+		numFCRCerrors = 0;
+		numTriggers = 0;
+		eventCounter = 0;
+		percentBackpressure = 0;
+		frlMasked = true;
+		frl_AccSlinkFullSec = 0;
+		frl_AccLatchedFerol40ClockSeconds  = 0;
+		frl_AccBIFIBackpressureSeconds = 0;
 	}
 
+	public int getSrcIdReceived() {
+		return srcIdReceived;
+	}
+
+	public void setSrcIdReceived(int srcIdReceived) {
+		this.srcIdReceived = srcIdReceived;
+	}
+
+	public float getPercentBackpressure() {
+		return percentBackpressure;
+	}
+
+	public void setPercentBackpressure(float percentBackpressure) {
+		this.percentBackpressure = percentBackpressure;
+	}
+
+	public double getFrl_AccBIFIBackpressureSeconds() {
+		return frl_AccBIFIBackpressureSeconds;
+	}
+
+	public void setFrl_AccBIFIBackpressureSeconds(double frl_AccBIFIBackpressureSeconds) {
+		this.frl_AccBIFIBackpressureSeconds = frl_AccBIFIBackpressureSeconds;
+	}
+
+	public double getFrl_AccLatchedFerol40ClockSeconds() {
+		return frl_AccLatchedFerol40ClockSeconds;
+	}
+
+	public void setFrl_AccLatchedFerol40ClockSeconds(double frl_AccLatchedFerol40ClockSeconds) {
+		this.frl_AccLatchedFerol40ClockSeconds = frl_AccLatchedFerol40ClockSeconds;
+	}
+
+	public float getPercentWarning() {
+		return percentWarning;
+	}
+
+	public void setPercentWarning(float percentWarning) {
+		this.percentWarning = percentWarning;
+	}
+
+	public float getPercentBusy() {
+		return percentBusy;
+	}
+
+	public void setPercentBusy(float percentBusy) {
+		this.percentBusy = percentBusy;
+	}
 
 	public String getTtsState() {
 		return ttsState;
@@ -298,6 +343,29 @@ public class FED implements FlashlistUpdatable {
 		this.ttsState = ttsState;
 	}
 
+	public long getNumSCRCerrors() {
+		return numSCRCerrors;
+	}
+
+	public void setNumSCRCerrors(long numSCRCerrors) {
+		this.numSCRCerrors = numSCRCerrors;
+	}
+
+	public long getNumFCRCerrors() {
+		return numFCRCerrors;
+	}
+
+	public void setNumFCRCerrors(long numFCRCerrors) {
+		this.numFCRCerrors = numFCRCerrors;
+	}
+
+	public long getNumTriggers() {
+		return numTriggers;
+	}
+
+	public void setNumTriggers(long numTriggers) {
+		this.numTriggers = numTriggers;
+	}
 
 	public FRL getFrl() {
 		return frl;
@@ -355,100 +423,27 @@ public class FED implements FlashlistUpdatable {
 		this.id = id;
 	}
 
-	public TTCPartition getTtcp() {
-		return ttcp;
-	}
-
-	public void setTtcp(TTCPartition ttcp) {
-		this.ttcp = ttcp;
-	}
-	
-
-	public Integer getSrcIdReceived() {
-		return srcIdReceived;
-	}
-
-	public void setSrcIdReceived(Integer srcIdReceived) {
-		this.srcIdReceived = srcIdReceived;
-	}
-
-	public Float getPercentBackpressure() {
-		return percentBackpressure;
-	}
-
-	public void setPercentBackpressure(Float percentBackpressure) {
-		this.percentBackpressure = percentBackpressure;
-	}
-
-	public Double getFrl_AccBIFIBackpressureSeconds() {
-		return frl_AccBIFIBackpressureSeconds;
-	}
-
-	public void setFrl_AccBIFIBackpressureSeconds(Double frl_AccBIFIBackpressureSeconds) {
-		this.frl_AccBIFIBackpressureSeconds = frl_AccBIFIBackpressureSeconds;
-	}
-
-	public Float getPercentWarning() {
-		return percentWarning;
-	}
-
-	public void setPercentWarning(Float percentWarning) {
-		this.percentWarning = percentWarning;
-	}
-
-	public Float getPercentBusy() {
-		return percentBusy;
-	}
-
-	public void setPercentBusy(Float percentBusy) {
-		this.percentBusy = percentBusy;
-	}
-
-	public Long getNumSCRCerrors() {
-		return numSCRCerrors;
-	}
-
-	public void setNumSCRCerrors(Long numSCRCerrors) {
-		this.numSCRCerrors = numSCRCerrors;
-	}
-
-	public Long getNumFCRCerrors() {
-		return numFCRCerrors;
-	}
-
-	public void setNumFCRCerrors(Long numFCRCerrors) {
-		this.numFCRCerrors = numFCRCerrors;
-	}
-
-	public Long getNumTriggers() {
-		return numTriggers;
-	}
-
-	public void setNumTriggers(Long numTriggers) {
-		this.numTriggers = numTriggers;
-	}
-
-	public Long getEventCounter() {
+	public long getEventCounter() {
 		return eventCounter;
 	}
 
-	public void setEventCounter(Long eventCounter) {
+	public void setEventCounter(long eventCounter) {
 		this.eventCounter = eventCounter;
 	}
 
-	public Boolean isFmmMasked() {
+	public boolean isFmmMasked() {
 		return fmmMasked;
 	}
 
-	public void setFmmMasked(Boolean fmmMasked) {
+	public void setFmmMasked(boolean fmmMasked) {
 		this.fmmMasked = fmmMasked;
 	}
 
-	public Boolean isFrlMasked() {
+	public boolean isFrlMasked() {
 		return frlMasked;
 	}
 
-	public void setFrlMasked(Boolean frlMasked) {
+	public void setFrlMasked(boolean frlMasked) {
 		this.frlMasked = frlMasked;
 	}
 
@@ -468,106 +463,99 @@ public class FED implements FlashlistUpdatable {
 		this.hasTTS = hasTTS;
 	}
 
-	public Boolean isRuFedInError() {
+	public boolean isRuFedInError() {
 		return ruFedInError;
 	}
 
-	public void setRuFedInError(Boolean ruFedInError) {
+	public void setRuFedInError(boolean ruFedInError) {
 		this.ruFedInError = ruFedInError;
 	}
 
-	public Integer getRuFedBXError() {
+	public int getRuFedBXError() {
 		return ruFedBXError;
 	}
 
-	public void setRuFedBXError(Integer ruFedBXError) {
+	public void setRuFedBXError(int ruFedBXError) {
 		this.ruFedBXError = ruFedBXError;
 	}
 
-	public Integer getRuFedCRCError() {
+	public int getRuFedCRCError() {
 		return ruFedCRCError;
 	}
 
-	public void setRuFedCRCError(Integer ruFedCRCError) {
+	public void setRuFedCRCError(int ruFedCRCError) {
 		this.ruFedCRCError = ruFedCRCError;
 	}
 
-	public Integer getRuFedDataCorruption() {
+	public int getRuFedDataCorruption() {
 		return ruFedDataCorruption;
 	}
 
-	public void setRuFedDataCorruption(Integer ruFedDataCorruption) {
+	public void setRuFedDataCorruption(int ruFedDataCorruption) {
 		this.ruFedDataCorruption = ruFedDataCorruption;
 	}
 
-	public Integer getRuFedOutOfSync() {
+	public int getRuFedOutOfSync() {
 		return ruFedOutOfSync;
 	}
 
-	public void setRuFedOutOfSync(Integer ruFedOutOfSync) {
+	public void setRuFedOutOfSync(int ruFedOutOfSync) {
 		this.ruFedOutOfSync = ruFedOutOfSync;
 	}
 
-	public Boolean isRuFedWithoutFragments() {
+	public boolean isRuFedWithoutFragments() {
 		return ruFedWithoutFragments;
 	}
 
-	public void setRuFedWithoutFragments(Boolean ruFedWithoutFragments) {
+	public void setRuFedWithoutFragments(boolean ruFedWithoutFragments) {
 		this.ruFedWithoutFragments = ruFedWithoutFragments;
 	}
 
-	public Double getFrl_AccSlinkFullSec() {
+	public double getFrl_AccSlinkFullSec() {
 		return frl_AccSlinkFullSec;
 	}
 
-	public void setFrl_AccSlinkFullSec(Double frl_AccSlinkFullSec) {
+	public void setFrl_AccSlinkFullSec(double frl_AccSlinkFullSec) {
 		this.frl_AccSlinkFullSec = frl_AccSlinkFullSec;
 	}
 
-	public Double getFrl_AccLatchedFerol40ClockSeconds() {
-		return frl_AccLatchedFerol40ClockSeconds;
+	public TTCPartition getTtcp() {
+		return ttcp;
 	}
 
-	public void setFrl_AccLatchedFerol40ClockSeconds(Double frl_AccLatchedFerol40ClockSeconds) {
-		this.frl_AccLatchedFerol40ClockSeconds = frl_AccLatchedFerol40ClockSeconds;
-	}
-
-	@Override
-	public String toString() {
-		return "FED [id=" + id + ", ttsState=" + ttsState + ", frlMasked=" + frlMasked + "]";
+	public void setTtcp(TTCPartition ttcp) {
+		this.ttcp = ttcp;
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((eventCounter == null) ? 0 : eventCounter.hashCode());
+		result = prime * result + (int) (eventCounter ^ (eventCounter >>> 32));
 		result = prime * result + fmmIO;
-		result = prime * result + ((fmmMasked == null) ? 0 : fmmMasked.hashCode());
+		result = prime * result + (fmmMasked ? 1231 : 1237);
 		result = prime * result + frlIO;
-		result = prime * result + ((frlMasked == null) ? 0 : frlMasked.hashCode());
-		result = prime * result
-				+ ((frl_AccBIFIBackpressureSeconds == null) ? 0 : frl_AccBIFIBackpressureSeconds.hashCode());
-		result = prime * result
-				+ ((frl_AccLatchedFerol40ClockSeconds == null) ? 0 : frl_AccLatchedFerol40ClockSeconds.hashCode());
-		result = prime * result + ((frl_AccSlinkFullSec == null) ? 0 : frl_AccSlinkFullSec.hashCode());
+		result = prime * result + (frlMasked ? 1231 : 1237);
+		long temp;
+		temp = Double.doubleToLongBits(frl_AccSlinkFullSec);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
 		result = prime * result + (hasSLINK ? 1231 : 1237);
 		result = prime * result + (hasTTS ? 1231 : 1237);
 		result = prime * result + id;
-		result = prime * result + ((numFCRCerrors == null) ? 0 : numFCRCerrors.hashCode());
-		result = prime * result + ((numSCRCerrors == null) ? 0 : numSCRCerrors.hashCode());
-		result = prime * result + ((numTriggers == null) ? 0 : numTriggers.hashCode());
-		result = prime * result + ((percentBackpressure == null) ? 0 : percentBackpressure.hashCode());
-		result = prime * result + ((percentBusy == null) ? 0 : percentBusy.hashCode());
-		result = prime * result + ((percentWarning == null) ? 0 : percentWarning.hashCode());
-		result = prime * result + ((ruFedBXError == null) ? 0 : ruFedBXError.hashCode());
-		result = prime * result + ((ruFedCRCError == null) ? 0 : ruFedCRCError.hashCode());
-		result = prime * result + ((ruFedDataCorruption == null) ? 0 : ruFedDataCorruption.hashCode());
-		result = prime * result + ((ruFedInError == null) ? 0 : ruFedInError.hashCode());
-		result = prime * result + ((ruFedOutOfSync == null) ? 0 : ruFedOutOfSync.hashCode());
-		result = prime * result + ((ruFedWithoutFragments == null) ? 0 : ruFedWithoutFragments.hashCode());
+		result = prime * result + (int) (numFCRCerrors ^ (numFCRCerrors >>> 32));
+		result = prime * result + (int) (numSCRCerrors ^ (numSCRCerrors >>> 32));
+		result = prime * result + (int) (numTriggers ^ (numTriggers >>> 32));
+		result = prime * result + Float.floatToIntBits(percentBackpressure);
+		result = prime * result + Float.floatToIntBits(percentBusy);
+		result = prime * result + Float.floatToIntBits(percentWarning);
+		result = prime * result + ruFedBXError;
+		result = prime * result + ruFedCRCError;
+		result = prime * result + ruFedDataCorruption;
+		result = prime * result + (ruFedInError ? 1231 : 1237);
+		result = prime * result + ruFedOutOfSync;
+		result = prime * result + (ruFedWithoutFragments ? 1231 : 1237);
 		result = prime * result + srcIdExpected;
-		result = prime * result + ((srcIdReceived == null) ? 0 : srcIdReceived.hashCode());
+		result = prime * result + srcIdReceived;
 		result = prime * result + ((ttsState == null) ? 0 : ttsState.hashCode());
 		return result;
 	}
@@ -581,39 +569,17 @@ public class FED implements FlashlistUpdatable {
 		if (getClass() != obj.getClass())
 			return false;
 		FED other = (FED) obj;
-		if (eventCounter == null) {
-			if (other.eventCounter != null)
-				return false;
-		} else if (!eventCounter.equals(other.eventCounter))
+		if (eventCounter != other.eventCounter)
 			return false;
 		if (fmmIO != other.fmmIO)
 			return false;
-		if (fmmMasked == null) {
-			if (other.fmmMasked != null)
-				return false;
-		} else if (!fmmMasked.equals(other.fmmMasked))
+		if (fmmMasked != other.fmmMasked)
 			return false;
 		if (frlIO != other.frlIO)
 			return false;
-		if (frlMasked == null) {
-			if (other.frlMasked != null)
-				return false;
-		} else if (!frlMasked.equals(other.frlMasked))
+		if (frlMasked != other.frlMasked)
 			return false;
-		if (frl_AccBIFIBackpressureSeconds == null) {
-			if (other.frl_AccBIFIBackpressureSeconds != null)
-				return false;
-		} else if (!frl_AccBIFIBackpressureSeconds.equals(other.frl_AccBIFIBackpressureSeconds))
-			return false;
-		if (frl_AccLatchedFerol40ClockSeconds == null) {
-			if (other.frl_AccLatchedFerol40ClockSeconds != null)
-				return false;
-		} else if (!frl_AccLatchedFerol40ClockSeconds.equals(other.frl_AccLatchedFerol40ClockSeconds))
-			return false;
-		if (frl_AccSlinkFullSec == null) {
-			if (other.frl_AccSlinkFullSec != null)
-				return false;
-		} else if (!frl_AccSlinkFullSec.equals(other.frl_AccSlinkFullSec))
+		if (Double.doubleToLongBits(frl_AccSlinkFullSec) != Double.doubleToLongBits(other.frl_AccSlinkFullSec))
 			return false;
 		if (hasSLINK != other.hasSLINK)
 			return false;
@@ -621,72 +587,33 @@ public class FED implements FlashlistUpdatable {
 			return false;
 		if (id != other.id)
 			return false;
-		if (numFCRCerrors == null) {
-			if (other.numFCRCerrors != null)
-				return false;
-		} else if (!numFCRCerrors.equals(other.numFCRCerrors))
+		if (numFCRCerrors != other.numFCRCerrors)
 			return false;
-		if (numSCRCerrors == null) {
-			if (other.numSCRCerrors != null)
-				return false;
-		} else if (!numSCRCerrors.equals(other.numSCRCerrors))
+		if (numSCRCerrors != other.numSCRCerrors)
 			return false;
-		if (numTriggers == null) {
-			if (other.numTriggers != null)
-				return false;
-		} else if (!numTriggers.equals(other.numTriggers))
+		if (numTriggers != other.numTriggers)
 			return false;
-		if (percentBackpressure == null) {
-			if (other.percentBackpressure != null)
-				return false;
-		} else if (!percentBackpressure.equals(other.percentBackpressure))
+		if (Float.floatToIntBits(percentBackpressure) != Float.floatToIntBits(other.percentBackpressure))
 			return false;
-		if (percentBusy == null) {
-			if (other.percentBusy != null)
-				return false;
-		} else if (!percentBusy.equals(other.percentBusy))
+		if (Float.floatToIntBits(percentBusy) != Float.floatToIntBits(other.percentBusy))
 			return false;
-		if (percentWarning == null) {
-			if (other.percentWarning != null)
-				return false;
-		} else if (!percentWarning.equals(other.percentWarning))
+		if (Float.floatToIntBits(percentWarning) != Float.floatToIntBits(other.percentWarning))
 			return false;
-		if (ruFedBXError == null) {
-			if (other.ruFedBXError != null)
-				return false;
-		} else if (!ruFedBXError.equals(other.ruFedBXError))
+		if (ruFedBXError != other.ruFedBXError)
 			return false;
-		if (ruFedCRCError == null) {
-			if (other.ruFedCRCError != null)
-				return false;
-		} else if (!ruFedCRCError.equals(other.ruFedCRCError))
+		if (ruFedCRCError != other.ruFedCRCError)
 			return false;
-		if (ruFedDataCorruption == null) {
-			if (other.ruFedDataCorruption != null)
-				return false;
-		} else if (!ruFedDataCorruption.equals(other.ruFedDataCorruption))
+		if (ruFedDataCorruption != other.ruFedDataCorruption)
 			return false;
-		if (ruFedInError == null) {
-			if (other.ruFedInError != null)
-				return false;
-		} else if (!ruFedInError.equals(other.ruFedInError))
+		if (ruFedInError != other.ruFedInError)
 			return false;
-		if (ruFedOutOfSync == null) {
-			if (other.ruFedOutOfSync != null)
-				return false;
-		} else if (!ruFedOutOfSync.equals(other.ruFedOutOfSync))
+		if (ruFedOutOfSync != other.ruFedOutOfSync)
 			return false;
-		if (ruFedWithoutFragments == null) {
-			if (other.ruFedWithoutFragments != null)
-				return false;
-		} else if (!ruFedWithoutFragments.equals(other.ruFedWithoutFragments))
+		if (ruFedWithoutFragments != other.ruFedWithoutFragments)
 			return false;
 		if (srcIdExpected != other.srcIdExpected)
 			return false;
-		if (srcIdReceived == null) {
-			if (other.srcIdReceived != null)
-				return false;
-		} else if (!srcIdReceived.equals(other.srcIdReceived))
+		if (srcIdReceived != other.srcIdReceived)
 			return false;
 		if (ttsState == null) {
 			if (other.ttsState != null)
@@ -695,8 +622,10 @@ public class FED implements FlashlistUpdatable {
 			return false;
 		return true;
 	}
-	
-	
-	
+
+	@Override
+	public String toString() {
+		return "FED [id=" + id + ", ttsState=" + ttsState + ", frlMasked=" + frlMasked + "]";
+	}
 
 }

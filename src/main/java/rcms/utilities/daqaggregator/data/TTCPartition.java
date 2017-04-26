@@ -56,10 +56,10 @@ public class TTCPartition implements FlashlistUpdatable, Derivable {
 	//TODO: ttsState @ PI (in future)
 
 	// @ top level FMM
-	private Float percentWarning;
+	private float percentWarning;
 
 	// @ top level FMM
-	private Float percentBusy;
+	private float percentBusy;
 
 	private List<FED> feds = new ArrayList<>();
 	
@@ -88,19 +88,19 @@ public class TTCPartition implements FlashlistUpdatable, Derivable {
 		this.ttsState = ttsState;
 	}
 
-	public Float getPercentWarning() {
+	public float getPercentWarning() {
 		return percentWarning;
 	}
 
-	public void setPercentWarning(Float percentWarning) {
+	public void setPercentWarning(float percentWarning) {
 		this.percentWarning = percentWarning;
 	}
 
-	public Float getPercentBusy() {
+	public float getPercentBusy() {
 		return percentBusy;
 	}
 
-	public void setPercentBusy(Float percentBusy) {
+	public void setPercentBusy(float percentBusy) {
 		this.percentBusy = percentBusy;
 	}
 
@@ -143,7 +143,7 @@ public class TTCPartition implements FlashlistUpdatable, Derivable {
 		
 		/* TTCPartition is mask if all FEDs with TTS output are masked */
 		for (FED fed : feds) {
-			if (fed.isHasTTS()&&(fed.isFmmMasked()!=null)){
+			if (fed.isHasTTS()){
 				if (!fed.isFmmMasked()){
 					masked = false;
 					break;
@@ -154,8 +154,8 @@ public class TTCPartition implements FlashlistUpdatable, Derivable {
 
 	@Override
 	public void clean() {
-		this.percentBusy = null;
-		this.percentWarning = null;
+		this.percentBusy = 0;
+		this.percentWarning = 0;
 		this.ttsState = null;
 	}
 
@@ -211,23 +211,18 @@ public class TTCPartition implements FlashlistUpdatable, Derivable {
 	}
 
 	@Override
-	public String toString() {
-		return "TTCPartition [name=" + name + ", masked=" + masked + ", ttsState=" + ttsState + ", percentWarning="
-				+ percentWarning + ", percentBusy=" + percentBusy + ", feds=" + feds + "]";
-	}
-
-	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + ((feds == null) ? 0 : feds.hashCode());
 		result = prime * result + (masked ? 1231 : 1237);
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result + ((percentBusy == null) ? 0 : percentBusy.hashCode());
-		result = prime * result + ((percentWarning == null) ? 0 : percentWarning.hashCode());
-		result = prime * result + ((tcds_apv_pm_ttsState == null) ? 0 : tcds_apv_pm_ttsState.hashCode());
-		result = prime * result + ((tcds_pm_ttsState == null) ? 0 : tcds_pm_ttsState.hashCode());
+		result = prime * result + Float.floatToIntBits(percentBusy);
+		result = prime * result + Float.floatToIntBits(percentWarning);
 		result = prime * result + ttcpNr;
 		result = prime * result + ((ttsState == null) ? 0 : ttsState.hashCode());
+		result = prime * result + ((tcds_pm_ttsState == null) ? 0 : tcds_pm_ttsState.hashCode());
+		result = prime * result + ((tcds_apv_pm_ttsState == null) ? 0 : tcds_apv_pm_ttsState.hashCode());
 		return result;
 	}
 
@@ -240,6 +235,11 @@ public class TTCPartition implements FlashlistUpdatable, Derivable {
 		if (getClass() != obj.getClass())
 			return false;
 		TTCPartition other = (TTCPartition) obj;
+		if (feds == null) {
+			if (other.feds != null)
+				return false;
+		} else if (!feds.equals(other.feds))
+			return false;
 		if (masked != other.masked)
 			return false;
 		if (name == null) {
@@ -247,25 +247,9 @@ public class TTCPartition implements FlashlistUpdatable, Derivable {
 				return false;
 		} else if (!name.equals(other.name))
 			return false;
-		if (percentBusy == null) {
-			if (other.percentBusy != null)
-				return false;
-		} else if (!percentBusy.equals(other.percentBusy))
+		if (Float.floatToIntBits(percentBusy) != Float.floatToIntBits(other.percentBusy))
 			return false;
-		if (percentWarning == null) {
-			if (other.percentWarning != null)
-				return false;
-		} else if (!percentWarning.equals(other.percentWarning))
-			return false;
-		if (tcds_apv_pm_ttsState == null) {
-			if (other.tcds_apv_pm_ttsState != null)
-				return false;
-		} else if (!tcds_apv_pm_ttsState.equals(other.tcds_apv_pm_ttsState))
-			return false;
-		if (tcds_pm_ttsState == null) {
-			if (other.tcds_pm_ttsState != null)
-				return false;
-		} else if (!tcds_pm_ttsState.equals(other.tcds_pm_ttsState))
+		if (Float.floatToIntBits(percentWarning) != Float.floatToIntBits(other.percentWarning))
 			return false;
 		if (ttcpNr != other.ttcpNr)
 			return false;
@@ -274,9 +258,23 @@ public class TTCPartition implements FlashlistUpdatable, Derivable {
 				return false;
 		} else if (!ttsState.equals(other.ttsState))
 			return false;
+		if (tcds_pm_ttsState == null) {
+			if (other.tcds_pm_ttsState != null)
+				return false;
+		} else if (!tcds_pm_ttsState.equals(other.tcds_pm_ttsState))
+			return false;
+		if (tcds_apv_pm_ttsState == null) {
+			if (other.tcds_apv_pm_ttsState != null)
+				return false;
+		} else if (!tcds_apv_pm_ttsState.equals(other.tcds_apv_pm_ttsState))
+			return false;
 		return true;
 	}
 
-	
+	@Override
+	public String toString() {
+		return "TTCPartition [name=" + name + ", masked=" + masked + ", ttsState=" + ttsState + ", percentWarning="
+				+ percentWarning + ", percentBusy=" + percentBusy + ", feds=" + feds + "]";
+	}
 
 }

@@ -32,15 +32,15 @@ public class FMMApplication implements FlashlistUpdatable {
 	// fields updated periodically
 	// ----------------------------------------
 
-	private Boolean crashed;
+	private boolean crashed;
 
 	// ----------------------------------------------------------------------
 
-	public Boolean isCrashed() {
+	public boolean isCrashed() {
 		return crashed;
 	}
 
-	public void setCrashed(Boolean crashed) {
+	public void setCrashed(boolean crashed) {
 		this.crashed = crashed;
 	}
 
@@ -84,7 +84,7 @@ public class FMMApplication implements FlashlistUpdatable {
 			JsonNode jobTable = flashlistRow.get("jobTable");
 
 			JsonNode rows = jobTable.get("rows");
-			this.crashed = false;
+
 			for (JsonNode row : rows) {
 				//TODO: get the row with matching jid to the context (additional field)
 				String status = row.get("status").asText();
@@ -101,7 +101,7 @@ public class FMMApplication implements FlashlistUpdatable {
 
 	@Override
 	public void clean() {
-		this.crashed = null;
+		this.crashed = false;
 	}
 	// ----------------------------------------------------------------------
 
@@ -109,9 +109,9 @@ public class FMMApplication implements FlashlistUpdatable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((crashed == null) ? 0 : crashed.hashCode());
+		result = prime * result + (crashed ? 1231 : 1237);
+		result = prime * result + ((fmms == null) ? 0 : fmms.hashCode());
 		result = prime * result + ((hostname == null) ? 0 : hostname.hashCode());
-		result = prime * result + port;
 		return result;
 	}
 
@@ -124,20 +124,19 @@ public class FMMApplication implements FlashlistUpdatable {
 		if (getClass() != obj.getClass())
 			return false;
 		FMMApplication other = (FMMApplication) obj;
-		if (crashed == null) {
-			if (other.crashed != null)
+		if (crashed != other.crashed)
+			return false;
+		if (fmms == null) {
+			if (other.fmms != null)
 				return false;
-		} else if (!crashed.equals(other.crashed))
+		} else if (!fmms.equals(other.fmms))
 			return false;
 		if (hostname == null) {
 			if (other.hostname != null)
 				return false;
 		} else if (!hostname.equals(other.hostname))
 			return false;
-		if (port != other.port)
-			return false;
 		return true;
 	}
-	
 
 }
