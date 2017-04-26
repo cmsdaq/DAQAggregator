@@ -3,15 +3,22 @@ package rcms.utilities.daqaggregator;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
-import rcms.utilities.daqaggregator.datasource.LiveAccessService;
+import org.apache.log4j.Logger;
+
+import rcms.utilities.daqaggregator.datasource.FlashlistType;
+import rcms.utilities.daqaggregator.datasource.LiveAccessServiceExplorer;
 
 public class Application {
 
 	private final Properties prop;
 
 	private static Application instance;
+
+	private static final Logger logger = Logger.getLogger(Application.class);
 
 	private Application(String propertiesFile) {
 		prop = load(propertiesFile);
@@ -27,7 +34,12 @@ public class Application {
 	public static void initialize(String propertiesFile) {
 		instance = new Application(propertiesFile);
 		checkRequiredSettings();
-		initializeLAS();
+
+		/*
+		 * Setup proxy
+		 */
+		ProxyManager.get().startProxy();
+		autodiscoverFlashilstsInLas();
 	}
 
 	private Properties load(String propertiesFile) {
@@ -60,12 +72,40 @@ public class Application {
 	}
 
 	/**
-	 * Initialize Liva Access Service urls from configuration file
+	 * Initialize Live Access Service urls from configuration file
 	 */
-	private static void initializeLAS() {
-		LiveAccessService.PRIMARY.setUrl(Application.get().getProp(Settings.FLASHLIST_PRIMARY_URL));
-		LiveAccessService.SECONDARY.setUrl(Application.get().getProp(Settings.FLASHLIST_SECONDARY_URL));
-		LiveAccessService.ADDITIONAL.setUrl(Application.get().getProp(Settings.FLASHLIST_ADDITIONAL_URL));
+	private static void autodiscoverFlashilstsInLas() {
+
+		// read possible url from configuration file
+		List<String> lasUrls = new ArrayList<String>();
+		String[] lasURLs = instance.getProp(Settings.LAS_URL).split(" +");
+
+		for (String url : lasURLs) {
+			// System.out.println(url);
+			lasUrls.add(url);
+		}
+
+		logger.info(
+				lasUrls.size() + " LAS urls will be explored to find " + FlashlistType.values().length + " flashlists");
+
+		LiveAccessServiceExplorer flashlistDiscovery = new LiveAccessServiceExplorer(lasUrls);
+		flashlistDiscovery.exploreLiveAccessServices();
+
+		for (FlashlistType flashlistType : FlashlistType.values()) {
+
+			String lasUrl = flashlistDiscovery.getFlashlistUrl(flashlistType.getFlashlistName());
+			if (lasUrl == null) {
+				throw new DAQException(DAQExceptionCode.FlashlistNotFound,
+						"Cannot find flashlist " + flashlistType.getFlashlistName() + " in any of the given LASes");
+			}
+			flashlistType.setUrl(lasUrl);
+
+		}
+
+		logger.info("All flashlists sucessfully discovered:");
+		for (FlashlistType flashlistType : FlashlistType.values()) {
+			logger.info(String.format("%1$-26s", flashlistType.getFlashlistName()) + " " + flashlistType.getUrl());
+		}
 	}
 
 	public String getProp(Settings setting) {

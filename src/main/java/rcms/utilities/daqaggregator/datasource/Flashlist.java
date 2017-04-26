@@ -51,7 +51,7 @@ public class Flashlist {
 		this.flashlistType = flashlistType;
 		this.sessionId = sessionId;
 		this.name = "urn:xdaq-flashlist:" + flashlistType.getFlashlistName();
-		this.address = flashlistType.getLas().getUrl() + "/retrieveCollection?flash=" + name + "&fmt=json";
+		this.address = flashlistType.getUrl() + "/retrieveCollection?flash=" + name + "&fmt=json";
 
 		if (flashlistType.isSessionContext()) {
 			if (sessionId != 0) {
