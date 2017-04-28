@@ -6,9 +6,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import rcms.utilities.daqaggregator.datasource.FlashlistConfigurationReader;
 import rcms.utilities.daqaggregator.datasource.FlashlistType;
 import rcms.utilities.daqaggregator.datasource.LiveAccessServiceExplorer;
 
@@ -34,7 +36,9 @@ public class Application {
 	public static void initialize(String propertiesFile) {
 		instance = new Application(propertiesFile);
 		checkRequiredSettings();
-
+		configureFlashlists();
+		
+		
 		/*
 		 * Setup proxy
 		 */
@@ -70,6 +74,16 @@ public class Application {
 			}
 		}
 	}
+	
+	private static void configureFlashlists(){
+		FlashlistConfigurationReader reader = new FlashlistConfigurationReader();
+		Set<FlashlistType> optionalFlaslists = reader.readFlashlistOptionalConfigurations(instance.getProp());
+
+		logger.info("Configuring optional flashlists: " + optionalFlaslists);
+		for(FlashlistType flashlistType: optionalFlaslists){
+			flashlistType.setOptional(true);
+		}
+	}
 
 	/**
 	 * Initialize Live Access Service urls from configuration file
@@ -95,8 +109,15 @@ public class Application {
 
 			String lasUrl = flashlistDiscovery.getFlashlistUrl(flashlistType.getFlashlistName());
 			if (lasUrl == null) {
-				throw new DAQException(DAQExceptionCode.FlashlistNotFound,
-						"Cannot find flashlist " + flashlistType.getFlashlistName() + " in any of the given LASes");
+				if (!flashlistType.isOptional()) {
+					throw new DAQException(DAQExceptionCode.FlashlistNotFound,
+							"Cannot find flashlist " + flashlistType.getFlashlistName() + " in any of the given LASes. "
+									+ "This flashlist is not optional and has to be retrieved to produce DAQSnapshot. "
+									+ "Optional settings may be configured in DAQAggregator properties file");
+				} else {
+					logger.warn("Flashlist " + flashlistType.getFlashlistName() + " could not be found in given LASes. "
+							+ "DAQAggregator will continue as the flashlist is optional according to properties file");
+				}
 			}
 			flashlistType.setUrl(lasUrl);
 

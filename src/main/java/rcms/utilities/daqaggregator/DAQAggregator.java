@@ -51,7 +51,7 @@ public class DAQAggregator {
 			try {
 				Application.initialize(propertiesFile);
 			} catch (DAQException e) {
-				logger.fatal(e.getCode().getName() + e.getMessage());
+				logger.fatal(e.getCode().getName() + ": " + e.getMessage());
 				System.exit(e.getCode().getCode());
 			}
 

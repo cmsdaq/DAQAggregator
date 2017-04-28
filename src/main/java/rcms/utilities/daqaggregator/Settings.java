@@ -6,6 +6,8 @@ public enum Settings {
 
 	// flashlists
 	LAS_URL("flashlist.urls",true),
+	FLASHLIST_OPTIONAL("flashlist.optional"),
+
 
 	// settings concerning session definition
 	SESSION_L0FILTER1("session.l0filter1"),
