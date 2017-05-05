@@ -86,7 +86,7 @@ public class LiveAccessServiceExplorer {
 
 		} else {
 			throw new DAQException(DAQExceptionCode.ProblemExploringLAS,
-					"Request to LAS catalog returned with http status: " + a.getLeft());
+					"Request to LAS catalog at " + url + " returned with http status: " + a.getLeft());
 		}
 	}
 
