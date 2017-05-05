@@ -61,6 +61,18 @@ public class DAQAggregator {
 			RunMode runMode = RunMode.decode(Application.get().getProp(Settings.RUN_MODE));
 			logger.info("Run mode:" + runMode);
 
+			int minimumSnapshotPeriod = 2000;
+			String minPeriod = Application.get().getProp(Settings.RUN_SAMPLING);
+			if(minPeriod != null){
+				try{
+					 minimumSnapshotPeriod =  Integer.parseInt(minPeriod);
+				} catch(NumberFormatException e){
+					logger.warn("Could not parse minimum snapshot period from: " + minimumSnapshotPeriod);
+				}
+			} else{
+				logger.info("No minimum snapshot period supplied. Using default of " + minimumSnapshotPeriod + "ms");
+			}
+
 			/*
 			 * Persist mode from properties file
 			 */
@@ -118,7 +130,20 @@ public class DAQAggregator {
 
 						long end = System.currentTimeMillis();
 						int resultTime = (int) (end - start);
-						logger.info("Monitor & persist in " + resultTime + "ms");
+						
+						logger.debug("Monitor & persist in " + resultTime);
+						
+						if(resultTime < minimumSnapshotPeriod){
+							int diff = minimumSnapshotPeriod - resultTime;
+							
+							logger.info("Minimum snapshot period is set to: " + minimumSnapshotPeriod + "ms, waiting " + diff + "ms before next snapshot");
+						
+							try {
+								Thread.sleep(diff);
+							} catch (InterruptedException e1) {
+								e1.printStackTrace();
+							}
+						}
 
 					} catch (DAQException e) {
 						logger.error(e.getMessage());

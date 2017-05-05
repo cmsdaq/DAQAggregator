@@ -3,6 +3,7 @@ package rcms.utilities.daqaggregator;
 public enum Settings {
 
 	RUN_MODE("run.mode", true),
+	RUN_SAMPLING("run.sampling.period"),
 
 	// flashlists
 	LAS_URL("flashlist.urls",true),
