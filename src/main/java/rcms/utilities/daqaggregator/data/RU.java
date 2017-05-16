@@ -28,6 +28,8 @@ public class RU implements FlashlistUpdatable, Derivable {
 	private FEDBuilder fedBuilder;
 
 	private String hostname;
+	
+	private int port;
 
 	private boolean isEVM;
 
@@ -38,6 +40,8 @@ public class RU implements FlashlistUpdatable, Derivable {
 	// ----------------------------------------
 	// fields updated periodically
 	// ----------------------------------------
+	
+	private boolean crashed;
 
 	private String stateName;
 
@@ -87,6 +91,13 @@ public class RU implements FlashlistUpdatable, Derivable {
 	
 	private double allocateRetryRate;
 	
+	public boolean isCrashed() {
+		return crashed;
+	}
+
+	public void setCrashed(boolean crashed) {
+		this.crashed = crashed;
+	}
 
 	public String getStateName() {
 		return stateName;
@@ -208,6 +219,14 @@ public class RU implements FlashlistUpdatable, Derivable {
 		this.hostname = hostname;
 	}
 
+	public int getPort() {
+		return port;
+	}
+
+	public void setPort(int port) {
+		this.port = port;
+	}
+
 	public void setEVM(boolean isEVM) {
 		this.isEVM = isEVM;
 	}
@@ -295,6 +314,7 @@ public class RU implements FlashlistUpdatable, Derivable {
 		int maskedFeds = 0;
 		int allFeds = 0;
 
+		//this will iterate over FEDs which are not pseudoFEDs, so no need to check if they have SLINK
 		for (SubFEDBuilder subFedBuilder : fedBuilder.getSubFedbuilders()) {
 			for (FRL frl : subFedBuilder.getFrls()) {
 				for (FED fed : frl.getFeds().values()) {
@@ -306,7 +326,7 @@ public class RU implements FlashlistUpdatable, Derivable {
 			}
 		}
 
-		/* Ru is mask if all of FEDs are masked */
+		/* Ru is masked if all FEDs are masked */
 		if (maskedFeds == allFeds) {
 			masked = true;
 		}
@@ -336,6 +356,7 @@ public class RU implements FlashlistUpdatable, Derivable {
 			this.setStateName(flashlistRow.get("stateName").asText());
 			this.setErrorMsg(flashlistRow.get("errorMsg").asText());
 			this.requests = flashlistRow.get("activeRequests").asInt();
+			this.port = Integer.parseInt(flashlistRow.get("context").asText().split(":")[2]);
 			this.rate = flashlistRow.get("eventRate").asInt();
 			this.eventsInRU = flashlistRow.get("eventsInRU").asInt();
 			this.eventCount = flashlistRow.get("eventCount").asLong();
@@ -387,12 +408,53 @@ public class RU implements FlashlistUpdatable, Derivable {
 				this.allocateRetryRate = flashlistRow.get("allocateRate").asDouble();
 			}
 		}
+		
+		if (flashlistType == FlashlistType.JOB_CONTROL) {
+			JsonNode jobTable = flashlistRow.get("jobTable");
+
+			JsonNode rows = jobTable.get("rows");
+
+			for (JsonNode row : rows) {
+				//TODO: get the row with matching jid to the context (additional field)
+				String status = row.get("status").asText();
+
+				// if not alive than crashed, if no data than default value
+				// witch is not crashed
+				if (!status.equalsIgnoreCase("alive"))
+					this.crashed = true;
+
+			}
+
+		}
 	}
 
 
 	@Override
 	public void clean() {
-		// nothing to do
+		this.setStateName(null);
+		this.setErrorMsg(null);
+		this.requests = 0;
+		this.port = 0;
+		this.rate = 0;
+		this.eventsInRU = 0;
+		this.eventCount = 0;
+		this.superFragmentSizeMean = 0;
+		this.superFragmentSizeStddev = 0;
+		this.incompleteSuperFragmentCount = 0;
+		this.fragmentsInRU = 0;
+		
+		this.throughput = rate * superFragmentSizeMean;
+		
+		// values per BU
+		this.throughputPerBU = new ArrayList<Long>();
+		this.buTids = new ArrayList<Integer>();
+		this.fragmentRatePerBU = new ArrayList<Integer>();
+		this.retryRatePerBU = new ArrayList<Double>();
+
+		this.allocateRate = 0;
+		this.allocateRetryRate = 0;
+			
+		this.crashed = false;
 	}
 
 	@Override
@@ -410,6 +472,7 @@ public class RU implements FlashlistUpdatable, Derivable {
 		result = prime * result + ((fragmentRatePerBU == null) ? 0 : fragmentRatePerBU.hashCode());
 		result = prime * result + fragmentsInRU;
 		result = prime * result + ((hostname == null) ? 0 : hostname.hashCode());
+		result = prime * result + port;
 		result = prime * result + incompleteSuperFragmentCount;
 		result = prime * result + ((infoMsg == null) ? 0 : infoMsg.hashCode());
 		result = prime * result + instance;
@@ -467,6 +530,8 @@ public class RU implements FlashlistUpdatable, Derivable {
 		} else if (!hostname.equals(other.hostname))
 			return false;
 		if (incompleteSuperFragmentCount != other.incompleteSuperFragmentCount)
+			return false;
+		if (port != other.port)
 			return false;
 		if (infoMsg == null) {
 			if (other.infoMsg != null)

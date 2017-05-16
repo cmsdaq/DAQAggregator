@@ -1,8 +1,9 @@
 package rcms.utilities.daqaggregator;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -32,16 +33,25 @@ public class DAQAggregator {
 	private static final Logger logger = Logger.getLogger(DAQAggregator.class);
 
 	public static void main(String[] args) {
+		
 		try {
 			String propertiesFile = "DAQAggregator.properties";
 			if (args.length > 0)
 				propertiesFile = args[0];
 			logger.info("DAQAggregator started with properties file '" + propertiesFile + "'");
+			
+			try {
+				String execPath = URLDecoder.decode(DAQ.class.getProtectionDomain().getCodeSource().getLocation().getPath(), "UTF-8");
+				logger.info("Path of current executable: "+execPath);
+				
+			} catch (UnsupportedEncodingException e2) {
+			
+			}
 
 			try {
 				Application.initialize(propertiesFile);
 			} catch (DAQException e) {
-				logger.fatal(e.getCode().getName() + e.getMessage());
+				logger.fatal(e.getCode().getName() + ": " + e.getMessage());
 				System.exit(e.getCode().getCode());
 			}
 
@@ -50,6 +60,18 @@ public class DAQAggregator {
 			 */
 			RunMode runMode = RunMode.decode(Application.get().getProp(Settings.RUN_MODE));
 			logger.info("Run mode:" + runMode);
+
+			int minimumSnapshotPeriod = 2000;
+			String minPeriod = Application.get().getProp(Settings.RUN_SAMPLING);
+			if(minPeriod != null){
+				try{
+					 minimumSnapshotPeriod =  Integer.parseInt(minPeriod);
+				} catch(NumberFormatException e){
+					logger.warn("Could not parse minimum snapshot period from: " + minimumSnapshotPeriod);
+				}
+			} else{
+				logger.info("No minimum snapshot period supplied. Using default of " + minimumSnapshotPeriod + "ms");
+			}
 
 			/*
 			 * Persist mode from properties file
@@ -108,7 +130,20 @@ public class DAQAggregator {
 
 						long end = System.currentTimeMillis();
 						int resultTime = (int) (end - start);
-						logger.info("Monitor & persist in " + resultTime + "ms");
+						
+						logger.debug("Monitor & persist in " + resultTime);
+						
+						if(resultTime < minimumSnapshotPeriod){
+							int diff = minimumSnapshotPeriod - resultTime;
+							
+							logger.info("Minimum snapshot period is set to: " + minimumSnapshotPeriod + "ms, waiting " + diff + "ms before next snapshot");
+						
+							try {
+								Thread.sleep(diff);
+							} catch (InterruptedException e1) {
+								e1.printStackTrace();
+							}
+						}
 
 					} catch (DAQException e) {
 						logger.error(e.getMessage());
@@ -206,11 +241,6 @@ public class DAQAggregator {
 		String user = Application.get().getProp(Settings.HWCFGDB_LOGIN);
 		String passwd = Application.get().getProp(Settings.HWCFGDB_PWD);
 		hardwareConnector.initialize(url, host, port, sid, user, passwd);
-
-		/*
-		 * Setup proxy
-		 */
-		ProxyManager.get().startProxy();
 
 		/*
 		 * Get persistence dirs

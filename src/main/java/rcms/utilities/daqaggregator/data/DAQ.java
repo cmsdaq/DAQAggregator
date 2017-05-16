@@ -1,11 +1,12 @@
 package rcms.utilities.daqaggregator.data;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import rcms.utilities.daqaggregator.datasource.DateParser;
 import rcms.utilities.daqaggregator.datasource.FlashlistType;
 import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
 
@@ -14,9 +15,11 @@ import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
  * 
  * @author Andre Georg Holzner (andre.georg.holzner@cern.ch)
  * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
- * 
+ * @author Michail Vougioukas (michail.vougioukas@cern.ch)
  */
 public class DAQ implements FlashlistUpdatable {
+	
+	private String daqAggregatorProducer;
 
 	// ----------------------------------------
 	// fields set at beginning of session
@@ -31,6 +34,8 @@ public class DAQ implements FlashlistUpdatable {
 	// ----------------------------------------
 
 	private int runNumber;
+	private long runStart;
+	private long runDurationInMillis;
 
 	/** timestamp */
 	private long lastUpdate;
@@ -38,6 +43,7 @@ public class DAQ implements FlashlistUpdatable {
 	private String daqState;
 
 	private String levelZeroState;
+	private long levelZeroStateEntry;
 	private String lhcMachineMode;
 	private String lhcBeamMode;
 
@@ -56,8 +62,14 @@ public class DAQ implements FlashlistUpdatable {
 	private Collection<FED> feds;
 	
 	private TCDSGlobalInfo tcdsGlobalInfo;
-
-
+	
+	/**
+	 * HLT rate in Hz
+	 */
+	private Double hltRate;
+	private String hltKey;
+	private String hltKeyDescription;
+	
 	public BUSummary getBuSummary() {
 		return buSummary;
 	}
@@ -210,6 +222,22 @@ public class DAQ implements FlashlistUpdatable {
 			this.levelZeroState = flashlistRow.get("STATE").asText();
 			this.lhcBeamMode = flashlistRow.get("LHC_BEAM_MODE").asText();
 			this.lhcMachineMode = flashlistRow.get("LHC_MACHINE_MODE").asText();
+			this.hltKey = flashlistRow.get("HLT_KEY").asText();
+			this.hltKeyDescription = flashlistRow.get("HLT_KEY_DESCRIPTION").asText();
+			
+			String runStart = flashlistRow.get("RUN_START_TIME").asText();
+			String stateEntry = flashlistRow.get("STATE_ENTRY_TIME").asText();
+			
+			Date date = DateParser.parseDateTransparently(runStart);
+			if (date != null) {
+				this.runStart = date.getTime();
+				this.runDurationInMillis = (new Date()).getTime() - date.getTime();
+			}
+			
+			date = DateParser.parseDateTransparently(stateEntry);
+			if (date != null) {
+				this.levelZeroStateEntry = date.getTime();
+			}
 		}
 
 	}
@@ -246,9 +274,29 @@ public class DAQ implements FlashlistUpdatable {
 		this.tcdsGlobalInfo = tcdsGlobalInfo;
 	}
 
+	/** @return the corresponding FED object (there should be at most one)
+	 *  corresponding to the given a numeric fed source ID or null if 
+	 *  no such source id was found.
+	 *  @param fedId the source id of the FED requested
+	 */
+	public FED getFEDbySrcId(int fedId) {
+		
+		for (FED fed : getFeds()) {
+			
+			if (fed.getSrcIdExpected() == fedId) {
+				return fed;
+			}
+
+		} // loop over FEDs
+
+		// fedId not found
+		return null;
+		
+	}
+	
 	@Override
 	public void clean() {
-		// nothing to do
+		this.daqState = "Unknown";
 	}
 
 	@Override
@@ -350,5 +398,79 @@ public class DAQ implements FlashlistUpdatable {
 			return false;
 		return true;
 	}
+
+	public Double getHltRate() {
+		return hltRate;
+	}
+
+	public void setHltRate(Double hltRate) {
+		this.hltRate = hltRate;
+	}
+
+	public long getRunStart() {
+		return runStart;
+	}
+
+	public void setRunStart(long runStart) {
+		this.runStart = runStart;
+	}
+
+	public long getLevelZeroStateEntry() {
+		return levelZeroStateEntry;
+	}
+
+	public void setLevelZeroStateEntry(long levelZeroStateEntry) {
+		this.levelZeroStateEntry = levelZeroStateEntry;
+	}
+
+	public void setRunDurationInMillis(long runDurationInMillis) {
+		this.runDurationInMillis = runDurationInMillis;
+	}
+
+	public Long getRunDurationInMillis() {
+		return runDurationInMillis;
+	}
+
+	public void setRunDurationInMillis(Long runDurationInMillis) {
+		this.runDurationInMillis = runDurationInMillis;
+	}
+
+	public String getHltKey() {
+		return hltKey;
+	}
+
+	public void setHltKey(String hltKey) {
+		this.hltKey = hltKey;
+	}
+
+	public String getHltKeyDescription() {
+		return hltKeyDescription;
+	}
+
+	public void setHltKeyDescription(String hltKeyDescription) {
+		this.hltKeyDescription = hltKeyDescription;
+	}
+
+	public String getDaqAggregatorProducer() {
+		return daqAggregatorProducer;
+	}
+
+	public void setDaqAggregatorProducer(String daqAggregatorProducer) {
+		this.daqAggregatorProducer = daqAggregatorProducer;
+	}
+
+	@Override
+	public String toString() {
+		return "DAQ [sessionId=" + sessionId + ", dpsetPath=" + dpsetPath + ", runNumber=" + runNumber + ", runStart="
+				+ runStart + ", runDurationInMillis=" + runDurationInMillis + ", lastUpdate=" + lastUpdate
+				+ ", daqState=" + daqState + ", levelZeroState=" + levelZeroState + ", levelZeroStateEntry="
+				+ levelZeroStateEntry + ", lhcMachineMode=" + lhcMachineMode + ", lhcBeamMode=" + lhcBeamMode
+				+ ", buSummary=" + buSummary + ", fedBuilderSummary=" + fedBuilderSummary + ", subSystems=" + subSystems
+				+ ", ttcPartitions=" + ttcPartitions + ", bus=" + bus + ", rus=" + rus + ", fedBuilders=" + fedBuilders
+				+ ", fmmApplications=" + fmmApplications + ", fmms=" + fmms + ", frlPcs=" + frlPcs + ", frls=" + frls
+				+ ", subFEDBuilders=" + subFEDBuilders + ", feds=" + feds + ", tcdsGlobalInfo=" + tcdsGlobalInfo
+				+ ", hltRate=" + hltRate + ", hltKey=" + hltKey + ", hltKeyDescription=" + hltKeyDescription + "]";
+	}
+	
 
 }

@@ -47,7 +47,7 @@ public class SessionRetriever {
 
 		if (flashlist == null)
 			throw new DAQException(DAQExceptionCode.FlashlistNull, "");
-		if (flashlist.getFlashlistType() != FlashlistType.LEVEL_ZERO_FM_STATIC)
+		if (flashlist.getFlashlistType() != FlashlistType.LEVEL_ZERO_FM_DYNAMIC)
 			throw new DAQException(DAQExceptionCode.WrongFlaslhist,
 					"Wrong flashlist type: " + flashlist.getFlashlistType());
 		if (flashlist.getRowsNode() == null || flashlist.getRowsNode().size() == 0)

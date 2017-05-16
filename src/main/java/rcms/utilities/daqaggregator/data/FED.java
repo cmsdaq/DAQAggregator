@@ -51,6 +51,8 @@ public class FED implements FlashlistUpdatable {
 
 	private float percentBackpressure;
 
+	private double frl_AccBIFIBackpressureSeconds;
+
 	private float percentWarning;
 
 	private float percentBusy;
@@ -82,6 +84,8 @@ public class FED implements FlashlistUpdatable {
 	private boolean ruFedWithoutFragments;
 
 	private double frl_AccSlinkFullSec;
+
+	private double frl_AccLatchedFerol40ClockSeconds;
 
 	@JsonIgnore
 	private BackpressureConverter converter = new BackpressureConverter();
@@ -115,7 +119,7 @@ public class FED implements FlashlistUpdatable {
 	{"key":"sessionid","type":"string"},
 	{"key":"timestamp","type":"time"},
 	{"key":"timeTag","type":"unsigned int 64"}] 
-	
+
 	 * }
 	 * </pre>
 	 * 
@@ -148,7 +152,7 @@ public class FED implements FlashlistUpdatable {
 	{"key":"TriggerNumber","type":"unsigned int 32"},
 	{"key":"WrongFEDId","type":"unsigned int 32"},
 	{"key":"WrongFEDIdDetected","type":"unsigned int 32"}] 
-	
+
 	 * }
 	 * </pre>
 	 * 
@@ -161,8 +165,7 @@ public class FED implements FlashlistUpdatable {
 			this.percentWarning = (float) (flashlistRow.get("fractionWarning").asDouble() * 100);
 			this.percentBusy = (float) (flashlistRow.get("fractionBusy").asDouble() * 100);
 			this.ttsState = flashlistRow.get("inputState").asText();
-			// this.fmmMasked = !flashlistRow.get("isActive").asBoolean();
-			// //covered
+			this.fmmMasked = !flashlistRow.get("isActive").asBoolean();
 
 		} else if (flashlistType == FlashlistType.FEROL_INPUT_STREAM) {
 
@@ -187,13 +190,16 @@ public class FED implements FlashlistUpdatable {
 
 		} else if (flashlistType == FlashlistType.FEROL_CONFIGURATION) {
 
-			/*
-			 * if (this.frlIO == 0) this.frlMasked =
-			 * !flashlistRow.get("enableStream0").asBoolean();
-			 * 
-			 * else if (this.frlIO == 1) this.frlMasked =
-			 * !flashlistRow.get("enableStream1").asBoolean();
-			 */ // covered
+			if (this.frlIO == 0){
+				this.frlMasked = !flashlistRow.get("enableStream0").asBoolean();
+			}else if (this.frlIO == 1){
+				this.frlMasked = !flashlistRow.get("enableStream1").asBoolean();
+			}
+
+		} else if (flashlistType == FlashlistType.FEROL40_STREAM_CONFIGURATION) {
+
+			this.frlMasked = !flashlistRow.get("enable").asBoolean();
+
 		} else if (flashlistType == FlashlistType.FRL_MONITORING) {
 
 			if (this.frlIO == 0)
@@ -225,6 +231,34 @@ public class FED implements FlashlistUpdatable {
 					break;
 				}
 			}
+		} else if (flashlistType == FlashlistType.FEROL40_INPUT_STREAM) {
+
+			if (flashlistRow.get("WrongFEDIdDetected").asInt() == 0) {
+				// srcIdExpected already filled at mapping from corresponding
+				// hwfed
+				this.srcIdReceived = this.srcIdExpected;
+			} else {
+				this.srcIdReceived = flashlistRow.get("WrongFEDId").asInt();
+			}
+
+			this.numSCRCerrors = flashlistRow.get("LinkCRCError").asInt();
+			this.numFCRCerrors = flashlistRow.get("FEDCRCError").asInt();
+			this.numTriggers = flashlistRow.get("TriggerNumber").asInt();
+			this.eventCounter = flashlistRow.get("EventCounter").asLong();
+
+			/*
+			 * should be used to convert accumulated backpressure from flashlist
+			 */
+			this.frl_AccLatchedFerol40ClockSeconds  = flashlistRow.get("LatchedFerol40ClockSeconds").asDouble();
+
+
+			this.percentBackpressure = converter.calculatePercent(flashlistRow.get("AccBackpressureSeconds").asDouble(),
+					flashlistRow.get("timestamp").asText()); //to be replaced with latchedSeconds (unit is seconds)
+
+			this.frl_AccSlinkFullSec = flashlistRow.get("AccSlinkFullSeconds").asDouble();
+
+			this.frl_AccBIFIBackpressureSeconds = flashlistRow.get("AccBIFIBackpressureSeconds").asDouble();
+
 		}
 
 	}
@@ -235,10 +269,22 @@ public class FED implements FlashlistUpdatable {
 		ruFedCRCError = 0;
 		ruFedDataCorruption = 0;
 		ruFedOutOfSync = 0;
-
 		ruFedInError = false;
 		ruFedWithoutFragments = false;
-
+		percentWarning = 0;
+		percentBusy = 0;
+		ttsState = null;
+		fmmMasked = true;
+		srcIdReceived = 0;
+		numSCRCerrors = 0;
+		numFCRCerrors = 0;
+		numTriggers = 0;
+		eventCounter = 0;
+		percentBackpressure = 0;
+		frlMasked = true;
+		frl_AccSlinkFullSec = 0;
+		frl_AccLatchedFerol40ClockSeconds  = 0;
+		frl_AccBIFIBackpressureSeconds = 0;
 	}
 
 	public int getSrcIdReceived() {
@@ -255,6 +301,22 @@ public class FED implements FlashlistUpdatable {
 
 	public void setPercentBackpressure(float percentBackpressure) {
 		this.percentBackpressure = percentBackpressure;
+	}
+
+	public double getFrl_AccBIFIBackpressureSeconds() {
+		return frl_AccBIFIBackpressureSeconds;
+	}
+
+	public void setFrl_AccBIFIBackpressureSeconds(double frl_AccBIFIBackpressureSeconds) {
+		this.frl_AccBIFIBackpressureSeconds = frl_AccBIFIBackpressureSeconds;
+	}
+
+	public double getFrl_AccLatchedFerol40ClockSeconds() {
+		return frl_AccLatchedFerol40ClockSeconds;
+	}
+
+	public void setFrl_AccLatchedFerol40ClockSeconds(double frl_AccLatchedFerol40ClockSeconds) {
+		this.frl_AccLatchedFerol40ClockSeconds = frl_AccLatchedFerol40ClockSeconds;
 	}
 
 	public float getPercentWarning() {

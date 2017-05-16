@@ -24,11 +24,15 @@ public class BU implements FlashlistUpdatable {
 	private DAQ daq;
 
 	private String hostname;
+	
+	private int port;
 
 	// ----------------------------------------
 	// fields updated periodically
 	// ----------------------------------------
 
+	private boolean crashed;
+	
 	private String stateName;
 
 	private String errorMsg;
@@ -114,6 +118,7 @@ public class BU implements FlashlistUpdatable {
 
 			// direct values
 			this.stateName = flashlistRow.get("stateName").asText();
+			this.port = Integer.parseInt(flashlistRow.get("context").asText().split(":")[2]);
 			this.errorMsg = flashlistRow.get("errorMsg").asText();
 			this.rate = flashlistRow.get("eventRate").asInt();
 			this.throughput = flashlistRow.get("throughput").asInt();
@@ -149,11 +154,64 @@ public class BU implements FlashlistUpdatable {
 			this.stateName = flashlistRow.get("stateName").asText();
 
 		}
+		
+		if (flashlistType == FlashlistType.JOB_CONTROL) {
+			JsonNode jobTable = flashlistRow.get("jobTable");
+
+			JsonNode rows = jobTable.get("rows");
+
+			for (JsonNode row : rows) {
+				//TODO: get the row with matching jid to the context (additional field)
+				String status = row.get("status").asText();
+
+				// if not alive than crashed, if no data than default value
+				// witch is not crashed
+				if (!status.equalsIgnoreCase("alive"))
+					this.crashed = true;
+
+			}
+
+		}
 	}
 
 	@Override
 	public void clean() {
-		// nothing to do
+		this.stateName = null;
+		this.port = 0;
+		this.errorMsg = null;
+		this.rate = 0;
+		this.throughput = 0;
+		this.eventSizeMean = 0;
+		this.eventSizeStddev = 0;
+		this.numEvents = 0;
+		this.numEventsInBU = 0;
+		this.priority = 0;
+		this.numRequestsSent = 0;
+		this.numRequestsUsed = 0;
+		this.numRequestsBlocked = 0;
+		this.numFUsHLT = 0;
+		this.numFUsCrashed = 0;
+		this.numFUsStale = 0;
+		this.numFUsCloud = 0;
+		this.ramDiskUsage = 0;
+		this.ramDiskTotal = 0;
+		this.numFiles = 0;
+		this.numLumisectionsWithFiles = 0;
+		this.currentLumisection = 0;
+		this.numLumisectionsForHLT = 0;
+		this.numLumisectionsOutHLT = 0;
+		this.fuOutputBandwidthInMB = 0;
+		this.requestRate = 0;
+		this.requestRetryRate = 0;
+
+		this.fragmentCount = 0;
+		this.slowestRUtid = 0;
+		this.nbCorruptedEvents = 0;
+		this.nbEventsMissingData = 0;
+		this.nbEventsWithCRCerrors = 0;
+		this.nbTotalResources = 0;
+		
+		this.crashed = false;
 	}
 
 	// ----------------------------------------------------------------------
@@ -164,6 +222,14 @@ public class BU implements FlashlistUpdatable {
 			// assume both are non-null
 			return bu1.getHostname().compareTo(bu2.getHostname());
 		}
+	}
+
+	public boolean isCrashed() {
+		return crashed;
+	}
+
+	public void setCrashed(boolean crashed) {
+		this.crashed = crashed;
 	}
 
 	public DAQ getDaq() {
@@ -180,6 +246,14 @@ public class BU implements FlashlistUpdatable {
 
 	public void setHostname(String hostname) {
 		this.hostname = hostname;
+	}
+
+	public int getPort() {
+		return port;
+	}
+
+	public void setPort(int port) {
+		this.port = port;
 	}
 
 	public String getStateName() {
@@ -451,6 +525,7 @@ public class BU implements FlashlistUpdatable {
 		temp = Double.doubleToLongBits(fuOutputBandwidthInMB);
 		result = prime * result + (int) (temp ^ (temp >>> 32));
 		result = prime * result + ((hostname == null) ? 0 : hostname.hashCode());
+		result = prime * result + port;
 		result = prime * result + nbCorruptedEvents;
 		result = prime * result + nbEventsMissingData;
 		result = prime * result + nbEventsWithCRCerrors;
@@ -511,6 +586,8 @@ public class BU implements FlashlistUpdatable {
 			if (other.hostname != null)
 				return false;
 		} else if (!hostname.equals(other.hostname))
+			return false;
+		if (port != other.port)
 			return false;
 		if (nbCorruptedEvents != other.nbCorruptedEvents)
 			return false;

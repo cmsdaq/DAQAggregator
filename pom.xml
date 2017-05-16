@@ -3,12 +3,12 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>ch.cern</groupId>
 	<artifactId>DAQAggregator</artifactId>
-	<version>1.5.1</version>
+	<version>1.8.0</version>
 	<repositories>
 		<repository>
 			<id>libs-release-local</id>
 			<url>http://dev-daq-expert.cern.ch/artifactory/libs-release-local</url>
-			<snapshots>
+	  		<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
 		</repository>
@@ -121,8 +121,8 @@
 		<!-- Hardware database is downloaded from internal repository -->
 		<dependency>
 			<groupId>ch.cern</groupId>
-			<artifactId>hwdb</artifactId>
-			<version>1.0</version>
+			<artifactId>rcms</artifactId>
+			<version>4.6.0.pre4</version>
 		</dependency>
 		<!-- Oracle driver is downloaded from internal repository -->
 		<dependency>

@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 
 import rcms.utilities.daqaggregator.data.DAQ;
 import rcms.utilities.daqaggregator.data.SubFEDBuilder;
+import rcms.utilities.daqaggregator.datasource.TCDSFMInfoRetriever;
 import rcms.utilities.hwcfg.HardwareConfigurationException;
 import rcms.utilities.hwcfg.dp.DAQPartition;
 import rcms.utilities.hwcfg.fb.FBI;
@@ -37,16 +38,19 @@ public class MappingManager implements Serializable {
 	private final RelationMapper relationMapper;
 
 	private final transient DAQPartition daqPartition;
+	
+	private final transient TCDSFMInfoRetriever tcdsFmInfoRetriever;
 
 	/**
 	 * 
 	 * @param daqPartition
 	 *            object representing hardware configuration
 	 */
-	public MappingManager(DAQPartition daqPartition) {
-		objectMapper = new ObjectMapper();
-		relationMapper = new RelationMapper(objectMapper);
+	public MappingManager(DAQPartition daqPartition, TCDSFMInfoRetriever tcdsFmInfoRetriever) {
+		objectMapper = new ObjectMapper(tcdsFmInfoRetriever);
+		relationMapper = new RelationMapper(objectMapper,tcdsFmInfoRetriever);
 		this.daqPartition = daqPartition;
+		this.tcdsFmInfoRetriever = tcdsFmInfoRetriever;
 	}
 
 	/**
@@ -179,5 +183,10 @@ public class MappingManager implements Serializable {
 	public RelationMapper getRelationMapper() {
 		return relationMapper;
 	}
+
+	public TCDSFMInfoRetriever getTcdsFmInfoRetriever() {
+		return tcdsFmInfoRetriever;
+	}
+	
 
 }

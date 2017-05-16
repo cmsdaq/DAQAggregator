@@ -15,7 +15,7 @@ import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
 public class TCDSGlobalInfo implements FlashlistUpdatable{
 
 	/**
-	 * Container of global information from the TCDS flashlists
+	 * Container of global (as in no TTCP specific) information from the TCDS flashlists
 	 *
 	 * @author Michail Vougioukas (michail.vougioukas@cern.ch)
 	 */
@@ -24,10 +24,10 @@ public class TCDSGlobalInfo implements FlashlistUpdatable{
 	private Map<String, GlobalTTSState> globalTtsStates;// = new HashMap<String, GlobalTTSState>();
 
 	/*cpm counts*/
-	
+
 	//lumi section to which counts monitoring data correspond
 	private int sectionNumber_counts;
-	
+
 	//totals
 	private int sup_trg_cnt_beamactive_total;
 	private int sup_trg_cnt_total;
@@ -41,20 +41,20 @@ public class TCDSGlobalInfo implements FlashlistUpdatable{
 	private List<Integer> trg_cnt_tt_values;
 
 	/*cpm deadtimes*/
-	
+
 	//lumi section to which deadtimes monitoring data correspond
 	private int sectionNumber_deadtimes;
-	
+
 	private int fillNumber;
-	
+
 	//map with all deadtime values, indexed by their flashlist column name
 	private Map<String, Double> deadTimes;
 
 	/*cpm rates*/
-	
+
 	//lumi section to which rates monitoring data correspond
 	private int sectionNumber_rates;
-	
+
 	//totals
 	private double sup_trg_rate_beamactive_total;
 	private double sup_trg_rate_total;
@@ -72,12 +72,15 @@ public class TCDSGlobalInfo implements FlashlistUpdatable{
 	//action[i]_count, , where i=0,...,m (action0 always at array position 0 etc.)
 	private List<Integer> actionCounts;
 
+	private String tcdsControllerContext;
+	private String tcdsControllerServiceName;
+
+
 	public TCDSGlobalInfo() {
 		super();
-		
-		globalTtsStates = new HashMap<String, GlobalTTSState>(); //should, in principle, reset between aggregations in the same DAQAggregator exec.
-														//(refactor this field's setting to take place in this updateFromFlashlist(arg) before)
-		
+
+		globalTtsStates = new HashMap<String, GlobalTTSState>(); //should reset between aggregations in the same DAQAggregator exec.
+
 		sup_trg_cnt_beamactive_tt_values = new ArrayList<Integer>();
 		sup_trg_cnt_tt_values = new ArrayList<Integer>();
 		trg_cnt_beamactive_tt_values = new ArrayList<Integer>();
@@ -87,7 +90,7 @@ public class TCDSGlobalInfo implements FlashlistUpdatable{
 		trg_rate_beamactive_tt_values = new ArrayList<Double>();
 		trg_rate_tt_values = new ArrayList<Double>();
 		actionCounts = new ArrayList<Integer>();
-		deadTimes = new HashMap<String, Double>(); //should, in principle, reset between aggregations in the same DAQAggregator exec.
+		deadTimes = new HashMap<String, Double>(); //should reset between aggregations in the same DAQAggregator exec.
 	}
 
 	public Map<String, GlobalTTSState> getGlobalTtsStates() {
@@ -274,9 +277,25 @@ public class TCDSGlobalInfo implements FlashlistUpdatable{
 		this.sectionNumber_rates = sectionNumber_rates;
 	}
 
+	public String getTcdsControllerContext() {
+		return tcdsControllerContext;
+	}
+
+	public void setTcdsControllerContext(String tcdsControllerContext) {
+		this.tcdsControllerContext = tcdsControllerContext;
+	}
+
+	public String getTcdsControllerServiceName() {
+		return tcdsControllerServiceName;
+	}
+
+	public void setTcdsControllerServiceName(String tcdsControllerServiceName) {
+		this.tcdsControllerServiceName = tcdsControllerServiceName;
+	}
+
 	@Override
 	public void updateFromFlashlist(FlashlistType flashlistType, JsonNode flashlistRow) {
-		
+
 		/*Instance(s) of this type are also flashlist-updated by the tcds_pm_tts_channel flashlist.
 		 * This is nevertheless not handled in this method but in the flashlist dispatcher using setters,
 		 * where tcds_pm_tts_channel flashlist updates other data types as well. This way, the
@@ -289,101 +308,101 @@ public class TCDSGlobalInfo implements FlashlistUpdatable{
 			sup_trg_cnt_tt_values = new ArrayList<Integer>();
 			trg_cnt_beamactive_tt_values = new ArrayList<Integer>();
 			trg_cnt_tt_values = new ArrayList<Integer>();
-			
+
 			//set ls number
 			sectionNumber_counts = flashlistRow.get("section_number").asInt();
-			
+
 			//set totals
 			sup_trg_cnt_beamactive_total = flashlistRow.get("sup_trg_cnt_beamactive_total").asInt();
 			sup_trg_cnt_total = flashlistRow.get("sup_trg_cnt_total").asInt();
 			trg_cnt_beamactive_total = flashlistRow.get("trg_cnt_beamactive_total").asInt();
 			trg_cnt_total = flashlistRow.get("trg_cnt_total").asInt();
-			
-			
+
+
 			//pattern for column name
 			String pattern;
-			
+
 			//tt[0] to tt[max] are not parsed in guaranteed order, so this map is needed to later store in correct order
 			Map<Integer,Integer> positionToValue;
-			
-			
+
+
 			//fill sup_trg_cnt_beamactive_tt_values
 			pattern = "sup_trg_cnt_beamactive_tt\\d+";
-			
+
 			positionToValue = new HashMap<Integer, Integer>();
-			
+
 			for (Iterator<String> fieldNameIter = flashlistRow.fieldNames(); fieldNameIter.hasNext() ;){
 				String fieldName = fieldNameIter.next();
 				if (!Pattern.matches(pattern, fieldName)){
 					continue;
 				}
-				
+
 				int i = Integer.parseInt(fieldName.substring(25));
 				positionToValue.put(i, flashlistRow.get(fieldName).asInt());
 			}
-			
+
 			//adding values from map to array, in tt[0]->tt[max] ordering
 			for (int i=0;i<positionToValue.size();i++){
 				sup_trg_cnt_beamactive_tt_values.add(positionToValue.get(i));
 			}
-			
-			
+
+
 			//fill sup_trg_cnt_tt_values
 			pattern = "sup_trg_cnt_tt\\d+";
-			
+
 			positionToValue = new HashMap<Integer, Integer>();
-			
+
 			for (Iterator<String> fieldNameIter = flashlistRow.fieldNames(); fieldNameIter.hasNext() ;){
 				String fieldName = fieldNameIter.next();
 				if (!Pattern.matches(pattern, fieldName)){
 					continue;
 				}
-				
+
 				int i = Integer.parseInt(fieldName.substring(14));
 				positionToValue.put(i, flashlistRow.get(fieldName).asInt());
 			}
-			
+
 			//adding values from map to array, in tt[0]->tt[max] ordering
 			for (int i=0;i<positionToValue.size();i++){
 				sup_trg_cnt_tt_values.add(positionToValue.get(i));
 			}
-			
+
 			//fill trg_cnt_beamactive_tt_values
 			pattern = "trg_cnt_beamactive_tt\\d+";
-			
+
 			positionToValue = new HashMap<Integer, Integer>();
-			
+
 			for (Iterator<String> fieldNameIter = flashlistRow.fieldNames(); fieldNameIter.hasNext() ;){
 				String fieldName = fieldNameIter.next();
 				if (!Pattern.matches(pattern, fieldName)){
 					continue;
 				}
-				
+
 				int i = Integer.parseInt(fieldName.substring(21));
 				positionToValue.put(i, flashlistRow.get(fieldName).asInt());
 			}
-			
+
 			//adding values from map to array, in tt[0]->tt[max] ordering
 			for (int i=0;i<positionToValue.size();i++){
 				trg_cnt_beamactive_tt_values.add(positionToValue.get(i));
 			}
-			
-			
+
+
 			//fill trg_cnt_tt_values
 			pattern = "trg_cnt_tt\\d+";
-			
+
 			positionToValue = new HashMap<Integer, Integer>();
-			
+
 			for (Iterator<String> fieldNameIter = flashlistRow.fieldNames(); fieldNameIter.hasNext() ;){
 				String fieldName = fieldNameIter.next();
 				if (!Pattern.matches(pattern, fieldName)){
 					continue;
 				}
-				
+
 				int i = Integer.parseInt(fieldName.substring(10));
 				positionToValue.put(i, flashlistRow.get(fieldName).asInt());
 			}
-			
+
 			//adding values from map to array, in tt[0]->tt[max] ordering
 			for (int i=0;i<positionToValue.size();i++){
 				trg_cnt_tt_values.add(positionToValue.get(i));
@@ -396,101 +415,101 @@ public class TCDSGlobalInfo implements FlashlistUpdatable{
 			sup_trg_rate_tt_values = new ArrayList<Double>();
 			trg_rate_beamactive_tt_values = new ArrayList<Double>();
 			trg_rate_tt_values = new ArrayList<Double>();
-			
+
 			//set ls number
 			sectionNumber_rates = flashlistRow.get("section_number").asInt();
-			
+
 			//set totals
 			sup_trg_rate_beamactive_total = flashlistRow.get("sup_trg_rate_beamactive_total").asDouble();
 			sup_trg_rate_total = flashlistRow.get("sup_trg_rate_total").asDouble();
 			trg_rate_beamactive_total = flashlistRow.get("trg_rate_beamactive_total").asDouble();
 			trg_rate_total = flashlistRow.get("trg_rate_total").asDouble();
-			
-			
+
+
 			//pattern for column name
 			String pattern;
-			
+
 			//tt[0] to tt[max] are not parsed in guaranteed order, so this map is needed to later store in correct order
 			Map<Integer,Double> positionToValue;
-			
-			
+
+
 			//fill sup_trg_rate_beamactive_tt_values
 			pattern = "sup_trg_rate_beamactive_tt\\d+";
-			
+
 			positionToValue = new HashMap<Integer, Double>();
-			
+
 			for (Iterator<String> fieldNameIter = flashlistRow.fieldNames(); fieldNameIter.hasNext() ;){
 				String fieldName = fieldNameIter.next();
 				if (!Pattern.matches(pattern, fieldName)){
 					continue;
 				}
-				
+
 				int i = Integer.parseInt(fieldName.substring(26));
 				positionToValue.put(i, flashlistRow.get(fieldName).asDouble());
 			}
-			
+
 			//adding values from map to array, in tt[0]->tt[max] ordering
 			for (int i=0;i<positionToValue.size();i++){
 				sup_trg_rate_beamactive_tt_values.add(positionToValue.get(i));
 			}
-			
-			
+
+
 			//fill sup_trg_rate_tt_values
 			pattern = "sup_trg_rate_tt\\d+";
-			
+
 			positionToValue = new HashMap<Integer, Double>();
-			
+
 			for (Iterator<String> fieldNameIter = flashlistRow.fieldNames(); fieldNameIter.hasNext() ;){
 				String fieldName = fieldNameIter.next();
 				if (!Pattern.matches(pattern, fieldName)){
 					continue;
 				}
-				
+
 				int i = Integer.parseInt(fieldName.substring(15));
 				positionToValue.put(i, flashlistRow.get(fieldName).asDouble());
 			}
-			
+
 			//adding values from map to array, in tt[0]->tt[max] ordering
 			for (int i=0;i<positionToValue.size();i++){
 				sup_trg_rate_tt_values.add(positionToValue.get(i));
 			}
-			
+
 			//fill trg_rate_beamactive_tt_values
 			pattern = "trg_rate_beamactive_tt\\d+";
-			
+
 			positionToValue = new HashMap<Integer, Double>();
-			
+
 			for (Iterator<String> fieldNameIter = flashlistRow.fieldNames(); fieldNameIter.hasNext() ;){
 				String fieldName = fieldNameIter.next();
 				if (!Pattern.matches(pattern, fieldName)){
 					continue;
 				}
-				
+
 				int i = Integer.parseInt(fieldName.substring(22));
 				positionToValue.put(i, flashlistRow.get(fieldName).asDouble());
 			}
-			
+
 			//adding values from map to array, in tt[0]->tt[max] ordering
 			for (int i=0;i<positionToValue.size();i++){
 				trg_rate_beamactive_tt_values.add(positionToValue.get(i));
 			}
-			
-			
+
+
 			//fill trg_rate_tt_values
 			pattern = "trg_rate_tt\\d+";
-			
+
 			positionToValue = new HashMap<Integer, Double>();
-			
+
 			for (Iterator<String> fieldNameIter = flashlistRow.fieldNames(); fieldNameIter.hasNext() ;){
 				String fieldName = fieldNameIter.next();
 				if (!Pattern.matches(pattern, fieldName)){
 					continue;
 				}
-				
+
 				int i = Integer.parseInt(fieldName.substring(11));
 				positionToValue.put(i, flashlistRow.get(fieldName).asDouble());
 			}
-			
+
 			//adding values from map to array, in tt[0]->tt[max] ordering
 			for (int i=0;i<positionToValue.size();i++){
 				trg_rate_tt_values.add(positionToValue.get(i));
@@ -498,22 +517,22 @@ public class TCDSGlobalInfo implements FlashlistUpdatable{
 		}
 
 		if (flashlistType == FlashlistType.TCDS_CPM_DEADTIMES){
-			
+
 			//set fillnumber
 			fillNumber = flashlistRow.get("fill_number").asInt();
-			
+
 			//set ls number
 			sectionNumber_deadtimes = flashlistRow.get("section_number").asInt();
-			
+
 			//set map of deadtimes
 			String pattern = "deadtime.*";
-			
+
 			for (Iterator<String> fieldNameIter = flashlistRow.fieldNames(); fieldNameIter.hasNext() ;){
 				String fieldName = fieldNameIter.next();
 				if (!Pattern.matches(pattern, fieldName)){
 					continue;
 				}
-				
+
 				//stripping "deadtime_" prefix, common to all values, to save some space
 				deadTimes.put(fieldName.substring(9, fieldName.length()), flashlistRow.get(fieldName).asDouble());
 			}
@@ -522,25 +541,25 @@ public class TCDSGlobalInfo implements FlashlistUpdatable{
 		if (flashlistType == FlashlistType.TCDS_PM_ACTION_COUNTS){
 			//reset array to flush old entries
 			actionCounts = new ArrayList<Integer>();
-			
-			
+
+
 			//set action counts array with values
 			String pattern = "action\\d+_count";
-			
+
 			Map<Integer,Integer> positionToValue = new HashMap<Integer, Integer>();
-			
+
 			for (Iterator<String> fieldNameIter = flashlistRow.fieldNames(); fieldNameIter.hasNext() ;){
 				String fieldName = fieldNameIter.next();
 				if (!Pattern.matches(pattern, fieldName)){
 					continue;
 				}
-				
+
 				/*explicit decoding of position needed, because iteration over flashlistRow children has no guaranteed ordering
 				 * (flashlistRow is an object, not an array, therefore action[2] might be returned before action[1] etc.)*/
 				int i = Integer.parseInt(fieldName.substring(6, 7));
 				positionToValue.put(i, flashlistRow.get(fieldName).asInt());
 			}
-			
+
 			//adding values from map to array, in action[0]->action[max] ordering
 			for (int i=0;i<positionToValue.size();i++){
 				actionCounts.add(positionToValue.get(i));
@@ -550,8 +569,33 @@ public class TCDSGlobalInfo implements FlashlistUpdatable{
 
 	@Override
 	public void clean() {
+		globalTtsStates = new HashMap<String, GlobalTTSState>(); 
 		
-		
+		sup_trg_cnt_beamactive_tt_values = new ArrayList<Integer>();
+		sup_trg_cnt_tt_values = new ArrayList<Integer>();
+		trg_cnt_beamactive_tt_values = new ArrayList<Integer>();
+		trg_cnt_tt_values = new ArrayList<Integer>();
+		sectionNumber_counts = 0;
+		sup_trg_cnt_beamactive_total = 0;
+		sup_trg_cnt_total = 0;
+		trg_cnt_beamactive_total = 0;
+		trg_cnt_total = 0;
+		sup_trg_rate_beamactive_tt_values = new ArrayList<Double>();
+		sup_trg_rate_tt_values = new ArrayList<Double>();
+		trg_rate_beamactive_tt_values = new ArrayList<Double>();
+		trg_rate_tt_values = new ArrayList<Double>();
+		sectionNumber_rates = 0;
+		sup_trg_rate_beamactive_total = 0;
+		sup_trg_rate_total = 0;
+		trg_rate_beamactive_total = 0;
+		trg_rate_total = 0;
+		fillNumber = 0;
+		sectionNumber_deadtimes = 0;
+
+		deadTimes = new HashMap<String, Double>();
+		actionCounts = new ArrayList<Integer>();
+
+
 	}
 
 }

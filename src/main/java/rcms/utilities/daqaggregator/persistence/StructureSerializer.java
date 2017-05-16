@@ -9,6 +9,7 @@ import java.io.OutputStream;
 import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -133,6 +134,7 @@ public class StructureSerializer {
 	public DAQ deserialize(String filepath, PersistenceFormat format) {
 
 		ObjectMapper mapper = format.getMapper();
+		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
 		switch (format) {
 		case SMILE:

@@ -1,5 +1,7 @@
 package rcms.utilities.daqaggregator.mappers;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -31,6 +33,7 @@ import rcms.utilities.daqaggregator.data.SubFEDBuilder;
 import rcms.utilities.daqaggregator.data.SubSystem;
 import rcms.utilities.daqaggregator.data.TCDSGlobalInfo;
 import rcms.utilities.daqaggregator.data.TTCPartition;
+import rcms.utilities.daqaggregator.datasource.TCDSFMInfoRetriever;
 import rcms.utilities.hwcfg.HardwareConfigurationException;
 import rcms.utilities.hwcfg.dp.DAQPartition;
 import rcms.utilities.hwcfg.dp.DPGenericHost;
@@ -50,6 +53,8 @@ public class ObjectMapper {
 
 	private static final Logger logger = Logger.getLogger(ObjectMapper.class);
 
+	private final transient TCDSFMInfoRetriever tcdsFmInfoRetriever;
+	
 	/** DAQ structure root object */
 	public DAQ daq;
 
@@ -77,12 +82,20 @@ public class ObjectMapper {
 	public Map<String, RU> rusByHostname;
 	public Map<String, BU> busByHostname;
 	public Map<String, SubSystem> subsystemByName;
+	
+	public ObjectMapper(TCDSFMInfoRetriever tcdsFmInfoRetriever) {
+		this.tcdsFmInfoRetriever = tcdsFmInfoRetriever;
+	}
 
 	public void mapAllObjects(DAQPartition daqPartition) {
 
 		daq = new DAQ();
+		try {
+			String execPath = URLDecoder.decode(DAQ.class.getProtectionDomain().getCodeSource().getLocation().getPath(), "UTF-8");
+			String [] tokens = execPath.split("/");
+			daq.setDaqAggregatorProducer(tokens[tokens.length-1]);
+		} catch (UnsupportedEncodingException e2) {}
 
-		// TODO: this is for flashlist mapping, refactor me
 		rusById = new HashMap<>();
 		busById = new HashMap<>();
 		fedsById = new HashMap<>();

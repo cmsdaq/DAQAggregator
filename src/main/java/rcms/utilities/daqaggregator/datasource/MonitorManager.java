@@ -20,7 +20,10 @@ public class MonitorManager {
 	private static final Logger logger = Logger.getLogger(MonitorManager.class);
 	private final FlashlistRetriever flashlistRetriever;
 	private final SessionDetector sessionDetector;
+	private final TCDSFMInfoRetriever tcdsFmInfoRetriever;
 	private final HardwareConnector hardwareConnector;
+	
+	private final F3DataRetriever f3dataRetriever;
 
 	/** Manager for mapping the structure */
 	private MappingManager mappingManager;
@@ -36,7 +39,8 @@ public class MonitorManager {
 		this.flashlistRetriever = flashlistRetriever;
 		this.hardwareConnector = hardwareConnector;
 		this.sessionDetector = new SessionDetector(sessionRetriever, flashlistRetriever);
-
+		this.tcdsFmInfoRetriever = new TCDSFMInfoRetriever(flashlistRetriever);
+		this.f3dataRetriever = new F3DataRetriever(new Connector());
 	}
 
 	public void skipToNextSnapshot() {
@@ -50,24 +54,31 @@ public class MonitorManager {
 
 		logger.debug("Detecting new session");
 		boolean newSession = sessionDetector.detectNewSession();
-
+		boolean newTrigger = tcdsFmInfoRetriever.detectNewTrigger(); //if true, it will update tcds fm info internally on the tcdsFmInfoRetriever object and they will be picked up later in structure building
+		
 		logger.debug("New session: " + newSession);
-
-		if (newSession) {
-			logger.info("New session detected. Rebuilding the daq model based on hardware database");
+		
+		
+		//rebuild structure if newSession or newTrigger (in both cases we need the session information for HW)
+		if (newSession || newTrigger) {
+			
+			String reason = newSession? "session" : "trigger";
+			
+			logger.info("New "+reason+" detected. Rebuilding the DAQ model.");
 			long start = System.currentTimeMillis();
 			daq = rebuildDaqModel(sessionDetector.getResult());
 			int timeToRebuild = (int) (System.currentTimeMillis() - start);
-			logger.info("Structure rebuiled in " + timeToRebuild + "ms");
+			logger.info("Structure rebuilded in " + timeToRebuild + "ms");
 			logger.info("--------------------------------------");
 
 		}
 
 		int sessionId = sessionDetector.getResult().getMiddle();
-
+		
 		Collection<Flashlist> flashlists = flashlistRetriever.retrieveAllFlashlists(sessionId).values();
 		flashlistManager.mapFlashlists(flashlists);
 
+		
 		long lastUpdate = 0L;
 		for (Flashlist flashlist : flashlists) {
 			// why null here?
@@ -81,6 +92,9 @@ public class MonitorManager {
 		// postprocess daq (derived values, summary classes)
 		PostProcessor postProcessor = new PostProcessor(daq);
 		postProcessor.postProcess();
+		
+
+		f3dataRetriever.dispatch(daq);
 		return Triple.of(daq, flashlists, newSession);
 
 	}
@@ -108,7 +122,7 @@ public class MonitorManager {
 		DAQPartition daqPartition = hardwareConnector.getPartition(path);
 
 		// map the structure to new DAQ
-		mappingManager = new MappingManager(daqPartition);
+		mappingManager = new MappingManager(daqPartition, this.tcdsFmInfoRetriever);
 		logger.info("New DAQ structure");
 		daq = mappingManager.map();
 		daq.setSessionId(sid);

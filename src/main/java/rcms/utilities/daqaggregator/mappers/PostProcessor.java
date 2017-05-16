@@ -137,7 +137,7 @@ public class PostProcessor {
 				if (ru.isMasked()) {
 					masked++;
 				}
-				if (ru.getStateName().equalsIgnoreCase("enabled"))
+				if (ru.getStateName()!=null && ru.getStateName().equalsIgnoreCase("enabled"))
 					enabledRus++;
 				if (ru.isEVM())
 					evms++;

@@ -24,7 +24,7 @@ import rcms.utilities.daqaggregator.Settings;
  * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
  *
  */
-// @Ignore
+@Ignore
 public class LASFlashlistRetrieverTest {
 
 	private static String filter1;

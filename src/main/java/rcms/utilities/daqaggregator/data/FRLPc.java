@@ -23,6 +23,8 @@ public class FRLPc implements FlashlistUpdatable, Derivable {
 	// ----------------------------------------
 
 	private String hostname;
+	
+	private int port;
 
 	private boolean masked;
 
@@ -55,6 +57,14 @@ public class FRLPc implements FlashlistUpdatable, Derivable {
 		this.hostname = hostname;
 	}
 
+	public int getPort() {
+		return port;
+	}
+
+	public void setPort(int port) {
+		this.port = port;
+	}
+
 	public void setMasked(boolean masked) {
 		this.masked = masked;
 	}
@@ -71,17 +81,22 @@ public class FRLPc implements FlashlistUpdatable, Derivable {
 	public void updateFromFlashlist(FlashlistType flashlistType, JsonNode flashlistRow) {
 
 		if (flashlistType == FlashlistType.JOB_CONTROL) {
+			
+			this.port = Integer.parseInt(flashlistRow.get("context").asText().split(":")[2]);
+			
 			JsonNode jobTable = flashlistRow.get("jobTable");
 			JsonNode rows = jobTable.get("rows");
-
+			
 			for (JsonNode row : rows) {
 
 				String status = row.get("status").asText();
-
+				
 				// if not alive than crashed, if no data than default value
 				// witch is not crashed
 				if (!status.equalsIgnoreCase("alive"))
 					this.crashed = true;
+				
+				
 
 			}
 		}
@@ -89,6 +104,7 @@ public class FRLPc implements FlashlistUpdatable, Derivable {
 
 	@Override
 	public void clean() {
+		port = 0;
 		crashed = false;
 	}
 
@@ -122,6 +138,7 @@ public class FRLPc implements FlashlistUpdatable, Derivable {
 		result = prime * result + (crashed ? 1231 : 1237);
 		result = prime * result + ((hostname == null) ? 0 : hostname.hashCode());
 		result = prime * result + (masked ? 1231 : 1237);
+		result = prime * result + port;
 		return result;
 	}
 
@@ -135,6 +152,8 @@ public class FRLPc implements FlashlistUpdatable, Derivable {
 			return false;
 		FRLPc other = (FRLPc) obj;
 		if (crashed != other.crashed)
+			return false;
+		if (port != other.port)
 			return false;
 		if (hostname == null) {
 			if (other.hostname != null)

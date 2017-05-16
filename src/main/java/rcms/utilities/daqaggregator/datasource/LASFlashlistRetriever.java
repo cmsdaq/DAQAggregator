@@ -53,28 +53,36 @@ public class LASFlashlistRetriever implements FlashlistRetriever {
 		final Date retrievalDate = new Date();
 		for (final FlashlistType flashlistType : FlashlistType.values()) {
 
-			Runnable task = new Runnable() {
-				public void run() {
-					try {
-						Pair<Flashlist, Integer> result;
+			/*
+			 * Some flashlist may be optional - they were not discovered in
+			 * LAS-flashlist auto mapping and they has no url assigned
+			 */
+			if (flashlistType.getUrl() != null) {
 
-						if (flashlistType.isSessionContext()) {
-							result = downloadSessionContextFlashlist(flashlistType, retrievalDate, sessionId);
-						} else {
-							result = downloadNonSessionContextFlashlist(flashlistType, retrievalDate);
+				Runnable task = new Runnable() {
+					public void run() {
+						try {
+							Pair<Flashlist, Integer> result;
+
+							if (flashlistType.isSessionContext()) {
+								result = downloadSessionContextFlashlist(flashlistType, retrievalDate, sessionId);
+							} else {
+								result = downloadNonSessionContextFlashlist(flashlistType, retrievalDate);
+							}
+
+							times.put(flashlistType, result.getRight());
+							flashlists.put(flashlistType, result.getLeft());
+							logger.debug("Flashlist definition:" + result.getLeft().getDefinitionNode());
+
+						} catch (IOException e) {
+							logger.error("Error reading flashlist " + flashlistType);
+							e.printStackTrace();
 						}
-
-						times.put(flashlistType, result.getRight());
-						flashlists.put(flashlistType, result.getLeft());
-						logger.debug("Flashlist definition:" + result.getLeft().getDefinitionNode());
-
-					} catch (IOException e) {
-						logger.error("Error reading flashlist " + flashlistType);
-						e.printStackTrace();
 					}
-				}
-			};
-			futures.add(executor.submit(task));
+				};
+				futures.add(executor.submit(task));
+
+			}
 		}
 
 		try {
@@ -94,7 +102,7 @@ public class LASFlashlistRetriever implements FlashlistRetriever {
 
 	@Override
 	public Pair<Flashlist, Integer> retrieveFlashlist(FlashlistType flashlistType) {
-		logger.info("Requested flashlist " + flashlistType + " retreival");
+		logger.info("Requested flashlist " + flashlistType + " retrieval");
 		try {
 			final Date retrievalDate = new Date();
 			return downloadNonSessionContextFlashlist(flashlistType, retrievalDate);

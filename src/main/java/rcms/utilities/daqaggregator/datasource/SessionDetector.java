@@ -36,12 +36,12 @@ public class SessionDetector {
 		boolean detectedChange = false;
 
 		Pair<Flashlist, Integer> levelZeroRetrieveResult = flashlistRetriever
-				.retrieveFlashlist(FlashlistType.LEVEL_ZERO_FM_STATIC);
+				.retrieveFlashlist(FlashlistType.LEVEL_ZERO_FM_DYNAMIC);
 
-		Flashlist levelZeroStaticFlashist = levelZeroRetrieveResult.getLeft();
+		Flashlist levelZeroDynamicFlashist = levelZeroRetrieveResult.getLeft();
 		int timeToAutoDetect = levelZeroRetrieveResult.getRight();
 
-		Triple<String, Integer, Long> result = sessionRetriever.retrieveSession(levelZeroStaticFlashist);
+		Triple<String, Integer, Long> result = sessionRetriever.retrieveSession(levelZeroDynamicFlashist);
 
 		if (lastResult == null) {
 			logger.info("Detected first session " + result);

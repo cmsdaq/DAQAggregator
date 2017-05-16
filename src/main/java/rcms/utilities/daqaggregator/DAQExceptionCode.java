@@ -9,6 +9,8 @@ public enum DAQExceptionCode {
 	/* LAS access errors */
 	ProblemRetrievingFlashlists(201, "Problem retrieving flashlist(s)"),
 	MissingSessionIdRetrievingFlashlists(202, "Missing session id retrieving flashlists"),
+	FlashlistNotFound(203, "Flashlist not found in LASes"),
+	ProblemExploringLAS(204,"Problem exploring LAS"),
 
 	/* File access errors */
 	NoMoreFlashlistSourceFiles(301, "No more flashlist source files"),
