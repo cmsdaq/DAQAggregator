@@ -53,6 +53,7 @@ public class F3DataRetrieverTest {
 		private final String response;
 
 		public ConnectorFake(String response) {
+			super(false);
 			this.response = response;
 		}
 

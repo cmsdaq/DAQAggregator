@@ -34,7 +34,7 @@ public class LiveAccessServiceExplorer {
 	public LiveAccessServiceExplorer(List<String> urls, boolean staticCatalog) {
 		this.urls = urls;
 		this.flashlistToUrl = new HashMap<>();
-		this.connector = new Connector();
+		this.connector = new Connector(false);
 		this.staticCatalog = staticCatalog;
 	}
 

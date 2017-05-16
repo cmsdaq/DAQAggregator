@@ -26,6 +26,6 @@ public interface FlashlistRetriever {
 	 *            flashlist type
 	 * @return retrieved flashlist and time to retrieve
 	 */
-	public Pair<Flashlist, Integer> retrieveFlashlist(FlashlistType flashlistType);
+	public Pair<Flashlist, String> retrieveFlashlist(FlashlistType flashlistType);
 
 }
