@@ -5,10 +5,21 @@ import com.fasterxml.jackson.dataformat.smile.SmileFactory;
 
 public enum PersistenceFormat {
 
-	SMILE(".smile", false, new ObjectMapper(new SmileFactory())),
+	
 	JSON(".json", true, new ObjectMapper()),
+	
+	ZIPPED(".json.gz", true, new ObjectMapper()),
+
+	@Deprecated
+	SMILE(".smile", false, new ObjectMapper(new SmileFactory())),
+	
+	@Deprecated
 	JSONUGLY(".json", false, new ObjectMapper()),
+
+	@Deprecated
 	JSONREFPREFIXED(".ref.json", true, new ObjectMapper()),
+
+	@Deprecated
 	JSONREFPREFIXEDUGLY(".ref.json",false, new ObjectMapper());
 
 	private final String extension;
@@ -36,6 +47,8 @@ public enum PersistenceFormat {
 	public static PersistenceFormat decode(String formatProperty){
 		if (PersistenceFormat.JSON.name().equalsIgnoreCase(formatProperty))
 			return PersistenceFormat.JSON;
+		else if (PersistenceFormat.ZIPPED.name().equalsIgnoreCase(formatProperty))
+			return PersistenceFormat.ZIPPED;
 		else if (PersistenceFormat.SMILE.name().equalsIgnoreCase(formatProperty))
 			return PersistenceFormat.SMILE;
 		else if (PersistenceFormat.JSONREFPREFIXED.name().equalsIgnoreCase(formatProperty))

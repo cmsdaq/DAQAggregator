@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.OutputStream;
+import java.util.zip.GZIPOutputStream;
 
 import org.apache.log4j.Logger;
 
@@ -72,12 +73,20 @@ public class StructureSerializer {
 
 		ObjectMapper mapper = format.getMapper();
 		boolean prettyPrint = format.isPrettyPrint();
+		
+		OutputStream finalOutputStream = outputStream;
 
 		switch (format) {
-		case SMILE:
+		
+		case JSON:
 			addMixins(mapper);
 			break;
-		case JSON:
+		case ZIPPED:
+            GZIPOutputStream gzipOS = new GZIPOutputStream(outputStream);
+            finalOutputStream = gzipOS;
+			addMixins(mapper);
+            break;
+		case SMILE:
 			addMixins(mapper);
 			break;
 		case JSONREFPREFIXED:
@@ -94,9 +103,9 @@ public class StructureSerializer {
 		}
 
 		if (prettyPrint)
-			mapper.writerWithDefaultPrettyPrinter().writeValue(outputStream, daqSnapshot);
+			mapper.writerWithDefaultPrettyPrinter().writeValue(finalOutputStream, daqSnapshot);
 		else
-			mapper.writeValue(outputStream, daqSnapshot);
+			mapper.writeValue(finalOutputStream, daqSnapshot);
 
 	}
 
@@ -136,10 +145,15 @@ public class StructureSerializer {
 		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
 		switch (format) {
-		case SMILE:
+		
+		case JSON:
 			addMixins(mapper);
 			break;
-		case JSON:
+		case ZIPPED:
+			logger.warn("What to do?");
+			addMixins(mapper);
+            break;
+		case SMILE:
 			addMixins(mapper);
 			break;
 		case JSONREFPREFIXED:
