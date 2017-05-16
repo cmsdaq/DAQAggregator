@@ -1,10 +1,8 @@
 package rcms.utilities.daqaggregator.datasource;
 
 import java.io.IOException;
-import java.rmi.server.ExportException;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
@@ -12,7 +10,6 @@ import org.apache.log4j.Logger;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
-import rcms.utilities.daqaggregator.DAQAggregator;
 import rcms.utilities.daqaggregator.DAQException;
 import rcms.utilities.daqaggregator.DAQExceptionCode;
 

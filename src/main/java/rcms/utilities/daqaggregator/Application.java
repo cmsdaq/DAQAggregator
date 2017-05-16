@@ -124,7 +124,7 @@ public class Application {
 
 		}
 
-		logger.info("All flashlists sucessfully discovered:");
+		logger.info("All required flash-lists successfully discovered:");
 		for (FlashlistType flashlistType : FlashlistType.values()) {
 			logger.info(String.format("%1$-26s", flashlistType.getFlashlistName()) + " " + flashlistType.getUrl());
 		}
