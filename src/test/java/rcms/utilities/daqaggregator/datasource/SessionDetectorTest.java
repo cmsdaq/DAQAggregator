@@ -90,8 +90,8 @@ public class SessionDetectorTest {
 		private final Iterator<Flashlist> iterator;
 
 		@Override
-		public Pair<Flashlist, Integer> retrieveFlashlist(FlashlistType flashlistType) {
-			return Pair.of(iterator.next(), 0);
+		public Pair<Flashlist, String> retrieveFlashlist(FlashlistType flashlistType) {
+			return Pair.of(iterator.next(), 0+"ms");
 		}
 
 		@Override

@@ -35,11 +35,12 @@ public class SessionDetector {
 
 		boolean detectedChange = false;
 
-		Pair<Flashlist, Integer> levelZeroRetrieveResult = flashlistRetriever
+		long start = System.currentTimeMillis();
+
+		Pair<Flashlist, String> levelZeroRetrieveResult = flashlistRetriever
 				.retrieveFlashlist(FlashlistType.LEVEL_ZERO_FM_DYNAMIC);
 
 		Flashlist levelZeroDynamicFlashist = levelZeroRetrieveResult.getLeft();
-		int timeToAutoDetect = levelZeroRetrieveResult.getRight();
 
 		Triple<String, Integer, Long> result = sessionRetriever.retrieveSession(levelZeroDynamicFlashist);
 
@@ -61,9 +62,15 @@ public class SessionDetector {
 			}
 		}
 
+		long end = System.currentTimeMillis();
+		int timeToAutoDetect = (int) (end - start);
+
 		lastResult = result;
-		logger.info("Auto-detecting session finished in " + timeToAutoDetect + " ms with detected change: "
-				+ detectedChange);
+
+		if (timeToAutoDetect > 1000 || detectedChange) {
+			logger.info("Auto-detecting session finished in " + timeToAutoDetect + " ms with detected change: "
+					+ detectedChange);
+		}
 
 		return detectedChange;
 	}

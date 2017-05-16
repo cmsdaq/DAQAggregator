@@ -37,8 +37,7 @@ public class Application {
 		instance = new Application(propertiesFile);
 		checkRequiredSettings();
 		configureFlashlists();
-		
-		
+
 		/*
 		 * Setup proxy
 		 */
@@ -74,13 +73,13 @@ public class Application {
 			}
 		}
 	}
-	
-	private static void configureFlashlists(){
+
+	private static void configureFlashlists() {
 		FlashlistConfigurationReader reader = new FlashlistConfigurationReader();
 		Set<FlashlistType> optionalFlaslists = reader.readFlashlistOptionalConfigurations(instance.getProp());
 
 		logger.info("Configuring optional flashlists: " + optionalFlaslists);
-		for(FlashlistType flashlistType: optionalFlaslists){
+		for (FlashlistType flashlistType : optionalFlaslists) {
 			flashlistType.setOptional(true);
 		}
 	}
@@ -94,6 +93,8 @@ public class Application {
 		List<String> lasUrls = new ArrayList<String>();
 		String[] lasURLs = instance.getProp(Settings.LAS_URL).split(" +");
 
+		boolean staticCatalog = false;
+		staticCatalog = Boolean.parseBoolean(instance.getProp(Settings.STATIC_CATALOG));
 		for (String url : lasURLs) {
 			// System.out.println(url);
 			lasUrls.add(url);
@@ -102,7 +103,7 @@ public class Application {
 		logger.info(
 				lasUrls.size() + " LAS urls will be explored to find " + FlashlistType.values().length + " flashlists");
 
-		LiveAccessServiceExplorer flashlistDiscovery = new LiveAccessServiceExplorer(lasUrls);
+		LiveAccessServiceExplorer flashlistDiscovery = new LiveAccessServiceExplorer(lasUrls, staticCatalog);
 		flashlistDiscovery.exploreLiveAccessServices();
 
 		for (FlashlistType flashlistType : FlashlistType.values()) {
@@ -123,7 +124,7 @@ public class Application {
 
 		}
 
-		logger.info("All flashlists sucessfully discovered:");
+		logger.info("All required flash-lists successfully discovered:");
 		for (FlashlistType flashlistType : FlashlistType.values()) {
 			logger.info(String.format("%1$-26s", flashlistType.getFlashlistName()) + " " + flashlistType.getUrl());
 		}

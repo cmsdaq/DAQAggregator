@@ -139,7 +139,7 @@ public class FileFlashlistRetriever implements FlashlistRetriever {
 	 * remains unchanged
 	 */
 	@Override
-	public Pair<Flashlist, Integer> retrieveFlashlist(FlashlistType flashlistType) {
+	public Pair<Flashlist, String> retrieveFlashlist(FlashlistType flashlistType) {
 		if (exploredFlashlists.get(flashlistType).size() <= i)
 			throw new DAQException(DAQExceptionCode.NoMoreFlashlistSourceFiles,
 					"Cannot retrieve flashlist, all flashlist source files has been processed");
@@ -148,7 +148,7 @@ public class FileFlashlistRetriever implements FlashlistRetriever {
 		Flashlist flashlist = structureSerialzier.deserializeFlashlist(flashistFile, flashlistFormat);
 		long end = System.currentTimeMillis();
 		int time = (int) (end - start);
-		return Pair.of(flashlist, time);
+		return Pair.of(flashlist, time+"ms");
 	}
 
 }

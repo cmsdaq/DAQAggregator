@@ -27,7 +27,7 @@ public class LiveAccessServiceExplorerIT {
 		a.add("http://ucsrv-c2e41-13-01.cms:9941/urn:xdaq-application:service=xmaslas2g");
 		a.add("http://kvm-s3562-1-ip151-95.cms:9945/urn:xdaq-application:service=xmaslas2g");
 
-		LiveAccessServiceExplorer explorer = new LiveAccessServiceExplorer(a);
+		LiveAccessServiceExplorer explorer = new LiveAccessServiceExplorer(a,false);
 		explorer.exploreLiveAccessServices();
 
 		System.out.println("Result of LAS exploring: ");

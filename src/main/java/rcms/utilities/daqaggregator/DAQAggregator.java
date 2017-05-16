@@ -33,19 +33,20 @@ public class DAQAggregator {
 	private static final Logger logger = Logger.getLogger(DAQAggregator.class);
 
 	public static void main(String[] args) {
-		
+
 		try {
 			String propertiesFile = "DAQAggregator.properties";
 			if (args.length > 0)
 				propertiesFile = args[0];
 			logger.info("DAQAggregator started with properties file '" + propertiesFile + "'");
-			
+
 			try {
-				String execPath = URLDecoder.decode(DAQ.class.getProtectionDomain().getCodeSource().getLocation().getPath(), "UTF-8");
-				logger.info("Path of current executable: "+execPath);
-				
+				String execPath = URLDecoder
+						.decode(DAQ.class.getProtectionDomain().getCodeSource().getLocation().getPath(), "UTF-8");
+				logger.info("Path of current executable: " + execPath);
+
 			} catch (UnsupportedEncodingException e2) {
-			
+
 			}
 
 			try {
@@ -63,13 +64,13 @@ public class DAQAggregator {
 
 			int minimumSnapshotPeriod = 2000;
 			String minPeriod = Application.get().getProp(Settings.RUN_SAMPLING);
-			if(minPeriod != null){
-				try{
-					 minimumSnapshotPeriod =  Integer.parseInt(minPeriod);
-				} catch(NumberFormatException e){
+			if (minPeriod != null) {
+				try {
+					minimumSnapshotPeriod = Integer.parseInt(minPeriod);
+				} catch (NumberFormatException e) {
 					logger.warn("Could not parse minimum snapshot period from: " + minimumSnapshotPeriod);
 				}
-			} else{
+			} else {
 				logger.info("No minimum snapshot period supplied. Using default of " + minimumSnapshotPeriod + "ms");
 			}
 
@@ -130,14 +131,15 @@ public class DAQAggregator {
 
 						long end = System.currentTimeMillis();
 						int resultTime = (int) (end - start);
-						
+
 						logger.debug("Monitor & persist in " + resultTime);
-						
-						if(resultTime < minimumSnapshotPeriod){
+
+						if (resultTime < minimumSnapshotPeriod) {
 							int diff = minimumSnapshotPeriod - resultTime;
-							
-							logger.info("Minimum snapshot period is set to: " + minimumSnapshotPeriod + "ms, waiting " + diff + "ms before next snapshot");
-						
+
+							logger.info("Minimum snapshot period is set to: " + minimumSnapshotPeriod + "ms, waiting "
+									+ diff + "ms before next snapshot");
+
 							try {
 								Thread.sleep(diff);
 							} catch (InterruptedException e1) {
@@ -266,10 +268,13 @@ public class DAQAggregator {
 		PersistorManager persistorManager = new PersistorManager(snapshotPersistenceDir, flashlistPersistenceDir,
 				snapshotFormat, flashlistFormat);
 
+		boolean suppressFailedRequests = false;
+		suppressFailedRequests = Boolean.parseBoolean(Application.get().getProp(Settings.SUPPRESS_HTTP_FAILED));
+
 		FlashlistRetriever flashlistRetriever = null;
 		switch (runMode) {
 		case RT:
-			flashlistRetriever = new LASFlashlistRetriever();
+			flashlistRetriever = new LASFlashlistRetriever(suppressFailedRequests);
 			break;
 		case FILE:
 		case SPECIAL:

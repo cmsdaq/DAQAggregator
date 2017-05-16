@@ -1,8 +1,6 @@
 package rcms.utilities.daqaggregator.datasource;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -41,9 +39,9 @@ public class LASFlashlistRetrieverTest {
 		filter1 = Application.get().getProp(Settings.SESSION_L0FILTER1).toString();
 		filter2 = Application.get().getProp(Settings.SESSION_L0FILTER2).toString();
 
-		retriever = new LASFlashlistRetriever();
+		retriever = new LASFlashlistRetriever(false);
 
-		Pair<Flashlist, Integer> flashlistDownloadResult = retriever
+		Pair<Flashlist, String> flashlistDownloadResult = retriever
 				.retrieveFlashlist(FlashlistType.LEVEL_ZERO_FM_STATIC);
 
 		SessionRetriever sessionRetriever = new SessionRetriever(filter1, filter2);
