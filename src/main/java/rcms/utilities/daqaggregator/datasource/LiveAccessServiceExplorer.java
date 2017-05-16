@@ -27,12 +27,15 @@ public class LiveAccessServiceExplorer {
 
 	private final Connector connector;
 
+	private final boolean staticCatalog;
+
 	private final static Logger logger = Logger.getLogger(LiveAccessServiceExplorer.class);
 
-	public LiveAccessServiceExplorer(List<String> urls) {
+	public LiveAccessServiceExplorer(List<String> urls, boolean staticCatalog) {
 		this.urls = urls;
 		this.flashlistToUrl = new HashMap<>();
 		this.connector = new Connector();
+		this.staticCatalog = staticCatalog;
 	}
 
 	public void exploreLiveAccessServices() {
@@ -48,8 +51,9 @@ public class LiveAccessServiceExplorer {
 	}
 
 	private void exploreLiveAccessService(String url) throws IOException {
-		Pair<Integer, List<String>> a = connector.retrieveLines(url + "/retrieveCatalog?fmt=json");
-
+		Pair<Integer, List<String>> a = connector
+				.retrieveLines(url + "/retrieve" + (staticCatalog ? "Static" : "") + "Catalog?fmt=json");
+		
 		if (a.getLeft() == 200) {
 
 			com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();

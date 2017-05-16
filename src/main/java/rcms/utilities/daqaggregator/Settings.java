@@ -8,6 +8,7 @@ public enum Settings {
 	// flashlists
 	LAS_URL("flashlist.urls",true),
 	FLASHLIST_OPTIONAL("flashlist.optional"),
+	STATIC_CATALOG("catalog.static"),
 
 
 	// settings concerning session definition
