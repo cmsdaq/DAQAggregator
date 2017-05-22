@@ -11,6 +11,10 @@ import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import rcms.utilities.daqaggregator.DAQAggregator;
+import rcms.utilities.daqaggregator.DAQException;
+import rcms.utilities.daqaggregator.DAQExceptionCode;
+
 public class Flashlist {
 
 	private FlashlistType flashlistType;
@@ -29,25 +33,36 @@ public class Flashlist {
 
 	/** Name of flashlist used as parameter to API request */
 	private String name;
-	
-	/** Meta-field indicating whether this flashlist's counterpart at LAS was downloaded successfully (if not, this object is never filled)*/
+
+	/**
+	 * Meta-field indicating whether this flashlist's counterpart at LAS was
+	 * downloaded successfully (if not, this object is never filled)
+	 */
 	private boolean unknownAtLAS;
 
 	private static final Logger logger = Logger.getLogger(Flashlist.class);
-	
+
 	private final Connector connector;
 
 	public Flashlist() {
-		this.connector = new Connector();
+		this.connector = new Connector(false);
 	}
 
 	public Flashlist(FlashlistType flashlistType) {
-		this(flashlistType, 0);
+		this(flashlistType, 0, false);
+	}
+	
+	public Flashlist(FlashlistType flashlistType, boolean suppressFailedRequests) {
+		this(flashlistType, 0, suppressFailedRequests);
+	}
+	
+	public Flashlist(FlashlistType flashlistType, int sessionId) {
+		this(flashlistType, sessionId, false);
 	}
 
-	public Flashlist(FlashlistType flashlistType, int sessionId) {
+	public Flashlist(FlashlistType flashlistType, int sessionId, boolean suppressFailedRequests) {
 		super();
-		this.connector = new Connector();
+		this.connector = new Connector(suppressFailedRequests);
 		this.flashlistType = flashlistType;
 		this.sessionId = sessionId;
 		this.name = "urn:xdaq-flashlist:" + flashlistType.getFlashlistName();
@@ -98,7 +113,10 @@ public class Flashlist {
 
 		int timeResult = (int) (stopTime - startTime);
 
-		/* Warning if there was no data retrieved (while the flashlist itself was found at LAS)*/
+		/*
+		 * Warning if there was no data retrieved (while the flashlist itself
+		 * was found at LAS)
+		 */
 		if ((!unknownAtLAS) && (definitionNode.size() == 0 || rowsNode.size() == 0))
 			logger.warn("Reading " + flashlistType + " finished in " + timeResult + "ms, fetched " + rowsNode.size()
 					+ " rows and " + definitionNode.size() + " columns");
@@ -114,22 +132,22 @@ public class Flashlist {
 	 */
 	private void download() throws IOException, HTTPException {
 		Pair<Integer, List<String>> result = connector.retrieveLines(address);
-		//List<String> result = Connector.get().retrieveLines(address);
-		
-		/*Codes that may come with a successful request (usually 200)*/
-		if (result.getLeft() < 400){
-		
-		com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
-		JsonNode rootNode = mapper.readValue(result.getRight().get(0), JsonNode.class);
+		// List<String> result = Connector.get().retrieveLines(address);
 
-		definitionNode = rootNode.get("table").get("definition");
-		rowsNode = rootNode.get("table").get("rows");
-		
-		this.unknownAtLAS = false;
-		
-		}else{
+		/* Codes that may come with a successful request (usually 200) */
+		if (result.getLeft() == 200) {
+
+			com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+			JsonNode rootNode = mapper.readValue(result.getRight().get(0), JsonNode.class);
+
+			definitionNode = rootNode.get("table").get("definition");
+			rowsNode = rootNode.get("table").get("rows");
+
+			this.unknownAtLAS = false;
+
+		} else {
 			this.unknownAtLAS = true;
-			logger.warn("Flashlist "+this.name+" was not found at LAS and its nodes are null (reason can be either server error or client bad request)");
+			throw new DAQException(DAQExceptionCode.ProblemRetrievingFlashlists, "HTTP-" + result.getLeft());
 		}
 	}
 
@@ -170,7 +188,5 @@ public class Flashlist {
 	public void setUnknownAtLAS(boolean unknownAtLAS) {
 		this.unknownAtLAS = unknownAtLAS;
 	}
-	
-	
 
 }

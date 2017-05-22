@@ -31,17 +31,16 @@ public class TCDSFMInfoRetriever {
 	/**
 	 * Gets TCDS info from flashlists
 	 */
-	protected int aggregateInformation() {
+	protected void aggregateInformation() {
 
 		if (FlashlistType.TCDSFM.getUrl() != null) {
 
-			Pair<Flashlist, Integer> tcdsFmRetrieveResult = flashlistRetriever.retrieveFlashlist(FlashlistType.TCDSFM);
+			Pair<Flashlist, String> tcdsFmRetrieveResult = flashlistRetriever.retrieveFlashlist(FlashlistType.TCDSFM);
 
 			Flashlist tcdsFmFlashlist = tcdsFmRetrieveResult.getLeft();
 
 			setTcdsFmFlashlistValues(tcdsFmFlashlist);
 
-			return tcdsFmRetrieveResult.getRight();
 		} else {
 			throw new DAQException(DAQExceptionCode.FlashlistNotFound, "The url of flashlist " + FlashlistType.TCDSFM
 					+ " is unknown. Possibly because it was not discovered from LAS urls set.");
@@ -107,6 +106,7 @@ public class TCDSFMInfoRetriever {
 	public boolean detectNewTrigger() {
 
 		boolean detectedChange = false;
+		long start = System.currentTimeMillis();
 		try {
 
 			/* current values of fields */
@@ -117,11 +117,9 @@ public class TCDSFMInfoRetriever {
 			String tcdsfm_pmService_old = this.tcdsfm_pmService;
 
 			/* following line will overwrite fields */
-			int timeToAutoDetect = this.aggregateInformation(); // updates
-																// fields on
-																// this and
-																// returns time
-																// it took in ms
+			this.aggregateInformation(); // updates
+											// fields on
+											// this
 
 			// There is no need to specifically check the first trigger, because
 			// structure will already be updated by the first session
@@ -157,9 +155,6 @@ public class TCDSFMInfoRetriever {
 							"Auto-detecting trigger change: a new tcdsfm value (PM Service) is null, no trigger change can be deduced");
 				}
 
-				logger.info("Auto-detecting trigger change finished in " + timeToAutoDetect
-						+ " ms with detected change: " + detectedChange);
-
 			} else {
 				/*
 				 * this is usually the case at first iteration and will never
@@ -171,8 +166,7 @@ public class TCDSFMInfoRetriever {
 				logger.debug(
 						"Auto-detecting trigger change: an old tcdsfm value is null, no trigger change can be deduced");
 
-				logger.info("Auto-detecting trigger change finished in " + timeToAutoDetect
-						+ " ms with detected change: N/A (expected in first iteration, check TCDSFM flashlist at LAS otherwise)");
+				logger.info("N/A (expected in first iteration, check TCDSFM flashlist at LAS otherwise)");
 			}
 
 			/*
@@ -184,6 +178,13 @@ public class TCDSFMInfoRetriever {
 
 		}
 
+		long end = System.currentTimeMillis();
+		int timeToAutoDetect = (int) (end - start);
+
+		if (timeToAutoDetect > 1000 || detectedChange) {
+			logger.info("Auto-detecting trigger change finished in " + timeToAutoDetect + " ms with detected change: "
+					+ detectedChange);
+		}
 		return detectedChange;
 	}
 

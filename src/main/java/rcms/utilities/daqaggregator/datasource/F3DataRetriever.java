@@ -210,7 +210,7 @@ public class F3DataRetriever {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		F3DataRetriever f3dr = new F3DataRetriever(new Connector());
+		F3DataRetriever f3dr = new F3DataRetriever(new Connector(false));
 		try {
 			Application.initialize("DAQAggregator.properties");
 			ProxyManager.get().startProxy();
