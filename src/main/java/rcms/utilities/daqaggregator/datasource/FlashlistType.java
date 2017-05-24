@@ -22,8 +22,8 @@ public enum FlashlistType {
 
 	JOB_CONTROL("jobcontrol"),
 	DISK_INFO("diskInfo", "sessionid"),
-	//FMM_PARTITION_DEAD_TIME("FMMPartitionDeadTime"),
-	//FMM_FED_DEAD_TIME("FMMFEDDeadTime"),
+	// FMM_PARTITION_DEAD_TIME("FMMPartitionDeadTime"),
+	// FMM_FED_DEAD_TIME("FMMFEDDeadTime"),
 
 	TCDS_CPM_COUNTS("tcds_cpm_counts"),
 	TCDS_CPM_DEADTIMES("tcds_cpm_deadtimes"),
@@ -54,6 +54,12 @@ public enum FlashlistType {
 	 * (flashlist may be hosted by differed LAS)
 	 */
 	private String url;
+
+	/**
+	 * Is the flashlist optional. If it's optional DAQAggregator will produce
+	 * the snapshots event if flashlist cannot be retrieved
+	 */
+	private boolean optional;
 
 	public String getUrl() {
 		return url;
@@ -92,6 +98,14 @@ public enum FlashlistType {
 
 	public String getFlashlistName() {
 		return flashlistName;
+	}
+
+	public boolean isOptional() {
+		return optional;
+	}
+
+	public void setOptional(boolean optional) {
+		this.optional = optional;
 	}
 
 }

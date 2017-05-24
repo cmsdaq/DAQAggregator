@@ -3,9 +3,14 @@ package rcms.utilities.daqaggregator;
 public enum Settings {
 
 	RUN_MODE("run.mode", true),
+	RUN_SAMPLING("run.sampling.period"),
 
 	// flashlists
 	LAS_URL("flashlist.urls",true),
+	FLASHLIST_OPTIONAL("flashlist.optional"),
+	STATIC_CATALOG("catalog.static"),
+	SUPPRESS_HTTP_FAILED("flashlist.suppress.failed"),
+
 
 	// settings concerning session definition
 	SESSION_L0FILTER1("session.l0filter1"),

@@ -39,8 +39,7 @@ public class FlashlistDispatcher {
 	// Value to filter out values from TCDS flashlists
 	// This will only work for CDAQ. Need to figure out how to know what
 	// PM (CPM or LPM) is used for a given run, instead of hardcoding
-	//private String serviceField;
-
+	// private String serviceField;
 
 	private static final Logger logger = Logger.getLogger(Flashlist.class);
 
@@ -62,17 +61,17 @@ public class FlashlistDispatcher {
 	 */
 	public void dispatch(Flashlist flashlist, MappingManager mappingManager) {
 
-		/**TCDS service name*/
+		/** TCDS service name */
 		String tcds_serviceField = mappingManager.getTcdsFmInfoRetriever().getTcdsfm_pmService();
 		String tcds_url = mappingManager.getTcdsFmInfoRetriever().getTcdsfm_pmContext();
 
-		logger.debug("Received "+tcds_serviceField+" TCDS PM service name");
-
-		if (flashlist.isUnknownAtLAS()){
-			logger.debug("Flashlist dispatcher received and will ignore "+flashlist.getName()+" because it was not successfully downloaded from LAS");
+		logger.debug("Received " + tcds_serviceField + " TCDS PM service name");
+    
+		if (flashlist.isUnknownAtLAS()) {
+			logger.debug("Flashlist dispatcher received and will ignore " + flashlist.getName()
+					+ " because it was not successfully downloaded from LAS");
 			return;
 		}
-
 
 		FlashlistType type = flashlist.getFlashlistType();
 
@@ -114,7 +113,6 @@ public class FlashlistDispatcher {
 						+ flashlist.getRowsNode());
 			}
 
-
 			break;
 		case LEVEL_ZERO_FM_STATIC:
 			break;
@@ -131,15 +129,24 @@ public class FlashlistDispatcher {
 
 			for (JsonNode rowNode : flashlist.getRowsNode()) {
 
-				String subsystemName = rowNode.get("SUBSYS").asText();
+				logger.debug("Current session id: " + mappingManager.getObjectMapper().daq.getSessionId());
 
-				if (subsystemName.equals("DAQ") && rowNode.get("FMURL").asText().contains(filter1)) {
-					mappingManager.getObjectMapper().daq.updateFromFlashlist(flashlist.getFlashlistType(), rowNode);
-				}
+				if (rowNode.get("SID").asText()
+						.contains(String.valueOf(mappingManager.getObjectMapper().daq.getSessionId()))) {
+					logger.debug(
+							"Successfully matched session id: " + mappingManager.getObjectMapper().daq.getSessionId());
+					String subsystemName = rowNode.get("SUBSYS").asText();
 
-				if (mappingManager.getObjectMapper().subsystemByName.containsKey(subsystemName)) {
-					mappingManager.getObjectMapper().subsystemByName.get(subsystemName)
-					.updateFromFlashlist(flashlist.getFlashlistType(), rowNode);
+					if (subsystemName.equals("DAQ") && rowNode.get("FMURL").asText().contains(filter1)) {
+						mappingManager.getObjectMapper().daq.updateFromFlashlist(flashlist.getFlashlistType(), rowNode);
+					}
+
+					if (mappingManager.getObjectMapper().subsystemByName.containsKey(subsystemName)) {
+						mappingManager.getObjectMapper().subsystemByName.get(subsystemName)
+								.updateFromFlashlist(flashlist.getFlashlistType(), rowNode);
+					}
+				} else {
+					logger.debug("Ignoring unrelated session ids: " + rowNode.get("SID").asText());
 				}
 
 			}
@@ -174,16 +181,16 @@ public class FlashlistDispatcher {
 			String typeField1 = "tts_ici";
 			String typeField2 = "tts_apve";
 
-			if (tcds_serviceField == null || tcds_url == null){
+			if (tcds_serviceField == null || tcds_url == null) {
 				return;
 			}
 
-			//stpi-indexed flashlist
+			// stpi-indexed flashlist
 			Map<String, Map<String, Map<Integer, Map<Integer, Map<String, String>>>>> stpiDataFromFlashlist = TCDSFlashlistHelpers
 					.getTreeFromFlashlist(flashlist);
 
-
-			//setting TTC partition states for types tts_ici and tts_apve (where applicable)
+			// setting TTC partition states for types tts_ici and tts_apve
+			// (where applicable)
 
 			// . iterate over all ttcpartitions and set tcds_pm_ttsState
 			// according to the code in 'value' flash column
@@ -197,7 +204,7 @@ public class FlashlistDispatcher {
 			for (Entry<Integer, TTCPartition> ttcpEntry : mappingManager.getObjectMapper().ttcPartitions.entrySet()) {
 				TTCPartition ttcp = ttcpEntry.getValue(); // ref to ttcp object
 
-				/*if no tcds ici/pi information could be found*/
+				/* if no tcds ici/pi information could be found */
 				if (ttcp.getTcdsPartitionInfo().getNullCause() != null) {
 					ttcp.setTcds_pm_ttsState(ttcp.getTcdsPartitionInfo().getNullCause());
 					ttcp.setTcds_apv_pm_ttsState(ttcp.getTcdsPartitionInfo().getNullCause());
@@ -205,33 +212,39 @@ public class FlashlistDispatcher {
 					continue;
 				}
 
-				if (stpiDataFromFlashlist.containsKey(tcds_serviceField)  &&
-						stpiDataFromFlashlist.get(tcds_serviceField).containsKey(typeField1) &&
-						stpiDataFromFlashlist.get(tcds_serviceField).get(typeField1).containsKey( ttcp.getTcdsPartitionInfo().getPMNr() ) && 
-						stpiDataFromFlashlist.get(tcds_serviceField).get(typeField1).get( ttcp.getTcdsPartitionInfo().getPMNr() ).containsKey( ttcp.getTcdsPartitionInfo().getICINr() ) )  {
+				if (stpiDataFromFlashlist.containsKey(tcds_serviceField)
+						&& stpiDataFromFlashlist.get(tcds_serviceField).containsKey(typeField1)
+						&& stpiDataFromFlashlist.get(tcds_serviceField).get(typeField1)
+								.containsKey(ttcp.getTcdsPartitionInfo().getPMNr())
+						&& stpiDataFromFlashlist.get(tcds_serviceField).get(typeField1)
+								.get(ttcp.getTcdsPartitionInfo().getPMNr())
+								.containsKey(ttcp.getTcdsPartitionInfo().getICINr())) {
 
 					int stateCode = Integer.parseInt(stpiDataFromFlashlist.get(tcds_serviceField).get(typeField1)
-							.get(ttcp.getTcdsPartitionInfo().getPMNr()).get(ttcp.getTcdsPartitionInfo().getICINr()).get("value"));
+							.get(ttcp.getTcdsPartitionInfo().getPMNr()).get(ttcp.getTcdsPartitionInfo().getICINr())
+							.get("value"));
 
 					ttcp.setTcds_pm_ttsState(TCDSFlashlistHelpers.decodeTCDSTTSState(stateCode));
 				}
 
-
-				if (stpiDataFromFlashlist.containsKey(tcds_serviceField)  &&
-						stpiDataFromFlashlist.get(tcds_serviceField).containsKey(typeField2) &&
-						stpiDataFromFlashlist.get(tcds_serviceField).get(typeField2).containsKey( ttcp.getTcdsPartitionInfo().getPMNr() ) && 
-						stpiDataFromFlashlist.get(tcds_serviceField).get(typeField2).get( ttcp.getTcdsPartitionInfo().getPMNr() ).containsKey( ttcp.getTcdsPartitionInfo().getICINr() ) )  {
-
-
+				if (stpiDataFromFlashlist.containsKey(tcds_serviceField)
+						&& stpiDataFromFlashlist.get(tcds_serviceField).containsKey(typeField2)
+						&& stpiDataFromFlashlist.get(tcds_serviceField).get(typeField2)
+								.containsKey(ttcp.getTcdsPartitionInfo().getPMNr())
+						&& stpiDataFromFlashlist.get(tcds_serviceField).get(typeField2)
+								.get(ttcp.getTcdsPartitionInfo().getPMNr())
+								.containsKey(ttcp.getTcdsPartitionInfo().getICINr())) {
 
 					String label = stpiDataFromFlashlist.get(tcds_serviceField).get(typeField2)
-							.get(ttcp.getTcdsPartitionInfo().getPMNr()).get(ttcp.getTcdsPartitionInfo().getICINr()).get("label");
+							.get(ttcp.getTcdsPartitionInfo().getPMNr()).get(ttcp.getTcdsPartitionInfo().getICINr())
+							.get("label");
 
-					if (label.equalsIgnoreCase("Unused")){
+					if (label.equalsIgnoreCase("Unused")) {
 						ttcp.setTcds_apv_pm_ttsState("x");
-					}else{
+					} else {
 						int stateCode = Integer.parseInt(stpiDataFromFlashlist.get(tcds_serviceField).get(typeField2)
-								.get(ttcp.getTcdsPartitionInfo().getPMNr()).get(ttcp.getTcdsPartitionInfo().getICINr()).get("value"));
+								.get(ttcp.getTcdsPartitionInfo().getPMNr()).get(ttcp.getTcdsPartitionInfo().getICINr())
+								.get("value"));
 
 						ttcp.setTcds_apv_pm_ttsState(TCDSFlashlistHelpers.decodeTCDSTTSState(stateCode));
 					}
@@ -239,41 +252,45 @@ public class FlashlistDispatcher {
 				}
 			}
 
+			// setting global TTS states for all other types detected in
+			// flashlist
 
-			//setting global TTS states for all other types detected in flashlist
-
-			//.detect types other than tts_ici, tts_apve
+			// .detect types other than tts_ici, tts_apve
 			Set<String> types = new HashSet<String>();
 
 			types.addAll(stpiDataFromFlashlist.get(tcds_serviceField).keySet());
 			types.remove("tts_ici");
 			types.remove("tts_apve");
 
-
-			//.foreach type, decode state value and %B/%W value (if existing) and set corresponding value in model's daq
+			// .foreach type, decode state value and %B/%W value (if existing)
+			// and set corresponding value in model's daq
 			GlobalTTSState globalTtsState;
-			for (String typeName: types){
-				logger.debug("Global TTS state detected for this service:"+typeName);
+			for (String typeName : types) {
+				logger.debug("Global TTS state detected for this service:" + typeName);
 
 				globalTtsState = new GlobalTTSState();
 
-				int stateCode = Integer.parseInt(stpiDataFromFlashlist.get(tcds_serviceField).get(typeName)
-						.get(0).get(0).get("value"));
+				int stateCode = Integer.parseInt(
+						stpiDataFromFlashlist.get(tcds_serviceField).get(typeName).get(0).get(0).get("value"));
 				globalTtsState.setState(TCDSFlashlistHelpers.decodeTCDSTTSState(stateCode));
 
-				//percentage keys should be reviewed when the flashlist column name for these attributes is defined
+				// percentage keys should be reviewed when the flashlist column
+				// name for these attributes is defined
 				String busyKey = "outputFractionBusy";
 				String warningKey = "outputFractionWarning";
 
-				if (stpiDataFromFlashlist.get(tcds_serviceField).get(typeName).get(0).get(0).containsKey(busyKey)){
-					globalTtsState.setPercentBusy(Float.parseFloat(stpiDataFromFlashlist.get(tcds_serviceField).get(typeName).get(0).get(0).get(busyKey)));
+				if (stpiDataFromFlashlist.get(tcds_serviceField).get(typeName).get(0).get(0).containsKey(busyKey)) {
+					globalTtsState.setPercentBusy(Float.parseFloat(
+							stpiDataFromFlashlist.get(tcds_serviceField).get(typeName).get(0).get(0).get(busyKey)));
 				}
 
-				if (stpiDataFromFlashlist.get(tcds_serviceField).get(typeName).get(0).get(0).containsKey(warningKey)){
-					globalTtsState.setPercentWarning(Float.parseFloat(stpiDataFromFlashlist.get(tcds_serviceField).get(typeName).get(0).get(0).get(warningKey)));
+				if (stpiDataFromFlashlist.get(tcds_serviceField).get(typeName).get(0).get(0).containsKey(warningKey)) {
+					globalTtsState.setPercentWarning(Float.parseFloat(
+							stpiDataFromFlashlist.get(tcds_serviceField).get(typeName).get(0).get(0).get(warningKey)));
 				}
 
-				mappingManager.getObjectMapper().daq.getTcdsGlobalInfo().getGlobalTtsStates().put(typeName, globalTtsState);
+				mappingManager.getObjectMapper().daq.getTcdsGlobalInfo().getGlobalTtsStates().put(typeName,
+						globalTtsState);
 			}
 
 			mappingManager.getObjectMapper().daq.getTcdsGlobalInfo().setTcdsControllerServiceName(tcds_serviceField);
@@ -281,16 +298,16 @@ public class FlashlistDispatcher {
 
 			break;
 
-
 		case TCDS_CPM_COUNTS:
-			if (tcds_serviceField == null || tcds_url == null){
+			if (tcds_serviceField == null || tcds_url == null) {
 				return;
 			}
 			for (JsonNode rowNode : flashlist.getRowsNode()) {
 
-				//get flashlist row corresponding to service
-				if (rowNode.get("service").asText().equalsIgnoreCase(tcds_serviceField)){
-					mappingManager.getObjectMapper().daq.getTcdsGlobalInfo().updateFromFlashlist(flashlist.getFlashlistType(), rowNode);
+				// get flashlist row corresponding to service
+				if (rowNode.get("service").asText().equalsIgnoreCase(tcds_serviceField)) {
+					mappingManager.getObjectMapper().daq.getTcdsGlobalInfo()
+							.updateFromFlashlist(flashlist.getFlashlistType(), rowNode);
 					break;
 				}
 			}
@@ -298,14 +315,15 @@ public class FlashlistDispatcher {
 			break;
 
 		case TCDS_CPM_DEADTIMES:
-			if (tcds_serviceField == null || tcds_url == null){
+			if (tcds_serviceField == null || tcds_url == null) {
 				return;
 			}
 			for (JsonNode rowNode : flashlist.getRowsNode()) {
 
-				//get flashlist row corresponding to service
-				if (rowNode.get("service").asText().equalsIgnoreCase(tcds_serviceField)){
-					mappingManager.getObjectMapper().daq.getTcdsGlobalInfo().updateFromFlashlist(flashlist.getFlashlistType(), rowNode);
+				// get flashlist row corresponding to service
+				if (rowNode.get("service").asText().equalsIgnoreCase(tcds_serviceField)) {
+					mappingManager.getObjectMapper().daq.getTcdsGlobalInfo()
+							.updateFromFlashlist(flashlist.getFlashlistType(), rowNode);
 					break;
 				}
 			}
@@ -313,29 +331,31 @@ public class FlashlistDispatcher {
 			break;
 
 		case TCDS_CPM_RATES:
-			if (tcds_serviceField == null || tcds_url == null){
+			if (tcds_serviceField == null || tcds_url == null) {
 				return;
 			}
 			for (JsonNode rowNode : flashlist.getRowsNode()) {
 
-				//get flashlist row corresponding to service
-				if (rowNode.get("service").asText().equalsIgnoreCase(tcds_serviceField)){
-					mappingManager.getObjectMapper().daq.getTcdsGlobalInfo().updateFromFlashlist(flashlist.getFlashlistType(), rowNode);
+				// get flashlist row corresponding to service
+				if (rowNode.get("service").asText().equalsIgnoreCase(tcds_serviceField)) {
+					mappingManager.getObjectMapper().daq.getTcdsGlobalInfo()
+							.updateFromFlashlist(flashlist.getFlashlistType(), rowNode);
 					break;
-				}  
+				}
 			}
 
 			break;
 
 		case TCDS_PM_ACTION_COUNTS:
-			if (tcds_serviceField == null || tcds_url == null){
+			if (tcds_serviceField == null || tcds_url == null) {
 				return;
 			}
 			for (JsonNode rowNode : flashlist.getRowsNode()) {
 
-				//get flashlist row corresponding to service
-				if (rowNode.get("service").asText().equalsIgnoreCase(tcds_serviceField)){
-					mappingManager.getObjectMapper().daq.getTcdsGlobalInfo().updateFromFlashlist(flashlist.getFlashlistType(), rowNode);
+				// get flashlist row corresponding to service
+				if (rowNode.get("service").asText().equalsIgnoreCase(tcds_serviceField)) {
+					mappingManager.getObjectMapper().daq.getTcdsGlobalInfo()
+							.updateFromFlashlist(flashlist.getFlashlistType(), rowNode);
 					break;
 				}
 			}

@@ -40,7 +40,7 @@ public class MonitorManager {
 		this.hardwareConnector = hardwareConnector;
 		this.sessionDetector = new SessionDetector(sessionRetriever, flashlistRetriever);
 		this.tcdsFmInfoRetriever = new TCDSFMInfoRetriever(flashlistRetriever);
-		this.f3dataRetriever = new F3DataRetriever(new Connector());
+		this.f3dataRetriever = new F3DataRetriever(new Connector(false));
 	}
 
 	public void skipToNextSnapshot() {

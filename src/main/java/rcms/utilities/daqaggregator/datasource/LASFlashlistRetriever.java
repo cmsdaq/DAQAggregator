@@ -30,16 +30,19 @@ public class LASFlashlistRetriever implements FlashlistRetriever {
 	 * downloaded in parallel.
 	 */
 	private final ExecutorService executor;
+	
+	private final boolean suppressFailedRequests;
 
-	public LASFlashlistRetriever() {
+	public LASFlashlistRetriever(boolean suppressFailedRequests) {
 		this.executor = Executors.newFixedThreadPool(10);
+		this.suppressFailedRequests = suppressFailedRequests;
 	}
 
 	private static final Logger logger = Logger.getLogger(LASFlashlistRetriever.class);
 
 	@Override
 	public Map<FlashlistType, Flashlist> retrieveAllFlashlists(final int sessionId) {
-		logger.info("Downloading flashlists ...");
+		logger.debug("Downloading flashlists ...");
 
 		if (sessionId == 0) {
 			throw new DAQException(DAQExceptionCode.MissingSessionIdRetrievingFlashlists,
@@ -48,33 +51,41 @@ public class LASFlashlistRetriever implements FlashlistRetriever {
 
 		Collection<Future<?>> futures = new LinkedList<Future<?>>();
 		long startTime = System.currentTimeMillis();
-		final Map<FlashlistType, Integer> times = new ConcurrentHashMap<>();
+		final Map<FlashlistType, String> statuses = new ConcurrentHashMap<>();
 		final Map<FlashlistType, Flashlist> flashlists = new ConcurrentHashMap<>();
 		final Date retrievalDate = new Date();
 		for (final FlashlistType flashlistType : FlashlistType.values()) {
 
-			Runnable task = new Runnable() {
-				public void run() {
-					try {
-						Pair<Flashlist, Integer> result;
+			/*
+			 * Some flashlist may be optional - they were not discovered in
+			 * LAS-flashlist auto mapping and they has no url assigned
+			 */
+			if (flashlistType.getUrl() != null) {
 
-						if (flashlistType.isSessionContext()) {
-							result = downloadSessionContextFlashlist(flashlistType, retrievalDate, sessionId);
-						} else {
-							result = downloadNonSessionContextFlashlist(flashlistType, retrievalDate);
+				Runnable task = new Runnable() {
+					public void run() {
+						try {
+							Pair<Flashlist, String> result;
+
+							if (flashlistType.isSessionContext()) {
+								result = downloadSessionContextFlashlist(flashlistType, retrievalDate, sessionId);
+							} else {
+								result = downloadNonSessionContextFlashlist(flashlistType, retrievalDate);
+							}
+
+							statuses.put(flashlistType, result.getRight());
+							flashlists.put(flashlistType, result.getLeft());
+							logger.debug("Flashlist definition:" + result.getLeft().getDefinitionNode());
+
+						} catch (IOException e) {
+							logger.error("Error reading flashlist " + flashlistType);
+							e.printStackTrace();
 						}
-
-						times.put(flashlistType, result.getRight());
-						flashlists.put(flashlistType, result.getLeft());
-						logger.debug("Flashlist definition:" + result.getLeft().getDefinitionNode());
-
-					} catch (IOException e) {
-						logger.error("Error reading flashlist " + flashlistType);
-						e.printStackTrace();
 					}
-				}
-			};
-			futures.add(executor.submit(task));
+				};
+				futures.add(executor.submit(task));
+
+			}
 		}
 
 		try {
@@ -88,13 +99,13 @@ public class LASFlashlistRetriever implements FlashlistRetriever {
 
 		long stopTime = System.currentTimeMillis();
 		int time = (int) (stopTime - startTime);
-		logger.info("Reading all flashlists finished in " + time + "ms, flashlist specific times: " + times);
+		logger.info("Reading all flashlists finished in " + time + "ms, flashlist specific results: " + statuses);
 		return flashlists;
 	}
 
 	@Override
-	public Pair<Flashlist, Integer> retrieveFlashlist(FlashlistType flashlistType) {
-		logger.info("Requested flashlist " + flashlistType + " retrieval");
+	public Pair<Flashlist, String> retrieveFlashlist(FlashlistType flashlistType) {
+		logger.debug("Requested flashlist " + flashlistType + " retrieval");
 		try {
 			final Date retrievalDate = new Date();
 			return downloadNonSessionContextFlashlist(flashlistType, retrievalDate);
@@ -104,23 +115,31 @@ public class LASFlashlistRetriever implements FlashlistRetriever {
 		}
 	}
 
-	private Pair<Flashlist, Integer> downloadNonSessionContextFlashlist(FlashlistType flashlistType, Date retrievalDate)
+	private Pair<Flashlist, String> downloadNonSessionContextFlashlist(FlashlistType flashlistType, Date retrievalDate)
 			throws IOException {
 
-		Flashlist flashlistSnapshot = new Flashlist(flashlistType);
-		int time = flashlistSnapshot.download(retrievalDate);
-		logger.debug("Flashlist " + flashlistType + " downloaded in " + time + "ms, without sessionId.");
-		return Pair.of(flashlistSnapshot, time);
+		Flashlist flashlistSnapshot = new Flashlist(flashlistType, suppressFailedRequests);
+		try {
+			int time = flashlistSnapshot.download(retrievalDate);
+			logger.debug("Flashlist " + flashlistType + " downloaded in " + time + "ms, without sessionId.");
+			return Pair.of(flashlistSnapshot, "HTTP-200 in " + time + "ms");
+		} catch (DAQException e) {
+			return Pair.of(flashlistSnapshot, e.getMessage());
+		}
 
 	}
 
-	private Pair<Flashlist, Integer> downloadSessionContextFlashlist(FlashlistType flashlistType, Date retrievalDate,
+	private Pair<Flashlist, String> downloadSessionContextFlashlist(FlashlistType flashlistType, Date retrievalDate,
 			int sessionId) throws IOException {
 
-		Flashlist flashlistSnapshot = new Flashlist(flashlistType, sessionId);
-		int time = flashlistSnapshot.download(retrievalDate);
-		logger.debug("Flashlist " + flashlistType + " downloaded in " + time + "ms, with sessionId: " + sessionId);
-		return Pair.of(flashlistSnapshot, time);
+		Flashlist flashlistSnapshot = new Flashlist(flashlistType, sessionId, suppressFailedRequests);
+		try {
+			int time = flashlistSnapshot.download(retrievalDate);
+			logger.debug("Flashlist " + flashlistType + " downloaded in " + time + "ms, with sessionId: " + sessionId);
+			return Pair.of(flashlistSnapshot, "HTTP-200 in " + time + "ms");
+		} catch (DAQException e) {
+			return Pair.of(flashlistSnapshot, e.getMessage());
+		}
 
 	}
 
