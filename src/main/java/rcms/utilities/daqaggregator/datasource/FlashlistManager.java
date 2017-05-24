@@ -3,6 +3,8 @@ package rcms.utilities.daqaggregator.datasource;
 import java.util.Collection;
 
 import org.apache.log4j.Logger;
+import rcms.utilities.daqaggregator.Application;
+import rcms.utilities.daqaggregator.Settings;
 
 import rcms.utilities.daqaggregator.data.*;
 import rcms.utilities.daqaggregator.mappers.MappingManager;
@@ -34,7 +36,10 @@ public class FlashlistManager {
 		
 		for (Flashlist flashlist : flashlists) {
 
-			FlashlistDispatcher dispatcher = new FlashlistDispatcher();
+			FlashlistDispatcher dispatcher = new FlashlistDispatcher(
+				Application.get().getProp(Settings.SESSION_L0FILTER1)
+      );
+			
 			dispatcher.dispatch(flashlist, mappingManager);
 		}
 		long stopTime = System.currentTimeMillis();

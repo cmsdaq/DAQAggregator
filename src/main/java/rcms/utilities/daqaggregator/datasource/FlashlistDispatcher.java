@@ -43,6 +43,14 @@ public class FlashlistDispatcher {
 
 	private static final Logger logger = Logger.getLogger(Flashlist.class);
 
+	/** string for filtering by FM URL */
+	private final String filter1;
+
+	public FlashlistDispatcher(String filter1)
+	{
+		this.filter1 = filter1;
+	}
+	
 	/**
 	 * Dispatch flashlist rows to appropriate objects from DAQ structure. Note
 	 * that a flashlist must be already initialized, for initialization see
@@ -57,10 +65,8 @@ public class FlashlistDispatcher {
 		String tcds_serviceField = mappingManager.getTcdsFmInfoRetriever().getTcdsfm_pmService();
 		String tcds_url = mappingManager.getTcdsFmInfoRetriever().getTcdsfm_pmContext();
 
-		String filter1 = Application.get().getProp(Settings.SESSION_L0FILTER1);
-
 		logger.debug("Received " + tcds_serviceField + " TCDS PM service name");
-
+    
 		if (flashlist.isUnknownAtLAS()) {
 			logger.debug("Flashlist dispatcher received and will ignore " + flashlist.getName()
 					+ " because it was not successfully downloaded from LAS");
