@@ -141,16 +141,25 @@ public class FlashlistDispatcher {
 			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().busByHostname, "context");
 			break;
 
-		case LEVEL_ZERO_FM_SUBSYS: // TODO: SID column
-
+		case LEVEL_ZERO_FM_SUBSYS: { 
+		
+			Integer daqSid = this.getDAQsid(flashlist);
+			logger.debug("DAQ session id: " + daqSid);
+			
 			for (JsonNode rowNode : flashlist.getRowsNode()) {
 
-				logger.debug("Current session id: " + mappingManager.getObjectMapper().daq.getSessionId());
+				Integer sid = null;
+				try {
+					sid = Integer.parseInt(rowNode.get("SID").asText());
+				} catch (Exception ex) {
 
-				if (rowNode.get("SID").asText()
-						.contains(String.valueOf(mappingManager.getObjectMapper().daq.getSessionId()))) {
-					logger.debug(
-							"Successfully matched session id: " + mappingManager.getObjectMapper().daq.getSessionId());
+					logger.error("Unexpected exception caught when trying to parse subsystem session id", ex);
+				}
+
+				if (sid != null && daqSid != null && sid.equals(daqSid)) {
+					
+					logger.debug("Successfully matched session id: " + daqSid);
+					
 					String subsystemName = rowNode.get("SUBSYS").asText();
 
 					if (subsystemName.equals("DAQ") && rowNode.get("FMURL").asText().contains(filter1)) {
@@ -166,7 +175,9 @@ public class FlashlistDispatcher {
 				}
 
 			}
-			break;
+		}
+		break;
+		
 		case LEVEL_ZERO_FM_DYNAMIC:
 
 			for (JsonNode rowNode : flashlist.getRowsNode()) {
