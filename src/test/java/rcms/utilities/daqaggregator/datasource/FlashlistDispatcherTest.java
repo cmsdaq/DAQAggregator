@@ -170,8 +170,6 @@ public class FlashlistDispatcherTest {
 		  String dpsetPath = "/daq2/eq_150929/fb_all_withuTCA/dp_bl116_64BU";
 							
 			Set<String> subsystems = this.getSubsystems(flashlistDir, "topdev", timestamp, dpsetPath);
-
-			System.out.println("subsystems=" + subsystems);
 			
 			testSubsystems(284766, new String[] {
 			  /* "DAQ", "DCS", "DQM", */ "ECAL", "ES", "HCAL", "HF", "PIXEL", "PIXEL_UP",
