@@ -52,6 +52,29 @@ public class FlashlistDispatcher {
 		this.filter1 = filter1;
 	}
 	
+	/** helper function for dispatch(..): returns the session id (SID) of 
+	 *  the DAQ subsystem or null if not found
+	 */
+	private Integer getDAQsid(Flashlist flashlist) {
+		
+		try {
+			for (JsonNode rowNode : flashlist.getRowsNode()) {
+
+				String subsystemName = rowNode.get("SUBSYS").asText();
+
+				if (subsystemName.equals("DAQ") && rowNode.get("FMURL").asText().contains(filter1)) {
+					return Integer.parseInt(rowNode.get("SID").asText());
+				}
+			} // loop over rows of the flashlist
+		} catch (Exception ex) {
+
+			logger.error("Unexpected exception caught when trying to determine DAQ session id", ex);
+	  }
+
+		// not found or there was a problem
+		return null;
+	}
+	
 	/**
 	 * Dispatch flashlist rows to appropriate objects from DAQ structure. Note
 	 * that a flashlist must be already initialized, for initialization see
