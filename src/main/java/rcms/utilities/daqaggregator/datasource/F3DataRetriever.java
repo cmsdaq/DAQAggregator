@@ -10,6 +10,8 @@ import org.apache.log4j.Logger;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.HashMap;
+import java.util.Map;
 
 import rcms.utilities.daqaggregator.Application;
 import rcms.utilities.daqaggregator.ProxyManager;
@@ -145,6 +147,41 @@ public class F3DataRetriever {
 
 	}
 
+	/** contains information about the HLT output, retrieved in one go
+	    from the F3 monitoring */
+	public class HLToutputInfo {
+		
+		/** HLT output event rates (events per second) by stream name */
+		private final Map<String, Double> eventRates = new HashMap<String, Double>();
+		
+		/** HLT output bandwidth (bytes per second) by stream name */
+		private final Map<String, Double> bandwidths = new HashMap<String, Double>();
+
+		private void setEventRate(String streamName, double rate) {
+			eventRates.put(streamName, rate);
+		}
+
+		/** @return the event rate (events per second) for the given stream
+		 *  or null if not known
+		 */
+		public Double getEventRate(String streamName) {
+			return eventRates.get(streamName);
+		}
+		
+		private void setBandwidth(String streamName, double bandwidth) {
+			bandwidths.put(streamName, bandwidth);
+		}
+		
+		/** @return the bandwidth (bytes per second) for the given stream
+		 *  or null if not known
+		 */
+		public Double getBandwidth(String streamName) {
+			return bandwidths.get(streamName);
+		}
+		
+	}
+	
+	
 	public void dispatch(DAQ daq) {
 
 		long start = System.currentTimeMillis();
