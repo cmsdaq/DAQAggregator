@@ -99,35 +99,6 @@ public class F3DataRetriever {
 		return info;
 	}
 	
-	public Double getHLTInfo(int runNumber) throws IOException {
-		Pair<Integer, List<String>> a = connector.retrieveLines(
-				"http://es-cdaq.cms/sc/php/stream_summary_last.php?setup=cdaq&run=" + runNumber + "&unit=events");
-
-		List<String> result = a.getRight();
-
-		long count = result.size();
-		if (count == 1) {
-			JsonNode resultJson = mapper.readValue(result.get(0), JsonNode.class);
-
-			logger.debug(resultJson);
-			try {
-				return resultJson.elements().next().get(PHYSICS_STREAM_NAME).asDouble();
-			} catch (NoSuchElementException e) {
-
-				logger.warn("Cannot retrieve hlt rate (no such element) from response: " + result.get(0));
-				return null;
-			}
-
-			catch (NullPointerException e) {
-				logger.warn("Cannot retrieve hlt rate from response: " + result.get(0));
-				return null;
-			}
-		} else {
-			logger.warn("Expected 1 node as a response but was " + count);
-			return null;
-		}
-	}
-
 	/**
 	 * Gets ramdisk and output disk occupancy levels. It's summary of all cdaq
 	 * BU's
