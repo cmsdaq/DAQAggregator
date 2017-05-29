@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import rcms.utilities.daqaggregator.Application;
@@ -33,6 +34,57 @@ public class F3DataRetriever {
 		this.connector = connector;
 	}
 
+	/** @param events if true, fills event rates otherwise fills bandwidths */
+	private void fillHLTInfo(int runNumber, HLToutputInfo hltOutputInfo, boolean events) throws IOException {
+		
+		final String unit;
+		if (events)
+			unit = "events";
+		else
+			unit = "bytes";
+		
+		Pair<Integer, List<String>> a = connector.retrieveLines(
+				"http://es-cdaq.cms/sc/php/stream_summary_last.php?setup=cdaq&run=" + runNumber + "&unit=" + unit);
+
+		List<String> result = a.getRight();
+
+		long count = result.size();
+		if (count == 1) {
+			JsonNode resultJson = mapper.readValue(result.get(0), JsonNode.class);
+
+			logger.debug(resultJson);
+			try {
+
+				// node corresponding to the latest lumi section
+				JsonNode node = resultJson.elements().next();
+				
+				// loop over streams
+				for (Iterator<Map.Entry<String, JsonNode>> it = node.fields();
+						 it.hasNext(); ) {
+					
+					Map.Entry<String, JsonNode> entry = it.next();
+					String streamName = entry.getKey();
+					double rate = entry.getValue().asDouble();
+					
+					if (events)
+						hltOutputInfo.setEventRate(streamName, rate);
+					else
+						hltOutputInfo.setBandwidth(streamName, rate);
+					
+				}
+			} catch (NoSuchElementException e) {
+
+				logger.warn("Cannot retrieve hlt rate (no such element) from response: " + result.get(0));
+			}
+
+			catch (NullPointerException e) {
+				logger.warn("Cannot retrieve hlt rate from response: " + result.get(0));
+			}
+		} else {
+			logger.warn("Expected 1 node as a response but was " + count);
+		}
+	}
+	
 	public Double getHLTInfo(int runNumber) throws IOException {
 		Pair<Integer, List<String>> a = connector.retrieveLines(
 				"http://es-cdaq.cms/sc/php/stream_summary_last.php?setup=cdaq&run=" + runNumber + "&unit=events");
