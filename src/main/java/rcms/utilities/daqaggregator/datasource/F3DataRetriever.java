@@ -271,14 +271,14 @@ public class F3DataRetriever {
 	public boolean dispatchHLT(DAQ daq) {
 
 		try {
-			Double d = getHLTInfo(daq.getRunNumber());
-			if (d != null) {
-				daq.setHltRate(d);
-				return true;
-			} else {
-				daq.setHltRate(null);
-			}
+			HLToutputInfo hltInfo = getHLToutputInfo(daq.getRunNumber());
 
+			Double hltOutputRate = hltInfo.getEventRate(PHYSICS_STREAM_NAME);
+
+			daq.setHltRate(hltOutputRate);
+
+			return hltOutputRate != null;
+			
 		} catch (JsonMappingException e) {
 			logger.warn("Could not retrieve F3 HLT rate,  json mapping exception: ", e);
 		} catch (IOException e) {
