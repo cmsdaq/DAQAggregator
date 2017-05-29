@@ -64,7 +64,7 @@ public class DAQ implements FlashlistUpdatable {
 	private TCDSGlobalInfo tcdsGlobalInfo;
 	
 	/**
-	 * HLT rate in Hz
+	 * HLT stream physics output rate in Hz (events per second)
 	 */
 	private Double hltRate;
 	private String hltKey;
