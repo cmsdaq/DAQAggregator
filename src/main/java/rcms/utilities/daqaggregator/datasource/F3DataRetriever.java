@@ -85,6 +85,18 @@ public class F3DataRetriever {
 		}
 	}
 	
+	public HLToutputInfo getHLToutputInfo(int runNumber) throws IOException {
+		HLToutputInfo info = new HLToutputInfo();
+		
+		// fill event rates
+		this.fillHLTInfo(runNumber, info, true);
+
+		// fill bandwidths
+		this.fillHLTInfo(runNumber, info, false);
+		
+		return info;
+	}
+	
 	public Double getHLTInfo(int runNumber) throws IOException {
 		Pair<Integer, List<String>> a = connector.retrieveLines(
 				"http://es-cdaq.cms/sc/php/stream_summary_last.php?setup=cdaq&run=" + runNumber + "&unit=events");
