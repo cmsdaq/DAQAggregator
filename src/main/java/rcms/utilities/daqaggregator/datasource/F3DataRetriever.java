@@ -323,7 +323,7 @@ public class F3DataRetriever {
 			Application.initialize("DAQAggregator.properties");
 			ProxyManager.get().startProxy();
 			DiskInfo d = f3dr.getDiskInfo();
-			Double h = f3dr.getHLTInfo(288498);
+			Double h = f3dr.getHLToutputInfo(288498).getEventRate(PHYSICS_STREAM_NAME);
 
 			logger.info(d);
 			logger.info(h);
