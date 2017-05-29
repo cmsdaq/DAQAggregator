@@ -1,4 +1,4 @@
-package rcms.utilities.daqaggregator.mappers.helper;
+package rcms.utilities.daqaggregator.mappers.matcher;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,19 +9,21 @@ import rcms.utilities.daqaggregator.data.FED;
 import rcms.utilities.daqaggregator.datasource.Flashlist;
 
 /**
- * FED geolocation finder in FMM tree
+ * FED geolocation finder in FRL 40 tree
  * 
- * For more information see {@link ThreeElementGeoMatcher} documentation
  * 
- * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
- *
  */
-public class FedInFmmGeoFinder extends ThreeElementGeoMatcher<FED> {
+public class FedInFrl40GeoFinder extends ThreeElementGeoMatcher<FED> {
+
+
+	public FedInFrl40GeoFinder(int sessionId) {
+		super(sessionId);
+	}
 
 	@Override
 	public String getHostname(FED fed) {
 		try {
-			return fed.getFmm().getFmmApplication().getHostname();
+			return fed.getFrl().getFrlPc().getHostname();
 		} catch (NullPointerException e) {
 			return null;
 		}
@@ -30,7 +32,7 @@ public class FedInFmmGeoFinder extends ThreeElementGeoMatcher<FED> {
 	@Override
 	public Integer getGeoslot(FED fed) {
 		try {
-			return fed.getFmm().getGeoslot();
+			return fed.getFrl().getGeoSlot();
 		} catch (NullPointerException e) {
 			return null;
 		}
@@ -38,22 +40,22 @@ public class FedInFmmGeoFinder extends ThreeElementGeoMatcher<FED> {
 
 	@Override
 	public Integer getIO(FED fed) {
-		return fed.getFmmIO();
+		return fed.getFrlIO();
 	}
 
 	@Override
 	public String getFlashlistHostnameKey() {
-		return "hostname";
+		return "context";
 	}
 
 	@Override
 	public String getFlashlistGeoslotKey() {
-		return "geoslot";
+		return "slotNumber";
 	}
 
 	@Override
 	public String getFlashlistIoKey() {
-		return "io";
+		return "streamNumber";
 	}
 
 }

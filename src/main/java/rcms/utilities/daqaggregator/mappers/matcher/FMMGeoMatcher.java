@@ -1,8 +1,12 @@
-package rcms.utilities.daqaggregator.mappers.helper;
+package rcms.utilities.daqaggregator.mappers.matcher;
 
 import rcms.utilities.daqaggregator.data.FMM;
 
 public class FMMGeoMatcher extends TwoElementGeoMatcher<FMM> {
+
+	public FMMGeoMatcher(int sessionId) {
+		super(sessionId);
+	}
 
 	@Override
 	public String getHostname(FMM fmm) {

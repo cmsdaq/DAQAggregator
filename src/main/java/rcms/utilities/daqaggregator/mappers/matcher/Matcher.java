@@ -1,4 +1,4 @@
-package rcms.utilities.daqaggregator.mappers.helper;
+package rcms.utilities.daqaggregator.mappers.matcher;
 
 import java.util.Collection;
 import java.util.Map;
@@ -10,7 +10,7 @@ import rcms.utilities.daqaggregator.datasource.Flashlist;
 public abstract class Matcher<E> {
 
 	/**
-	 * Match flashlist row to appropriate row
+	 * Match flashlist row to appropriate object
 	 * 
 	 * @param flashlist
 	 *            flashlist with rows to match

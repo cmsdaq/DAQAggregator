@@ -1,8 +1,12 @@
-package rcms.utilities.daqaggregator.mappers.helper;
+package rcms.utilities.daqaggregator.mappers.matcher;
 
 import rcms.utilities.daqaggregator.data.FRL;
 
 public class FRLGeoFinder extends TwoElementGeoMatcher<FRL> {
+
+	public FRLGeoFinder(int sessionId) {
+		super(sessionId);
+	}
 
 	@Override
 	public String getHostname(FRL object) {

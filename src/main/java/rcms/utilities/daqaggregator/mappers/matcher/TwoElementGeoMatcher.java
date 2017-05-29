@@ -1,4 +1,4 @@
-package rcms.utilities.daqaggregator.mappers.helper;
+package rcms.utilities.daqaggregator.mappers.matcher;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import rcms.utilities.daqaggregator.datasource.Flashlist;
+import rcms.utilities.daqaggregator.mappers.helper.ContextHelper;
 
 /**
  * Some objects in DAQ snapshot structure can be identified by 2 elements
@@ -22,9 +23,14 @@ import rcms.utilities.daqaggregator.datasource.Flashlist;
  * @param <E>
  *            Any object that can be located with 2 elements geolocation
  */
-public abstract class TwoElementGeoMacher<E> extends Matcher<E> {
+public abstract class TwoElementGeoMatcher<E> extends SessionFilteringMatcher<E> {
 
-	private final Logger logger = Logger.getLogger(TwoElementGeoMacher.class);
+	public TwoElementGeoMatcher(int sessionId) {
+		super(sessionId);
+		// TODO Auto-generated constructor stub
+	}
+
+	private final Logger logger = Logger.getLogger(TwoElementGeoMatcher.class);
 
 	public abstract String getHostname(E e);
 
