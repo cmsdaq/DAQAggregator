@@ -265,6 +265,9 @@ public class F3DataRetriever {
 		}
 	}
 
+	/** @return true if retrieving HLT output information from F3mon
+	 *  was successful, false otherwise
+	 */
 	public boolean dispatchHLT(DAQ daq) {
 
 		try {
