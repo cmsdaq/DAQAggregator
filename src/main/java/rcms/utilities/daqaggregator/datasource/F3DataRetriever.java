@@ -34,6 +34,8 @@ public class F3DataRetriever {
 		this.connector = connector;
 	}
 
+	public final static String PHYSICS_STREAM_NAME = "Physics";
+	
 	/** @param events if true, fills event rates otherwise fills bandwidths */
 	private void fillHLTInfo(int runNumber, HLToutputInfo hltOutputInfo, boolean events) throws IOException {
 		
@@ -109,7 +111,7 @@ public class F3DataRetriever {
 
 			logger.debug(resultJson);
 			try {
-				return resultJson.elements().next().get("Physics").asDouble();
+				return resultJson.elements().next().get(PHYSICS_STREAM_NAME).asDouble();
 			} catch (NoSuchElementException e) {
 
 				logger.warn("Cannot retrieve hlt rate (no such element) from response: " + result.get(0));
