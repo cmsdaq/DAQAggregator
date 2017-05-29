@@ -9,11 +9,8 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 
-import rcms.utilities.daqaggregator.Application;
-import rcms.utilities.daqaggregator.Settings;
 import rcms.utilities.daqaggregator.data.FED;
 import rcms.utilities.daqaggregator.data.GlobalTTSState;
 import rcms.utilities.daqaggregator.data.RU;
@@ -22,17 +19,23 @@ import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
 import rcms.utilities.daqaggregator.mappers.MappingManager;
 import rcms.utilities.daqaggregator.mappers.MappingReporter;
 import rcms.utilities.daqaggregator.mappers.helper.ContextHelper;
-import rcms.utilities.daqaggregator.mappers.helper.FEDEnableMaskParser;
-import rcms.utilities.daqaggregator.mappers.helper.FMMGeoMatcher;
-import rcms.utilities.daqaggregator.mappers.helper.FRLGeoFinder;
-import rcms.utilities.daqaggregator.mappers.helper.FedFromFerolInputStreamGeoFinder;
-import rcms.utilities.daqaggregator.mappers.helper.FedInFmmGeoFinder;
-import rcms.utilities.daqaggregator.mappers.helper.FedInFrl40GeoFinder;
-import rcms.utilities.daqaggregator.mappers.helper.FedInFrlGeoFinder;
-import rcms.utilities.daqaggregator.mappers.helper.Matcher;
 import rcms.utilities.daqaggregator.mappers.helper.TCDSFlashlistHelpers;
-import rcms.utilities.daqaggregator.mappers.helper.TTCPartitionGeoFinder;
+import rcms.utilities.daqaggregator.mappers.matcher.FMMGeoMatcher;
+import rcms.utilities.daqaggregator.mappers.matcher.FRLGeoFinder;
+import rcms.utilities.daqaggregator.mappers.matcher.FedFromFerolInputStreamGeoFinder;
+import rcms.utilities.daqaggregator.mappers.matcher.FedInFmmGeoFinder;
+import rcms.utilities.daqaggregator.mappers.matcher.FedInFrl40GeoFinder;
+import rcms.utilities.daqaggregator.mappers.matcher.FedInFrlGeoFinder;
+import rcms.utilities.daqaggregator.mappers.matcher.Matcher;
+import rcms.utilities.daqaggregator.mappers.matcher.TTCPartitionGeoFinder;
 
+/**
+ * This class dispatches the flashlist content (monitoring data that changes
+ * over time) to appropriate objects (that are built based on hardware database)
+ * 
+ * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
+ *
+ */
 public class FlashlistDispatcher {
 
 	final String INSTANCE = "instance";
@@ -47,34 +50,44 @@ public class FlashlistDispatcher {
 	/** string for filtering by FM URL */
 	private final String filter1;
 
-	public FlashlistDispatcher(String filter1)
-	{
+	public FlashlistDispatcher(String filter1) {
 		this.filter1 = filter1;
 	}
-	
-	/** helper function for dispatch(..): returns the session id (SID) of 
-	 *  the DAQ subsystem or null if not found
+
+	/**
+	 * 
+	 * Dispatch rows of a flashlist to appropriate objects using 2 elements geo
+	 * matcher
+	 *
+	 * @param flashlist
+	 *            flashlist to dispatch
+	 * @param collection
+	 *            objects to dispatch flashlist data to
+	 * @param matcher
+	 *            object responsible for matching row - object
+	 * 
 	 */
-	private Integer getDAQsid(Flashlist flashlist) {
-		
-		try {
-			for (JsonNode rowNode : flashlist.getRowsNode()) {
+	public <T extends FlashlistUpdatable> void dispatchRowsUsingMatcher(Flashlist flashlist, Collection<T> collection,
+			Matcher<T> matcher) {
 
-				String subsystemName = rowNode.get("SUBSYS").asText();
+		FlashlistType flashlistType = flashlist.getFlashlistType();
 
-				if (subsystemName.equals("DAQ") && rowNode.get("FMURL").asText().contains(filter1)) {
-					return Integer.parseInt(rowNode.get("SID").asText());
-				}
-			} // loop over rows of the flashlist
-		} catch (Exception ex) {
+		/* Object T will receive row JsonNode */
+		Map<T, JsonNode> dispatchMap = matcher.match(flashlist, collection);
+		logger.debug("Elements matched by geolocation: " + dispatchMap.size() + "/" + collection.size());
 
-			logger.error("Unexpected exception caught when trying to determine DAQ session id", ex);
-	  }
+		for (Entry<T, JsonNode> match : dispatchMap.entrySet()) {
+			match.getKey().updateFromFlashlist(flashlistType, match.getValue());
+		}
 
-		// not found or there was a problem
-		return null;
+		int failed = matcher.getFailded();
+		int all = matcher.getFailded() + matcher.getSuccessful();
+
+		MappingReporter.get().increaseMissing(flashlistType.name(), failed);
+		MappingReporter.get().increaseTotal(flashlistType.name(), all);
+
 	}
-	
+
 	/**
 	 * Dispatch flashlist rows to appropriate objects from DAQ structure. Note
 	 * that a flashlist must be already initialized, for initialization see
@@ -89,8 +102,10 @@ public class FlashlistDispatcher {
 		String tcds_serviceField = mappingManager.getTcdsFmInfoRetriever().getTcdsfm_pmService();
 		String tcds_url = mappingManager.getTcdsFmInfoRetriever().getTcdsfm_pmContext();
 
+		int sessionId = mappingManager.getObjectMapper().daq.getSessionId();
+
 		logger.debug("Received " + tcds_serviceField + " TCDS PM service name");
-    
+
 		if (flashlist.isUnknownAtLAS()) {
 			logger.debug("Flashlist dispatcher received and will ignore " + flashlist.getName()
 					+ " because it was not successfully downloaded from LAS");
@@ -101,22 +116,24 @@ public class FlashlistDispatcher {
 
 		switch (type) {
 		case RU:
-			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().rusByHostname, "context");
-			dispatchRowsByFedIdsWithErrors(flashlist, mappingManager.getObjectMapper().fedsByExpectedId);
+			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().rusByHostname, "context", sessionId);
+			dispatchRowsByFedIdsWithErrors(flashlist, mappingManager.getObjectMapper().fedsByExpectedId, sessionId);
 			break;
 		case BU:
-			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().busByHostname, "context");
+			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().busByHostname, "context", sessionId);
 			break;
 		case FEROL_INPUT_STREAM:
-			dispatchRowsByGeo(flashlist, mappingManager.getObjectMapper().fedsById.values(),
-					new FedFromFerolInputStreamGeoFinder("streamNumber"));
+			dispatchRowsUsingMatcher(flashlist, mappingManager.getObjectMapper().fedsById.values(),
+					new FedFromFerolInputStreamGeoFinder("streamNumber", sessionId));
 			break;
 		case FMM_INPUT:
-			dispatchRowsByGeo(flashlist, mappingManager.getObjectMapper().fedsById.values(), new FedInFmmGeoFinder());
+			dispatchRowsUsingMatcher(flashlist, mappingManager.getObjectMapper().fedsById.values(),
+					new FedInFmmGeoFinder(sessionId));
 
 			break;
 		case FEROL_STATUS:
-			dispatchRowsByGeo(flashlist, mappingManager.getObjectMapper().frls.values(), new FRLGeoFinder());
+			dispatchRowsUsingMatcher(flashlist, mappingManager.getObjectMapper().frls.values(),
+					new FRLGeoFinder(sessionId));
 			break;
 		case EVM:
 			if (flashlist.getRowsNode().isArray() && flashlist.getRowsNode().size() > 0) {
@@ -135,17 +152,18 @@ public class FlashlistDispatcher {
 		case LEVEL_ZERO_FM_STATIC:
 			break;
 		case JOB_CONTROL:
-			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().frlPcByHostname, "context");
-			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().fmmApplicationByHostname, "context");
-			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().rusByHostname, "context");
-			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().busByHostname, "context");
+			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().frlPcByHostname, "context", sessionId);
+			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().fmmApplicationByHostname, "context",
+					sessionId);
+			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().rusByHostname, "context", sessionId);
+			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().busByHostname, "context", sessionId);
 			break;
 
-		case LEVEL_ZERO_FM_SUBSYS: { 
-		
+		case LEVEL_ZERO_FM_SUBSYS: {
+
 			Integer daqSid = this.getDAQsid(flashlist);
 			logger.debug("DAQ session id: " + daqSid);
-			
+
 			for (JsonNode rowNode : flashlist.getRowsNode()) {
 
 				Integer sid = null;
@@ -157,9 +175,9 @@ public class FlashlistDispatcher {
 				}
 
 				if (sid != null && daqSid != null && sid.equals(daqSid)) {
-					
+
 					logger.debug("Successfully matched session id: " + daqSid);
-					
+
 					String subsystemName = rowNode.get("SUBSYS").asText();
 
 					if (subsystemName.equals("DAQ") && rowNode.get("FMURL").asText().contains(filter1)) {
@@ -176,8 +194,8 @@ public class FlashlistDispatcher {
 
 			}
 		}
-		break;
-		
+			break;
+
 		case LEVEL_ZERO_FM_DYNAMIC:
 
 			for (JsonNode rowNode : flashlist.getRowsNode()) {
@@ -186,22 +204,23 @@ public class FlashlistDispatcher {
 				}
 			}
 			break;
-		
+
 		case FEROL_CONFIGURATION:
-			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().frlPcByHostname, "context");
-			dispatchRowsByGeo(flashlist, mappingManager.getObjectMapper().fedsById.values(),
-					new FedInFrlGeoFinder("io"));
+			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().frlPcByHostname, "context", sessionId);
+			dispatchRowsUsingMatcher(flashlist, mappingManager.getObjectMapper().fedsById.values(),
+					new FedInFrlGeoFinder("io", sessionId));
 			break;
 		case FRL_MONITORING:
 			// TODO: future - use frlpc.context for mapping
-			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().frlPcByHostname, "context");
-			dispatchRowsByGeo(flashlist, mappingManager.getObjectMapper().fedsById.values(),
-					new FedInFrlGeoFinder("io"));
+			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().frlPcByHostname, "context", sessionId);
+			dispatchRowsUsingMatcher(flashlist, mappingManager.getObjectMapper().fedsById.values(),
+					new FedInFrlGeoFinder("io", sessionId));
 			break;
 		case FMM_STATUS:
-			dispatchRowsByGeo(flashlist, mappingManager.getObjectMapper().fmms.values(), new FMMGeoMatcher());
-			dispatchRowsByGeo(flashlist, mappingManager.getObjectMapper().ttcPartitions.values(),
-					new TTCPartitionGeoFinder());
+			dispatchRowsUsingMatcher(flashlist, mappingManager.getObjectMapper().fmms.values(),
+					new FMMGeoMatcher(sessionId));
+			dispatchRowsUsingMatcher(flashlist, mappingManager.getObjectMapper().ttcPartitions.values(),
+					new TTCPartitionGeoFinder(sessionId));
 			break;
 		case TCDS_PM_TTS_CHANNEL:
 
@@ -389,40 +408,38 @@ public class FlashlistDispatcher {
 
 			break;
 		case FEROL40_STREAM_CONFIGURATION:
-			dispatchRowsByGeo(flashlist, mappingManager.getObjectMapper().fedsById.values(),
-					new FedInFrl40GeoFinder());
+			dispatchRowsUsingMatcher(flashlist, mappingManager.getObjectMapper().fedsById.values(),
+					new FedInFrl40GeoFinder(sessionId));
 			break;
 		case FEROL40_INPUT_STREAM:
-			dispatchRowsByGeo(flashlist, mappingManager.getObjectMapper().fedsById.values(),
-					new FedInFrl40GeoFinder());
+			dispatchRowsUsingMatcher(flashlist, mappingManager.getObjectMapper().fedsById.values(),
+					new FedInFrl40GeoFinder(sessionId));
 			break;
 		case FEROL40_STATUS:
-			dispatchRowsByGeo(flashlist, mappingManager.getObjectMapper().frls.values(), new FRLGeoFinder());
+			dispatchRowsUsingMatcher(flashlist, mappingManager.getObjectMapper().frls.values(),
+					new FRLGeoFinder(sessionId));
 			break;
 		case FEROL40_CONFIGURATION:
-			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().frlPcByHostname, "context");
+			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().frlPcByHostname, "context", sessionId);
 			break;
 		default:
 			break;
 		}
 	}
 
-	private void printFlashListTypeInfo(Flashlist flashlist) {
-		com.fasterxml.jackson.databind.ObjectMapper om = new com.fasterxml.jackson.databind.ObjectMapper();
-		try {
-			logger.debug("Flashlist schema:  " + om.writeValueAsString(flashlist.getDefinitionNode()));
-		} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-	}
-
-	private void dispatchRowsByFedIdsWithErrors(Flashlist flashlist, Map<Integer, FED> fedsByExpectedId) {
+	/**
+	 * @deprecated
+	 * @param flashlist
+	 * @param fedsByExpectedId
+	 * @param sessionId
+	 */
+	private void dispatchRowsByFedIdsWithErrors(Flashlist flashlist, Map<Integer, FED> fedsByExpectedId,
+			int sessionId) {
 
 		HashMap<FED, JsonNode> fedToFlashlistRow = new HashMap<>();
 
-		for (JsonNode row : flashlist.getRowsNode()) {
+		for (JsonNode row : getRowsFilteredBySessionId(flashlist.getRowsNode(), flashlist.getFlashlistType(),
+				sessionId)) {
 			if (row.get("fedIdsWithErrors").isArray()) {
 				for (JsonNode fedIdWithErrors : row.get("fedIdsWithErrors")) {
 					int fedId = fedIdWithErrors.asInt();
@@ -461,39 +478,6 @@ public class FlashlistDispatcher {
 	}
 
 	/**
-	 * 
-	 * Dispatch rows of a flashlist to appropriate objects using 2 elements geo
-	 * matcher
-	 *
-	 * @param flashlist
-	 *            flashlist to dispatch
-	 * @param collection
-	 *            objects to dispatch flashlist data to
-	 * @param matcher
-	 *            object responsible for matching row - object
-	 */
-	public <T extends FlashlistUpdatable> void dispatchRowsByGeo(Flashlist flashlist, Collection<T> collection,
-			Matcher<T> matcher) {
-
-		FlashlistType flashlistType = flashlist.getFlashlistType();
-
-		/* Object T will receive row JsonNode */
-		Map<T, JsonNode> dispatchMap = matcher.match(flashlist, collection);
-		logger.debug("Elements matched by geolocation: " + dispatchMap.size() + "/" + collection.size());
-
-		for (Entry<T, JsonNode> match : dispatchMap.entrySet()) {
-			match.getKey().updateFromFlashlist(flashlistType, match.getValue());
-		}
-
-		int failed = matcher.getFailded();
-		int all = matcher.getFailded() + matcher.getSuccessful();
-
-		MappingReporter.get().increaseMissing(flashlistType.name(), failed);
-		MappingReporter.get().increaseTotal(flashlistType.name(), all);
-
-	}
-
-	/**
 	 * Dispatch rows of a flashlist to appropriate objects
 	 * 
 	 * @param flashlist
@@ -502,9 +486,12 @@ public class FlashlistDispatcher {
 	 *            map of objects by hostname
 	 * @param flashlistKey
 	 *            key to find flashlist column with hostname
+	 * @param sessionId
+	 *            used to filter the results by session id
 	 */
+	@Deprecated
 	public <T extends FlashlistUpdatable> void dispatchRowsByHostname(Flashlist flashlist,
-			Map<String, T> objectsByHostname, String flashlistKey) {
+			Map<String, T> objectsByHostname, String flashlistKey, int sessionId) {
 
 		logger.debug("Updating " + flashlist.getRowsNode().size() + " of " + flashlist.getFlashlistType() + " objects ("
 				+ objectsByHostname.size() + " in the structure)");
@@ -512,7 +499,8 @@ public class FlashlistDispatcher {
 		int found = 0;
 		int failed = 0;
 
-		for (JsonNode rowNode : flashlist.getRowsNode()) {
+		for (JsonNode rowNode : getRowsFilteredBySessionId(flashlist.getRowsNode(), flashlist.getFlashlistType(),
+				sessionId)) {
 			String hostname = rowNode.get(flashlistKey).asText();
 			hostname = ContextHelper.getHostnameFromContext(hostname);
 			if (objectsByHostname.containsKey(hostname)) {
@@ -539,15 +527,17 @@ public class FlashlistDispatcher {
 	 * @param objectsById
 	 *            objects to update
 	 */
-	public <T extends FlashlistUpdatable> void dispatchRowsByInstanceId(Flashlist flashlist,
-			Map<Integer, T> objectsById) {
+	@Deprecated
+	private <T extends FlashlistUpdatable> void dispatchRowsByInstanceId(Flashlist flashlist,
+			Map<Integer, T> objectsById, int sessionId) {
 
 		logger.debug("Updating " + flashlist.getRowsNode().size() + " of " + flashlist.getFlashlistType() + " objects ("
 				+ objectsById.size() + " in the structure)");
 		int found = 0;
 		int failed = 0;
 
-		for (JsonNode rowNode : flashlist.getRowsNode()) {
+		for (JsonNode rowNode : getRowsFilteredBySessionId(flashlist.getRowsNode(), flashlist.getFlashlistType(),
+				sessionId)) {
 			try {
 				int objectId = Integer.parseInt(rowNode.get(INSTANCE).asText());
 
@@ -572,6 +562,36 @@ public class FlashlistDispatcher {
 
 		MappingReporter.get().increaseMissing(flashlist.getFlashlistType().name(), failed);
 		MappingReporter.get().increaseTotal(flashlist.getFlashlistType().name(), failed + found);
+	}
+
+	@Deprecated
+	private JsonNode getRowsFilteredBySessionId(JsonNode rowsNode, FlashlistType flashlistType, int sessionId) {
+		return rowsNode;
+	}
+
+	/**
+	 * helper function for dispatch(..): returns the session id (SID) of the DAQ
+	 * subsystem or null if not found
+	 */
+	@Deprecated
+	private Integer getDAQsid(Flashlist flashlist) {
+
+		try {
+			for (JsonNode rowNode : flashlist.getRowsNode()) {
+
+				String subsystemName = rowNode.get("SUBSYS").asText();
+
+				if (subsystemName.equals("DAQ") && rowNode.get("FMURL").asText().contains(filter1)) {
+					return Integer.parseInt(rowNode.get("SID").asText());
+				}
+			} // loop over rows of the flashlist
+		} catch (Exception ex) {
+
+			logger.error("Unexpected exception caught when trying to determine DAQ session id", ex);
+		}
+
+		// not found or there was a problem
+		return null;
 	}
 
 }
