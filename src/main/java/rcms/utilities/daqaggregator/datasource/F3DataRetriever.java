@@ -274,9 +274,11 @@ public class F3DataRetriever {
 			HLToutputInfo hltInfo = getHLToutputInfo(daq.getRunNumber());
 
 			Double hltOutputRate = hltInfo.getEventRate(PHYSICS_STREAM_NAME);
-
+			Double hltOutputBW   = hltInfo.getBandwidth(PHYSICS_STREAM_NAME);
+			
 			daq.setHltRate(hltOutputRate);
-
+			daq.setHltBandwidth(hltOutputBW);
+			
 			return hltOutputRate != null;
 			
 		} catch (JsonMappingException e) {
