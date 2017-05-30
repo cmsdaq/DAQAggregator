@@ -19,7 +19,12 @@ public abstract class HostnameMatcher<E> extends SessionFilteringMatcher<E> {
 	public abstract String getHostname(E e);
 
 	public HostnameMatcher(int sessionId, String flashlistKey) {
-		super(sessionId);
+		super(sessionId, false);
+		this.flashlistKey = flashlistKey;
+	}
+	
+	public HostnameMatcher(int sessionId, String flashlistKey, boolean ignoreFiltering) {
+		super(sessionId, ignoreFiltering);
 		this.flashlistKey = flashlistKey;
 	}
 

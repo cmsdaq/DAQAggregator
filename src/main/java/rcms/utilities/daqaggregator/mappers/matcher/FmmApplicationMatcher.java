@@ -4,8 +4,8 @@ import rcms.utilities.daqaggregator.data.FMMApplication;
 
 public class FmmApplicationMatcher extends HostnameMatcher<FMMApplication> {
 
-	public FmmApplicationMatcher(int sessionId, String flashlistKey) {
-		super(sessionId, flashlistKey);
+	public FmmApplicationMatcher(int sessionId, String flashlistKey, boolean ignoreFiltering) {
+		super(sessionId, flashlistKey, ignoreFiltering);
 	}
 
 	@Override

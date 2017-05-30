@@ -5,7 +5,11 @@ import rcms.utilities.daqaggregator.data.FRLPc;
 public class FrlPcMatcher extends HostnameMatcher<FRLPc> {
 
 	public FrlPcMatcher(int sessionId, String flashlistKey) {
-		super(sessionId, flashlistKey);
+		this(sessionId, flashlistKey, false);
+	}
+
+	public FrlPcMatcher(int sessionId, String flashlistKey, boolean ignoreFiltering) {
+		super(sessionId, flashlistKey, ignoreFiltering);
 	}
 
 	@Override

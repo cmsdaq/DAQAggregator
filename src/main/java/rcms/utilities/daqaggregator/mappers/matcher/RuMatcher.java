@@ -5,7 +5,11 @@ import rcms.utilities.daqaggregator.data.RU;
 public class RuMatcher extends HostnameMatcher<RU> {
 
 	public RuMatcher(int sessionId, String flashlistKey) {
-		super(sessionId, flashlistKey);
+		this(sessionId, flashlistKey, false);
+	}
+
+	public RuMatcher(int sessionId, String flashlistKey, boolean ignoreFiltering) {
+		super(sessionId, flashlistKey, ignoreFiltering);
 	}
 
 	@Override

@@ -1,8 +1,10 @@
 package rcms.utilities.daqaggregator.datasource;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -151,9 +153,12 @@ public class FlashlistDispatcher {
 		case EVM:
 			if (flashlist.getRowsNode().isArray() && flashlist.getRowsNode().size() > 0) {
 
-				for (RU ru : mappingManager.getObjectMapper().rus.values()) {
-					if (ru.isEVM())
-						ru.updateFromFlashlist(flashlist.getFlashlistType(), flashlist.getRowsNode().get(0));
+				for (JsonNode row : getRowsFilteredBySessionId(flashlist.getRowsNode(), flashlist.getFlashlistType(),
+						sessionId)) {
+					for (RU ru : mappingManager.getObjectMapper().rus.values()) {
+						if (ru.isEVM())
+							ru.updateFromFlashlist(flashlist.getFlashlistType(), row);
+					}
 				}
 
 			} else {
@@ -167,13 +172,13 @@ public class FlashlistDispatcher {
 		case JOB_CONTROL:
 
 			dispatchRowsUsingMatcher(flashlist, mappingManager.getObjectMapper().frlPcs.values(),
-					new FrlPcMatcher(sessionId, "context"));
+					new FrlPcMatcher(sessionId, "context", true));
 			dispatchRowsUsingMatcher(flashlist, mappingManager.getObjectMapper().fmmApplications.values(),
-					new FmmApplicationMatcher(sessionId, "context"));
+					new FmmApplicationMatcher(sessionId, "context", true));
 			dispatchRowsUsingMatcher(flashlist, mappingManager.getObjectMapper().rus.values(),
-					new RuMatcher(sessionId, "context"));
+					new RuMatcher(sessionId, "context", true));
 			dispatchRowsUsingMatcher(flashlist, mappingManager.getObjectMapper().bus.values(),
-					new BuMatcher(sessionId, "context"));
+					new BuMatcher(sessionId, "context", true));
 			break;
 
 		case LEVEL_ZERO_FM_SUBSYS: {
@@ -181,11 +186,11 @@ public class FlashlistDispatcher {
 			dispatchRowsUsingMatcher(flashlist, mappingManager.getObjectMapper().subSystems.values(),
 					new SubsystemMatcher(sessionId));
 
-			for (JsonNode rowNode : flashlist.getRowsNode()) {
+			for (JsonNode rowNode : getRowsFilteredBySessionId(flashlist.getRowsNode(), flashlist.getFlashlistType(),
+					sessionId)) {
 				if (rowNode.get(subsystemKey) != null) {
 					String subsystemName = rowNode.get(subsystemKey).textValue();
-					if (subsystemName.equals("DAQ") && rowNode
-							.get(flashlist.getFlashlistType().getSessionIdColumnName()).intValue() == sessionId) {
+					if (subsystemName.equals("DAQ")) {
 						mappingManager.getObjectMapper().daq.updateFromFlashlist(flashlist.getFlashlistType(), rowNode);
 					}
 				} else {
@@ -425,6 +430,54 @@ public class FlashlistDispatcher {
 		default:
 			break;
 		}
+	}
+
+	/**
+	 * TODO: this method is coppied from SessionFilteringMatcher, refactor this
+	 * so that it's only in one place
+	 * 
+	 * @param rowsToFilter
+	 * @param flashlistType
+	 * @param sessionId
+	 * @return
+	 */
+	protected List<JsonNode> getRowsFilteredBySessionId(JsonNode rowsToFilter, FlashlistType flashlistType,
+			int sessionId) {
+		List<JsonNode> result = new ArrayList<>();
+		logger.debug("Before the sid filter: " + rowsToFilter.size());
+
+		for (JsonNode rowNode : rowsToFilter) {
+
+			if (flashlistType.isSessionContext()) {
+				if (flashlistType.getSessionIdColumnName() != null) {
+					if (rowNode.has(flashlistType.getSessionIdColumnName())) {
+						try {
+							int rowSessionContext = rowNode.get(flashlistType.getSessionIdColumnName()).asInt();
+							if (rowSessionContext == sessionId) {
+								result.add(rowNode);
+							} else {
+								logger.debug("Ignoring row of " + flashlistType + " with SID " + rowSessionContext
+										+ ", expecting " + sessionId);
+							}
+						} catch (NumberFormatException e) {
+							logger.info(
+									"Could not parse SID from: " + rowNode.get(flashlistType.getSessionIdColumnName()));
+						}
+					} else {
+						logger.warn("Flashlist " + flashlistType + " has no such column "
+								+ flashlistType.getSessionIdColumnName());
+					}
+				} else {
+					logger.warn("Flashlist " + flashlistType
+							+ " is defined as having session context but no session id column is defined");
+				}
+			} else {
+				result.add(rowNode);
+			}
+		}
+		logger.debug("After the sid filter: " + result.size());
+
+		return result;
 	}
 
 }

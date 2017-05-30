@@ -5,7 +5,11 @@ import rcms.utilities.daqaggregator.data.BU;
 public class BuMatcher extends HostnameMatcher<BU> {
 
 	public BuMatcher(int sessionId, String flashlistKey) {
-		super(sessionId, flashlistKey);
+		this(sessionId, flashlistKey, false);
+	}
+
+	public BuMatcher(int sessionId, String flashlistKey, boolean ignoreFiltering) {
+		super(sessionId, flashlistKey, ignoreFiltering);
 	}
 
 	@Override

@@ -15,12 +15,19 @@ public abstract class SessionFilteringMatcher<E> extends Matcher<E> {
 
 	private final int sessionId;
 
+	private final boolean ignoreFiltering;
+
 	private int filtered;
 
 	public SessionFilteringMatcher(int sessionId) {
+		this(sessionId, false);
+	}
+
+	public SessionFilteringMatcher(int sessionId, boolean ignoreFiltering) {
 		super();
 		this.sessionId = sessionId;
 		this.filtered = 0;
+		this.ignoreFiltering = ignoreFiltering;
 	}
 
 	protected List<JsonNode> getRowsFilteredBySessionId(JsonNode rowsToFilter, FlashlistType flashlistType) {
@@ -30,7 +37,7 @@ public abstract class SessionFilteringMatcher<E> extends Matcher<E> {
 
 		for (JsonNode rowNode : rowsToFilter) {
 
-			if (flashlistType.isSessionContext()) {
+			if (flashlistType.isSessionContext() && !ignoreFiltering) {
 				if (flashlistType.getSessionIdColumnName() != null) {
 					if (rowNode.has(flashlistType.getSessionIdColumnName())) {
 						try {
