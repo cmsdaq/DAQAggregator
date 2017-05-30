@@ -1,8 +1,12 @@
-package rcms.utilities.daqaggregator.mappers.helper;
+package rcms.utilities.daqaggregator.mappers.matcher;
 
 import rcms.utilities.daqaggregator.data.TTCPartition;
 
 public class TTCPartitionGeoFinder extends TwoElementGeoMatcher<TTCPartition> {
+
+	public TTCPartitionGeoFinder(int sessionId) {
+		super(sessionId);
+	}
 
 	@Override
 	public String getHostname(TTCPartition ttcp) {

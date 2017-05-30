@@ -18,7 +18,7 @@ import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
  * @author Michail Vougioukas (michail.vougioukas@cern.ch)
  */
 public class DAQ implements FlashlistUpdatable {
-	
+
 	private String daqAggregatorProducer;
 
 	// ----------------------------------------
@@ -60,16 +60,16 @@ public class DAQ implements FlashlistUpdatable {
 	private List<FRL> frls;
 	private List<SubFEDBuilder> subFEDBuilders;
 	private Collection<FED> feds;
-	
+
 	private TCDSGlobalInfo tcdsGlobalInfo;
-	
+
 	/**
 	 * HLT rate in Hz
 	 */
 	private Double hltRate;
 	private String hltKey;
 	private String hltKeyDescription;
-	
+
 	public BUSummary getBuSummary() {
 		return buSummary;
 	}
@@ -214,6 +214,9 @@ public class DAQ implements FlashlistUpdatable {
 		this.dpsetPath = dpsetPath;
 	}
 
+	/**
+	 * TODO: some columns were added later to the flashlists - accessing them in old flashlists should be fail-safe
+	 */
 	@Override
 	public void updateFromFlashlist(FlashlistType flashlistType, JsonNode flashlistRow) {
 		if (flashlistType == FlashlistType.LEVEL_ZERO_FM_SUBSYS) {
@@ -222,23 +225,24 @@ public class DAQ implements FlashlistUpdatable {
 			this.levelZeroState = flashlistRow.get("STATE").asText();
 			this.lhcBeamMode = flashlistRow.get("LHC_BEAM_MODE").asText();
 			this.lhcMachineMode = flashlistRow.get("LHC_MACHINE_MODE").asText();
-			this.hltKey = flashlistRow.get("HLT_KEY").asText();
-			this.hltKeyDescription = flashlistRow.get("HLT_KEY_DESCRIPTION").asText();
+			try {this.hltKey = flashlistRow.get("HLT_KEY").asText();} catch (NullPointerException e) {}
+			try {this.hltKeyDescription = flashlistRow.get("HLT_KEY_DESCRIPTION").asText();;} catch (NullPointerException e) {}
 			this.runNumber = flashlistRow.get("RUN_NUMBER").asInt();
-			
-			String runStart = flashlistRow.get("RUN_START_TIME").asText();
-			String stateEntry = flashlistRow.get("STATE_ENTRY_TIME").asText();
-			
-			Date date = DateParser.parseDateTransparently(runStart);
-			if (date != null) {
-				this.runStart = date.getTime();
-				this.runDurationInMillis = (new Date()).getTime() - date.getTime();
-			}
-			
-			date = DateParser.parseDateTransparently(stateEntry);
-			if (date != null) {
-				this.levelZeroStateEntry = date.getTime();
-			}
+
+			try {
+				String runStart = flashlistRow.get("RUN_START_TIME").asText();
+				String stateEntry = flashlistRow.get("STATE_ENTRY_TIME").asText();
+				Date date = DateParser.parseDateTransparently(runStart);
+				if (date != null) {
+					this.runStart = date.getTime();
+					this.runDurationInMillis = (new Date()).getTime() - date.getTime();
+				}
+				date = DateParser.parseDateTransparently(stateEntry);
+				if (date != null) {
+					this.levelZeroStateEntry = date.getTime();
+				}
+
+			} catch (NullPointerException e) {}
 		}
 
 	}
@@ -266,7 +270,7 @@ public class DAQ implements FlashlistUpdatable {
 	public void setLhcBeamMode(String lhcBeamMode) {
 		this.lhcBeamMode = lhcBeamMode;
 	}
-	
+
 	public TCDSGlobalInfo getTcdsGlobalInfo() {
 		return tcdsGlobalInfo;
 	}
@@ -275,15 +279,17 @@ public class DAQ implements FlashlistUpdatable {
 		this.tcdsGlobalInfo = tcdsGlobalInfo;
 	}
 
-	/** @return the corresponding FED object (there should be at most one)
-	 *  corresponding to the given a numeric fed source ID or null if 
-	 *  no such source id was found.
-	 *  @param fedId the source id of the FED requested
+	/**
+	 * @return the corresponding FED object (there should be at most one)
+	 *         corresponding to the given a numeric fed source ID or null if no
+	 *         such source id was found.
+	 * @param fedId
+	 *            the source id of the FED requested
 	 */
 	public FED getFEDbySrcId(int fedId) {
-		
+
 		for (FED fed : getFeds()) {
-			
+
 			if (fed.getSrcIdExpected() == fedId) {
 				return fed;
 			}
@@ -292,9 +298,9 @@ public class DAQ implements FlashlistUpdatable {
 
 		// fedId not found
 		return null;
-		
+
 	}
-	
+
 	@Override
 	public void clean() {
 		this.daqState = "Unknown";
@@ -472,6 +478,5 @@ public class DAQ implements FlashlistUpdatable {
 				+ ", subFEDBuilders=" + subFEDBuilders + ", feds=" + feds + ", tcdsGlobalInfo=" + tcdsGlobalInfo
 				+ ", hltRate=" + hltRate + ", hltKey=" + hltKey + ", hltKeyDescription=" + hltKeyDescription + "]";
 	}
-	
 
 }

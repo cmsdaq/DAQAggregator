@@ -1,8 +1,14 @@
 package rcms.utilities.daqaggregator.datasource;
 
+/**
+ * Definition of flashlist set that will be downloaded and mapped in each
+ * iteration of DAQAggregator.
+ * 
+ * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
+ *
+ */
 public enum FlashlistType {
 
-	// fsname, sessionContext?, download?, sessionIdColName
 	BU("BU", "sessionid"),
 	EVM("EVM", "sessionid"),
 	FMM_INPUT("FMMInput", "sessionid"),
@@ -16,9 +22,9 @@ public enum FlashlistType {
 	FEROL_TCP_STREAM("ferolTcpStream", "sessionid"),
 	FRL_MONITORING("frlMonitoring", "sessionid"),
 	HOST_INFO("hostInfo", "sessionid"),
-	LEVEL_ZERO_FM_DYNAMIC("levelZeroFM_dynamic"),
-	LEVEL_ZERO_FM_STATIC("levelZeroFM_static"),
-	LEVEL_ZERO_FM_SUBSYS("levelZeroFM_subsys"),
+	LEVEL_ZERO_FM_DYNAMIC("levelZeroFM_dynamic", "SID"),
+	LEVEL_ZERO_FM_STATIC("levelZeroFM_static", "SID"),
+	LEVEL_ZERO_FM_SUBSYS("levelZeroFM_subsys", "SID"),
 
 	JOB_CONTROL("jobcontrol"),
 	DISK_INFO("diskInfo", "sessionid"),
@@ -47,6 +53,11 @@ public enum FlashlistType {
 	 */
 	private final boolean sessionContext;
 
+	/**
+	 * Name of the column holding session id data, if flashlist is not subject
+	 * to session context than this field is null. Note that this field is
+	 * related to flag sessionContext
+	 */
 	private final String sessionIdColumnName;
 
 	/**

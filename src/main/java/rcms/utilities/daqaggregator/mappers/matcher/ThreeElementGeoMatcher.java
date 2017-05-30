@@ -1,4 +1,4 @@
-package rcms.utilities.daqaggregator.mappers.helper;
+package rcms.utilities.daqaggregator.mappers.matcher;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import rcms.utilities.daqaggregator.datasource.Flashlist;
+import rcms.utilities.daqaggregator.mappers.helper.ContextHelper;
 
 /**
  * FED can be identified by its geolocation which consists of 3 elements:
@@ -23,7 +24,11 @@ import rcms.utilities.daqaggregator.datasource.Flashlist;
  * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
  *
  */
-public abstract class ThreeElementGeoMatcher<E> extends Matcher<E> {
+public abstract class ThreeElementGeoMatcher<E> extends SessionFilteringMatcher<E> {
+
+	public ThreeElementGeoMatcher(int sessionId) {
+		super(sessionId);
+	}
 
 	protected final Logger logger = Logger.getLogger(ThreeElementGeoMatcher.class);
 
@@ -42,7 +47,7 @@ public abstract class ThreeElementGeoMatcher<E> extends Matcher<E> {
 	protected Map<String, Map<Integer, Map<Integer, JsonNode>>> prepareFlashlistMap(Flashlist flashlist) {
 		Map<String, Map<Integer, Map<Integer, JsonNode>>> flashlistMap = new HashMap<>();
 
-		for (JsonNode row : flashlist.getRowsNode()) {
+		for (JsonNode row : getRowsFilteredBySessionId(flashlist.getRowsNode(), flashlist.getFlashlistType())) {
 
 			String hostname = row.get(this.getFlashlistHostnameKey()).asText();
 
