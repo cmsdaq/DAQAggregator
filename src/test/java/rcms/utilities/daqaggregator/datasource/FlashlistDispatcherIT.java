@@ -20,6 +20,13 @@ import rcms.utilities.hwcfg.InvalidNodeTypeException;
 import rcms.utilities.hwcfg.PathNotFoundException;
 import rcms.utilities.hwcfg.dp.DAQPartition;
 
+/**
+ * Integration test verifying how the flashlists data is dispatched to objects.
+ * This tests both dispatcher and all individual matchers
+ * 
+ * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
+ *
+ */
 public class FlashlistDispatcherIT {
 
 	private static final Logger logger = Logger.getLogger(FlashlistDispatcherIT.class);
@@ -27,8 +34,6 @@ public class FlashlistDispatcherIT {
 	@Test
 	public void test() throws IOException, DBConnectorException, HardwareConfigurationException, PathNotFoundException,
 			InvalidNodeTypeException {
-
-		FlashlistDispatcher sut = new FlashlistDispatcher(null);
 
 		long startTime = System.currentTimeMillis();
 		MappingReporter.get().clear();
@@ -65,17 +70,17 @@ public class FlashlistDispatcherIT {
 		// TODO: we could mock this object
 		TCDSFMInfoRetriever tcdsFmInfoRetriever = new TCDSFMInfoRetriever(flashlistRetriever);
 
+		FlashlistDispatcher dispatcher = new FlashlistDispatcher(filter1);
+
 		MappingManager mappingManager = new MappingManager(daqPartition, tcdsFmInfoRetriever);
 		mappingManager.map();
 		for (Flashlist flashlist : flashlists.values()) {
-
-			FlashlistDispatcher dispatcher = new FlashlistDispatcher(filter1);
 
 			dispatcher.dispatch(flashlist, mappingManager);
 		}
 		long stopTime = System.currentTimeMillis();
 		int time = (int) (stopTime - startTime);
-		logger.debug("Mapping all flashlists finished in " + time + "ms");
+		logger.info("Mapping all flashlists finished in " + time + "ms");
 
 		Assert.assertEquals(1196, MappingReporter.get().getTotalObjects().get("FRL_MONITORING").intValue());
 		Assert.assertEquals(83, MappingReporter.get().getTotalObjects().get("RU").intValue());
