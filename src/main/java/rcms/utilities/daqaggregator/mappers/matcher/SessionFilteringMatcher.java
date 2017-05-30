@@ -14,16 +14,19 @@ public abstract class SessionFilteringMatcher<E> extends Matcher<E> {
 	private static final Logger logger = Logger.getLogger(SessionFilteringMatcher.class);
 
 	private final int sessionId;
-	
-	public SessionFilteringMatcher(int sessionId){
+
+	private int filtered;
+
+	public SessionFilteringMatcher(int sessionId) {
 		super();
 		this.sessionId = sessionId;
+		this.filtered = 0;
 	}
 
-	protected List<JsonNode> getRowsFilteredBySessionId(JsonNode rowsToFilter, FlashlistType flashlistType,
-			int expectedSession) {
+	protected List<JsonNode> getRowsFilteredBySessionId(JsonNode rowsToFilter, FlashlistType flashlistType) {
 		List<JsonNode> result = new ArrayList<>();
 		logger.info("Before the sid filter: " + rowsToFilter.size());
+		filtered = 0;
 
 		for (JsonNode rowNode : rowsToFilter) {
 
@@ -32,11 +35,12 @@ public abstract class SessionFilteringMatcher<E> extends Matcher<E> {
 					if (rowNode.has(flashlistType.getSessionIdColumnName())) {
 						try {
 							int rowSessionContext = rowNode.get(flashlistType.getSessionIdColumnName()).asInt();
-							if (rowSessionContext == expectedSession) {
+							if (rowSessionContext == sessionId) {
 								result.add(rowNode);
 							} else {
+								filtered++;
 								logger.info("Ignoring row of " + flashlistType + " with SID " + rowSessionContext
-										+ ", expecting " + expectedSession);
+										+ ", expecting " + sessionId);
 							}
 						} catch (NumberFormatException e) {
 							logger.info(
@@ -61,6 +65,10 @@ public abstract class SessionFilteringMatcher<E> extends Matcher<E> {
 
 	public int getSessionId() {
 		return sessionId;
+	}
+
+	public int getFiltered() {
+		return filtered;
 	}
 
 }

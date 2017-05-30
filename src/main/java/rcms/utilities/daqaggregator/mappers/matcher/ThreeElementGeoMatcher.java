@@ -47,7 +47,7 @@ public abstract class ThreeElementGeoMatcher<E> extends SessionFilteringMatcher<
 	protected Map<String, Map<Integer, Map<Integer, JsonNode>>> prepareFlashlistMap(Flashlist flashlist) {
 		Map<String, Map<Integer, Map<Integer, JsonNode>>> flashlistMap = new HashMap<>();
 
-		for (JsonNode row : flashlist.getRowsNode()) {
+		for (JsonNode row : getRowsFilteredBySessionId(flashlist.getRowsNode(), flashlist.getFlashlistType())) {
 
 			String hostname = row.get(this.getFlashlistHostnameKey()).asText();
 

@@ -1,7 +1,6 @@
 package rcms.utilities.daqaggregator.datasource;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -11,22 +10,25 @@ import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import rcms.utilities.daqaggregator.data.FED;
 import rcms.utilities.daqaggregator.data.GlobalTTSState;
 import rcms.utilities.daqaggregator.data.RU;
 import rcms.utilities.daqaggregator.data.TTCPartition;
 import rcms.utilities.daqaggregator.mappers.FlashlistUpdatable;
 import rcms.utilities.daqaggregator.mappers.MappingManager;
 import rcms.utilities.daqaggregator.mappers.MappingReporter;
-import rcms.utilities.daqaggregator.mappers.helper.ContextHelper;
 import rcms.utilities.daqaggregator.mappers.helper.TCDSFlashlistHelpers;
+import rcms.utilities.daqaggregator.mappers.matcher.BuMatcher;
 import rcms.utilities.daqaggregator.mappers.matcher.FMMGeoMatcher;
 import rcms.utilities.daqaggregator.mappers.matcher.FRLGeoFinder;
 import rcms.utilities.daqaggregator.mappers.matcher.FedFromFerolInputStreamGeoFinder;
+import rcms.utilities.daqaggregator.mappers.matcher.FedInErrorMatcher;
 import rcms.utilities.daqaggregator.mappers.matcher.FedInFmmGeoFinder;
 import rcms.utilities.daqaggregator.mappers.matcher.FedInFrl40GeoFinder;
 import rcms.utilities.daqaggregator.mappers.matcher.FedInFrlGeoFinder;
+import rcms.utilities.daqaggregator.mappers.matcher.FmmApplicationMatcher;
+import rcms.utilities.daqaggregator.mappers.matcher.FrlPcMatcher;
 import rcms.utilities.daqaggregator.mappers.matcher.Matcher;
+import rcms.utilities.daqaggregator.mappers.matcher.RuMatcher;
 import rcms.utilities.daqaggregator.mappers.matcher.TTCPartitionGeoFinder;
 
 /**
@@ -116,11 +118,15 @@ public class FlashlistDispatcher {
 
 		switch (type) {
 		case RU:
-			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().rusByHostname, "context", sessionId);
-			dispatchRowsByFedIdsWithErrors(flashlist, mappingManager.getObjectMapper().fedsByExpectedId, sessionId);
+			dispatchRowsUsingMatcher(flashlist, mappingManager.getObjectMapper().rus.values(),
+					new RuMatcher(sessionId, "context"));
+
+			dispatchRowsUsingMatcher(flashlist, mappingManager.getObjectMapper().feds.values(),
+					new FedInErrorMatcher(sessionId));
 			break;
 		case BU:
-			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().busByHostname, "context", sessionId);
+			dispatchRowsUsingMatcher(flashlist, mappingManager.getObjectMapper().bus.values(),
+					new BuMatcher(sessionId, "context"));
 			break;
 		case FEROL_INPUT_STREAM:
 			dispatchRowsUsingMatcher(flashlist, mappingManager.getObjectMapper().fedsById.values(),
@@ -152,11 +158,15 @@ public class FlashlistDispatcher {
 		case LEVEL_ZERO_FM_STATIC:
 			break;
 		case JOB_CONTROL:
-			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().frlPcByHostname, "context", sessionId);
-			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().fmmApplicationByHostname, "context",
-					sessionId);
-			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().rusByHostname, "context", sessionId);
-			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().busByHostname, "context", sessionId);
+
+			dispatchRowsUsingMatcher(flashlist, mappingManager.getObjectMapper().frlPcs.values(),
+					new FrlPcMatcher(sessionId, "context"));
+			dispatchRowsUsingMatcher(flashlist, mappingManager.getObjectMapper().fmmApplications.values(),
+					new FmmApplicationMatcher(sessionId, "context"));
+			dispatchRowsUsingMatcher(flashlist, mappingManager.getObjectMapper().rus.values(),
+					new RuMatcher(sessionId, "context"));
+			dispatchRowsUsingMatcher(flashlist, mappingManager.getObjectMapper().bus.values(),
+					new BuMatcher(sessionId, "context"));
 			break;
 
 		case LEVEL_ZERO_FM_SUBSYS: {
@@ -206,13 +216,16 @@ public class FlashlistDispatcher {
 			break;
 
 		case FEROL_CONFIGURATION:
-			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().frlPcByHostname, "context", sessionId);
+
+			dispatchRowsUsingMatcher(flashlist, mappingManager.getObjectMapper().frlPcs.values(),
+					new FrlPcMatcher(sessionId, "context"));
 			dispatchRowsUsingMatcher(flashlist, mappingManager.getObjectMapper().fedsById.values(),
 					new FedInFrlGeoFinder("io", sessionId));
 			break;
 		case FRL_MONITORING:
 			// TODO: future - use frlpc.context for mapping
-			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().frlPcByHostname, "context", sessionId);
+			dispatchRowsUsingMatcher(flashlist, mappingManager.getObjectMapper().frlPcs.values(),
+					new FrlPcMatcher(sessionId, "context"));
 			dispatchRowsUsingMatcher(flashlist, mappingManager.getObjectMapper().fedsById.values(),
 					new FedInFrlGeoFinder("io", sessionId));
 			break;
@@ -420,153 +433,12 @@ public class FlashlistDispatcher {
 					new FRLGeoFinder(sessionId));
 			break;
 		case FEROL40_CONFIGURATION:
-			dispatchRowsByHostname(flashlist, mappingManager.getObjectMapper().frlPcByHostname, "context", sessionId);
+			dispatchRowsUsingMatcher(flashlist, mappingManager.getObjectMapper().frlPcs.values(),
+					new FrlPcMatcher(sessionId, "context"));
 			break;
 		default:
 			break;
 		}
-	}
-
-	/**
-	 * @deprecated
-	 * @param flashlist
-	 * @param fedsByExpectedId
-	 * @param sessionId
-	 */
-	private void dispatchRowsByFedIdsWithErrors(Flashlist flashlist, Map<Integer, FED> fedsByExpectedId,
-			int sessionId) {
-
-		HashMap<FED, JsonNode> fedToFlashlistRow = new HashMap<>();
-
-		for (JsonNode row : getRowsFilteredBySessionId(flashlist.getRowsNode(), flashlist.getFlashlistType(),
-				sessionId)) {
-			if (row.get("fedIdsWithErrors").isArray()) {
-				for (JsonNode fedIdWithErrors : row.get("fedIdsWithErrors")) {
-					int fedId = fedIdWithErrors.asInt();
-					if (fedsByExpectedId.containsKey(fedId)) {
-						FED fed = fedsByExpectedId.get(fedId);
-						fedToFlashlistRow.put(fed, row);
-
-					} else {
-						logger.debug(
-								"FED with problem indicated by flashlist RU.fedIdsWithErrors could not be found by id "
-										+ fedId);
-					}
-				}
-				for (JsonNode fedIdWithoutFragment : row.get("fedIdsWithoutFragments")) {
-					int fedId = fedIdWithoutFragment.asInt();
-					if (fedsByExpectedId.containsKey(fedId)) {
-						FED fed = fedsByExpectedId.get(fedId);
-						fedToFlashlistRow.put(fed, row);
-
-					} else {
-						logger.debug(
-								"FED with problem indicated by flashlist RU.fedIdsWithoutFragments could not be found by id "
-										+ fedId);
-					}
-				}
-
-			}
-
-		}
-		logger.debug("There are " + fedToFlashlistRow.size() + " FEDs with problems (according to RU flashlist)");
-		for (Entry<FED, JsonNode> entry : fedToFlashlistRow.entrySet()) {
-			FED fed = entry.getKey();
-			fed.updateFromFlashlist(flashlist.getFlashlistType(), entry.getValue());
-		}
-
-	}
-
-	/**
-	 * Dispatch rows of a flashlist to appropriate objects
-	 * 
-	 * @param flashlist
-	 *            flashlit to dispatch
-	 * @param objectsByHostname
-	 *            map of objects by hostname
-	 * @param flashlistKey
-	 *            key to find flashlist column with hostname
-	 * @param sessionId
-	 *            used to filter the results by session id
-	 */
-	@Deprecated
-	public <T extends FlashlistUpdatable> void dispatchRowsByHostname(Flashlist flashlist,
-			Map<String, T> objectsByHostname, String flashlistKey, int sessionId) {
-
-		logger.debug("Updating " + flashlist.getRowsNode().size() + " of " + flashlist.getFlashlistType() + " objects ("
-				+ objectsByHostname.size() + " in the structure)");
-
-		int found = 0;
-		int failed = 0;
-
-		for (JsonNode rowNode : getRowsFilteredBySessionId(flashlist.getRowsNode(), flashlist.getFlashlistType(),
-				sessionId)) {
-			String hostname = rowNode.get(flashlistKey).asText();
-			hostname = ContextHelper.getHostnameFromContext(hostname);
-			if (objectsByHostname.containsKey(hostname)) {
-				T flashlistUpdatableObject = objectsByHostname.get(hostname);
-				flashlistUpdatableObject.updateFromFlashlist(flashlist.getFlashlistType(), rowNode);
-				found++;
-			} else {
-				logger.debug("Cannot find object " + hostname + " by name in " + objectsByHostname.keySet());
-				failed++;
-			}
-		}
-
-		// TODO: better report this warnings
-		MappingReporter.get().increaseMissing(flashlist.getFlashlistType().name(), failed);
-		MappingReporter.get().increaseTotal(flashlist.getFlashlistType().name(), failed + found);
-	}
-
-	/**
-	 * 
-	 * Dispatch rows of a flashlist to appropriate objects by instance id
-	 * 
-	 * @param flashlist
-	 *            Flashlist object with data retrieved from LAS
-	 * @param objectsById
-	 *            objects to update
-	 */
-	@Deprecated
-	private <T extends FlashlistUpdatable> void dispatchRowsByInstanceId(Flashlist flashlist,
-			Map<Integer, T> objectsById, int sessionId) {
-
-		logger.debug("Updating " + flashlist.getRowsNode().size() + " of " + flashlist.getFlashlistType() + " objects ("
-				+ objectsById.size() + " in the structure)");
-		int found = 0;
-		int failed = 0;
-
-		for (JsonNode rowNode : getRowsFilteredBySessionId(flashlist.getRowsNode(), flashlist.getFlashlistType(),
-				sessionId)) {
-			try {
-				int objectId = Integer.parseInt(rowNode.get(INSTANCE).asText());
-
-				if (objectsById.containsKey(objectId)) {
-
-					T flashlistUpdatableObject = objectsById.get(objectId);
-					flashlistUpdatableObject.updateFromFlashlist(flashlist.getFlashlistType(), rowNode);
-
-					logger.debug("Updated objects: " + flashlistUpdatableObject);
-					found++;
-
-				} else {
-					logger.debug("No DAQ object " + flashlist.getFlashlistType() + " with flashlist id " + objectId
-							+ ", ignoring "); // TODO: print class name of
-					// object being ignored
-					failed++;
-				}
-			} catch (NumberFormatException e) {
-				logger.warn("Instance number can not be parsed " + rowNode.get(INSTANCE));
-			}
-		}
-
-		MappingReporter.get().increaseMissing(flashlist.getFlashlistType().name(), failed);
-		MappingReporter.get().increaseTotal(flashlist.getFlashlistType().name(), failed + found);
-	}
-
-	@Deprecated
-	private JsonNode getRowsFilteredBySessionId(JsonNode rowsNode, FlashlistType flashlistType, int sessionId) {
-		return rowsNode;
 	}
 
 	/**

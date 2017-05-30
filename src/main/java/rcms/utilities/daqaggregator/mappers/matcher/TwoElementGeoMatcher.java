@@ -50,8 +50,6 @@ public abstract class TwoElementGeoMatcher<E> extends SessionFilteringMatcher<E>
 	// public abstract Map<E, JsonNode> match(Flashlist flashlist, Collection<E>
 	// collection);
 
-	
-
 	@Override
 	public Map<E, JsonNode> match(Flashlist flashlist, Collection<E> collection) {
 
@@ -63,7 +61,7 @@ public abstract class TwoElementGeoMatcher<E> extends SessionFilteringMatcher<E>
 
 		Map<String, Map<Integer, JsonNode>> flashlistMap = new HashMap<>();
 
-		for (JsonNode row : flashlist.getRowsNode()) {
+		for (JsonNode row : getRowsFilteredBySessionId(flashlist.getRowsNode(), flashlist.getFlashlistType())) {
 
 			String hostname = row.get(this.getFlashlistHostnameKey()).asText();
 
