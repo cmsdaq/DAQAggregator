@@ -64,9 +64,15 @@ public class DAQ implements FlashlistUpdatable {
 	private TCDSGlobalInfo tcdsGlobalInfo;
 
 	/**
-	 * HLT rate in Hz
+	 * HLT stream physics output rate in Hz (events per second)
 	 */
 	private Double hltRate;
+	
+	/**
+	 * HLT output bandwidth (bytes per second)
+	 */
+	private Double hltBandwidth;
+	
 	private String hltKey;
 	private String hltKeyDescription;
 
@@ -412,6 +418,17 @@ public class DAQ implements FlashlistUpdatable {
 
 	public void setHltRate(Double hltRate) {
 		this.hltRate = hltRate;
+	}
+
+	/** @return the HLT output bandwidth in bytes per second
+	 *  for the Physics stream
+	 */
+	public Double getHltBandwidth()	{
+		return hltBandwidth;
+	}
+
+	public void setHltBandwidth(Double hltBandwidth) {
+		this.hltBandwidth = hltBandwidth;
 	}
 
 	public long getRunStart() {
