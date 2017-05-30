@@ -1,18 +1,26 @@
 package rcms.utilities.daqaggregator.datasource;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import org.apache.commons.lang3.tuple.Triple;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import rcms.common.db.DBConnectorException;
 import rcms.utilities.daqaggregator.Settings;
 import rcms.utilities.daqaggregator.data.DAQ;
+import rcms.utilities.daqaggregator.data.SubSystem;
 import rcms.utilities.daqaggregator.mappers.MappingManager;
 import rcms.utilities.daqaggregator.mappers.MappingReporter;
 import rcms.utilities.daqaggregator.persistence.PersistenceFormat;
@@ -26,24 +34,40 @@ import rcms.utilities.hwcfg.dp.DAQPartition;
  * This tests both dispatcher and all individual matchers
  * 
  * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
+ * @author holzner
+ * 
+ *         TODO: in this test we are dependent on external subsystem: hardware
+ *         database
  *
+ *         TODO: in this test we need properties file with all paswords to
+ *         connect to hardware configuration - this makes it impossible to run
+ *         in CI environment only based on repository (properties files cannot
+ *         be commited to project repo). Try to make a dump of hardware database
+ *         object and bring it to project
  */
 public class FlashlistDispatcherIT {
 
 	private static final Logger logger = Logger.getLogger(FlashlistDispatcherIT.class);
+	private int forcedSessionId;
+	private String forcedPath;
 
-	@Test
-	public void test() throws IOException, DBConnectorException, HardwareConfigurationException, PathNotFoundException,
-			InvalidNodeTypeException {
-
-		long startTime = System.currentTimeMillis();
+	@Before
+	public void prepare() {
 		MappingReporter.get().clear();
-		final String versionDir = "1.6.0/flashlists";
-		final String flashlistDir = "src/test/resources/compatibility/" + versionDir + "/";
+	}
+
+	/**
+	 * Run dispatch procedure on given flash-list directory
+	 * 
+	 * @param forceIgnoreAutomaticSessionDetection
+	 *            flag to explicitly ignore automatic session detection
+	 */
+	private DAQ runDispatch(String flashlistDir, boolean forceIgnoreAutomaticSessionDetection) throws IOException,
+			DBConnectorException, HardwareConfigurationException, PathNotFoundException, InvalidNodeTypeException {
 
 		FileFlashlistRetriever flashlistRetriever = new FileFlashlistRetriever(flashlistDir, PersistenceFormat.JSON);
 
-		flashlistRetriever.prepare(1496135196681L - 1);
+		flashlistRetriever.prepare(Long.MIN_VALUE);
 		Map<FlashlistType, Flashlist> flashlists = flashlistRetriever.retrieveAllFlashlists(0);
 
 		HardwareConnector hardwareConnector = new HardwareConnector();
@@ -64,28 +88,49 @@ public class FlashlistDispatcherIT {
 		hardwareConnector.initialize(url, host, port, sid, user, passwd);
 
 		SessionRetriever sr = new SessionRetriever(filter1, filter2);
-		Triple<String, Integer, Long> r = sr.retrieveSession(flashlists.get(FlashlistType.LEVEL_ZERO_FM_DYNAMIC));
+		int sessionId;
+		String path;
+		if (!forceIgnoreAutomaticSessionDetection) {
+			Triple<String, Integer, Long> r = sr.retrieveSession(flashlists.get(FlashlistType.LEVEL_ZERO_FM_DYNAMIC));
+			sessionId = r.getMiddle();
+			path = r.getLeft();
+		} else {
+			sessionId = forcedSessionId;
+			path = forcedPath;
+		}
 
-		DAQPartition daqPartition = hardwareConnector.getPartition(r.getLeft());
+		DAQPartition daqPartition = hardwareConnector.getPartition(path);
 
 		// TODO: we could mock this object
 		TCDSFMInfoRetriever tcdsFmInfoRetriever = new TCDSFMInfoRetriever(flashlistRetriever);
 
-		FlashlistDispatcher dispatcher = new FlashlistDispatcher(filter1);
+		FlashlistDispatcher dispatcher = new FlashlistDispatcher();
 
 		MappingManager mappingManager = new MappingManager(daqPartition, tcdsFmInfoRetriever);
 		DAQ daq = mappingManager.map();
 
-		daq.setSessionId(r.getMiddle());
-		daq.setDpsetPath(r.getLeft());
+		daq.setSessionId(sessionId);
+		daq.setDpsetPath(path);
 
 		for (Flashlist flashlist : flashlists.values()) {
-
 			dispatcher.dispatch(flashlist, mappingManager);
 		}
-		long stopTime = System.currentTimeMillis();
-		int time = (int) (stopTime - startTime);
-		logger.info("Mapping all flashlists finished in " + time + "ms");
+
+		return daq;
+	}
+
+	/**
+	 * Test the mapping procedure by asserting how much objects have been
+	 * successfully and unsuccessfully dispatched
+	 * 
+	 * TODO: ideally 0 objects should be unsuccessfully dispatched - investigate
+	 * further
+	 */
+	@Test
+	public void test() throws IOException, DBConnectorException, HardwareConfigurationException, PathNotFoundException,
+			InvalidNodeTypeException {
+
+		runDispatch("src/test/resources/compatibility/1.6.0/flashlists/", false);
 
 		Assert.assertEquals(1196, MappingReporter.get().getTotalObjects().get("FRL_MONITORING").intValue());
 		Assert.assertEquals(83, MappingReporter.get().getTotalObjects().get("RU").intValue());
@@ -118,6 +163,57 @@ public class FlashlistDispatcherIT {
 		Assert.assertEquals(139, MappingReporter.get().getMissingObjects().get("FEROL_CONFIGURATION").intValue());
 		Assert.assertEquals(0, MappingReporter.get().getMissingObjects().get("FEROL40_CONFIGURATION").intValue());
 
+	}
+
+	@Test
+	public void testmultipleSessions1() throws IOException, DBConnectorException, HardwareConfigurationException,
+			PathNotFoundException, InvalidNodeTypeException {
+
+		forcedPath = "/daq2/eq_160913_01/fb_all_with1240_withCASTOR_w582_583/dp_bl381_75BU";
+		forcedSessionId = 286004;
+		DAQ daq = runDispatch("src/test/resources/compatibility/1.5.0/flashlists/", true);
+
+		Set<String> subsystemNames = new HashSet<>();
+		for (SubSystem subsystem : daq.getSubSystems()) {
+			if (subsystem.getStatus() != null) {
+				subsystemNames.add(subsystem.getName());
+			} else {
+				logger.info("Ignoring subsystem " + subsystem.getName() + " as the status is null");
+			}
+		}
+
+		Set<String> expected = new HashSet<>(Arrays.asList("CASTOR", "CSC", "CTPPS_TOT",
+				/* "DAQ", "DCS", "DQM", */ "DT", "ECAL", "ES", "HCAL", "HF", "PIXEL", "PIXEL_UP", "RPC", "SCAL", "TCDS",
+				"TRACKER", "TRG"));
+
+		// andre: DAQ, DCS and DQM seem not to be detected as subsystems with
+		// non-null state for some reason
+		assertThat(subsystemNames, is(expected));
+	}
+
+	@Test
+	public void testmultipleSessions2() throws IOException, DBConnectorException, HardwareConfigurationException,
+			PathNotFoundException, InvalidNodeTypeException {
+
+		forcedPath = "/daq2/eq_150929/fb_all_withuTCA/dp_bl116_64BU";
+		forcedSessionId = 284766;
+		DAQ daq = runDispatch("src/test/resources/compatibility/1.5.0/flashlists/", true);
+
+		Set<String> subsystemNames = new HashSet<>();
+		for (SubSystem subsystem : daq.getSubSystems()) {
+			if (subsystem.getStatus() != null) {
+				subsystemNames.add(subsystem.getName());
+			} else {
+				logger.info("Ignoring subsystem " + subsystem.getName() + " as the status is null");
+			}
+		}
+
+		Set<String> expected = new HashSet<>(Arrays.asList(
+				/* "DAQ", "DCS", "DQM", */ "ECAL", "ES", "HCAL", "HF", "PIXEL", "PIXEL_UP", "TCDS", "TRACKER", "TRG"));
+
+		// andre: DAQ, DCS and DQM seem not to be detected as subsystems with
+		// non-null state for some reason
+		assertThat(subsystemNames, is(expected));
 	}
 
 }
