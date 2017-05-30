@@ -25,7 +25,7 @@ public abstract class SessionFilteringMatcher<E> extends Matcher<E> {
 
 	protected List<JsonNode> getRowsFilteredBySessionId(JsonNode rowsToFilter, FlashlistType flashlistType) {
 		List<JsonNode> result = new ArrayList<>();
-		logger.info("Before the sid filter: " + rowsToFilter.size());
+		logger.debug("Before the sid filter: " + rowsToFilter.size());
 		filtered = 0;
 
 		for (JsonNode rowNode : rowsToFilter) {
@@ -39,7 +39,7 @@ public abstract class SessionFilteringMatcher<E> extends Matcher<E> {
 								result.add(rowNode);
 							} else {
 								filtered++;
-								logger.info("Ignoring row of " + flashlistType + " with SID " + rowSessionContext
+								logger.debug("Ignoring row of " + flashlistType + " with SID " + rowSessionContext
 										+ ", expecting " + sessionId);
 							}
 						} catch (NumberFormatException e) {
@@ -58,7 +58,7 @@ public abstract class SessionFilteringMatcher<E> extends Matcher<E> {
 				result.add(rowNode);
 			}
 		}
-		logger.info("After the sid filter: " + result.size());
+		logger.debug("After the sid filter: " + result.size());
 
 		return result;
 	}

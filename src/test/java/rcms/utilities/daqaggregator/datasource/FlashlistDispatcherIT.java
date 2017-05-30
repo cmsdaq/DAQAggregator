@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import rcms.common.db.DBConnectorException;
 import rcms.utilities.daqaggregator.Settings;
+import rcms.utilities.daqaggregator.data.DAQ;
 import rcms.utilities.daqaggregator.mappers.MappingManager;
 import rcms.utilities.daqaggregator.mappers.MappingReporter;
 import rcms.utilities.daqaggregator.persistence.PersistenceFormat;
@@ -73,7 +74,11 @@ public class FlashlistDispatcherIT {
 		FlashlistDispatcher dispatcher = new FlashlistDispatcher(filter1);
 
 		MappingManager mappingManager = new MappingManager(daqPartition, tcdsFmInfoRetriever);
-		mappingManager.map();
+		DAQ daq = mappingManager.map();
+
+		daq.setSessionId(r.getMiddle());
+		daq.setDpsetPath(r.getLeft());
+
 		for (Flashlist flashlist : flashlists.values()) {
 
 			dispatcher.dispatch(flashlist, mappingManager);
