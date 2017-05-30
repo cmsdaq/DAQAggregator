@@ -1,5 +1,6 @@
 package rcms.utilities.daqaggregator.datasource;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
@@ -18,6 +19,7 @@ import rcms.utilities.daqaggregator.mappers.MappingManager;
 import rcms.utilities.daqaggregator.mappers.MappingReporter;
 import rcms.utilities.daqaggregator.mappers.helper.TCDSFlashlistHelpers;
 import rcms.utilities.daqaggregator.mappers.matcher.BuMatcher;
+import rcms.utilities.daqaggregator.mappers.matcher.DAQMatcher;
 import rcms.utilities.daqaggregator.mappers.matcher.FMMGeoMatcher;
 import rcms.utilities.daqaggregator.mappers.matcher.FRLGeoFinder;
 import rcms.utilities.daqaggregator.mappers.matcher.FedFromFerolInputStreamGeoFinder;
@@ -29,18 +31,30 @@ import rcms.utilities.daqaggregator.mappers.matcher.FmmApplicationMatcher;
 import rcms.utilities.daqaggregator.mappers.matcher.FrlPcMatcher;
 import rcms.utilities.daqaggregator.mappers.matcher.Matcher;
 import rcms.utilities.daqaggregator.mappers.matcher.RuMatcher;
+import rcms.utilities.daqaggregator.mappers.matcher.SubsystemMatcher;
 import rcms.utilities.daqaggregator.mappers.matcher.TTCPartitionGeoFinder;
 
 /**
  * This class dispatches the flashlist content (monitoring data that changes
  * over time) to appropriate objects (that are built based on hardware database)
  * 
+ * Note that this object is NOT performing the actual matching of the data. The
+ * matching is done by matcher classes located in
+ * rcms.utilities.daqaggregator.mappers.matcher package.
+ * 
+ * Dispatcher takes the retrieved flashlist data and passes it to appropriate
+ * matcher based on the type of flaslhist - this is the only responsibility of
+ * this class
+ * 
  * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
+ * 
+ *         TODO: most of the matching code has been moved to matcher package,
+ *         but there are still some code related to matching ferol40 and tcds
  *
  */
 public class FlashlistDispatcher {
 
-	final String INSTANCE = "instance";
+	private static final String subsystemKey = "SUBSYS";
 
 	// Value to filter out values from TCDS flashlists
 	// This will only work for CDAQ. Need to figure out how to know what
@@ -48,13 +62,6 @@ public class FlashlistDispatcher {
 	// private String serviceField;
 
 	private static final Logger logger = Logger.getLogger(Flashlist.class);
-
-	/** string for filtering by FM URL */
-	private final String filter1;
-
-	public FlashlistDispatcher(String filter1) {
-		this.filter1 = filter1;
-	}
 
 	/**
 	 * 
@@ -171,48 +178,27 @@ public class FlashlistDispatcher {
 
 		case LEVEL_ZERO_FM_SUBSYS: {
 
-			Integer daqSid = this.getDAQsid(flashlist);
-			logger.debug("DAQ session id: " + daqSid);
+			dispatchRowsUsingMatcher(flashlist, mappingManager.getObjectMapper().subSystems.values(),
+					new SubsystemMatcher(sessionId));
 
 			for (JsonNode rowNode : flashlist.getRowsNode()) {
-
-				Integer sid = null;
-				try {
-					sid = Integer.parseInt(rowNode.get("SID").asText());
-				} catch (Exception ex) {
-
-					logger.error("Unexpected exception caught when trying to parse subsystem session id", ex);
-				}
-
-				if (sid != null && daqSid != null && sid.equals(daqSid)) {
-
-					logger.debug("Successfully matched session id: " + daqSid);
-
-					String subsystemName = rowNode.get("SUBSYS").asText();
-
-					if (subsystemName.equals("DAQ") && rowNode.get("FMURL").asText().contains(filter1)) {
+				if (rowNode.get(subsystemKey) != null) {
+					String subsystemName = rowNode.get(subsystemKey).textValue();
+					if (subsystemName.equals("DAQ") && rowNode
+							.get(flashlist.getFlashlistType().getSessionIdColumnName()).intValue() == sessionId) {
 						mappingManager.getObjectMapper().daq.updateFromFlashlist(flashlist.getFlashlistType(), rowNode);
 					}
-
-					if (mappingManager.getObjectMapper().subsystemByName.containsKey(subsystemName)) {
-						mappingManager.getObjectMapper().subsystemByName.get(subsystemName)
-								.updateFromFlashlist(flashlist.getFlashlistType(), rowNode);
-					}
 				} else {
-					logger.debug("Ignoring unrelated session ids: " + rowNode.get("SID").asText());
+					logger.warn("Flashlist cell for: " + subsystemKey + " is empty");
 				}
-
 			}
 		}
 			break;
 
 		case LEVEL_ZERO_FM_DYNAMIC:
 
-			for (JsonNode rowNode : flashlist.getRowsNode()) {
-				if (rowNode.get("FMURL").asText().contains(filter1)) {
-					mappingManager.getObjectMapper().daq.updateFromFlashlist(flashlist.getFlashlistType(), rowNode);
-				}
-			}
+			dispatchRowsUsingMatcher(flashlist, Arrays.asList(mappingManager.getObjectMapper().daq),
+					new DAQMatcher(sessionId));
 			break;
 
 		case FEROL_CONFIGURATION:
@@ -439,31 +425,6 @@ public class FlashlistDispatcher {
 		default:
 			break;
 		}
-	}
-
-	/**
-	 * helper function for dispatch(..): returns the session id (SID) of the DAQ
-	 * subsystem or null if not found
-	 */
-	@Deprecated
-	private Integer getDAQsid(Flashlist flashlist) {
-
-		try {
-			for (JsonNode rowNode : flashlist.getRowsNode()) {
-
-				String subsystemName = rowNode.get("SUBSYS").asText();
-
-				if (subsystemName.equals("DAQ") && rowNode.get("FMURL").asText().contains(filter1)) {
-					return Integer.parseInt(rowNode.get("SID").asText());
-				}
-			} // loop over rows of the flashlist
-		} catch (Exception ex) {
-
-			logger.error("Unexpected exception caught when trying to determine DAQ session id", ex);
-		}
-
-		// not found or there was a problem
-		return null;
 	}
 
 }
