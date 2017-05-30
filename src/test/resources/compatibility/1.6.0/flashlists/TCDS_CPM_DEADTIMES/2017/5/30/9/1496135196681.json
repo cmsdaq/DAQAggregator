@@ -1,0 +1,118 @@
+{
+  "flashlistType" : "TCDS_CPM_DEADTIMES",
+  "rowsNode" : [ {
+    "context" : "http://tcds-control-cpm-pri.cms:2050",
+    "deadtime_apve" : 0.735484,
+    "deadtime_beamactive_apve" : 0.84514,
+    "deadtime_beamactive_bx_mask" : 0.0,
+    "deadtime_beamactive_calib" : 0.0,
+    "deadtime_beamactive_daq_bp" : 0.0,
+    "deadtime_beamactive_fw_pause" : 7.27759,
+    "deadtime_beamactive_retri" : 0.0,
+    "deadtime_beamactive_sw_pause" : 0.0,
+    "deadtime_beamactive_total" : 15.273,
+    "deadtime_beamactive_trg_rules" : 5.99798,
+    "deadtime_beamactive_tts" : 8.36443,
+    "deadtime_bx_mask" : 0.982043,
+    "deadtime_calib" : 0.0925375,
+    "deadtime_daq_bp" : 0.0,
+    "deadtime_fw_pause" : 7.2767,
+    "deadtime_retri" : 0.0,
+    "deadtime_sw_pause" : 0.0,
+    "deadtime_total" : 10.9863,
+    "deadtime_trg_rules" : 0.816227,
+    "deadtime_tts" : 8.3714,
+    "fill_number" : 5730,
+    "lid" : "100",
+    "num_nibbles" : 64,
+    "run_number" : 295602,
+    "section_number" : 8,
+    "service" : "cpm-pri"
+  } ],
+  "definitionNode" : [ {
+    "key" : "context",
+    "type" : "string"
+  }, {
+    "key" : "deadtime_apve",
+    "type" : "float"
+  }, {
+    "key" : "deadtime_beamactive_apve",
+    "type" : "float"
+  }, {
+    "key" : "deadtime_beamactive_bx_mask",
+    "type" : "float"
+  }, {
+    "key" : "deadtime_beamactive_calib",
+    "type" : "float"
+  }, {
+    "key" : "deadtime_beamactive_daq_bp",
+    "type" : "float"
+  }, {
+    "key" : "deadtime_beamactive_fw_pause",
+    "type" : "float"
+  }, {
+    "key" : "deadtime_beamactive_retri",
+    "type" : "float"
+  }, {
+    "key" : "deadtime_beamactive_sw_pause",
+    "type" : "float"
+  }, {
+    "key" : "deadtime_beamactive_total",
+    "type" : "float"
+  }, {
+    "key" : "deadtime_beamactive_trg_rules",
+    "type" : "float"
+  }, {
+    "key" : "deadtime_beamactive_tts",
+    "type" : "float"
+  }, {
+    "key" : "deadtime_bx_mask",
+    "type" : "float"
+  }, {
+    "key" : "deadtime_calib",
+    "type" : "float"
+  }, {
+    "key" : "deadtime_daq_bp",
+    "type" : "float"
+  }, {
+    "key" : "deadtime_fw_pause",
+    "type" : "float"
+  }, {
+    "key" : "deadtime_retri",
+    "type" : "float"
+  }, {
+    "key" : "deadtime_sw_pause",
+    "type" : "float"
+  }, {
+    "key" : "deadtime_total",
+    "type" : "float"
+  }, {
+    "key" : "deadtime_trg_rules",
+    "type" : "float"
+  }, {
+    "key" : "deadtime_tts",
+    "type" : "float"
+  }, {
+    "key" : "fill_number",
+    "type" : "unsigned int 32"
+  }, {
+    "key" : "lid",
+    "type" : "string"
+  }, {
+    "key" : "num_nibbles",
+    "type" : "unsigned int 32"
+  }, {
+    "key" : "run_number",
+    "type" : "unsigned int 32"
+  }, {
+    "key" : "section_number",
+    "type" : "unsigned int 32"
+  }, {
+    "key" : "service",
+    "type" : "string"
+  } ],
+  "retrievalDate" : 1496135196681,
+  "address" : "http://kvm-s3562-1-ip151-95.cms:9945/urn:xdaq-application:service=xmaslas2g/retrieveCollection?flash=urn:xdaq-flashlist:tcds_cpm_deadtimes&fmt=json",
+  "name" : "urn:xdaq-flashlist:tcds_cpm_deadtimes",
+  "unknownAtLAS" : false
+}

@@ -1,0 +1,34 @@
+{
+  "flashlistType" : "TCDSFM",
+  "rowsNode" : [ {
+    "FMURL" : "http://cmsrc-top.cms:10000/urn:rcms-fm:fullpath=/toppro/tcds/tcdsFM,group=TCDSFM,owner=toppro",
+    "SID" : "294339",
+    "pmContext" : "http://tcds-control-cpm-pri.cms:2050",
+    "pmLID" : "100",
+    "pmService" : "cpm-pri",
+    "timestamp" : "2017-05-30T09:06:35.000989Z"
+  } ],
+  "definitionNode" : [ {
+    "key" : "FMURL",
+    "type" : "string"
+  }, {
+    "key" : "SID",
+    "type" : "string"
+  }, {
+    "key" : "pmContext",
+    "type" : "string"
+  }, {
+    "key" : "pmLID",
+    "type" : "string"
+  }, {
+    "key" : "pmService",
+    "type" : "string"
+  }, {
+    "key" : "timestamp",
+    "type" : "time"
+  } ],
+  "retrievalDate" : 1496135196681,
+  "address" : "http://ucsrv-c2e41-10-01.cms:9946/urn:xdaq-application:service=xmaslas2g/retrieveCollection?flash=urn:xdaq-flashlist:tcdsFM&fmt=json",
+  "name" : "urn:xdaq-flashlist:tcdsFM",
+  "unknownAtLAS" : false
+}
