@@ -36,6 +36,7 @@ public enum FlashlistType {
 	TCDS_CPM_RATES("tcds_cpm_rates"),
 	TCDS_PM_ACTION_COUNTS("tcds_pm_action_counts"),
 	TCDS_PM_TTS_CHANNEL("tcds_pm_tts_channel"),
+	TCDS_PI_TTS_SUMMARY("tcds_pi_tts_summary"),
 
 	FEROL40_CONFIGURATION("ferol40Configuration"),
 	FEROL40_INPUT_STREAM("ferol40InputStream"),
