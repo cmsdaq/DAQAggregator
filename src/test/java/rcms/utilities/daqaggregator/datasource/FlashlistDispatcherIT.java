@@ -1,7 +1,7 @@
 package rcms.utilities.daqaggregator.datasource;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -20,6 +20,9 @@ import org.junit.Test;
 import rcms.common.db.DBConnectorException;
 import rcms.utilities.daqaggregator.Settings;
 import rcms.utilities.daqaggregator.data.DAQ;
+import rcms.utilities.daqaggregator.data.FED;
+import rcms.utilities.daqaggregator.data.FRL;
+import rcms.utilities.daqaggregator.data.FRLType;
 import rcms.utilities.daqaggregator.data.SubSystem;
 import rcms.utilities.daqaggregator.mappers.MappingManager;
 import rcms.utilities.daqaggregator.mappers.MappingReporter;
@@ -214,6 +217,87 @@ public class FlashlistDispatcherIT {
 		// andre: DAQ, DCS and DQM seem not to be detected as subsystems with
 		// non-null state for some reason
 		assertThat(subsystemNames, is(expected));
+	}
+
+	/**
+	 * Verify how many FEDs there is, how may legacy, updated feds. How many of
+	 * them has TTS state
+	 */
+	@Test
+	public void testDispatchedValuesFromFlashlistTcdsPiSummary() throws IOException, DBConnectorException,
+			HardwareConfigurationException, PathNotFoundException, InvalidNodeTypeException {
+
+		DAQ daq = runDispatch("src/test/resources/compatibility/1.12.0/flashlists/", false);
+
+		int failed = 0, missingFRL = 0;
+		Set<FED> upgradedFeds = new HashSet<>();
+		Set<FED> legacyFeds = new HashSet<>();
+		for (FED fed : daq.getFeds()) {
+			if (fed.getFrl() != null) {
+				FRL frl = fed.getFrl();
+				if (frl.getType() != null) {
+					if (frl.getType() == FRLType.FEROL40_10G || frl.getType() == FRLType.FEROL40_6G) {
+						logger.debug(
+								"FED " + fed.getSrcIdExpected() + " is upgraded FED with " + frl.getType() + " link");
+						upgradedFeds.add(fed);
+					} else {
+						logger.debug("FED " + fed.getSrcIdExpected() + " is legacy FED");
+						legacyFeds.add(fed);
+					}
+				} else {
+					logger.warn("FRL has no type: " + frl);
+					failed++;
+				}
+			} else {
+				logger.debug("FED " + fed.getSrcIdExpected() + " has no FRL");
+				missingFRL++;
+			}
+		}
+
+		logger.info("Summary of FEDS:");
+		logger.info(" - all FEDS         : " + daq.getFeds().size());
+		logger.info(" - upgraded FEDS    : " + upgradedFeds.size());
+		logger.info(" - legacy FEDS      : " + legacyFeds.size());
+		logger.info(" - FEDS without FRL : " + missingFRL);
+		logger.info(" - FRL without type : " + failed);
+		Assert.assertEquals(777, daq.getFeds().size());
+		Assert.assertEquals(108, upgradedFeds.size());
+		Assert.assertEquals(638, legacyFeds.size());
+		Assert.assertEquals(31, missingFRL);
+		Assert.assertEquals(0, failed);
+
+		int upgradedFedsWithoutTTSState = 0;
+		for (FED fed : upgradedFeds) {
+			if (fed.getTtsState() == null) {
+				upgradedFedsWithoutTTSState++;
+			}
+			Assert.assertNull(fed.getTtsState());
+		}
+		logger.info("Summary of upgraded feds:");
+		logger.info(" - FEDS with TTS state    : " + (upgradedFeds.size() - upgradedFedsWithoutTTSState));
+		logger.info(" - FEDS without TTS state : " + upgradedFedsWithoutTTSState);
+		Assert.assertEquals(0, (upgradedFeds.size() - upgradedFedsWithoutTTSState));
+		Assert.assertEquals(108, upgradedFedsWithoutTTSState);
+
+		int legacyFedsWithoutTTSState = 0;
+		for (FED fed : legacyFeds) {
+			if (!fed.isFrlMasked()) {
+				if (fed.getTtsState() == null) {
+					logger.debug("FED " + fed.getSrcIdExpected() + " has null tts state");
+					legacyFedsWithoutTTSState++;
+				}
+			}
+			// Assert.assertNotNull("Asserting FED " + fed.getSrcIdExpected() +
+			// " has not null tts state",
+			// fed.getTtsState());
+		}
+
+		logger.info("Summary of legacy feds:");
+		logger.info(" - FEDS with TTS state    : " + (legacyFeds.size() - legacyFedsWithoutTTSState));
+		logger.info(" - FEDS without TTS state : " + legacyFedsWithoutTTSState);
+		Assert.assertEquals(595, (legacyFeds.size() - legacyFedsWithoutTTSState));
+		Assert.assertEquals(43, legacyFedsWithoutTTSState);
+
 	}
 
 }
