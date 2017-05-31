@@ -35,6 +35,7 @@ import rcms.utilities.daqaggregator.mappers.matcher.Matcher;
 import rcms.utilities.daqaggregator.mappers.matcher.RuMatcher;
 import rcms.utilities.daqaggregator.mappers.matcher.SubsystemMatcher;
 import rcms.utilities.daqaggregator.mappers.matcher.TTCPartitionGeoFinder;
+import rcms.utilities.daqaggregator.mappers.matcher.TcdsTtsPiMatcher;
 
 /**
  * This class dispatches the flashlist content (monitoring data that changes
@@ -426,6 +427,9 @@ public class FlashlistDispatcher {
 		case FEROL40_CONFIGURATION:
 			dispatchRowsUsingMatcher(flashlist, mappingManager.getObjectMapper().frlPcs.values(),
 					new FrlPcMatcher(sessionId, "context"));
+			break;
+		case TCDS_PI_TTS_SUMMARY:
+			dispatchRowsUsingMatcher(flashlist, mappingManager.getObjectMapper().feds.values(), new TcdsTtsPiMatcher());
 			break;
 		default:
 			break;
