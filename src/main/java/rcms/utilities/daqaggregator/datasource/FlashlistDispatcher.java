@@ -429,7 +429,8 @@ public class FlashlistDispatcher {
 					new FrlPcMatcher(sessionId, "context"));
 			break;
 		case TCDS_PI_TTS_SUMMARY:
-			dispatchRowsUsingMatcher(flashlist, mappingManager.getObjectMapper().feds.values(), new TcdsTtsPiMatcher());
+			dispatchRowsUsingMatcher(flashlist, mappingManager.getObjectMapper().fedsById.values(),
+					new TcdsTtsPiMatcher());
 			break;
 		default:
 			break;

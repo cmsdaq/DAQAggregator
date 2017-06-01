@@ -229,19 +229,21 @@ public class FlashlistDispatcherIT {
 
 		DAQ daq = runDispatch("src/test/resources/compatibility/1.12.0/flashlists/", false);
 
-		int failed = 0, missingFRL = 0;
+		int failed = 0;
 		Set<FED> upgradedFeds = new HashSet<>();
 		Set<FED> legacyFeds = new HashSet<>();
+		Set<FED> pseudoFeds = new HashSet<>();
 		for (FED fed : daq.getFeds()) {
 			if (fed.getFrl() != null) {
 				FRL frl = fed.getFrl();
 				if (frl.getType() != null) {
 					if (frl.getType() == FRLType.FEROL40_10G || frl.getType() == FRLType.FEROL40_6G) {
-						logger.debug(
-								"FED " + fed.getSrcIdExpected() + " is upgraded FED with " + frl.getType() + " link");
+						logger.debug("FED " + fed.getSrcIdExpected() + " is upgraded FED with " + frl.getType()
+								+ " link, it has deps: " + fed.getDependentFeds());
 						upgradedFeds.add(fed);
 					} else {
-						logger.debug("FED " + fed.getSrcIdExpected() + " is legacy FED");
+						logger.debug("FED " + fed.getSrcIdExpected() + " is legacy FED, it has deps: "
+								+ fed.getDependentFeds());
 						legacyFeds.add(fed);
 					}
 				} else {
@@ -250,20 +252,30 @@ public class FlashlistDispatcherIT {
 				}
 			} else {
 				logger.debug("FED " + fed.getSrcIdExpected() + " has no FRL");
-				missingFRL++;
+				pseudoFeds.add(fed);
 			}
 		}
 
-		logger.info("Summary of FEDS:");
-		logger.info(" - all FEDS         : " + daq.getFeds().size());
-		logger.info(" - upgraded FEDS    : " + upgradedFeds.size());
-		logger.info(" - legacy FEDS      : " + legacyFeds.size());
-		logger.info(" - FEDS without FRL : " + missingFRL);
-		logger.info(" - FRL without type : " + failed);
+		/*for (FED fed : upgradedFeds) {
+			if (fed.getDependentFeds().size() > 0) {
+				for (FED dep : fed.getDependentFeds()) {
+					if (dep.getTtsState() != null && fed.getTtsState() == null) {
+						fed.setTtsState(dep.getTtsState());
+					}
+				}
+			}
+		}*/
+
+		logger.info("Summary of FEDs:");
+		logger.info(" - all FEDS                  : " + daq.getFeds().size());
+		logger.info(" - upgraded FEDS             : " + upgradedFeds.size());
+		logger.info(" - legacy FEDS               : " + legacyFeds.size());
+		logger.info(" - FEDS without FRL (pseudo?): " + pseudoFeds.size());
+		logger.info(" - FRL without type          : " + failed);
 		Assert.assertEquals(777, daq.getFeds().size());
 		Assert.assertEquals(108, upgradedFeds.size());
 		Assert.assertEquals(638, legacyFeds.size());
-		Assert.assertEquals(31, missingFRL);
+		Assert.assertEquals(31, pseudoFeds.size());
 		Assert.assertEquals(0, failed);
 
 		int upgradedFedsWithoutTTSState = 0;
@@ -271,13 +283,26 @@ public class FlashlistDispatcherIT {
 			if (fed.getTtsState() == null) {
 				upgradedFedsWithoutTTSState++;
 			}
-			Assert.assertNull(fed.getTtsState());
+			//Assert.assertNull(fed.getTtsState());
 		}
-		logger.info("Summary of upgraded feds:");
-		logger.info(" - FEDS with TTS state    : " + (upgradedFeds.size() - upgradedFedsWithoutTTSState));
-		logger.info(" - FEDS without TTS state : " + upgradedFedsWithoutTTSState);
-		Assert.assertEquals(0, (upgradedFeds.size() - upgradedFedsWithoutTTSState));
-		Assert.assertEquals(108, upgradedFedsWithoutTTSState);
+		logger.info("Summary of ferol40 FEDs:");
+		logger.info(" - FEDS with TTS state       : " + (upgradedFeds.size() - upgradedFedsWithoutTTSState));
+		logger.info(" - FEDS without TTS state    : " + upgradedFedsWithoutTTSState);
+		Assert.assertEquals(0, (upgradedFeds.size() - upgradedFedsWithoutTTSState)); // without pi_flashlist 0
+		Assert.assertEquals(108, upgradedFedsWithoutTTSState);// without pi_flashlist 108
+		
+		
+		int pseudoWithoudTTSState = 0;
+		for (FED fed : pseudoFeds) {
+			if (fed.getTtsState() == null) {
+				pseudoWithoudTTSState++;
+			}
+		}
+		logger.info("Summary of pseudo FEDs:");
+		logger.info(" - FEDS with TTS state       : " + (pseudoFeds.size() - pseudoWithoudTTSState));
+		logger.info(" - FEDS without TTS state    : " + pseudoWithoudTTSState);
+		Assert.assertEquals(31, (pseudoFeds.size() - pseudoWithoudTTSState)); // without pi_flashlist 5
+		Assert.assertEquals(0, pseudoWithoudTTSState);// without pi_flashlist 26
 
 		int legacyFedsWithoutTTSState = 0;
 		for (FED fed : legacyFeds) {
@@ -287,16 +312,13 @@ public class FlashlistDispatcherIT {
 					legacyFedsWithoutTTSState++;
 				}
 			}
-			// Assert.assertNotNull("Asserting FED " + fed.getSrcIdExpected() +
-			// " has not null tts state",
-			// fed.getTtsState());
 		}
 
 		logger.info("Summary of legacy feds:");
-		logger.info(" - FEDS with TTS state    : " + (legacyFeds.size() - legacyFedsWithoutTTSState));
-		logger.info(" - FEDS without TTS state : " + legacyFedsWithoutTTSState);
-		Assert.assertEquals(595, (legacyFeds.size() - legacyFedsWithoutTTSState));
-		Assert.assertEquals(43, legacyFedsWithoutTTSState);
+		logger.info(" - FEDS with TTS state       : " + (legacyFeds.size() - legacyFedsWithoutTTSState));
+		logger.info(" - FEDS without TTS state    : " + legacyFedsWithoutTTSState);
+		Assert.assertEquals(608, (legacyFeds.size() - legacyFedsWithoutTTSState));// without pi_flashlist 595
+		Assert.assertEquals(30, legacyFedsWithoutTTSState);// without pi_flashlist 43
 
 	}
 
