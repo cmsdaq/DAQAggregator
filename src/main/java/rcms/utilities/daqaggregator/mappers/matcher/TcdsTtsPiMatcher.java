@@ -88,7 +88,7 @@ public class TcdsTtsPiMatcher extends Matcher<FED> {
 		logger.info("Matching " + flashlist.getRowsNode().size() + " flashlist rows to " + collection.size()
 				+ " FED objects");
 
-		List<String> report = new ArrayList<>();
+		//List<String> report = new ArrayList<>();
 		int all = 0, ignored = 0;
 		for (JsonNode a : flashlist.getRowsNode()) {
 			for (int i = 1; i <= 10; i++) {
@@ -125,15 +125,18 @@ public class TcdsTtsPiMatcher extends Matcher<FED> {
 						JsonNode matchedRow = flashlistMap.get(hostname).get(port).get(serviceName).get(io);
 
 						if (matchedRow != null) {
-							report.add(formatFedToRaport("matched", findable, hostname, port.toString(), serviceName,
-									io.toString()));
+							/*report.add(formatFedToRaport("matched", findable, hostname, port.toString(), serviceName,
+									io.toString())); */
 
 							dispatchMap.put(findable, matchedRow);
 							successful++;
 						} else {
 							failed++;
-							report.add(formatFedToRaport("n/m (missing io)", findable, hostname, port.toString(),
-									serviceName, io.toString()));
+							/*
+							 * report.add(formatFedToRaport("n/m (missing io)",
+							 * findable, hostname, port.toString(), serviceName,
+							 * io.toString()));
+							 */
 							logger.warn("IO mismatch. There is no data in flashlist for fed: "
 									+ findable.getSrcIdExpected() + ", [hostname,port,service,io] = [" + hostname + ","
 									+ port + "," + serviceName + "," + io + "]");
@@ -143,30 +146,40 @@ public class TcdsTtsPiMatcher extends Matcher<FED> {
 								+ findable.getSrcIdExpected() + ", [hostname,port,service,io] = [" + hostname + ","
 								+ port + "," + serviceName + "," + io + "]");
 						failed++;
-						report.add(formatFedToRaport("n/m (a, not matched)", findable, hostname, port.toString(),
-								serviceName, io.toString()));
+						/*
+						 * report.add(formatFedToRaport("n/m (a, not matched)",
+						 * findable, hostname, port.toString(), serviceName,
+						 * io.toString()));
+						 */
 					}
 				} else {
 					logger.debug("Could not get geo information for fed: " + findable.getSrcIdExpected()
 							+ ", [hostname,port,service,io] = [" + hostname + "," + port + "," + serviceName + "," + io
 							+ "]");
 					// failed++;
-					report.add(formatFedToRaport("n/m (incomplete)", findable, hostname, port.toString(), serviceName,
-							io.toString()));
+					/*
+					 * report.add(formatFedToRaport("n/m (incomplete)",
+					 * findable, hostname, port.toString(), serviceName,
+					 * io.toString()));
+					 */
 				}
 			} else {
 				// nothign to do: FED has no FMM
-				report.add(formatFedToRaport("n/m (b, no FMM)", findable, "-", "-", "-", findable.getFmmIO() + ""));
+				/*
+				 * report.add(formatFedToRaport("n/m (b, no FMM)", findable,
+				 * "-", "-", "-", findable.getFmmIO() + ""));
+				 */
 			}
 		}
 		logger.info("Matching completed with " + successful + " successful and " + failed + " failed matches");
-		
-		/*
-		Collections.sort(report);
 
-		for (String reportFed : report) {
-			System.out.println(reportFed);
-		}*/
+		/*
+		 * Collections.sort(report);
+		 */
+		/*
+		 * if (report.size() > 0) for (String reportFed : report) {
+		 * System.out.println(reportFed); }
+		 */
 
 		return dispatchMap;
 	}
