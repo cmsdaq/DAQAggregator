@@ -268,6 +268,10 @@ public class FED implements FlashlistUpdatable {
 			String ttsState = FEDHelper.getTTSState(this.fmmIO, flashlistRow);
 			this.ttsState = ttsState;
 
+			// unmask if other than 152 = 0x98: ignored (i.e., forced ready) 
+			if (ttsState != null && !"-".equals(ttsState)) {
+				this.fmmMasked = false;
+			}
 		}
 
 	}
