@@ -1,0 +1,9 @@
+{
+  "flashlistType" : "FEROL40_TCP_STREAM",
+  "rowsNode" : null,
+  "definitionNode" : null,
+  "retrievalDate" : 1496217954303,
+  "address" : "http://ucsrv-c2e41-09-01.cms:9945/urn:xdaq-application:service=xmaslas2g/retrieveCollection?flash=urn:xdaq-flashlist:ferol40TcpStream&fmt=json",
+  "name" : "urn:xdaq-flashlist:ferol40TcpStream",
+  "unknownAtLAS" : true
+}

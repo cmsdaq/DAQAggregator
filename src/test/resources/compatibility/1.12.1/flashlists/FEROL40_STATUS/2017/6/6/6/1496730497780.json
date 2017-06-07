@@ -1,0 +1,391 @@
+{
+  "flashlistType" : "FEROL40_STATUS",
+  "rowsNode" : [ {
+    "context" : "http://frlpc40-s2d19-40-01.cms:11100",
+    "failedReason" : "",
+    "instance" : "10",
+    "lid" : "103",
+    "lockStatus" : "locked by us",
+    "sessionid" : "294356",
+    "slotNumber" : 3,
+    "stateName" : "Enabled",
+    "subState" : "active",
+    "timestamp" : "2017-06-06T06:28:17.043163Z"
+  }, {
+    "context" : "http://frlpc40-s2d19-40-01.cms:11100",
+    "failedReason" : "",
+    "instance" : "16",
+    "lid" : "109",
+    "lockStatus" : "locked by us",
+    "sessionid" : "294356",
+    "slotNumber" : 9,
+    "stateName" : "Enabled",
+    "subState" : "active",
+    "timestamp" : "2017-06-06T06:28:16.062367Z"
+  }, {
+    "context" : "http://frlpc40-s2d19-40-01.cms:11100",
+    "failedReason" : "",
+    "instance" : "13",
+    "lid" : "106",
+    "lockStatus" : "locked by us",
+    "sessionid" : "294356",
+    "slotNumber" : 6,
+    "stateName" : "Enabled",
+    "subState" : "active",
+    "timestamp" : "2017-06-06T06:28:17.332699Z"
+  }, {
+    "context" : "http://frlpc40-s2d19-40-01.cms:11100",
+    "failedReason" : "",
+    "instance" : "19",
+    "lid" : "112",
+    "lockStatus" : "locked by us",
+    "sessionid" : "294356",
+    "slotNumber" : 12,
+    "stateName" : "Enabled",
+    "subState" : "active",
+    "timestamp" : "2017-06-06T06:28:17.497000Z"
+  }, {
+    "context" : "http://frlpc40-s2d19-40-01.cms:11100",
+    "failedReason" : "",
+    "instance" : "18",
+    "lid" : "111",
+    "lockStatus" : "locked by us",
+    "sessionid" : "294356",
+    "slotNumber" : 11,
+    "stateName" : "Enabled",
+    "subState" : "active",
+    "timestamp" : "2017-06-06T06:28:17.248987Z"
+  }, {
+    "context" : "http://frlpc40-s2d19-41-01.cms:11100",
+    "failedReason" : "",
+    "instance" : "24",
+    "lid" : "105",
+    "lockStatus" : "locked by us",
+    "sessionid" : "294356",
+    "slotNumber" : 5,
+    "stateName" : "Enabled",
+    "subState" : "active",
+    "timestamp" : "2017-06-06T06:28:17.367755Z"
+  }, {
+    "context" : "http://frlpc40-s2d19-41-01.cms:11100",
+    "failedReason" : "",
+    "instance" : "29",
+    "lid" : "110",
+    "lockStatus" : "locked by us",
+    "sessionid" : "294356",
+    "slotNumber" : 10,
+    "stateName" : "Enabled",
+    "subState" : "active",
+    "timestamp" : "2017-06-06T06:28:17.429617Z"
+  }, {
+    "context" : "http://frlpc40-s2d19-41-01.cms:11100",
+    "failedReason" : "",
+    "instance" : "21",
+    "lid" : "102",
+    "lockStatus" : "locked by us",
+    "sessionid" : "294356",
+    "slotNumber" : 2,
+    "stateName" : "Enabled",
+    "subState" : "active",
+    "timestamp" : "2017-06-06T06:28:17.373202Z"
+  }, {
+    "context" : "http://frlpc40-s2d19-41-01.cms:11100",
+    "failedReason" : "",
+    "instance" : "23",
+    "lid" : "104",
+    "lockStatus" : "locked by us",
+    "sessionid" : "294356",
+    "slotNumber" : 4,
+    "stateName" : "Enabled",
+    "subState" : "active",
+    "timestamp" : "2017-06-06T06:28:17.348236Z"
+  }, {
+    "context" : "http://frlpc40-s2d19-41-01.cms:11100",
+    "failedReason" : "",
+    "instance" : "27",
+    "lid" : "108",
+    "lockStatus" : "locked by us",
+    "sessionid" : "294356",
+    "slotNumber" : 8,
+    "stateName" : "Enabled",
+    "subState" : "active",
+    "timestamp" : "2017-06-06T06:28:17.340207Z"
+  }, {
+    "context" : "http://frlpc40-s2d19-41-01.cms:11100",
+    "failedReason" : "",
+    "instance" : "20",
+    "lid" : "101",
+    "lockStatus" : "locked by us",
+    "sessionid" : "294356",
+    "slotNumber" : 1,
+    "stateName" : "Enabled",
+    "subState" : "active",
+    "timestamp" : "2017-06-06T06:28:17.396566Z"
+  }, {
+    "context" : "http://frlpc40-s2d19-41-01.cms:11100",
+    "failedReason" : "",
+    "instance" : "26",
+    "lid" : "107",
+    "lockStatus" : "locked by us",
+    "sessionid" : "294356",
+    "slotNumber" : 7,
+    "stateName" : "Enabled",
+    "subState" : "active",
+    "timestamp" : "2017-06-06T06:28:17.336590Z"
+  }, {
+    "context" : "http://frlpc40-s2d19-41-01.cms:11100",
+    "failedReason" : "",
+    "instance" : "22",
+    "lid" : "103",
+    "lockStatus" : "locked by us",
+    "sessionid" : "294356",
+    "slotNumber" : 3,
+    "stateName" : "Enabled",
+    "subState" : "active",
+    "timestamp" : "2017-06-06T06:28:16.565844Z"
+  }, {
+    "context" : "http://frlpc40-s2d19-39-01.cms:11100",
+    "failedReason" : "",
+    "instance" : "7",
+    "lid" : "108",
+    "lockStatus" : "locked by us",
+    "sessionid" : "294356",
+    "slotNumber" : 8,
+    "stateName" : "Enabled",
+    "subState" : "active",
+    "timestamp" : "2017-06-06T06:28:17.267665Z"
+  }, {
+    "context" : "http://frlpc40-s2d19-39-01.cms:11100",
+    "failedReason" : "",
+    "instance" : "3",
+    "lid" : "104",
+    "lockStatus" : "locked by us",
+    "sessionid" : "294356",
+    "slotNumber" : 4,
+    "stateName" : "Enabled",
+    "subState" : "active",
+    "timestamp" : "2017-06-06T06:28:16.152774Z"
+  }, {
+    "context" : "http://frlpc40-s2d19-39-01.cms:11100",
+    "failedReason" : "",
+    "instance" : "5",
+    "lid" : "106",
+    "lockStatus" : "locked by us",
+    "sessionid" : "294356",
+    "slotNumber" : 6,
+    "stateName" : "Enabled",
+    "subState" : "active",
+    "timestamp" : "2017-06-06T06:28:16.318293Z"
+  }, {
+    "context" : "http://frlpc40-s2d19-39-01.cms:11100",
+    "failedReason" : "",
+    "instance" : "0",
+    "lid" : "101",
+    "lockStatus" : "locked by us",
+    "sessionid" : "294356",
+    "slotNumber" : 1,
+    "stateName" : "Enabled",
+    "subState" : "active",
+    "timestamp" : "2017-06-06T06:28:16.270213Z"
+  }, {
+    "context" : "http://frlpc40-s2d19-39-01.cms:11100",
+    "failedReason" : "",
+    "instance" : "4",
+    "lid" : "105",
+    "lockStatus" : "locked by us",
+    "sessionid" : "294356",
+    "slotNumber" : 5,
+    "stateName" : "Enabled",
+    "subState" : "active",
+    "timestamp" : "2017-06-06T06:28:16.317990Z"
+  }, {
+    "context" : "http://frlpc40-s2d19-39-01.cms:11100",
+    "failedReason" : "",
+    "instance" : "1",
+    "lid" : "102",
+    "lockStatus" : "locked by us",
+    "sessionid" : "294356",
+    "slotNumber" : 2,
+    "stateName" : "Enabled",
+    "subState" : "active",
+    "timestamp" : "2017-06-06T06:28:16.660164Z"
+  }, {
+    "context" : "http://frlpc40-s2d19-40-01.cms:11100",
+    "failedReason" : "",
+    "instance" : "15",
+    "lid" : "108",
+    "lockStatus" : "locked by us",
+    "sessionid" : "294356",
+    "slotNumber" : 8,
+    "stateName" : "Enabled",
+    "subState" : "active",
+    "timestamp" : "2017-06-06T06:28:15.984973Z"
+  }, {
+    "context" : "http://frlpc40-s2d19-40-01.cms:11100",
+    "failedReason" : "",
+    "instance" : "14",
+    "lid" : "107",
+    "lockStatus" : "locked by us",
+    "sessionid" : "294356",
+    "slotNumber" : 7,
+    "stateName" : "Enabled",
+    "subState" : "active",
+    "timestamp" : "2017-06-06T06:28:16.046822Z"
+  }, {
+    "context" : "http://frlpc40-s2d19-40-01.cms:11100",
+    "failedReason" : "",
+    "instance" : "11",
+    "lid" : "104",
+    "lockStatus" : "locked by us",
+    "sessionid" : "294356",
+    "slotNumber" : 4,
+    "stateName" : "Enabled",
+    "subState" : "active",
+    "timestamp" : "2017-06-06T06:28:16.114658Z"
+  }, {
+    "context" : "http://frlpc40-s2d19-40-01.cms:11100",
+    "failedReason" : "",
+    "instance" : "17",
+    "lid" : "110",
+    "lockStatus" : "locked by us",
+    "sessionid" : "294356",
+    "slotNumber" : 10,
+    "stateName" : "Enabled",
+    "subState" : "active",
+    "timestamp" : "2017-06-06T06:28:16.165788Z"
+  }, {
+    "context" : "http://frlpc40-s2d19-40-01.cms:11100",
+    "failedReason" : "",
+    "instance" : "9",
+    "lid" : "102",
+    "lockStatus" : "locked by us",
+    "sessionid" : "294356",
+    "slotNumber" : 2,
+    "stateName" : "Enabled",
+    "subState" : "active",
+    "timestamp" : "2017-06-06T06:28:16.302364Z"
+  }, {
+    "context" : "http://frlpc40-s2d19-40-01.cms:11100",
+    "failedReason" : "",
+    "instance" : "12",
+    "lid" : "105",
+    "lockStatus" : "locked by us",
+    "sessionid" : "294356",
+    "slotNumber" : 5,
+    "stateName" : "Enabled",
+    "subState" : "active",
+    "timestamp" : "2017-06-06T06:28:16.361331Z"
+  }, {
+    "context" : "http://frlpc40-s2d19-40-01.cms:11100",
+    "failedReason" : "",
+    "instance" : "8",
+    "lid" : "101",
+    "lockStatus" : "locked by us",
+    "sessionid" : "294356",
+    "slotNumber" : 1,
+    "stateName" : "Enabled",
+    "subState" : "active",
+    "timestamp" : "2017-06-06T06:28:16.484650Z"
+  }, {
+    "context" : "http://frlpc40-s2d19-41-01.cms:11100",
+    "failedReason" : "",
+    "instance" : "25",
+    "lid" : "106",
+    "lockStatus" : "locked by us",
+    "sessionid" : "294356",
+    "slotNumber" : 6,
+    "stateName" : "Enabled",
+    "subState" : "active",
+    "timestamp" : "2017-06-06T06:28:16.575746Z"
+  }, {
+    "context" : "http://frlpc40-s2d19-41-01.cms:11100",
+    "failedReason" : "",
+    "instance" : "31",
+    "lid" : "112",
+    "lockStatus" : "locked by us",
+    "sessionid" : "294356",
+    "slotNumber" : 12,
+    "stateName" : "Enabled",
+    "subState" : "active",
+    "timestamp" : "2017-06-06T06:28:16.591743Z"
+  }, {
+    "context" : "http://frlpc40-s2d19-41-01.cms:11100",
+    "failedReason" : "",
+    "instance" : "28",
+    "lid" : "109",
+    "lockStatus" : "locked by us",
+    "sessionid" : "294356",
+    "slotNumber" : 9,
+    "stateName" : "Enabled",
+    "subState" : "active",
+    "timestamp" : "2017-06-06T06:28:16.575238Z"
+  }, {
+    "context" : "http://frlpc40-s2d19-41-01.cms:11100",
+    "failedReason" : "",
+    "instance" : "30",
+    "lid" : "111",
+    "lockStatus" : "locked by us",
+    "sessionid" : "294356",
+    "slotNumber" : 11,
+    "stateName" : "Enabled",
+    "subState" : "active",
+    "timestamp" : "2017-06-06T06:28:17.367812Z"
+  }, {
+    "context" : "http://frlpc40-s2d19-39-01.cms:11100",
+    "failedReason" : "",
+    "instance" : "6",
+    "lid" : "107",
+    "lockStatus" : "locked by us",
+    "sessionid" : "294356",
+    "slotNumber" : 7,
+    "stateName" : "Enabled",
+    "subState" : "active",
+    "timestamp" : "2017-06-06T06:28:17.484911Z"
+  }, {
+    "context" : "http://frlpc40-s2d19-39-01.cms:11100",
+    "failedReason" : "",
+    "instance" : "2",
+    "lid" : "103",
+    "lockStatus" : "locked by us",
+    "sessionid" : "294356",
+    "slotNumber" : 3,
+    "stateName" : "Enabled",
+    "subState" : "active",
+    "timestamp" : "2017-06-06T06:28:17.462101Z"
+  } ],
+  "definitionNode" : [ {
+    "key" : "context",
+    "type" : "string"
+  }, {
+    "key" : "failedReason",
+    "type" : "string"
+  }, {
+    "key" : "instance",
+    "type" : "string"
+  }, {
+    "key" : "lid",
+    "type" : "string"
+  }, {
+    "key" : "lockStatus",
+    "type" : "string"
+  }, {
+    "key" : "sessionid",
+    "type" : "string"
+  }, {
+    "key" : "slotNumber",
+    "type" : "unsigned int 32"
+  }, {
+    "key" : "stateName",
+    "type" : "string"
+  }, {
+    "key" : "subState",
+    "type" : "string"
+  }, {
+    "key" : "timestamp",
+    "type" : "time"
+  } ],
+  "retrievalDate" : 1496730497780,
+  "address" : "http://ucsrv-c2e41-09-01.cms:9945/urn:xdaq-application:service=xmaslas2g/retrieveCollection?flash=urn:xdaq-flashlist:ferol40Status&fmt=json",
+  "name" : "urn:xdaq-flashlist:ferol40Status",
+  "unknownAtLAS" : false
+}
