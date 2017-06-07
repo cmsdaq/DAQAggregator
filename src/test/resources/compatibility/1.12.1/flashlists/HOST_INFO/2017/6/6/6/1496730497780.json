@@ -1,0 +1,21 @@
+{
+  "flashlistType" : "HOST_INFO",
+  "rowsNode" : [ ],
+  "definitionNode" : [ {
+    "key" : "context",
+    "type" : "string"
+  }, {
+    "key" : "cpuUsage",
+    "type" : "double"
+  }, {
+    "key" : "sessionid",
+    "type" : "string"
+  }, {
+    "key" : "timestamp",
+    "type" : "time"
+  } ],
+  "retrievalDate" : 1496730497780,
+  "address" : "http://ucsrv-c2e41-14-01.cms:9942/urn:xdaq-application:service=xmaslas2g/retrieveCollection?flash=urn:xdaq-flashlist:hostInfo&fmt=json&sessionid=294356",
+  "name" : "urn:xdaq-flashlist:hostInfo",
+  "unknownAtLAS" : false
+}
