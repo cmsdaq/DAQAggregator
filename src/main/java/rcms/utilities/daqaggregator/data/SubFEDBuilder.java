@@ -82,6 +82,9 @@ public class SubFEDBuilder {
 	}
 	
 
+	/** @return the list of pseudofeds (NOT including real FEDs) of this
+	 *  SubFEDBuilder
+	 */
 	public List<FED> getFeds() {
 		return feds;
 	}
