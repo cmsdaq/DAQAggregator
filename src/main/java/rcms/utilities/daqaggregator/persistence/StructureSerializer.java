@@ -164,7 +164,7 @@ public class StructureSerializer {
 			daq = mapper.readValue(new File(filepath), DAQ.class);
 			return daq;
 		} catch (IOException i) {
-			logger.error("File incompatible: " + filepath);
+			logger.error("File incompatible: " + filepath, i);
 			i.printStackTrace();
 			return null;
 		} finally {
