@@ -4,6 +4,10 @@ package rcms.utilities.daqaggregator.datasource;
  * Definition of flashlist set that will be downloaded and mapped in each
  * iteration of DAQAggregator.
  * 
+ * Note that the order is meaningful. Flashlists will be delivered to dispatcher
+ * in this order. It means that if more than one flashlist updates the field of
+ * the object the last one from this list will override the previous.
+ * 
  * @author Maciej Gladki (maciej.szymon.gladki@cern.ch)
  *
  */
@@ -22,9 +26,6 @@ public enum FlashlistType {
 	FEROL_TCP_STREAM("ferolTcpStream", "sessionid"),
 	FRL_MONITORING("frlMonitoring", "sessionid"),
 	HOST_INFO("hostInfo", "sessionid"),
-	LEVEL_ZERO_FM_DYNAMIC("levelZeroFM_dynamic", "SID"),
-	LEVEL_ZERO_FM_STATIC("levelZeroFM_static", "SID"),
-	LEVEL_ZERO_FM_SUBSYS("levelZeroFM_subsys", "SID"),
 
 	JOB_CONTROL("jobcontrol"),
 	DISK_INFO("diskInfo", "sessionid"),
@@ -37,6 +38,11 @@ public enum FlashlistType {
 	TCDS_PM_ACTION_COUNTS("tcds_pm_action_counts"),
 	TCDS_PM_TTS_CHANNEL("tcds_pm_tts_channel"),
 	TCDS_PI_TTS_SUMMARY("tcds_pi_tts_summary"),
+	
+
+	LEVEL_ZERO_FM_DYNAMIC("levelZeroFM_dynamic", "SID"),
+	LEVEL_ZERO_FM_STATIC("levelZeroFM_static", "SID"),
+	LEVEL_ZERO_FM_SUBSYS("levelZeroFM_subsys", "SID"),
 
 	FEROL40_CONFIGURATION("ferol40Configuration"),
 	FEROL40_INPUT_STREAM("ferol40InputStream"),

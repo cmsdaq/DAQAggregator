@@ -1,6 +1,7 @@
 package rcms.utilities.daqaggregator;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
@@ -8,6 +9,8 @@ import java.util.Map.Entry;
 
 import javax.xml.bind.DatatypeConverter;
 
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import rcms.utilities.daqaggregator.data.DAQ;
@@ -30,17 +33,44 @@ public class Converter {
 		// Times here are in UTC
 		Long startTimestamp = DatatypeConverter.parseDateTime("2016-10-25T06:50:59+02:00").getTimeInMillis();
 		Long endTimestamp = DatatypeConverter.parseDateTime("2017-10-25T14:09:59+02:00").getTimeInMillis();
-		String sourceDir = "/tmp/1.12.2/flashlists/";
+		String sourceDir = "/tmp/flaslhist/";
 		String targetDir = "/tmp/1.12.2/snapshots-json/";
 		PersistenceFormat sourceFormat = PersistenceFormat.SMILE;
 		PersistenceFormat targetFormat = PersistenceFormat.JSON;
 
 		Converter converter = new Converter();
 
-		converter.convertFlashlist(startTimestamp, endTimestamp, sourceDir, targetDir, sourceFormat, targetFormat);
+		converter.convertFlashlist(sourceDir);
 	}
 
-	private void convertFlashlist(Long startTimestamp, Long endTimestamp, String sourceDir, String targetDir,
+	private void convertFlashlist(String sourceDir) throws JsonGenerationException, JsonMappingException, IOException {
+		StructureSerializer serializer = new StructureSerializer();
+		PersistenceFormat targetFormat = PersistenceFormat.JSON;
+
+		File[] listOfFiles = new File(sourceDir).listFiles();
+
+		for (File file : listOfFiles) {
+
+			if (file.isFile() && file.getName().endsWith(".smile")) {
+
+				System.out.println("Converting flashlist: " + file.getName());
+				
+				Flashlist flashlist = serializer.deserializeFlashlist(file, PersistenceFormat.SMILE);
+
+				String flashlistFilename = flashlist.getRetrievalDate().getTime() + targetFormat.getExtension();
+
+				File targetFile = new File(file.getParent() + "/" + flashlistFilename);
+
+				ObjectMapper mapper = targetFormat.getMapper();
+
+				FileOutputStream fos = new FileOutputStream(targetFile);
+				mapper.writerWithDefaultPrettyPrinter().writeValue(fos, flashlist);
+				file.delete();
+			}
+		}
+	}
+
+	private void convertFlashlists(Long startTimestamp, Long endTimestamp, String sourceDir, String targetDir,
 			PersistenceFormat sourceFormat, PersistenceFormat targetFormat) throws IOException {
 
 		StructureSerializer serializer = new StructureSerializer();
@@ -57,7 +87,7 @@ public class Converter {
 
 				for (File file : result.getValue()) {
 
-					if(file.getName().endsWith(".json")){
+					if (file.getName().endsWith(".json")) {
 						file.delete();
 						continue;
 					}
