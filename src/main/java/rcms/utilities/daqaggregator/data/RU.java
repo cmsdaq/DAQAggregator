@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import java.util.HashSet;
+import java.util.Set;
 
 import rcms.utilities.daqaggregator.datasource.FlashlistType;
 import rcms.utilities.daqaggregator.mappers.Derivable;
@@ -305,6 +307,34 @@ public class RU implements FlashlistUpdatable, Derivable {
 
 	public void setIncompleteSuperFragmentCount(int incompleteSuperFragmentCount) {
 		this.incompleteSuperFragmentCount = incompleteSuperFragmentCount;
+	}
+
+	/** @return the list of all (real) FEDs (not including pseudofeds) associated
+	 *  to this RU.
+	 *  @param includeMasked if true, includes also masked FEDs, otherwise
+	 *    just includes FEDs which are not masked FRL-wise.
+	 */
+	public Set<FED> getFEDs(boolean includeMasked) {
+
+		Set<FED> retval = new HashSet<>();
+
+		for (SubFEDBuilder subFedBuilder : this.getFedBuilder().getSubFedbuilders()) {
+
+			for (FRL frl : subFedBuilder.getFrls()) {
+
+				for (FED fed : frl.getFeds().values()) {
+
+					if (includeMasked || ! fed.isFrlMasked()) {
+						retval.add(fed);
+					}
+
+				} // loop over FEDs
+
+			} // loop over FRLs
+
+		} // loop over subfedbuilders
+
+		return retval;
 	}
 
 	@Override
