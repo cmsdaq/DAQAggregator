@@ -307,6 +307,21 @@ public class DAQ implements FlashlistUpdatable {
 
 	}
 
+	/** @return the RU which is the EVM or null if none is found
+	 *  (returns the first one found in case there are multiple EVMs
+	 *  but this should never happen)
+	 */
+	public RU getEVM() {
+
+		for (RU ru : getRus()) {
+			if (ru.isEVM())
+				return ru;
+		} // loop over RUs
+
+		// not found
+		return null;
+	}
+
 	@Override
 	public void clean() {
 		this.daqState = "Unknown";
