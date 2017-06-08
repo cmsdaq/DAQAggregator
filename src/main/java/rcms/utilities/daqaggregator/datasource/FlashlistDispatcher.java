@@ -3,7 +3,6 @@ package rcms.utilities.daqaggregator.datasource;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +15,7 @@ import org.apache.log4j.Logger;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import rcms.utilities.daqaggregator.data.FED;
+import rcms.utilities.daqaggregator.data.FMMType;
 import rcms.utilities.daqaggregator.data.GlobalTTSState;
 import rcms.utilities.daqaggregator.data.RU;
 import rcms.utilities.daqaggregator.data.TTCPartition;
@@ -192,11 +192,17 @@ public class FlashlistDispatcher {
 						if (feds.containsKey(entry.getKey())) {
 
 							FED fed = feds.get(entry.getKey());
-							
-							fed.setFrlMasked(entry.getValue().getLeft());
-							fed.setFmmMasked(entry.getValue().getRight());
-							logger.debug("Mask information dispatched to FED");
-							
+							/*
+							 * deduce the fmmMasked flag of FEDs connected to a
+							 * PI from the FED_ENABLE_MASK. (not the fmmMasked
+							 * flag of FEDs connected to an FMM and not the
+							 * frlMasked flags).
+							 */
+							if (fed.getFmm() != null && fed.getFmm().getFmmType() == FMMType.pi) {
+								fed.setFmmMasked(entry.getValue().getRight());
+								logger.debug("Mask information dispatched to FED");
+							}
+
 						} else {
 							logger.warn("Value from FED enable mask could not be assigned to any FEDS, FED "
 									+ entry.getKey() + " could not be found in the structure");
