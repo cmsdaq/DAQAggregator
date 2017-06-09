@@ -165,7 +165,6 @@ public class StructureSerializer {
 			return daq;
 		} catch (IOException i) {
 			logger.error("File incompatible: " + filepath, i);
-			i.printStackTrace();
 			return null;
 		} finally {
 			if (in != null)
