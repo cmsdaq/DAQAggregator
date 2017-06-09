@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import rcms.utilities.daqaggregator.datasource.FlashlistType;
@@ -318,21 +319,47 @@ public class RU implements FlashlistUpdatable, Derivable {
 
 		Set<FED> retval = new HashSet<>();
 
-		for (SubFEDBuilder subFedBuilder : this.getFedBuilder().getSubFedbuilders()) {
+		FEDBuilder fb = this.getFedBuilder();
 
-			for (FRL frl : subFedBuilder.getFrls()) {
+		if (fb != null) {
 
-				for (FED fed : frl.getFeds().values()) {
+			List<SubFEDBuilder> subFedBuilders = fb.getSubFedbuilders();
 
-					if (includeMasked || ! fed.isFrlMasked()) {
-						retval.add(fed);
-					}
+			if (subFedBuilders != null) {
 
-				} // loop over FEDs
+				for (SubFEDBuilder subFedBuilder : subFedBuilders) {
 
-			} // loop over FRLs
+					List<FRL> frls = subFedBuilder.getFrls();
 
-		} // loop over subfedbuilders
+					if (frls != null) {
+
+						// assume that there are no null pointers in the list
+						for (FRL frl : frls) {
+
+							Map<Integer, FED> feds = frl.getFeds();
+
+							if (feds != null) {
+
+								// assume the map does not contain null pointers
+								for (FED fed : frl.getFeds().values()) {
+
+									if (includeMasked || ! fed.isFrlMasked()) {
+										retval.add(fed);
+									}
+
+								} // loop over FEDs
+
+							} // if feds is not null
+
+						} // loop over FRLs
+
+					} // if frls is not null
+
+				} // loop over subfedbuilders
+
+			} // if subFedBuilders is not null
+
+		} // if fb not null
 
 		return retval;
 	}
