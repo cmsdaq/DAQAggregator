@@ -302,7 +302,12 @@ public class FED implements FlashlistUpdatable {
 
 	/** convenience method to get the RU to which this FED is associated */
 	public RU getRu() {
-		return getFrl().getSubFedbuilder().getFedBuilder().getRu();
+		try {
+			return getFrl().getSubFedbuilder().getFedBuilder().getRu();
+		} catch (NullPointerException ex) {
+			// happens e.g. if the FED is not associated to an FRL etc.
+			return null;
+		}
 	}
 
 	public int getSrcIdReceived() {
