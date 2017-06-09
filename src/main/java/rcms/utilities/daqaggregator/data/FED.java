@@ -300,7 +300,8 @@ public class FED implements FlashlistUpdatable {
 		frl_AccBIFIBackpressureSeconds = 0;
 	}
 
-	/** convenience method to get the RU to which this FED is associated */
+	/** @return the RU to which this FED is associated or null if no RU is
+	    associated to it */
 	public RU getRu() {
 		try {
 			return getFrl().getSubFedbuilder().getFedBuilder().getRu();
