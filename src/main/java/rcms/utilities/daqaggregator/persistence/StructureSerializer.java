@@ -114,8 +114,7 @@ public class StructureSerializer {
 			flashlist = mapper.readValue(file, Flashlist.class);
 			return flashlist;
 		} catch (IOException i) {
-			logger.error("File incompatible: " + file.getAbsolutePath());
-			i.printStackTrace();
+			logger.error("File incompatible: " + file.getAbsolutePath(), i);
 			return null;
 		} finally {
 			if (in != null)
