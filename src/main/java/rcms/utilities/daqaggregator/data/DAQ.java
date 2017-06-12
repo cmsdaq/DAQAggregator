@@ -346,6 +346,26 @@ public class DAQ implements FlashlistUpdatable {
 
 	}
 
+	/** @return a list of BUs matching the given state
+	 *
+	 *  @param state the requested state (must not be null)
+	 */
+	public List<BU> getBusInState(String state) {
+
+		List<BU> result = new ArrayList<>();
+
+		for (BU bu : getBus()) {
+
+			if (state.equalsIgnoreCase(bu.getStateName())) {
+				result.add(bu);
+			}
+
+		} // loop over BUs
+
+		return result;
+
+	}
+
 	@Override
 	public void clean() {
 		this.daqState = "Unknown";
