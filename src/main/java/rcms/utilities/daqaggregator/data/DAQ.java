@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import java.util.ArrayList;
 
 import rcms.utilities.daqaggregator.datasource.DateParser;
 import rcms.utilities.daqaggregator.datasource.FlashlistType;
@@ -320,6 +321,29 @@ public class DAQ implements FlashlistUpdatable {
 
 		// not found
 		return null;
+	}
+
+	/** @return a list of RUs matching the given state
+	 *
+	 *  @param state the requested state (must not be null)
+	 */
+	public List<RU> getRusInState(String state) {
+
+		List<RU> result = new ArrayList<>();
+
+		for (RU ru : getRus()) {
+
+			if (ru.isMasked())
+				continue;
+
+			if (state.equalsIgnoreCase(ru.getStateName())) {
+				result.add(ru);
+			}
+
+		} // loop over RUs
+
+		return result;
+
 	}
 
 	@Override
