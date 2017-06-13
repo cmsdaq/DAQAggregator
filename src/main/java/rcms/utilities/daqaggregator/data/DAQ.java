@@ -331,16 +331,19 @@ public class DAQ implements FlashlistUpdatable {
 
 		List<RU> result = new ArrayList<>();
 
-		for (RU ru : getRus()) {
+		if (getRus() != null) {
 
-			if (ru.isMasked())
-				continue;
+			for (RU ru : getRus()) {
 
-			if (state.equalsIgnoreCase(ru.getStateName())) {
-				result.add(ru);
-			}
+				if (ru.isMasked())
+					continue;
 
-		} // loop over RUs
+				if (state.equalsIgnoreCase(ru.getStateName())) {
+					result.add(ru);
+				}
+
+			} // loop over RUs
+		}
 
 		return result;
 
@@ -354,13 +357,16 @@ public class DAQ implements FlashlistUpdatable {
 
 		List<BU> result = new ArrayList<>();
 
-		for (BU bu : getBus()) {
+		if (getBus() != null) {
 
-			if (state.equalsIgnoreCase(bu.getStateName())) {
-				result.add(bu);
-			}
+			for (BU bu : getBus()) {
 
-		} // loop over BUs
+				if (state.equalsIgnoreCase(bu.getStateName())) {
+					result.add(bu);
+				}
+
+			} // loop over BUs
+		}
 
 		return result;
 
