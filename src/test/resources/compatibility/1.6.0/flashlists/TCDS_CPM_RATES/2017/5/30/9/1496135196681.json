@@ -1,0 +1,310 @@
+{
+  "flashlistType" : "TCDS_CPM_RATES",
+  "rowsNode" : [ {
+    "context" : "http://tcds-control-cpm-pri.cms:2050",
+    "fill_number" : 5730,
+    "lid" : "100",
+    "num_nibbles" : 64,
+    "run_number" : 295602,
+    "section_number" : 8,
+    "service" : "cpm-pri",
+    "sup_trg_rate_beamactive_total" : 9212.58,
+    "sup_trg_rate_beamactive_tt0" : 0.0,
+    "sup_trg_rate_beamactive_tt1" : 9205.5,
+    "sup_trg_rate_beamactive_tt10" : 0.0,
+    "sup_trg_rate_beamactive_tt11" : 0.0,
+    "sup_trg_rate_beamactive_tt12" : 0.0,
+    "sup_trg_rate_beamactive_tt13" : 0.0,
+    "sup_trg_rate_beamactive_tt14" : 0.0,
+    "sup_trg_rate_beamactive_tt15" : 0.0,
+    "sup_trg_rate_beamactive_tt2" : 0.0,
+    "sup_trg_rate_beamactive_tt3" : 7.07851,
+    "sup_trg_rate_beamactive_tt4" : 0.0,
+    "sup_trg_rate_beamactive_tt5" : 0.0,
+    "sup_trg_rate_beamactive_tt6" : 0.0,
+    "sup_trg_rate_beamactive_tt7" : 0.0,
+    "sup_trg_rate_beamactive_tt8" : 0.0,
+    "sup_trg_rate_beamactive_tt9" : 0.0,
+    "sup_trg_rate_total" : 9296.23,
+    "sup_trg_rate_tt0" : 0.0,
+    "sup_trg_rate_tt1" : 9229.74,
+    "sup_trg_rate_tt10" : 0.0,
+    "sup_trg_rate_tt11" : 0.0,
+    "sup_trg_rate_tt12" : 0.0,
+    "sup_trg_rate_tt13" : 0.0,
+    "sup_trg_rate_tt14" : 0.0,
+    "sup_trg_rate_tt15" : 0.0,
+    "sup_trg_rate_tt2" : 0.0,
+    "sup_trg_rate_tt3" : 66.4951,
+    "sup_trg_rate_tt4" : 0.0,
+    "sup_trg_rate_tt5" : 0.0,
+    "sup_trg_rate_tt6" : 0.0,
+    "sup_trg_rate_tt7" : 0.0,
+    "sup_trg_rate_tt8" : 0.0,
+    "sup_trg_rate_tt9" : 0.0,
+    "trg_rate_beamactive_total" : 58298.5,
+    "trg_rate_beamactive_tt0" : 0.0,
+    "trg_rate_beamactive_tt1" : 58255.3,
+    "trg_rate_beamactive_tt10" : 0.0,
+    "trg_rate_beamactive_tt11" : 0.0,
+    "trg_rate_beamactive_tt12" : 0.0,
+    "trg_rate_beamactive_tt13" : 0.0,
+    "trg_rate_beamactive_tt14" : 0.0,
+    "trg_rate_beamactive_tt15" : 0.0,
+    "trg_rate_beamactive_tt2" : 0.0,
+    "trg_rate_beamactive_tt3" : 43.1575,
+    "trg_rate_beamactive_tt4" : 0.0,
+    "trg_rate_beamactive_tt5" : 0.0,
+    "trg_rate_beamactive_tt6" : 0.0,
+    "trg_rate_beamactive_tt7" : 0.0,
+    "trg_rate_beamactive_tt8" : 0.0,
+    "trg_rate_beamactive_tt9" : 0.0,
+    "trg_rate_total" : 58994.1,
+    "trg_rate_tt0" : 0.0,
+    "trg_rate_tt1" : 58370.3,
+    "trg_rate_tt10" : 0.0,
+    "trg_rate_tt11" : 0.0,
+    "trg_rate_tt12" : 0.0,
+    "trg_rate_tt13" : 0.0,
+    "trg_rate_tt14" : 0.0,
+    "trg_rate_tt15" : 0.0,
+    "trg_rate_tt2" : 91.8062,
+    "trg_rate_tt3" : 532.047,
+    "trg_rate_tt4" : 0.0,
+    "trg_rate_tt5" : 0.0,
+    "trg_rate_tt6" : 0.0,
+    "trg_rate_tt7" : 0.0,
+    "trg_rate_tt8" : 0.0,
+    "trg_rate_tt9" : 0.0
+  } ],
+  "definitionNode" : [ {
+    "key" : "context",
+    "type" : "string"
+  }, {
+    "key" : "fill_number",
+    "type" : "unsigned int 32"
+  }, {
+    "key" : "lid",
+    "type" : "string"
+  }, {
+    "key" : "num_nibbles",
+    "type" : "unsigned int 32"
+  }, {
+    "key" : "run_number",
+    "type" : "unsigned int 32"
+  }, {
+    "key" : "section_number",
+    "type" : "unsigned int 32"
+  }, {
+    "key" : "service",
+    "type" : "string"
+  }, {
+    "key" : "sup_trg_rate_beamactive_total",
+    "type" : "float"
+  }, {
+    "key" : "sup_trg_rate_beamactive_tt0",
+    "type" : "float"
+  }, {
+    "key" : "sup_trg_rate_beamactive_tt1",
+    "type" : "float"
+  }, {
+    "key" : "sup_trg_rate_beamactive_tt10",
+    "type" : "float"
+  }, {
+    "key" : "sup_trg_rate_beamactive_tt11",
+    "type" : "float"
+  }, {
+    "key" : "sup_trg_rate_beamactive_tt12",
+    "type" : "float"
+  }, {
+    "key" : "sup_trg_rate_beamactive_tt13",
+    "type" : "float"
+  }, {
+    "key" : "sup_trg_rate_beamactive_tt14",
+    "type" : "float"
+  }, {
+    "key" : "sup_trg_rate_beamactive_tt15",
+    "type" : "float"
+  }, {
+    "key" : "sup_trg_rate_beamactive_tt2",
+    "type" : "float"
+  }, {
+    "key" : "sup_trg_rate_beamactive_tt3",
+    "type" : "float"
+  }, {
+    "key" : "sup_trg_rate_beamactive_tt4",
+    "type" : "float"
+  }, {
+    "key" : "sup_trg_rate_beamactive_tt5",
+    "type" : "float"
+  }, {
+    "key" : "sup_trg_rate_beamactive_tt6",
+    "type" : "float"
+  }, {
+    "key" : "sup_trg_rate_beamactive_tt7",
+    "type" : "float"
+  }, {
+    "key" : "sup_trg_rate_beamactive_tt8",
+    "type" : "float"
+  }, {
+    "key" : "sup_trg_rate_beamactive_tt9",
+    "type" : "float"
+  }, {
+    "key" : "sup_trg_rate_total",
+    "type" : "float"
+  }, {
+    "key" : "sup_trg_rate_tt0",
+    "type" : "float"
+  }, {
+    "key" : "sup_trg_rate_tt1",
+    "type" : "float"
+  }, {
+    "key" : "sup_trg_rate_tt10",
+    "type" : "float"
+  }, {
+    "key" : "sup_trg_rate_tt11",
+    "type" : "float"
+  }, {
+    "key" : "sup_trg_rate_tt12",
+    "type" : "float"
+  }, {
+    "key" : "sup_trg_rate_tt13",
+    "type" : "float"
+  }, {
+    "key" : "sup_trg_rate_tt14",
+    "type" : "float"
+  }, {
+    "key" : "sup_trg_rate_tt15",
+    "type" : "float"
+  }, {
+    "key" : "sup_trg_rate_tt2",
+    "type" : "float"
+  }, {
+    "key" : "sup_trg_rate_tt3",
+    "type" : "float"
+  }, {
+    "key" : "sup_trg_rate_tt4",
+    "type" : "float"
+  }, {
+    "key" : "sup_trg_rate_tt5",
+    "type" : "float"
+  }, {
+    "key" : "sup_trg_rate_tt6",
+    "type" : "float"
+  }, {
+    "key" : "sup_trg_rate_tt7",
+    "type" : "float"
+  }, {
+    "key" : "sup_trg_rate_tt8",
+    "type" : "float"
+  }, {
+    "key" : "sup_trg_rate_tt9",
+    "type" : "float"
+  }, {
+    "key" : "trg_rate_beamactive_total",
+    "type" : "float"
+  }, {
+    "key" : "trg_rate_beamactive_tt0",
+    "type" : "float"
+  }, {
+    "key" : "trg_rate_beamactive_tt1",
+    "type" : "float"
+  }, {
+    "key" : "trg_rate_beamactive_tt10",
+    "type" : "float"
+  }, {
+    "key" : "trg_rate_beamactive_tt11",
+    "type" : "float"
+  }, {
+    "key" : "trg_rate_beamactive_tt12",
+    "type" : "float"
+  }, {
+    "key" : "trg_rate_beamactive_tt13",
+    "type" : "float"
+  }, {
+    "key" : "trg_rate_beamactive_tt14",
+    "type" : "float"
+  }, {
+    "key" : "trg_rate_beamactive_tt15",
+    "type" : "float"
+  }, {
+    "key" : "trg_rate_beamactive_tt2",
+    "type" : "float"
+  }, {
+    "key" : "trg_rate_beamactive_tt3",
+    "type" : "float"
+  }, {
+    "key" : "trg_rate_beamactive_tt4",
+    "type" : "float"
+  }, {
+    "key" : "trg_rate_beamactive_tt5",
+    "type" : "float"
+  }, {
+    "key" : "trg_rate_beamactive_tt6",
+    "type" : "float"
+  }, {
+    "key" : "trg_rate_beamactive_tt7",
+    "type" : "float"
+  }, {
+    "key" : "trg_rate_beamactive_tt8",
+    "type" : "float"
+  }, {
+    "key" : "trg_rate_beamactive_tt9",
+    "type" : "float"
+  }, {
+    "key" : "trg_rate_total",
+    "type" : "float"
+  }, {
+    "key" : "trg_rate_tt0",
+    "type" : "float"
+  }, {
+    "key" : "trg_rate_tt1",
+    "type" : "float"
+  }, {
+    "key" : "trg_rate_tt10",
+    "type" : "float"
+  }, {
+    "key" : "trg_rate_tt11",
+    "type" : "float"
+  }, {
+    "key" : "trg_rate_tt12",
+    "type" : "float"
+  }, {
+    "key" : "trg_rate_tt13",
+    "type" : "float"
+  }, {
+    "key" : "trg_rate_tt14",
+    "type" : "float"
+  }, {
+    "key" : "trg_rate_tt15",
+    "type" : "float"
+  }, {
+    "key" : "trg_rate_tt2",
+    "type" : "float"
+  }, {
+    "key" : "trg_rate_tt3",
+    "type" : "float"
+  }, {
+    "key" : "trg_rate_tt4",
+    "type" : "float"
+  }, {
+    "key" : "trg_rate_tt5",
+    "type" : "float"
+  }, {
+    "key" : "trg_rate_tt6",
+    "type" : "float"
+  }, {
+    "key" : "trg_rate_tt7",
+    "type" : "float"
+  }, {
+    "key" : "trg_rate_tt8",
+    "type" : "float"
+  }, {
+    "key" : "trg_rate_tt9",
+    "type" : "float"
+  } ],
+  "retrievalDate" : 1496135196681,
+  "address" : "http://kvm-s3562-1-ip151-95.cms:9945/urn:xdaq-application:service=xmaslas2g/retrieveCollection?flash=urn:xdaq-flashlist:tcds_cpm_rates&fmt=json",
+  "name" : "urn:xdaq-flashlist:tcds_cpm_rates",
+  "unknownAtLAS" : false
+}

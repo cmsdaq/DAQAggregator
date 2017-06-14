@@ -1,12 +1,13 @@
 package rcms.utilities.daqaggregator.datasource;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.tuple.Triple;
 import org.apache.log4j.Logger;
 
-import rcms.utilities.daqaggregator.DAQException;
-import rcms.utilities.daqaggregator.DAQExceptionCode;
 import rcms.utilities.daqaggregator.data.DAQ;
 import rcms.utilities.daqaggregator.mappers.MappingManager;
 import rcms.utilities.daqaggregator.mappers.PostProcessor;
@@ -75,12 +76,23 @@ public class MonitorManager {
 
 		int sessionId = sessionDetector.getResult().getMiddle();
 		
-		Collection<Flashlist> flashlists = flashlistRetriever.retrieveAllFlashlists(sessionId).values();
-		flashlistManager.mapFlashlists(flashlists);
+		Map<FlashlistType, Flashlist> flashlists = flashlistRetriever.retrieveAllFlashlists(sessionId);
+		List<Flashlist> flashlistsInOrder = new ArrayList<>();
+		
+		for(FlashlistType flashlistType: FlashlistType.values()){
+			if(flashlists.containsKey(flashlistType)){
+				flashlistsInOrder.add(flashlists.get(flashlistType));
+			}else{
+				logger.warn("Flashlist " + flashlistType + " has not been downloaded");
+			}
+		}
+		
+		
+		flashlistManager.mapFlashlists(flashlistsInOrder);
 
 		
 		long lastUpdate = 0L;
-		for (Flashlist flashlist : flashlists) {
+		for (Flashlist flashlist : flashlistsInOrder) {
 			// why null here?
 			logger.debug(flashlist.getRetrievalDate() + ", " + flashlist.getFlashlistType());
 			if (flashlist.getRetrievalDate() != null && lastUpdate < flashlist.getRetrievalDate().getTime()) {
@@ -95,7 +107,7 @@ public class MonitorManager {
 		
 
 		f3dataRetriever.dispatch(daq);
-		return Triple.of(daq, flashlists, newSession);
+		return Triple.of(daq, flashlists.values(), newSession);
 
 	}
 

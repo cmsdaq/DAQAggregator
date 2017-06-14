@@ -1,14 +1,16 @@
 package rcms.utilities.daqaggregator.mappers.helper;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
 
-import rcms.utilities.daqaggregator.datasource.Flashlist;
-
 /**
- * This class helps parsing the FED_ENABLE_MASK session-aware string, which contains masking information for FEDs
+ * This class helps parsing the FED_ENABLE_MASK session-aware string, which
+ * contains masking information for FEDs
  * 
  * @author Michail Vougioukas (michail.vougioukas@cern.ch)
  *
@@ -16,90 +18,147 @@ import rcms.utilities.daqaggregator.datasource.Flashlist;
 
 public class FEDEnableMaskParser {
 
-	/**Key is the srcExpectedId of a FED
-	 * Value is a string that contains two dash-separated substrings, each to be parsed as boolean,
-	 * the first of which is the flag for the fmmmasked and the second is the flag for the frlmasked
-	 * */
-
-	private final Map<Integer, String> fedByExpectedIdToMaskingFlags = new HashMap<Integer, String>();
+	private static final String fedEnableMaskFedListSeparator = "%";
+	private static final String fedEnableMaskFedKeyValueSeparator = "&";
 	private static final Logger logger = Logger.getLogger(FEDEnableMaskParser.class);
 
+	/**
+	 * Key is the srcExpectedId of a FED Value is a pair that contains two
+	 * booleans, the first of which is the flag for the frlmasked and the second
+	 * is the flag for the fmmmasked
+	 * 
+	 * @return
+	 */
+	public static Map<Integer, Pair<Boolean, Boolean>> parseMask(String listToDecode) {
+		Map<Integer, Pair<Boolean, Boolean>> targetMap = new HashMap<>();
+		String[] pairs = listToDecode.split(fedEnableMaskFedListSeparator);
+		logger.info("FED enable mask has been parsed and contains " + pairs.length + " entries");
+		int problematicEntries = 0;
+		for (String pair : pairs) {
+			if (pair.contains(fedEnableMaskFedKeyValueSeparator)) {
+				String[] fedIdAndMaskedFlag = pair.split(fedEnableMaskFedKeyValueSeparator);
+				String fedIdString = "", fedValueString = "";
+				try {
+					fedIdString = fedIdAndMaskedFlag[0];
+					fedValueString = fedIdAndMaskedFlag[1];
+					int fedId = Integer.parseInt(fedIdString);
+					int maskSum = Integer.parseInt(fedValueString);
 
-	public FEDEnableMaskParser(String fedEnableMask) {
-		super();
-		parse(fedEnableMask);
-	}
+					Pair<Boolean, Boolean> resolvedMasks = parseValue(maskSum);
 
-
-
-	private void parse(String fedEnableMask) {
-
-		String [] fedEntries = fedEnableMask.split("%");
-		logger.info("FED_Enable masks found for: "+fedEntries.length+" FEDs.");
-		for (String s : fedEntries){
-			String [] splitEntry = s.split("&");
-
-			Integer fedSrcId = Integer.parseInt(splitEntry[0]);
-			Integer maskSum = Integer.parseInt(splitEntry[1]);
-
-			int [] lowerBits = {0,0,0,0}; //only the 4 lower bits are used to convey the masking flags information
-
-			//maskSum in binary format (stringified)
-			String binaryMaskSum = Integer.toString(maskSum, 2);
-
-			//String padding
-			if (binaryMaskSum.length()==3){
-				binaryMaskSum = "0"+binaryMaskSum;
-			}else if (binaryMaskSum.length()==2){
-				binaryMaskSum = "00"+binaryMaskSum;
-			}else if (binaryMaskSum.length()==1){
-				binaryMaskSum = "000"+binaryMaskSum;
-			}
-
-			lowerBits[0] = Integer.parseInt(Character.toString(binaryMaskSum.charAt(0))); //Bit 3 (TTS)
-			lowerBits[1] = Integer.parseInt(Character.toString(binaryMaskSum.charAt(1))); //Bit 2 (SLINK)
-			lowerBits[2] = Integer.parseInt(Character.toString(binaryMaskSum.charAt(2))); //Bit 1 (TTS)
-			lowerBits[3] = Integer.parseInt(Character.toString(binaryMaskSum.charAt(3))); //Bit 0 (SLINK)
-
-
-			String resolvedMasks = "";
-
-			if (lowerBits[0]==0 && lowerBits[2]==1){
-				//FED has TTS output and TTS output is active
-				resolvedMasks = resolvedMasks +"false"; //fmm masked false
-			}else{
-				if (lowerBits[2]==0){
-					resolvedMasks = resolvedMasks +"true"; //fmm masked true (TTS output inactive or permanently masked)
-				}else{
-					//cases of no TTS output, where mask is not applicable
-					resolvedMasks = resolvedMasks +"false";
+					targetMap.put(fedId, resolvedMasks);
+					logger.debug("FED of id: " + fedId + " has value: " + fedValueString);
+				} catch (NullPointerException e) {
+					problematicEntries++;
+					logger.debug("Problem parsing FED enable mask, could not parse the pair: " + pair);
+				} catch (NumberFormatException e) {
+					problematicEntries++;
+					logger.warn("Problem parsing FED enable mask, could not parse the FED id or mask sum from integer: "
+							+ fedIdString + " and mask sum: " + fedValueString);
 				}
 			}
-
-			resolvedMasks = resolvedMasks+ "-"; //delimiter FMM/SLINK masks
-
-			if (lowerBits[1]==0 && lowerBits[3]==1){
-				//FED has SLINK and SLINK is active
-				resolvedMasks = resolvedMasks +"false"; //frl masked false
-			}else{
-				if (lowerBits[3]==0){
-					resolvedMasks = resolvedMasks +"true"; //frl masked true (SLINK inactive or permanently masked)
-				}else{
-					//cases of no SLINK, where mask is not applicable
-					resolvedMasks = resolvedMasks +"false";
-				}
-			}
-
-			//add to map
-			fedByExpectedIdToMaskingFlags.put(fedSrcId, resolvedMasks);
+		}
+		if (problematicEntries > 0) {
+			logger.info("Parsing the FED enable masked (" + pairs.length + " elements in table, parsed to "
+					+ targetMap.size() + " map) finished with " + problematicEntries + " problems");
+			logger.info(targetMap);
 		}
 
+		return targetMap;
 	}
 
+	public static Pair<Boolean, Boolean> parseValue(Integer maskSum) {
+		int bit1, bit2, bit3, bit0;
 
-	public Map<Integer, String> getFedByExpectedIdToMaskingFlags() {
-		return fedByExpectedIdToMaskingFlags;
+		// maskSum in binary format (stringified)
+		String binaryMaskSum = Integer.toString(maskSum, 2);
+
+		// String padding
+		if (binaryMaskSum.length() == 3) {
+			binaryMaskSum = "0" + binaryMaskSum;
+		} else if (binaryMaskSum.length() == 2) {
+			binaryMaskSum = "00" + binaryMaskSum;
+		} else if (binaryMaskSum.length() == 1) {
+			binaryMaskSum = "000" + binaryMaskSum;
+		}
+
+		// Bit 3 (TTS)
+		bit3 = Integer.parseInt(Character.toString(binaryMaskSum.charAt(0)));
+
+		// Bit 2 (SLINK)
+		bit2 = Integer.parseInt(Character.toString(binaryMaskSum.charAt(1)));
+
+		// Bit 1 (TTS)
+		bit1 = Integer.parseInt(Character.toString(binaryMaskSum.charAt(2)));
+
+		// Bit 0 (SLINK)
+		bit0 = Integer.parseInt(Character.toString(binaryMaskSum.charAt(3)));
+
+		Boolean frlMask = decodeFrlMasked(bit2, bit0);
+		Boolean fmmMask = decodeFMMMasked(bit3, bit1);
+
+		Pair<Boolean, Boolean> result = Pair.of(frlMask, fmmMask);
+		logger.debug("Converting sum " + maskSum + " to " + binaryMaskSum + " (that should be equal to " + bit3 + bit2
+				+ bit1 + bit0 + ") to result " + result);
+		return result;
 	}
 
+	protected static boolean decodeFrlMasked(int bit2, int bit0) {
+		boolean frlMask = true;
+		/*
+		 * FED has and SLINK and the SLINK is inactive (taken out from the
+		 * FED/TTS page)
+		 */
+		if (bit2 == 0 && bit0 == 0) {
+			frlMask = true;
+		}
+
+		/* FED has an SLINK and the SLINK is active */
+		else if (bit2 == 0 && bit0 == 1) {
+			frlMask = false;
+		}
+		/*
+		 * FED has an SLINK but the SLINK is permanently masked (code currently
+		 * not in use)
+		 */
+		else if (bit2 == 1 && bit0 == 0) {
+			frlMask = true;
+		}
+
+		/* FED has no SLINK - mask is not applicable */
+		else if (bit2 == 1 && bit0 == 1) {
+			frlMask = false;
+		}
+		return frlMask;
+	}
+
+	protected static boolean decodeFMMMasked(int bit3, int bit1) {
+		boolean fmmMasked = true;
+		/*
+		 * FED has a TTS output and the TTS output is inactive (taken out from
+		 * the FED/TTS page)
+		 */
+		if (bit3 == 0 && bit1 == 0) {
+			fmmMasked = true;
+		}
+
+		/* FED has a TTS output and the TTS output is active */
+		else if (bit3 == 0 && bit1 == 1) {
+			fmmMasked = false;
+		}
+		/*
+		 * FED has a TTS output but the TTS output is permanently masked (code
+		 * currently not in use)
+		 */
+		else if (bit3 == 1 && bit1 == 0) {
+			fmmMasked = true;
+		}
+
+		/* FED has no TTS output -mask is not applicable */
+		else if (bit3 == 1 && bit1 == 1) {
+			fmmMasked = false;
+		}
+		return fmmMasked;
+	}
 
 }

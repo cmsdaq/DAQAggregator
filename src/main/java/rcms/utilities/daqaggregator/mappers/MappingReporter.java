@@ -71,4 +71,12 @@ public class MappingReporter {
 		map.put(key, map.get(key) + number);
 	}
 
+	public Map<String, Integer> getMissingObjects() {
+		return missingObjects;
+	}
+
+	public Map<String, Integer> getTotalObjects() {
+		return totalObjects;
+	}
+
 }

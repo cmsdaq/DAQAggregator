@@ -45,9 +45,17 @@ public class F3DataRetrieverTest {
 	public void testHlt() throws IOException {
 		String fakeResponse = "{\"219\":{\"ALCALUMIPIXELS\":47.190047190047,\"ALCAPHISYM\":0,\"Calibration\":79.365079365079,\"DQM\":6.8640068640069,\"DQMCalibration\":7.9365079365079,\"DQMEventDisplay\":18.618618618619,\"DQMHistograms\":612.44101244101,\"EcalCalibration\":79.365079365079,\"Error\":0,\"ExpressCosmics\":19.004719004719,\"HLTRates\":612.44101244101,\"L1Rates\":612.44101244101,\"NanoDST\":5.7915057915058,\"Physics\":71.600171600172,\"RPCMON\":27.627627627628}}";
 		F3DataRetriever f3dataRetriever = new F3DataRetriever(new ConnectorFake(fakeResponse));
-		Assert.assertEquals(new Double(71.600171600172d), f3dataRetriever.getHLTInfo(0));
+		Assert.assertEquals(new Double(71.600171600172d), f3dataRetriever.getHLToutputInfo(0).getEventRate(F3DataRetriever.PHYSICS_STREAM_NAME));
 	}
 
+	@Test
+	public void testHltOutputBandwidth() throws IOException {
+		String fakeResponse = "{\"58\":{\"ALCALUMIPIXELS\":127814.84341484,\"ALCAPHISYM\":0,\"Calibration\":2844043.7580438,\"DQM\":64910.424710425,\"DQMCalibration\":290670.87087087,\"DQMEventDisplay\":0,\"DQMHistograms\":0,\"EcalCalibration\":118622.05062205,\"Error\":0,\"ExpressCosmics\":181467.43886744,\"HLTRates\":41108.193908194,\"L1Rates\":254211.66881167,\"NanoDST\":4938.4384384384,\"Physics\":439103.56070356,\"RPCMON\":0}}";
+		F3DataRetriever f3dataRetriever = new F3DataRetriever(new ConnectorFake(fakeResponse));
+		Assert.assertEquals(new Double(439103.56070356d), f3dataRetriever.getHLToutputInfo(0).getBandwidth(F3DataRetriever.PHYSICS_STREAM_NAME));
+	}
+
+	
 	public class ConnectorFake extends Connector {
 
 		private final String response;
