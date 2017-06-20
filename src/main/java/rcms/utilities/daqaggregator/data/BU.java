@@ -120,8 +120,8 @@ public class BU implements FlashlistUpdatable {
 			this.stateName = flashlistRow.get("stateName").asText();
 			this.port = Integer.parseInt(flashlistRow.get("context").asText().split(":")[2]);
 			this.errorMsg = flashlistRow.get("errorMsg").asText();
-			this.rate = flashlistRow.get("eventRate").asInt();
-			this.throughput = flashlistRow.get("throughput").asInt();
+			this.rate = flashlistRow.get("eventRate").asLong();
+			this.throughput = flashlistRow.get("throughput").asLong();
 			this.eventSizeMean = flashlistRow.get("eventSize").asInt();
 			this.eventSizeStddev = flashlistRow.get("eventSizeStdDev").asInt();
 			this.numEvents = flashlistRow.get("nbEventsBuilt").asLong();
