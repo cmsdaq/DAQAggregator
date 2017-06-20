@@ -256,13 +256,6 @@ public class FlashlistDispatcher {
 			dispatchRowsUsingMatcher(flashlist, mappingManager.getObjectMapper().fedsById.values(),
 					new FedInFrlGeoFinder("io", sessionId));
 			break;
-		case FRL_MONITORING:
-			// TODO: future - use frlpc.context for mapping
-			dispatchRowsUsingMatcher(flashlist, mappingManager.getObjectMapper().frlPcs.values(),
-					new FrlPcMatcher(sessionId, "context"));
-			dispatchRowsUsingMatcher(flashlist, mappingManager.getObjectMapper().fedsById.values(),
-					new FedInFrlGeoFinder("io", sessionId));
-			break;
 		case FMM_STATUS:
 			dispatchRowsUsingMatcher(flashlist, mappingManager.getObjectMapper().fmms.values(),
 					new FMMGeoMatcher(sessionId));

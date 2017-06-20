@@ -183,6 +183,11 @@ public class FED implements FlashlistUpdatable {
 			this.numTriggers = flashlistRow.get("TriggerNumber").asInt();
 			this.eventCounter = flashlistRow.get("EventCounter").asLong();
 
+
+			this.frl_AccSlinkFullSec = flashlistRow.get("AccSlinkFullSeconds").asDouble();
+			System.out.println("#3: Getting value " + this.frl_AccSlinkFullSec
+					+ " from column AccSlinkFullSeconds from FL " + flashlistType + "");
+
 			/*
 			 * converting accumulated backpressure from flashlist
 			 */
@@ -200,14 +205,6 @@ public class FED implements FlashlistUpdatable {
 		} else if (flashlistType == FlashlistType.FEROL40_STREAM_CONFIGURATION) {
 
 			this.frlMasked = !flashlistRow.get("enable").asBoolean();
-
-		} else if (flashlistType == FlashlistType.FRL_MONITORING) {
-
-			if (this.frlIO == 0)
-				this.frl_AccSlinkFullSec = flashlistRow.get("AccSlinkFullSec_L0").asDouble();
-
-			else if (this.frlIO == 1)
-				this.frl_AccSlinkFullSec = flashlistRow.get("AccSlinkFullSec_L1").asDouble();
 
 		} else if (flashlistType == FlashlistType.RU) {
 
@@ -268,7 +265,7 @@ public class FED implements FlashlistUpdatable {
 			String ttsState = FEDHelper.getTTSState(this.fmmIO, flashlistRow);
 			this.ttsState = ttsState;
 
-			// unmask if other than 152 = 0x98: ignored (i.e., forced ready) 
+			// unmask if other than 152 = 0x98: ignored (i.e., forced ready)
 			if (ttsState != null && !"-".equals(ttsState)) {
 				this.fmmMasked = false;
 			}

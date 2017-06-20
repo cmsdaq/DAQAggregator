@@ -24,7 +24,7 @@ public enum FlashlistType {
 	FEROL_MONITORING("ferolMonitoring", "sessionid"),
 	FEROL_STATUS("ferolStatus", "sessionid"),
 	FEROL_TCP_STREAM("ferolTcpStream", "sessionid"),
-	FRL_MONITORING("frlMonitoring", "sessionid"),
+	// FRL_MONITORING("frlMonitoring", "sessionid"),
 	HOST_INFO("hostInfo", "sessionid"),
 
 	JOB_CONTROL("jobcontrol"),
