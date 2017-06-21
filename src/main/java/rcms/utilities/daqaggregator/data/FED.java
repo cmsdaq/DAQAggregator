@@ -91,73 +91,6 @@ public class FED implements FlashlistUpdatable {
 	@JsonIgnore
 	private BackpressureConverter converter = new BackpressureConverter();
 
-	/**
-	 * Available columns in flashlist FMM_INPUT:
-	 * 
-	 * <pre>
-	 * {@code[
-	[{"key":"class","type":"string"},
-	{"key":"context","type":"string"},
-	{"key":"fractionBusy","type":"double"},
-	{"key":"fractionError","type":"double"},
-	{"key":"fractionOOS","type":"double"},
-	{"key":"fractionReady","type":"double"},
-	{"key":"fractionWarning","type":"double"},
-	{"key":"geoslot","type":"unsigned short"},
-	{"key":"hostname","type":"string"},
-	{"key":"inputState","type":"string"},
-	{"key":"instance","type":"string"},
-	{"key":"integralTimeBusy","type":"unsigned int 64"},
-	{"key":"integralTimeError","type":"unsigned int 64"},
-	{"key":"integralTimeOOS","type":"unsigned int 64"},
-	{"key":"integralTimeReady","type":"unsigned int 64"},
-	{"key":"integralTimeWarning","type":"unsigned int 64"},
-	{"key":"io","type":"unsigned short"},
-	{"key":"isActive","type":"bool"},
-	{"key":"lid","type":"string"},
-	{"key":"readTimestamp","type":"time"},
-	{"key":"runNumber","type":"unsigned int 32"},
-	{"key":"sessionid","type":"string"},
-	{"key":"timestamp","type":"time"},
-	{"key":"timeTag","type":"unsigned int 64"}] 
-	
-	 * }
-	 * </pre>
-	 * 
-	 * Available columns in flashlist FEROL_INPUT_STREAM:
-	 * 
-	 * <pre>
-	 * {@code[
-	[{"key":"AccBackpressureSecond","type":"double"},
-	{"key":"BackpressureCounter","type":"unsigned int 64"},
-	{"key":"BX","type":"unsigned int 32"},
-	{"key":"context","type":"string"},
-	{"key":"CurrentFragSizeReceived","type":"unsigned int 32"},
-	{"key":"EventCounter","type":"unsigned int 64"},
-	{"key":"expectedFedId","type":"unsigned int 32"},
-	{"key":"ExpectedTriggerNumber","type":"unsigned int 32"},
-	{"key":"FEDCRCError","type":"unsigned int 64"},
-	{"key":"FEDFrequency","type":"unsigned int 32"},
-	{"key":"instance","type":"string"},
-	{"key":"lid","type":"string"},
-	{"key":"LinkCRCError","type":"unsigned int 64"},
-	{"key":"MaxFragSizeReceived","type":"unsigned int 32"},
-	{"key":"NoOfFragmentsCut","type":"unsigned int 32"},
-	{"key":"ReceivedTriggerNumber","type":"unsigned int 32"},
-	{"key":"SenderFwVersion","type":"unsigned int 32"},
-	{"key":"sessionid","type":"string"},
-	{"key":"slotNumber","type":"unsigned int 32"},
-	{"key":"streamNumber","type":"unsigned int 32"},
-	{"key":"SyncLostDraining","type":"unsigned int 32"},
-	{"key":"timestamp","type":"time"},
-	{"key":"TriggerNumber","type":"unsigned int 32"},
-	{"key":"WrongFEDId","type":"unsigned int 32"},
-	{"key":"WrongFEDIdDetected","type":"unsigned int 32"}] 
-	
-	 * }
-	 * </pre>
-	 * 
-	 */
 	@Override
 	public void updateFromFlashlist(FlashlistType flashlistType, JsonNode flashlistRow) {
 
@@ -183,16 +116,25 @@ public class FED implements FlashlistUpdatable {
 			this.numTriggers = flashlistRow.get("TriggerNumber").asInt();
 			this.eventCounter = flashlistRow.get("EventCounter").asLong();
 
-
 			this.frl_AccSlinkFullSec = flashlistRow.get("AccSlinkFullSeconds").asDouble();
 			System.out.println("#3: Getting value " + this.frl_AccSlinkFullSec
 					+ " from column AccSlinkFullSeconds from FL " + flashlistType + "");
 
-			/*
-			 * converting accumulated backpressure from flashlist
-			 */
-			this.percentBackpressure = converter.calculatePercent(flashlistRow.get("AccBackpressureSecond").asDouble(),
-					flashlistRow.get("timestamp").asText());
+			this.frl_AccLatchedFerol40ClockSeconds = flashlistRow.get("LatchedFerol40ClockSeconds").asDouble();
+			this.percentBackpressure = converter.calculatePercent(flashlistRow.get("AccBackpressureSeconds").asDouble(),
+					this.frl_AccLatchedFerol40ClockSeconds,true); // calculate with
+																// latchedSeconds
+																// (unit is
+																// seconds)
+
+			System.out.println("#2+5: Calculated backpressure " + this.percentBackpressure + " from latched "
+					+ this.frl_AccLatchedFerol40ClockSeconds + " and "
+					+ flashlistRow.get("AccBackpressureSeconds").asDouble()
+					+ " from column AccSlinkFullSeconds from FL " + flashlistType + "");
+
+			this.frl_AccBIFIBackpressureSeconds = flashlistRow.get("AccBIFIBackpressureSeconds").asDouble();
+			System.out.println("#4: Getting value " + this.frl_AccBIFIBackpressureSeconds
+					+ " from column AccBIFIBackpressureSeconds from FL " + flashlistType + "");
 
 		} else if (flashlistType == FlashlistType.FEROL_CONFIGURATION) {
 
@@ -244,17 +186,15 @@ public class FED implements FlashlistUpdatable {
 			this.numTriggers = flashlistRow.get("TriggerNumber").asInt();
 			this.eventCounter = flashlistRow.get("EventCounter").asLong();
 
-			/*
-			 * should be used to convert accumulated backpressure from flashlist
-			 */
 			this.frl_AccLatchedFerol40ClockSeconds = flashlistRow.get("LatchedFerol40ClockSeconds").asDouble();
-
 			this.percentBackpressure = converter.calculatePercent(flashlistRow.get("AccBackpressureSeconds").asDouble(),
-					flashlistRow.get("timestamp").asText()); // to be replaced
-																// with
+					this.frl_AccLatchedFerol40ClockSeconds,true); // calculate with
 																// latchedSeconds
 																// (unit is
 																// seconds)
+			System.out.println("#2+5: Calculated backpressure from latched " + this.frl_AccLatchedFerol40ClockSeconds
+					+ " and " + flashlistRow.get("AccBackpressureSeconds").asDouble()
+					+ " from column AccSlinkFullSeconds from FL " + flashlistType + "");
 
 			this.frl_AccSlinkFullSec = flashlistRow.get("AccSlinkFullSeconds").asDouble();
 
