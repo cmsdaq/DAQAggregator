@@ -61,23 +61,6 @@ public class FEDHelper {
 
 		FMM fmm = findable.getFmm();
 		Integer fmmIO = findable.getFmmIO();
-
-		/*
-		 * if (fmm == null) { if (findable.getDependentFeds().size() > 0) {
-		 * logger.debug("Could not find FMM in FED " +
-		 * findable.getSrcIdExpected() +
-		 * " but it has following dependent feds: " +
-		 * findable.getDependentFeds());
-		 * 
-		 * if (findable.getDependentFeds().size() != 1) { logger.warn(
-		 * "more than one dependent fed: " +
-		 * findable.getDependentFeds().size()); } for (FED dep :
-		 * findable.getDependentFeds()) { if (dep.getFmm() != null) { fmm =
-		 * dep.getFmm(); fmmIO = dep.getFmmIO(); logger.debug( "fmmIO in fed: "
-		 * + findable.getFmmIO() + ", while in dependent: " + dep.getFmmIO()); }
-		 * } } }
-		 */
-
 		return Pair.of(fmmIO, fmm);
 	}
 
@@ -100,6 +83,24 @@ public class FEDHelper {
 
 		return printtype;
 
+	}
+
+	/**
+	 * This checks if row of flashlist FerolInputStream is after backporting of
+	 * columns from Ferol40InputStream. Note that this does NOT mean full
+	 * backward compatibility. For example the backpressure will NOT be
+	 * calculated based on values from other columns that were used before
+	 * backporting. The aggragator will not crash when made to produce snapshot
+	 * from old flashlists but some values will be missing. The columns that
+	 * have been replaced by new ones will not be mapped.
+	 * 
+	 */
+	public static boolean isFlashlistFerolInputStreamRowAfterFerol40Backporting(JsonNode flashlistRow) {
+		if (flashlistRow.has("AccSlinkFullSeconds") && flashlistRow.has("LatchedFerol40ClockSeconds")
+				&& flashlistRow.has("AccBackpressureSeconds") && flashlistRow.has("AccBIFIBackpressureSeconds")) {
+			return true;
+		}
+		return false;
 	}
 
 }

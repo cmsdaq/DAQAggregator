@@ -116,25 +116,32 @@ public class FED implements FlashlistUpdatable {
 			this.numTriggers = flashlistRow.get("TriggerNumber").asInt();
 			this.eventCounter = flashlistRow.get("EventCounter").asLong();
 
-			this.frl_AccSlinkFullSec = flashlistRow.get("AccSlinkFullSeconds").asDouble();
-			System.out.println("#3: Getting value " + this.frl_AccSlinkFullSec
-					+ " from column AccSlinkFullSeconds from FL " + flashlistType + "");
+			/*
+			 * some fields were introduced later - to prevent DAQAgg from
+			 * crashing when old flashlists are used to produce snapshot below
+			 * there is a condition. Note that this does NOT mean backward
+			 * compatibility with old flashlists - some values will not be
+			 * mapped
+			 */
+			if (FEDHelper.isFlashlistFerolInputStreamRowAfterFerol40Backporting(flashlistRow)) {
+				this.frl_AccSlinkFullSec = flashlistRow.get("AccSlinkFullSeconds").asDouble();
+				System.out.println("#3: Getting value " + this.frl_AccSlinkFullSec
+						+ " from column AccSlinkFullSeconds from FL " + flashlistType + "");
 
-			this.frl_AccLatchedFerol40ClockSeconds = flashlistRow.get("LatchedFerol40ClockSeconds").asDouble();
-			this.percentBackpressure = converter.calculatePercent(flashlistRow.get("AccBackpressureSeconds").asDouble(),
-					this.frl_AccLatchedFerol40ClockSeconds,true); // calculate with
-																// latchedSeconds
-																// (unit is
-																// seconds)
+				this.frl_AccLatchedFerol40ClockSeconds = flashlistRow.get("LatchedFerol40ClockSeconds").asDouble();
+				this.percentBackpressure = converter.calculatePercent(
+						flashlistRow.get("AccBackpressureSeconds").asDouble(), this.frl_AccLatchedFerol40ClockSeconds,
+						true);
 
-			System.out.println("#2+5: Calculated backpressure " + this.percentBackpressure + " from latched "
-					+ this.frl_AccLatchedFerol40ClockSeconds + " and "
-					+ flashlistRow.get("AccBackpressureSeconds").asDouble()
-					+ " from column AccSlinkFullSeconds from FL " + flashlistType + "");
+				System.out.println("#2+5: Calculated backpressure " + this.percentBackpressure + " from latched "
+						+ this.frl_AccLatchedFerol40ClockSeconds + " and "
+						+ flashlistRow.get("AccBackpressureSeconds").asDouble()
+						+ " from column AccSlinkFullSeconds from FL " + flashlistType + "");
 
-			this.frl_AccBIFIBackpressureSeconds = flashlistRow.get("AccBIFIBackpressureSeconds").asDouble();
-			System.out.println("#4: Getting value " + this.frl_AccBIFIBackpressureSeconds
-					+ " from column AccBIFIBackpressureSeconds from FL " + flashlistType + "");
+				this.frl_AccBIFIBackpressureSeconds = flashlistRow.get("AccBIFIBackpressureSeconds").asDouble();
+				System.out.println("#4: Getting value " + this.frl_AccBIFIBackpressureSeconds
+						+ " from column AccBIFIBackpressureSeconds from FL " + flashlistType + "");
+			}
 
 		} else if (flashlistType == FlashlistType.FEROL_CONFIGURATION) {
 
@@ -188,10 +195,11 @@ public class FED implements FlashlistUpdatable {
 
 			this.frl_AccLatchedFerol40ClockSeconds = flashlistRow.get("LatchedFerol40ClockSeconds").asDouble();
 			this.percentBackpressure = converter.calculatePercent(flashlistRow.get("AccBackpressureSeconds").asDouble(),
-					this.frl_AccLatchedFerol40ClockSeconds,true); // calculate with
-																// latchedSeconds
-																// (unit is
-																// seconds)
+					this.frl_AccLatchedFerol40ClockSeconds, true); // calculate
+																	// with
+																	// latchedSeconds
+																	// (unit is
+																	// seconds)
 			System.out.println("#2+5: Calculated backpressure from latched " + this.frl_AccLatchedFerol40ClockSeconds
 					+ " and " + flashlistRow.get("AccBackpressureSeconds").asDouble()
 					+ " from column AccSlinkFullSeconds from FL " + flashlistType + "");
