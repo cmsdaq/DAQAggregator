@@ -128,7 +128,7 @@ public class FED implements FlashlistUpdatable {
 				System.out.println("#3: Getting value " + this.frl_AccSlinkFullSec
 						+ " from column AccSlinkFullSeconds from FL " + flashlistType + "");
 
-				this.frl_AccLatchedFerol40ClockSeconds = flashlistRow.get("LatchedFerol40ClockSeconds").asDouble();
+				this.frl_AccLatchedFerol40ClockSeconds = flashlistRow.get("LatchedTimeFrontendSeconds").asDouble();
 				this.percentBackpressure = converter.calculatePercent(
 						flashlistRow.get("AccBackpressureSeconds").asDouble(), this.frl_AccLatchedFerol40ClockSeconds,
 						true);
@@ -193,7 +193,7 @@ public class FED implements FlashlistUpdatable {
 			this.numTriggers = flashlistRow.get("TriggerNumber").asInt();
 			this.eventCounter = flashlistRow.get("EventCounter").asLong();
 
-			this.frl_AccLatchedFerol40ClockSeconds = flashlistRow.get("LatchedFerol40ClockSeconds").asDouble();
+			this.frl_AccLatchedFerol40ClockSeconds = flashlistRow.get("LatchedTimeFrontendSeconds").asDouble();
 			this.percentBackpressure = converter.calculatePercent(flashlistRow.get("AccBackpressureSeconds").asDouble(),
 					this.frl_AccLatchedFerol40ClockSeconds, true); // calculate
 																	// with
