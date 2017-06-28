@@ -223,9 +223,10 @@ public class FED implements FlashlistUpdatable {
 						this.frl_AccLatchedFerol40ClockSeconds, true); // calculate with latchedSeconds (unit is
 																		// seconds)
 
-				System.out
-						.println("#2+5: Calculated backpressure from latched " + this.frl_AccLatchedFerol40ClockSeconds
-								+ " and " + flashlistRow.get("AccBackpressureSeconds").asDouble()
+				System.out.println(
+						"40 #2+5: Calculated backpressure " + this.percentBackpressure + "from LatchedTimeFrontendSeconds "
+								+ this.frl_AccLatchedFerol40ClockSeconds + " and backpressure column "
+								+ backpressureColumn + " " + flashlistRow.get(backpressureColumn).asDouble()
 								+ " from column AccSlinkFullSeconds from FL " + flashlistType + "");
 
 				this.frl_AccSlinkFullSec = flashlistRow.get("AccSlinkFullSeconds").asDouble();
