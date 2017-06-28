@@ -96,7 +96,7 @@ public class FEDHelper {
 	 * 
 	 */
 	public static boolean isFlashlistFerolInputStreamRowAfterFerol40Backporting(JsonNode flashlistRow) {
-		if (flashlistRow.has("AccSlinkFullSeconds") && flashlistRow.has("LatchedFerol40ClockSeconds")
+		if (flashlistRow.has("AccSlinkFullSeconds") && flashlistRow.has("LatchedTimeFrontendSeconds")
 				&& flashlistRow.has("AccBackpressureSeconds") && flashlistRow.has("AccBIFIBackpressureSeconds")) {
 			return true;
 		}

@@ -115,7 +115,14 @@ public class FED implements FlashlistUpdatable {
 				this.srcIdReceived = flashlistRow.get("WrongFEDId").asInt();
 			}
 
-			this.numSCRCerrors = flashlistRow.get("LinkCRCError").asInt();
+			/*
+			 * this field was renamed - to prevent DAQAgg from crashing when old flashlists are used to produce snapshot
+			 * below there is a condition. Note that this does NOT mean backward compatibility with old flashlists -
+			 * some values will not be mapped
+			 */
+			if (flashlistRow.has("SLinkCRCError")) {
+				this.numSCRCerrors = flashlistRow.get("SLinkCRCError").asInt();
+			}
 			this.numFCRCerrors = flashlistRow.get("FEDCRCError").asInt();
 			this.numTriggers = flashlistRow.get("TriggerNumber").asInt();
 			this.eventCounter = flashlistRow.get("EventCounter").asLong();
@@ -156,7 +163,7 @@ public class FED implements FlashlistUpdatable {
 		} else if (flashlistType == FlashlistType.FEROL40_STREAM_CONFIGURATION) {
 
 			this.frlMasked = !flashlistRow.get("enable").asBoolean();
-			if ("GENERATOR_SOURCE".equalsIgnoreCase(flashlistRow.get("").asText("DataSource"))) {
+			if ("GENERATOR_SOURCE".equalsIgnoreCase(flashlistRow.get("DataSource").asText())) {
 				this.generatorDataSource = true;
 			}
 
@@ -205,15 +212,24 @@ public class FED implements FlashlistUpdatable {
 				backpressureColumn = "AccBIFIBackpressureSeconds";
 			}
 
-			this.frl_AccLatchedFerol40ClockSeconds = flashlistRow.get("LatchedTimeFrontendSeconds").asDouble();
-			this.percentBackpressure = converter.calculatePercent(flashlistRow.get(backpressureColumn).asDouble(),
-					this.frl_AccLatchedFerol40ClockSeconds, true); // calculate with latchedSeconds (unit is seconds)
-			
-			System.out.println("#2+5: Calculated backpressure from latched " + this.frl_AccLatchedFerol40ClockSeconds
-					+ " and " + flashlistRow.get("AccBackpressureSeconds").asDouble()
-					+ " from column AccSlinkFullSeconds from FL " + flashlistType + "");
+			/*
+			 * some fields were introduced later - to prevent DAQAgg from crashing when old flashlists are used to
+			 * produce snapshot below there is a condition. Note that this does NOT mean backward compatibility with old
+			 * flashlists - some values will not be mapped
+			 */
+			if (FEDHelper.isFlashlistFerolInputStreamRowAfterFerol40Backporting(flashlistRow)) {
+				this.frl_AccLatchedFerol40ClockSeconds = flashlistRow.get("LatchedTimeFrontendSeconds").asDouble();
+				this.percentBackpressure = converter.calculatePercent(flashlistRow.get(backpressureColumn).asDouble(),
+						this.frl_AccLatchedFerol40ClockSeconds, true); // calculate with latchedSeconds (unit is
+																		// seconds)
 
-			this.frl_AccSlinkFullSec = flashlistRow.get("AccSlinkFullSeconds").asDouble();
+				System.out
+						.println("#2+5: Calculated backpressure from latched " + this.frl_AccLatchedFerol40ClockSeconds
+								+ " and " + flashlistRow.get("AccBackpressureSeconds").asDouble()
+								+ " from column AccSlinkFullSeconds from FL " + flashlistType + "");
+
+				this.frl_AccSlinkFullSec = flashlistRow.get("AccSlinkFullSeconds").asDouble();
+			}
 
 			this.frl_AccBIFIBackpressureSeconds = flashlistRow.get("AccBIFIBackpressureSeconds").asDouble();
 
