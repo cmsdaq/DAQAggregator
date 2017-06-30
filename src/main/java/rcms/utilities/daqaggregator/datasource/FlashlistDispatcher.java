@@ -143,7 +143,12 @@ public class FlashlistDispatcher {
 			dispatchRowsUsingMatcher(flashlist, mappingManager.getObjectMapper().bus.values(),
 					new BuMatcher(sessionId, "context"));
 			break;
+			
 		case FEROL_INPUT_STREAM:
+			dispatchRowsUsingMatcher(flashlist, mappingManager.getObjectMapper().fedsById.values(),
+					new FedFromFerolInputStreamGeoFinder("streamNumber", sessionId));
+			break;
+		case FEROL_TCP_STREAM:
 			dispatchRowsUsingMatcher(flashlist, mappingManager.getObjectMapper().fedsById.values(),
 					new FedFromFerolInputStreamGeoFinder("streamNumber", sessionId));
 			break;

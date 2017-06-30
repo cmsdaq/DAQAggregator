@@ -86,18 +86,16 @@ public class FEDHelper {
 	}
 
 	/**
-	 * This checks if row of flashlist FerolInputStream is after backporting of
-	 * columns from Ferol40InputStream. Note that this does NOT mean full
-	 * backward compatibility. For example the backpressure will NOT be
-	 * calculated based on values from other columns that were used before
-	 * backporting. The aggragator will not crash when made to produce snapshot
-	 * from old flashlists but some values will be missing. The columns that
-	 * have been replaced by new ones will not be mapped.
+	 * This checks if row of flashlist FerolInputStream is after backporting of columns from Ferol40InputStream. Note
+	 * that this does NOT mean full backward compatibility. For example the backpressure will NOT be calculated based on
+	 * values from other columns that were used before backporting. The aggragator will not crash when made to produce
+	 * snapshot from old flashlists but some values will be missing. The columns that have been replaced by new ones
+	 * will not be mapped.
 	 * 
 	 */
 	public static boolean isFlashlistFerolInputStreamRowAfterFerol40Backporting(JsonNode flashlistRow) {
 		if (flashlistRow.has("AccSlinkFullSeconds") && flashlistRow.has("LatchedTimeFrontendSeconds")
-				&& flashlistRow.has("AccBackpressureSeconds") && flashlistRow.has("AccBIFIBackpressureSeconds")) {
+				&& flashlistRow.has("AccBackpressureSeconds")) {
 			return true;
 		}
 		return false;
