@@ -295,6 +295,11 @@ public class FlashlistDispatcher {
 			for (Entry<Integer, TTCPartition> ttcpEntry : mappingManager.getObjectMapper().ttcPartitions.entrySet()) {
 				TTCPartition ttcp = ttcpEntry.getValue(); // ref to ttcp object
 
+				if(ttcp.getTcdsPartitionInfo() == null){
+					logger.warn(ttcp.getName() + " has empty TCDS partition info.");
+					continue;
+				}
+				
 				/* if no tcds ici/pi information could be found */
 				if (ttcp.getTcdsPartitionInfo().getNullCause() != null) {
 					ttcp.setTcds_pm_ttsState(ttcp.getTcdsPartitionInfo().getNullCause());
