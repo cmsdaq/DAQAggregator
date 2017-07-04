@@ -135,7 +135,6 @@ public class FlashlistDispatcherIT {
 
 		runDispatch("src/test/resources/compatibility/1.6.0/flashlists/", false);
 
-		Assert.assertEquals(1196, MappingReporter.get().getTotalObjects().get("FRL_MONITORING").intValue());
 		Assert.assertEquals(83, MappingReporter.get().getTotalObjects().get("RU").intValue());
 		Assert.assertEquals(450, MappingReporter.get().getTotalObjects().get("FEROL_STATUS").intValue());
 		Assert.assertEquals(777, MappingReporter.get().getTotalObjects().get("FMM_INPUT").intValue());
@@ -151,7 +150,6 @@ public class FlashlistDispatcherIT {
 		Assert.assertEquals(32, MappingReporter.get().getTotalObjects().get("FEROL40_CONFIGURATION").intValue());
 
 		logger.info(MappingReporter.get().getMissingObjects());
-		Assert.assertEquals(144, MappingReporter.get().getMissingObjects().get("FRL_MONITORING").intValue());
 		Assert.assertEquals(0, MappingReporter.get().getMissingObjects().get("RU").intValue());
 		Assert.assertEquals(32, MappingReporter.get().getMissingObjects().get("FEROL_STATUS").intValue());
 		Assert.assertEquals(185, MappingReporter.get().getMissingObjects().get("FMM_INPUT").intValue());

@@ -143,7 +143,12 @@ public class FlashlistDispatcher {
 			dispatchRowsUsingMatcher(flashlist, mappingManager.getObjectMapper().bus.values(),
 					new BuMatcher(sessionId, "context"));
 			break;
+			
 		case FEROL_INPUT_STREAM:
+			dispatchRowsUsingMatcher(flashlist, mappingManager.getObjectMapper().fedsById.values(),
+					new FedFromFerolInputStreamGeoFinder("streamNumber", sessionId));
+			break;
+		case FEROL_TCP_STREAM:
 			dispatchRowsUsingMatcher(flashlist, mappingManager.getObjectMapper().fedsById.values(),
 					new FedFromFerolInputStreamGeoFinder("streamNumber", sessionId));
 			break;
@@ -256,13 +261,6 @@ public class FlashlistDispatcher {
 			dispatchRowsUsingMatcher(flashlist, mappingManager.getObjectMapper().fedsById.values(),
 					new FedInFrlGeoFinder("io", sessionId));
 			break;
-		case FRL_MONITORING:
-			// TODO: future - use frlpc.context for mapping
-			dispatchRowsUsingMatcher(flashlist, mappingManager.getObjectMapper().frlPcs.values(),
-					new FrlPcMatcher(sessionId, "context"));
-			dispatchRowsUsingMatcher(flashlist, mappingManager.getObjectMapper().fedsById.values(),
-					new FedInFrlGeoFinder("io", sessionId));
-			break;
 		case FMM_STATUS:
 			dispatchRowsUsingMatcher(flashlist, mappingManager.getObjectMapper().fmms.values(),
 					new FMMGeoMatcher(sessionId));
@@ -297,6 +295,11 @@ public class FlashlistDispatcher {
 			for (Entry<Integer, TTCPartition> ttcpEntry : mappingManager.getObjectMapper().ttcPartitions.entrySet()) {
 				TTCPartition ttcp = ttcpEntry.getValue(); // ref to ttcp object
 
+				if(ttcp.getTcdsPartitionInfo() == null){
+					logger.warn(ttcp.getName() + " has empty TCDS partition info.");
+					continue;
+				}
+				
 				/* if no tcds ici/pi information could be found */
 				if (ttcp.getTcdsPartitionInfo().getNullCause() != null) {
 					ttcp.setTcds_pm_ttsState(ttcp.getTcdsPartitionInfo().getNullCause());

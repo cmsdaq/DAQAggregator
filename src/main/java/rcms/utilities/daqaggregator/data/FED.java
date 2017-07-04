@@ -88,76 +88,13 @@ public class FED implements FlashlistUpdatable {
 
 	private double frl_AccLatchedFerol40ClockSeconds;
 
+	/* flag indicating if data source id generated */
+	@JsonIgnore
+	private boolean generatorDataSource;
+
 	@JsonIgnore
 	private BackpressureConverter converter = new BackpressureConverter();
 
-	/**
-	 * Available columns in flashlist FMM_INPUT:
-	 * 
-	 * <pre>
-	 * {@code[
-	[{"key":"class","type":"string"},
-	{"key":"context","type":"string"},
-	{"key":"fractionBusy","type":"double"},
-	{"key":"fractionError","type":"double"},
-	{"key":"fractionOOS","type":"double"},
-	{"key":"fractionReady","type":"double"},
-	{"key":"fractionWarning","type":"double"},
-	{"key":"geoslot","type":"unsigned short"},
-	{"key":"hostname","type":"string"},
-	{"key":"inputState","type":"string"},
-	{"key":"instance","type":"string"},
-	{"key":"integralTimeBusy","type":"unsigned int 64"},
-	{"key":"integralTimeError","type":"unsigned int 64"},
-	{"key":"integralTimeOOS","type":"unsigned int 64"},
-	{"key":"integralTimeReady","type":"unsigned int 64"},
-	{"key":"integralTimeWarning","type":"unsigned int 64"},
-	{"key":"io","type":"unsigned short"},
-	{"key":"isActive","type":"bool"},
-	{"key":"lid","type":"string"},
-	{"key":"readTimestamp","type":"time"},
-	{"key":"runNumber","type":"unsigned int 32"},
-	{"key":"sessionid","type":"string"},
-	{"key":"timestamp","type":"time"},
-	{"key":"timeTag","type":"unsigned int 64"}] 
-	
-	 * }
-	 * </pre>
-	 * 
-	 * Available columns in flashlist FEROL_INPUT_STREAM:
-	 * 
-	 * <pre>
-	 * {@code[
-	[{"key":"AccBackpressureSecond","type":"double"},
-	{"key":"BackpressureCounter","type":"unsigned int 64"},
-	{"key":"BX","type":"unsigned int 32"},
-	{"key":"context","type":"string"},
-	{"key":"CurrentFragSizeReceived","type":"unsigned int 32"},
-	{"key":"EventCounter","type":"unsigned int 64"},
-	{"key":"expectedFedId","type":"unsigned int 32"},
-	{"key":"ExpectedTriggerNumber","type":"unsigned int 32"},
-	{"key":"FEDCRCError","type":"unsigned int 64"},
-	{"key":"FEDFrequency","type":"unsigned int 32"},
-	{"key":"instance","type":"string"},
-	{"key":"lid","type":"string"},
-	{"key":"LinkCRCError","type":"unsigned int 64"},
-	{"key":"MaxFragSizeReceived","type":"unsigned int 32"},
-	{"key":"NoOfFragmentsCut","type":"unsigned int 32"},
-	{"key":"ReceivedTriggerNumber","type":"unsigned int 32"},
-	{"key":"SenderFwVersion","type":"unsigned int 32"},
-	{"key":"sessionid","type":"string"},
-	{"key":"slotNumber","type":"unsigned int 32"},
-	{"key":"streamNumber","type":"unsigned int 32"},
-	{"key":"SyncLostDraining","type":"unsigned int 32"},
-	{"key":"timestamp","type":"time"},
-	{"key":"TriggerNumber","type":"unsigned int 32"},
-	{"key":"WrongFEDId","type":"unsigned int 32"},
-	{"key":"WrongFEDIdDetected","type":"unsigned int 32"}] 
-	
-	 * }
-	 * </pre>
-	 * 
-	 */
 	@Override
 	public void updateFromFlashlist(FlashlistType flashlistType, JsonNode flashlistRow) {
 
@@ -178,16 +115,38 @@ public class FED implements FlashlistUpdatable {
 				this.srcIdReceived = flashlistRow.get("WrongFEDId").asInt();
 			}
 
-			this.numSCRCerrors = flashlistRow.get("LinkCRCError").asInt();
+			/*
+			 * this field was renamed - to prevent DAQAgg from crashing when old flashlists are used to produce snapshot
+			 * below there is a condition. Note that this does NOT mean backward compatibility with old flashlists -
+			 * some values will not be mapped
+			 */
+			if (flashlistRow.has("SLinkCRCError")) {
+				this.numSCRCerrors = flashlistRow.get("SLinkCRCError").asInt();
+			}
 			this.numFCRCerrors = flashlistRow.get("FEDCRCError").asInt();
 			this.numTriggers = flashlistRow.get("TriggerNumber").asInt();
 			this.eventCounter = flashlistRow.get("EventCounter").asLong();
 
 			/*
-			 * converting accumulated backpressure from flashlist
+			 * some fields were introduced later - to prevent DAQAgg from crashing when old flashlists are used to
+			 * produce snapshot below there is a condition. Note that this does NOT mean backward compatibility with old
+			 * flashlists - some values will not be mapped
 			 */
-			this.percentBackpressure = converter.calculatePercent(flashlistRow.get("AccBackpressureSecond").asDouble(),
-					flashlistRow.get("timestamp").asText());
+			if (FEDHelper.isFlashlistFerolInputStreamRowAfterFerol40Backporting(flashlistRow)) {
+
+				this.frl_AccSlinkFullSec = flashlistRow.get("AccSlinkFullSeconds").asDouble();
+
+				/* if data source is generated this value will come from other flashlist */
+				if (!generatorDataSource) {
+					double latchedTime = flashlistRow.get("LatchedTimeFrontendSeconds").asDouble();
+					double backpressureTime = flashlistRow.get("AccBackpressureSeconds").asDouble();
+
+					this.percentBackpressure = converter.calculatePercent(backpressureTime, latchedTime, true);
+
+					this.frl_AccLatchedFerol40ClockSeconds = latchedTime;
+				}
+
+			}
 
 		} else if (flashlistType == FlashlistType.FEROL_CONFIGURATION) {
 
@@ -197,17 +156,14 @@ public class FED implements FlashlistUpdatable {
 				this.frlMasked = !flashlistRow.get("enableStream1").asBoolean();
 			}
 
+			if (flashlistRow.has("DataSource")
+					&& "GENERATOR_SOURCE".equalsIgnoreCase(flashlistRow.get("DataSource").asText())) {
+				this.generatorDataSource = true;
+			}
+
 		} else if (flashlistType == FlashlistType.FEROL40_STREAM_CONFIGURATION) {
 
 			this.frlMasked = !flashlistRow.get("enable").asBoolean();
-
-		} else if (flashlistType == FlashlistType.FRL_MONITORING) {
-
-			if (this.frlIO == 0)
-				this.frl_AccSlinkFullSec = flashlistRow.get("AccSlinkFullSec_L0").asDouble();
-
-			else if (this.frlIO == 1)
-				this.frl_AccSlinkFullSec = flashlistRow.get("AccSlinkFullSec_L1").asDouble();
 
 		} else if (flashlistType == FlashlistType.RU) {
 
@@ -247,30 +203,45 @@ public class FED implements FlashlistUpdatable {
 			this.numTriggers = flashlistRow.get("TriggerNumber").asInt();
 			this.eventCounter = flashlistRow.get("EventCounter").asLong();
 
+			// if: ferol40StreamConfiguration->DataSource = GENERATOR_SOURCE do not use AccBackpressureSeconds, instead
+			// use AccBIFIBackpressureSeconds
+			String backpressureColumn = "AccBackpressureSeconds";
 			/*
-			 * should be used to convert accumulated backpressure from flashlist
+			 * if (this.generatorDataSource) { backpressureColumn = "AccBIFIBackpressureSeconds"; }
 			 */
-			this.frl_AccLatchedFerol40ClockSeconds = flashlistRow.get("LatchedFerol40ClockSeconds").asDouble();
-
-			this.percentBackpressure = converter.calculatePercent(flashlistRow.get("AccBackpressureSeconds").asDouble(),
-					flashlistRow.get("timestamp").asText()); // to be replaced
-																// with
-																// latchedSeconds
-																// (unit is
-																// seconds)
-
-			this.frl_AccSlinkFullSec = flashlistRow.get("AccSlinkFullSeconds").asDouble();
-
-			this.frl_AccBIFIBackpressureSeconds = flashlistRow.get("AccBIFIBackpressureSeconds").asDouble();
+			/*
+			 * some fields were introduced later - to prevent DAQAgg from crashing when old flashlists are used to
+			 * produce snapshot below there is a condition. Note that this does NOT mean backward compatibility with old
+			 * flashlists - some values will not be mapped
+			 */
+			if (FEDHelper.isFlashlistFerolInputStreamRowAfterFerol40Backporting(flashlistRow)) {
+				this.frl_AccLatchedFerol40ClockSeconds = flashlistRow.get("LatchedTimeFrontendSeconds").asDouble();
+				this.percentBackpressure = converter.calculatePercent(flashlistRow.get(backpressureColumn).asDouble(),
+						this.frl_AccLatchedFerol40ClockSeconds, true); // calculate with latchedSeconds (unit is
+																		// seconds)
+				this.frl_AccSlinkFullSec = flashlistRow.get("AccSlinkFullSeconds").asDouble();
+			}
 
 		} else if (flashlistType == FlashlistType.TCDS_PI_TTS_SUMMARY) {
 
 			String ttsState = FEDHelper.getTTSState(this.fmmIO, flashlistRow);
 			this.ttsState = ttsState;
 
-			// unmask if other than 152 = 0x98: ignored (i.e., forced ready) 
+			// unmask if other than 152 = 0x98: ignored (i.e., forced ready)
 			if (ttsState != null && !"-".equals(ttsState)) {
 				this.fmmMasked = false;
+			}
+		} else if (flashlistType == FlashlistType.FEROL_TCP_STREAM) {
+
+			if (generatorDataSource) {
+				if (flashlistRow.has("AccBIFIBackpressureSeconds")) {
+					double latchedTime = flashlistRow.get("LatchedTimeBackendSeconds").asDouble();
+					double backpressureTime = flashlistRow.get("AccBIFIBackpressureSeconds").asDouble();
+
+					this.percentBackpressure = converter.calculatePercent(backpressureTime, latchedTime, true);
+					this.frl_AccBIFIBackpressureSeconds = backpressureTime;
+				}
+
 			}
 		}
 
@@ -298,6 +269,7 @@ public class FED implements FlashlistUpdatable {
 		frl_AccSlinkFullSec = 0;
 		frl_AccLatchedFerol40ClockSeconds = 0;
 		frl_AccBIFIBackpressureSeconds = 0;
+		generatorDataSource = false;
 	}
 
 	/** @return the RU to which this FED is associated or null if no RU is
