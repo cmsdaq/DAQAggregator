@@ -1,36 +1,56 @@
 package rcms.utilities.daqaggregator.data.helper;
 
-import java.util.Date;
-
+import org.apache.commons.math3.util.Precision;
 import org.apache.log4j.Logger;
-
-import rcms.utilities.daqaggregator.datasource.DateParser;
 
 public class BackpressureConverter {
 
+	/** Last value of accumulated backpressure in seconds */
 	private double lastValue;
-	private long lastTime;
+
+	/** Last latched time */
+	private double lastTime;
+
+	/** Last backpressure value */
 	private double lastResult;
 
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(BackpressureConverter.class);
 
-	public double calculate(double value, long time) {
+	/**
+	 * Calculate backpressure
+	 * 
+	 * @param accumulatedBackpressure
+	 *            accumulated backpressure in seconds
+	 * @param latchedTime
+	 *            latched time in seconds
+	 * @return backpressure value 0-1
+	 */
+	public double calculate(double accumulatedBackpressure, double latchedTime) {
 
-		int deltaTime = (int) (time - lastTime);
+		/*
+		 * restart the whole thing if the timer is restarted - that would result
+		 * in negative delta
+		 */
+		if (latchedTime < lastTime) {
+			lastValue = 0;
+			lastTime = 0;
+		}
 
-		double deltaVal = value - lastValue;
+		double deltaTime = latchedTime - lastTime;
 
-		double backpressure = (1000 * deltaVal) / deltaTime;
+		double deltaVal = accumulatedBackpressure - lastValue;
+
+		double backpressure = deltaVal / deltaTime;
 
 		/* restart of accumulated backpressure will be handled here */
 		if (backpressure < 0)
 			backpressure = 0;
 
-		// Regular conditions
-		if (time > lastTime) {
-			lastValue = value;
-			lastTime = time;
+		/* Regular conditions */
+		if (latchedTime > lastTime) {
+			lastValue = accumulatedBackpressure;
+			lastTime = latchedTime;
 			lastResult = backpressure;
 			return backpressure;
 		}
@@ -41,18 +61,21 @@ public class BackpressureConverter {
 		}
 	}
 
-	public double calculate(double value, String time) {
-		long timeLong;
-		Date date = DateParser.parseDateTransparently(time);
-		if (date == null) {
-			return lastResult;
+	/**
+	 * Calculate backpressure
+	 * 
+	 * @param accumulatedBackpressure
+	 *            accumulated backpressure in seconds
+	 * @param latchedTime
+	 *            latched time in seconds
+	 * @return backpressure value in percentage
+	 */
+	public float calculatePercent(double accumulatedBackpressure, double latchedTime, boolean round) {
+		float value = (float) (calculate(accumulatedBackpressure, latchedTime) * 100);
+		if (round) {
+			return Precision.round(value, 1);
+		} else {
+			return value;
 		}
-
-		timeLong = date.getTime();
-		return calculate(value, timeLong);
-	}
-
-	public float calculatePercent(double value, String time) {
-		return (float) (calculate(value, time) * 100);
 	}
 }

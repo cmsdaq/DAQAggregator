@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>ch.cern</groupId>
 	<artifactId>DAQAggregator</artifactId>
-	<version>1.13.1</version>
+	<version>1.13.2</version>
 	<repositories>
 		<repository>
 			<id>libs-release-local</id>
@@ -163,13 +163,21 @@
 			<artifactId>rcms</artifactId>
 			<version>4.6.2</version>
 		</dependency>
-		
+
 		<!-- Oracle driver is downloaded from internal repository -->
 		<dependency>
 			<groupId>com.oracle</groupId>
 			<artifactId>oracle6</artifactId>
 			<version>1.0</version>
 		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-math3 -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-math3</artifactId>
+			<version>3.0</version>
+		</dependency>
+
 
 
 	</dependencies>
