@@ -11,6 +11,10 @@ public enum PersistenceFormat {
 	ZIPPED(".json.gz", true, new ObjectMapper()),
 
 	@Deprecated
+	SMILE_ZIPPED(".smile.gz", false, new ObjectMapper(new SmileFactory())),
+	
+	
+	@Deprecated
 	SMILE(".smile", false, new ObjectMapper(new SmileFactory())),
 	
 	@Deprecated
@@ -42,6 +46,20 @@ public enum PersistenceFormat {
 
 	public ObjectMapper getMapper() {
 		return mapper;
+	}
+	
+	public static PersistenceFormat decodeFromFilename(String filename){
+		if(filename.toLowerCase().endsWith(ZIPPED.getExtension())){
+			return ZIPPED;
+		} else if(filename.toLowerCase().endsWith(SMILE_ZIPPED.getExtension())){
+			return SMILE_ZIPPED;
+		} else if(filename.toLowerCase().endsWith(JSON.getExtension())){
+			return JSON;
+		} else if(filename.toLowerCase().endsWith(SMILE.getExtension())){
+			return SMILE;
+		} else {
+			return null;
+		}
 	}
 	
 	public static PersistenceFormat decode(String formatProperty){
