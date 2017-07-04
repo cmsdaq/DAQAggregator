@@ -65,13 +65,7 @@ public class Compatibility {
 		flashlistRetriever.prepare(startLimit);
 		SessionRetriever sessionRetriever = new SessionRetriever("toppro", "toppro");
 
-		String url = Application.get().getProp(Settings.HWCFGDB_DBURL);
-		String host = Application.get().getProp(Settings.HWCFGDB_HOST);
-		String port = Application.get().getProp(Settings.HWCFGDB_PORT);
-		String sid = Application.get().getProp(Settings.HWCFGDB_SID);
-		String user = Application.get().getProp(Settings.HWCFGDB_LOGIN);
-		String passwd = Application.get().getProp(Settings.HWCFGDB_PWD);
-		hardwareConnector.initialize(url, host, port, sid, user, passwd);
+		hardwareConnector.initialize(Application.get().getProp());
 		monitorManager = new MonitorManager(flashlistRetriever, sessionRetriever, hardwareConnector);
 	}
 
