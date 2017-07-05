@@ -642,7 +642,7 @@ public class IdGenerators {
 
 	            String fedBuilderName = sfb.getFedBuilder().getName();
 	            String ttcpName = sfb.getTtcPartition().getName();
-	            String frlpcHostname = sfb.getFrlPc().getHostname();
+				String frlpcHostname = sfb.getFrlPc() != null ? sfb.getFrlPc().getHostname() : "-";
 	            frlpcHostname = ContextHelper.removeSuffixFromHostname(frlpcHostname, ".cms");
 
 	            StringBuilder sb = new StringBuilder(prefix.length() + fedBuilderName.length() + delimiter.length() + ttcpName.length() + delimiter.length() + frlpcHostname.length());
