@@ -198,7 +198,10 @@ public class FED implements FlashlistUpdatable {
 				this.srcIdReceived = flashlistRow.get("WrongFEDId").asInt();
 			}
 
-			this.numSCRCerrors = flashlistRow.get("SLinkCRCError").asInt();
+			// changes - backward compatibility
+			if (flashlistRow.has("SLinkCRCError")){
+				this.numSCRCerrors = flashlistRow.get("SLinkCRCError").asInt();
+			}
 			this.numFCRCerrors = flashlistRow.get("FEDCRCError").asInt();
 			this.numTriggers = flashlistRow.get("TriggerNumber").asInt();
 			this.eventCounter = flashlistRow.get("EventCounter").asLong();
@@ -272,8 +275,9 @@ public class FED implements FlashlistUpdatable {
 		generatorDataSource = false;
 	}
 
-	/** @return the RU to which this FED is associated or null if no RU is
-	    associated to it */
+	/**
+	 * @return the RU to which this FED is associated or null if no RU is associated to it
+	 */
 	public RU getRu() {
 		try {
 			return getFrl().getSubFedbuilder().getFedBuilder().getRu();
