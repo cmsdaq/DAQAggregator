@@ -395,4 +395,107 @@ public class BUSummary implements Derivable {
 		this.outputDiskUsage = outputDiskUsage;
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + currentLumisection;
+		long temp;
+		temp = Double.doubleToLongBits(eventSizeMean);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		temp = Double.doubleToLongBits(eventSizeStddev);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		temp = Double.doubleToLongBits(fuOutputBandwidthInMB);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		result = prime * result + (int) (numEvents ^ (numEvents >>> 32));
+		result = prime * result + (int) (numEventsInBU ^ (numEventsInBU >>> 32));
+		result = prime * result + numFUsCloud;
+		result = prime * result + numFUsCrashed;
+		result = prime * result + numFUsHLT;
+		result = prime * result + numFUsStale;
+		result = prime * result + numFiles;
+		result = prime * result + numLumisectionsForHLT;
+		result = prime * result + numLumisectionsOutHLT;
+		result = prime * result + numLumisectionsWithFiles;
+		result = prime * result + numRequestsBlocked;
+		result = prime * result + numRequestsSent;
+		result = prime * result + numRequestsUsed;
+		result = prime * result + ((outputDiskTotal == null) ? 0 : outputDiskTotal.hashCode());
+		result = prime * result + ((outputDiskUsage == null) ? 0 : outputDiskUsage.hashCode());
+		result = prime * result + priority;
+		temp = Double.doubleToLongBits(ramDiskTotal);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		temp = Double.doubleToLongBits(ramDiskUsage);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		result = prime * result + (int) (rate ^ (rate >>> 32));
+		result = prime * result + (int) (throughput ^ (throughput >>> 32));
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		BUSummary other = (BUSummary) obj;
+		if (currentLumisection != other.currentLumisection)
+			return false;
+		if (Double.doubleToLongBits(eventSizeMean) != Double.doubleToLongBits(other.eventSizeMean))
+			return false;
+		if (Double.doubleToLongBits(eventSizeStddev) != Double.doubleToLongBits(other.eventSizeStddev))
+			return false;
+		if (Double.doubleToLongBits(fuOutputBandwidthInMB) != Double.doubleToLongBits(other.fuOutputBandwidthInMB))
+			return false;
+		if (numEvents != other.numEvents)
+			return false;
+		if (numEventsInBU != other.numEventsInBU)
+			return false;
+		if (numFUsCloud != other.numFUsCloud)
+			return false;
+		if (numFUsCrashed != other.numFUsCrashed)
+			return false;
+		if (numFUsHLT != other.numFUsHLT)
+			return false;
+		if (numFUsStale != other.numFUsStale)
+			return false;
+		if (numFiles != other.numFiles)
+			return false;
+		if (numLumisectionsForHLT != other.numLumisectionsForHLT)
+			return false;
+		if (numLumisectionsOutHLT != other.numLumisectionsOutHLT)
+			return false;
+		if (numLumisectionsWithFiles != other.numLumisectionsWithFiles)
+			return false;
+		if (numRequestsBlocked != other.numRequestsBlocked)
+			return false;
+		if (numRequestsSent != other.numRequestsSent)
+			return false;
+		if (numRequestsUsed != other.numRequestsUsed)
+			return false;
+		if (outputDiskTotal == null) {
+			if (other.outputDiskTotal != null)
+				return false;
+		} else if (!outputDiskTotal.equals(other.outputDiskTotal))
+			return false;
+		if (outputDiskUsage == null) {
+			if (other.outputDiskUsage != null)
+				return false;
+		} else if (!outputDiskUsage.equals(other.outputDiskUsage))
+			return false;
+		if (priority != other.priority)
+			return false;
+		if (Double.doubleToLongBits(ramDiskTotal) != Double.doubleToLongBits(other.ramDiskTotal))
+			return false;
+		if (Double.doubleToLongBits(ramDiskUsage) != Double.doubleToLongBits(other.ramDiskUsage))
+			return false;
+		if (rate != other.rate)
+			return false;
+		if (throughput != other.throughput)
+			return false;
+		return true;
+	}
+
 }
