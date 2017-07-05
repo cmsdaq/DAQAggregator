@@ -198,7 +198,7 @@ public class FED implements FlashlistUpdatable {
 				this.srcIdReceived = flashlistRow.get("WrongFEDId").asInt();
 			}
 
-			this.numSCRCerrors = flashlistRow.get("LinkCRCError").asInt();
+			this.numSCRCerrors = flashlistRow.get("SLinkCRCError").asInt();
 			this.numFCRCerrors = flashlistRow.get("FEDCRCError").asInt();
 			this.numTriggers = flashlistRow.get("TriggerNumber").asInt();
 			this.eventCounter = flashlistRow.get("EventCounter").asLong();
