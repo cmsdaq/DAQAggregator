@@ -1,0 +1,9 @@
+{
+  "flashlistType" : "FMM_STATUS",
+  "rowsNode" : null,
+  "definitionNode" : null,
+  "retrievalDate" : 1499335390070,
+  "address" : "http://ucsrv-c2e41-07-01.cms:9943/urn:xdaq-application:service=xmaslas2g/retrieveCollection?flash=urn:xdaq-flashlist:FMMStatus&fmt=json&sessionid=295171",
+  "name" : "urn:xdaq-flashlist:FMMStatus",
+  "unknownAtLAS" : true
+}

@@ -1,6 +1,7 @@
 package rcms.utilities.daqaggregator.mappers;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -67,12 +68,17 @@ public class MappingManager implements Serializable {
 		relationMapper.subFedBuilderToFrlPc = new HashMap<>();
 		relationMapper.subFedBuilderToTTCP = new HashMap<>();
 
+		// Michail's hack - FIXME
 		objectMapper.subFedBuilders = mapSubFEDBuilders(daqPartition, relationMapper.fedBuilderToSubFedBuilder,
 				relationMapper.subFedBuilderToFrl, relationMapper.subFedBuilderToFrlPc,
 				relationMapper.subFedBuilderToTTCP);
 
 		objectMapper.mapAllObjects(daqPartition);
 		relationMapper.mapAllRelations(daqPartition);
+		
+
+		// quick fix to Michail's hack - avoids missing subfedbuilder in daqval setup - FIXME
+		objectMapper.daq.setSubFEDBuilders(new ArrayList<>(objectMapper.subFedBuilders.values()));
 
 		return objectMapper.daq;
 	}
