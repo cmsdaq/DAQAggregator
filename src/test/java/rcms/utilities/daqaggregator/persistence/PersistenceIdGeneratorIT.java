@@ -75,12 +75,17 @@ public class PersistenceIdGeneratorIT {
 		}
 		Assert.assertEquals(78, refferedSFB.size());
 
+		DAQ sref = getSnapshot("src/test/resources/id-generator/case/fixed-snapshot/", "test-output.json");
+		doBasicAssertionsOnSnapshot(sref);
+		
 		PersistorManager pm = new PersistorManager("src/test/resources/id-generator/case/fixed-snapshot/", null,
 				PersistenceFormat.JSON, null);
 		pm.persistSnapshot(snapshot1.getLeft());
-
+		
 		DAQ s = getSnapshot("src/test/resources/id-generator/case/fixed-snapshot/2017/7/6/10/", "1499335390070.json");
 		doBasicAssertionsOnSnapshot(s);
+		File f = new File("src/test/resources/id-generator/case/fixed-snapshot/2017/7/6/10/1499335390070.json");
+		f.delete();
 	}
 
 	private static HardwareConnector hardwareConnector;
