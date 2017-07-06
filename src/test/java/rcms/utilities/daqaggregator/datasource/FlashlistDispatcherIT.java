@@ -78,17 +78,11 @@ public class FlashlistDispatcherIT {
 		Properties prop = new Properties();
 		prop.load(new FileInputStream("DAQAggregator.properties"));
 
-		String url = prop.getProperty(Settings.HWCFGDB_DBURL.getKey());
-		String host = prop.getProperty(Settings.HWCFGDB_HOST.getKey());
-		String port = prop.getProperty(Settings.HWCFGDB_PORT.getKey());
-		String sid = prop.getProperty(Settings.HWCFGDB_SID.getKey());
-		String user = prop.getProperty(Settings.HWCFGDB_LOGIN.getKey());
-		String passwd = prop.getProperty(Settings.HWCFGDB_PWD.getKey());
 		String filter1 = prop.getProperty(Settings.SESSION_L0FILTER1.getKey());
 		String filter2 = prop.getProperty(Settings.SESSION_L0FILTER2.getKey());
 
 		// connect to the hardware database
-		hardwareConnector.initialize(url, host, port, sid, user, passwd);
+		hardwareConnector.initialize(prop);
 
 		SessionRetriever sr = new SessionRetriever(filter1, filter2);
 		int sessionId;

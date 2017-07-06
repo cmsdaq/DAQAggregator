@@ -5,10 +5,25 @@ import com.fasterxml.jackson.dataformat.smile.SmileFactory;
 
 public enum PersistenceFormat {
 
-	SMILE(".smile", false, new ObjectMapper(new SmileFactory())),
+	
 	JSON(".json", true, new ObjectMapper()),
+	
+	ZIPPED(".json.gz", true, new ObjectMapper()),
+
+	@Deprecated
+	SMILE_ZIPPED(".smile.gz", false, new ObjectMapper(new SmileFactory())),
+	
+	
+	@Deprecated
+	SMILE(".smile", false, new ObjectMapper(new SmileFactory())),
+	
+	@Deprecated
 	JSONUGLY(".json", false, new ObjectMapper()),
+
+	@Deprecated
 	JSONREFPREFIXED(".ref.json", true, new ObjectMapper()),
+
+	@Deprecated
 	JSONREFPREFIXEDUGLY(".ref.json",false, new ObjectMapper());
 
 	private final String extension;
@@ -33,9 +48,25 @@ public enum PersistenceFormat {
 		return mapper;
 	}
 	
+	public static PersistenceFormat decodeFromFilename(String filename){
+		if(filename.toLowerCase().endsWith(ZIPPED.getExtension())){
+			return ZIPPED;
+		} else if(filename.toLowerCase().endsWith(SMILE_ZIPPED.getExtension())){
+			return SMILE_ZIPPED;
+		} else if(filename.toLowerCase().endsWith(JSON.getExtension())){
+			return JSON;
+		} else if(filename.toLowerCase().endsWith(SMILE.getExtension())){
+			return SMILE;
+		} else {
+			return null;
+		}
+	}
+	
 	public static PersistenceFormat decode(String formatProperty){
 		if (PersistenceFormat.JSON.name().equalsIgnoreCase(formatProperty))
 			return PersistenceFormat.JSON;
+		else if (PersistenceFormat.ZIPPED.name().equalsIgnoreCase(formatProperty))
+			return PersistenceFormat.ZIPPED;
 		else if (PersistenceFormat.SMILE.name().equalsIgnoreCase(formatProperty))
 			return PersistenceFormat.SMILE;
 		else if (PersistenceFormat.JSONREFPREFIXED.name().equalsIgnoreCase(formatProperty))

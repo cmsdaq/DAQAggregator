@@ -2,9 +2,13 @@ package rcms.utilities.daqaggregator.persistence;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.OutputStream;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import org.apache.log4j.Logger;
 
@@ -73,11 +77,24 @@ public class StructureSerializer {
 		ObjectMapper mapper = format.getMapper();
 		boolean prettyPrint = format.isPrettyPrint();
 
+		OutputStream finalOutputStream = outputStream;
+
 		switch (format) {
+
+		case JSON:
+			addMixins(mapper);
+			break;
+		case ZIPPED:
+			GZIPOutputStream gzipOS = new GZIPOutputStream(outputStream);
+			finalOutputStream = gzipOS;
+			addMixins(mapper);
+			break;
 		case SMILE:
 			addMixins(mapper);
 			break;
-		case JSON:
+		case SMILE_ZIPPED:
+			GZIPOutputStream smileGzipOs = new GZIPOutputStream(outputStream);
+			finalOutputStream = smileGzipOs;
 			addMixins(mapper);
 			break;
 		case JSONREFPREFIXED:
@@ -94,9 +111,9 @@ public class StructureSerializer {
 		}
 
 		if (prettyPrint)
-			mapper.writerWithDefaultPrettyPrinter().writeValue(outputStream, daqSnapshot);
+			mapper.writerWithDefaultPrettyPrinter().writeValue(finalOutputStream, daqSnapshot);
 		else
-			mapper.writeValue(outputStream, daqSnapshot);
+			mapper.writeValue(finalOutputStream, daqSnapshot);
 
 	}
 
@@ -114,8 +131,7 @@ public class StructureSerializer {
 			flashlist = mapper.readValue(file, Flashlist.class);
 			return flashlist;
 		} catch (IOException i) {
-			logger.error("File incompatible: " + file.getAbsolutePath());
-			i.printStackTrace();
+			logger.error("File incompatible: " + file.getAbsolutePath(), i);
 			return null;
 		} finally {
 			if (in != null)
@@ -131,54 +147,71 @@ public class StructureSerializer {
 		}
 	}
 
+	public DAQ deserialize(String filepath) {
+		PersistenceFormat format = PersistenceFormat.decodeFromFilename(filepath);
+		return deserialize(filepath, format);
+	}
+
 	public DAQ deserialize(String filepath, PersistenceFormat format) {
 
 		ObjectMapper mapper = format.getMapper();
 		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-		switch (format) {
-		case SMILE:
-			addMixins(mapper);
-			break;
-		case JSON:
-			addMixins(mapper);
-			break;
-		case JSONREFPREFIXED:
-			addRefMixins(mapper);
-			break;
-		case JSONUGLY:
-			addMixins(mapper);
-			break;
-		case JSONREFPREFIXEDUGLY:
-			addRefMixins(mapper);
-			break;
-		default:
-			logger.warn("Format of snapshot not available");
-		}
-
-		DAQ daq = null;
-
-		ObjectInputStream in = null;
-		FileInputStream fileIn = null;
 		try {
-			daq = mapper.readValue(new File(filepath), DAQ.class);
-			return daq;
-		} catch (IOException i) {
-			logger.error("File incompatible: " + filepath);
-			i.printStackTrace();
+			InputStream finalInputStream = new FileInputStream(filepath);
+
+			switch (format) {
+
+			case JSON:
+				addMixins(mapper);
+				break;
+			case ZIPPED:
+				GZIPInputStream gzis = new GZIPInputStream(finalInputStream);
+				finalInputStream = gzis;
+				addMixins(mapper);
+				break;
+			case SMILE:
+				addMixins(mapper);
+				break;
+			case SMILE_ZIPPED:
+				GZIPInputStream gzisSmile = new GZIPInputStream(finalInputStream);
+				finalInputStream = gzisSmile;
+				addMixins(mapper);
+				break;
+			case JSONREFPREFIXED:
+				addRefMixins(mapper);
+				break;
+			case JSONUGLY:
+				addMixins(mapper);
+				break;
+			case JSONREFPREFIXEDUGLY:
+				addRefMixins(mapper);
+				break;
+			default:
+				logger.warn("Format of snapshot not available");
+			}
+
+			DAQ daq = null;
+
+			try {
+				daq = mapper.readValue(finalInputStream, DAQ.class);
+				return daq;
+			} catch (IOException i) {
+				logger.error("File incompatible: " + filepath, i);
+				return null;
+			} finally {
+				if (finalInputStream != null)
+					try {
+						finalInputStream.close();
+					} catch (IOException e1) {
+					}
+			}
+
+		} catch (IOException e) {
+			logger.error("Problem accessing file: " + filepath, e);
 			return null;
-		} finally {
-			if (in != null)
-				try {
-					in.close();
-				} catch (IOException e1) {
-				}
-			if (fileIn != null)
-				try {
-					fileIn.close();
-				} catch (IOException e1) {
-				}
 		}
+
 	}
 
 	/**

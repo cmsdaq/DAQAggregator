@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import rcms.utilities.daqaggregator.datasource.FlashlistType;
 import rcms.utilities.daqaggregator.mappers.Derivable;
@@ -305,6 +308,60 @@ public class RU implements FlashlistUpdatable, Derivable {
 
 	public void setIncompleteSuperFragmentCount(int incompleteSuperFragmentCount) {
 		this.incompleteSuperFragmentCount = incompleteSuperFragmentCount;
+	}
+
+	/** @return the list of all (real) FEDs (not including pseudofeds) associated
+	 *  to this RU.
+	 *  @param includeMasked if true, includes also masked FEDs, otherwise
+	 *    just includes FEDs which are not masked FRL-wise.
+	 */
+	public Set<FED> getFEDs(boolean includeMasked) {
+
+		Set<FED> retval = new HashSet<>();
+
+		FEDBuilder fb = this.getFedBuilder();
+
+		if (fb != null) {
+
+			List<SubFEDBuilder> subFedBuilders = fb.getSubFedbuilders();
+
+			if (subFedBuilders != null) {
+
+				for (SubFEDBuilder subFedBuilder : subFedBuilders) {
+
+					List<FRL> frls = subFedBuilder.getFrls();
+
+					if (frls != null) {
+
+						// assume that there are no null pointers in the list
+						for (FRL frl : frls) {
+
+							Map<Integer, FED> feds = frl.getFeds();
+
+							if (feds != null) {
+
+								// assume the map does not contain null pointers
+								for (FED fed : frl.getFeds().values()) {
+
+									if (includeMasked || ! fed.isFrlMasked()) {
+										retval.add(fed);
+									}
+
+								} // loop over FEDs
+
+							} // if feds is not null
+
+						} // loop over FRLs
+
+					} // if frls is not null
+
+				} // loop over subfedbuilders
+
+			} // if subFedBuilders is not null
+
+		} // if fb not null
+
+		return retval;
 	}
 
 	@Override
