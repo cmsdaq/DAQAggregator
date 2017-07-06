@@ -1,0 +1,9 @@
+{
+  "flashlistType" : "TCDSFM",
+  "rowsNode" : null,
+  "definitionNode" : null,
+  "retrievalDate" : 1499335390070,
+  "address" : "http://ucsrv-c2e41-10-01.cms:9946/urn:xdaq-application:service=xmaslas2g/retrieveCollection?flash=urn:xdaq-flashlist:tcdsFM&fmt=json",
+  "name" : "urn:xdaq-flashlist:tcdsFM",
+  "unknownAtLAS" : true
+}

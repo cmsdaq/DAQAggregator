@@ -1,0 +1,24 @@
+{
+  "flashlistType" : "DISK_INFO",
+  "rowsNode" : [ ],
+  "definitionNode" : [ {
+    "key" : "context",
+    "type" : "string"
+  }, {
+    "key" : "diskUsage",
+    "type" : "table"
+  }, {
+    "key" : "sessionid",
+    "type" : "string"
+  }, {
+    "key" : "timestamp",
+    "type" : "time"
+  }, {
+    "key" : "uniqueid",
+    "type" : "string"
+  } ],
+  "retrievalDate" : 1499335390070,
+  "address" : "http://ucsrv-c2e41-14-01.cms:9942/urn:xdaq-application:service=xmaslas2g/retrieveCollection?flash=urn:xdaq-flashlist:diskInfo&fmt=json&sessionid=295171",
+  "name" : "urn:xdaq-flashlist:diskInfo",
+  "unknownAtLAS" : false
+}

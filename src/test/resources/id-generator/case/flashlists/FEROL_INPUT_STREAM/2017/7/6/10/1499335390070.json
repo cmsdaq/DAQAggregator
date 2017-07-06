@@ -1,0 +1,9 @@
+{
+  "flashlistType" : "FEROL_INPUT_STREAM",
+  "rowsNode" : null,
+  "definitionNode" : null,
+  "retrievalDate" : 1499335390070,
+  "address" : "http://ucsrv-c2e41-14-01.cms:9942/urn:xdaq-application:service=xmaslas2g/retrieveCollection?flash=urn:xdaq-flashlist:ferolInputStream&fmt=json&sessionid=295171",
+  "name" : "urn:xdaq-flashlist:ferolInputStream",
+  "unknownAtLAS" : true
+}
