@@ -1,0 +1,9 @@
+{
+  "flashlistType" : "FEROL_STATUS",
+  "rowsNode" : null,
+  "definitionNode" : null,
+  "retrievalDate" : 1499335390070,
+  "address" : "http://ucsrv-c2e41-08-01.cms:9944/urn:xdaq-application:service=xmaslas2g/retrieveCollection?flash=urn:xdaq-flashlist:ferolStatus&fmt=json&sessionid=295171",
+  "name" : "urn:xdaq-flashlist:ferolStatus",
+  "unknownAtLAS" : true
+}
