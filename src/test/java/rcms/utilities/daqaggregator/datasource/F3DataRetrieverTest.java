@@ -7,11 +7,8 @@ import java.util.List;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
-import rcms.utilities.daqaggregator.Application;
-import rcms.utilities.daqaggregator.ProxyManager;
 import rcms.utilities.daqaggregator.datasource.F3DataRetriever.DiskInfo;
 
 /**
@@ -22,12 +19,6 @@ import rcms.utilities.daqaggregator.datasource.F3DataRetriever.DiskInfo;
  */
 public class F3DataRetrieverTest {
 	private static final Logger logger = Logger.getLogger(F3DataRetriever.class);
-
-	@BeforeClass
-	public static void enableProxy() {
-		Application.initialize("DAQAggregator.properties");
-		ProxyManager.get().startProxy();
-	}
 
 	@Test
 	public void diskInfoTest() throws IOException {
