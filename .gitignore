@@ -5,6 +5,9 @@ DAQAggregator.properties
 .classpath
 .project
 .settings
+.idea
+
+DAQAggregator.iml
 
 *.class
 *.jar
