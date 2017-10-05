@@ -34,6 +34,7 @@ public enum FlashlistType {
 
 	TCDS_CPM_COUNTS("tcds_cpm_counts"),
 	TCDS_CPM_DEADTIMES("tcds_cpm_deadtimes"),
+	TCDS_CPM_DEADTIMES_1HZ("tcds_cpm_deadtimes_1hz"),
 	TCDS_CPM_RATES("tcds_cpm_rates"),
 	TCDS_PM_ACTION_COUNTS("tcds_pm_action_counts"),
 	TCDS_PM_TTS_CHANNEL("tcds_pm_tts_channel"),
@@ -49,6 +50,7 @@ public enum FlashlistType {
 	FEROL40_INPUT_STREAM("ferol40InputStream"),
 	FEROL40_STATUS("ferol40Status"),
 	FEROL40_TCP_STREAM("ferol40TcpStream"),
+	
 
 	TCDSFM("tcdsFM");
 

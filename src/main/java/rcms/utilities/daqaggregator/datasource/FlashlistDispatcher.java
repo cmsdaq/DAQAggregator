@@ -425,6 +425,22 @@ public class FlashlistDispatcher {
 			}
 
 			break;
+			
+		case TCDS_CPM_DEADTIMES_1HZ:
+			if (tcds_serviceField == null || tcds_url == null) {
+				return;
+			}
+			for (JsonNode rowNode : flashlist.getRowsNode()) {
+
+				// get flashlist row corresponding to service
+				if (rowNode.get("service").asText().equalsIgnoreCase(tcds_serviceField)) {
+					mappingManager.getObjectMapper().daq.getTcdsGlobalInfo()
+							.updateFromFlashlist(flashlist.getFlashlistType(), rowNode);
+					break;
+				}
+			}
+
+			break;
 
 		case TCDS_CPM_RATES:
 			if (tcds_serviceField == null || tcds_url == null) {
