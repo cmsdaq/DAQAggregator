@@ -1,12 +1,17 @@
 package rcms.utilities.daqaggregator.persistence;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.TimeZone;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import org.apache.log4j.Logger;
 
@@ -120,12 +125,28 @@ public class PersistorManager {
 		File file = new File(getTimeDir(flashlistBase, flashlist.getRetrievalDate()) + flashlistFilename);
 
 		ObjectMapper mapper = getFlashlistFormat().getMapper();
+		
+		OutputStream finalOutputStream  = new FileOutputStream(file);
+
+		PersistenceFormat format = getFlashlistFormat();
+		
+		switch (format) {
+
+		case JSON:
+			// nothing to do
+			break;
+		case ZIPPED:
+			GZIPOutputStream gzis = new GZIPOutputStream(finalOutputStream);
+			finalOutputStream = gzis;
+			break;
+		default:
+			logger.warn("Format of flashlist not available");
+		}
 
 		// mapper.addMixIn(Flashlist.class,
 		// rcms.utilities.daqaggregator.FlashlistMixin.class);
 
-		FileOutputStream fos = new FileOutputStream(file);
-		mapper.writerWithDefaultPrettyPrinter().writeValue(fos, flashlist);
+		mapper.writerWithDefaultPrettyPrinter().writeValue(finalOutputStream, flashlist);
 		return file.getAbsolutePath();
 	}
 
