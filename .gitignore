@@ -5,6 +5,7 @@ DAQAggregator.properties
 .classpath
 .project
 .settings
+.idea
 
 *.class
 *.jar
@@ -15,3 +16,5 @@ target
 /visualization/
 /doc/
 /logs/
+logfile
+DAQAggregator.iml
