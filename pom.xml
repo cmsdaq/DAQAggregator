@@ -181,4 +181,11 @@
 
 
 	</dependencies>
+	<distributionManagement>
+		<repository>
+			<id>central</id>
+			<name>dev-daq-expert.cern.ch-releases</name>
+			<url>http://dev-daq-expert.cern.ch/artifactory/libs-release-local</url>
+		</repository>
+	</distributionManagement>
 </project>
