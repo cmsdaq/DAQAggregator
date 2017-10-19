@@ -83,15 +83,26 @@ public class PersistorManager {
 			String extension = snapshotFormat.getExtension();
 
 			String snapshotFilename = current.getTime() + extension;
-			File file = new File(getTimeDir(snapshotPersistenceDir, current) + snapshotFilename);
+			String pathname = getTimeDir(snapshotPersistenceDir, current) + snapshotFilename;
+			String tmpPathname = pathname + ".tmp";
+			File tmpfile = new File(tmpPathname);
+			File file = new File(pathname);
 
-			FileOutputStream fos = new FileOutputStream(file);
+			FileOutputStream fos = new FileOutputStream(tmpfile);
 
 			persistor.serialize(daq, fos, snapshotFormat);
-			String filename = file.getAbsolutePath();
 
-			logger.info("Successfully persisted in " + snapshotPersistenceDir + " as file " + filename);
-			return filename;
+			boolean success = tmpfile.renameTo(file);
+			if(success){
+				String filename = file.getAbsolutePath();
+				logger.info("Successfully persisted in " + snapshotPersistenceDir + " as file " + filename);
+				return filename;
+			}
+			else {
+				logger.error("Problem renaming file: " + tmpPathname);
+				return null;
+			}
+
 		} catch (IOException e) {
 			logger.warn("Problem persisting " + e.getMessage());
 			return null;
