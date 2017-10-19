@@ -49,6 +49,10 @@ public class TCDSGlobalInfo implements FlashlistUpdatable{
 
 	//map with all deadtime values, indexed by their flashlist column name
 	private Map<String, Double> deadTimes;
+	
+
+	//map with all deadtime values, indexed by their flashlist column name
+	private Map<String, Double> deadTimesInstant;
 
 	/*cpm rates*/
 
@@ -91,6 +95,7 @@ public class TCDSGlobalInfo implements FlashlistUpdatable{
 		trg_rate_tt_values = new ArrayList<Double>();
 		actionCounts = new ArrayList<Integer>();
 		deadTimes = new HashMap<String, Double>(); //should reset between aggregations in the same DAQAggregator exec.
+		deadTimesInstant = new HashMap<String, Double>(); //should reset between aggregations in the same DAQAggregator exec.
 	}
 
 	public Map<String, GlobalTTSState> getGlobalTtsStates() {
@@ -537,6 +542,29 @@ public class TCDSGlobalInfo implements FlashlistUpdatable{
 				deadTimes.put(fieldName.substring(9, fieldName.length()), flashlistRow.get(fieldName).asDouble());
 			}
 		}
+		
+
+		if (flashlistType == FlashlistType.TCDS_CPM_DEADTIMES_1HZ){
+
+			//set fillnumber
+			fillNumber = flashlistRow.get("fill_number").asInt();
+
+			//set ls number
+			sectionNumber_deadtimes = flashlistRow.get("section_number").asInt();
+
+			//set map of deadtimes
+			String pattern = "deadtime.*";
+
+			for (Iterator<String> fieldNameIter = flashlistRow.fieldNames(); fieldNameIter.hasNext() ;){
+				String fieldName = fieldNameIter.next();
+				if (!Pattern.matches(pattern, fieldName)){
+					continue;
+				}
+
+				//stripping "deadtime_" prefix, common to all values, to save some space
+				deadTimesInstant.put(fieldName.substring(9, fieldName.length()), flashlistRow.get(fieldName).asDouble());
+			}
+		}
 
 		if (flashlistType == FlashlistType.TCDS_PM_ACTION_COUNTS){
 			//reset array to flush old entries
@@ -565,6 +593,7 @@ public class TCDSGlobalInfo implements FlashlistUpdatable{
 				actionCounts.add(positionToValue.get(i));
 			}
 		}
+		
 	}
 
 	@Override
@@ -593,9 +622,18 @@ public class TCDSGlobalInfo implements FlashlistUpdatable{
 		sectionNumber_deadtimes = 0;
 
 		deadTimes = new HashMap<String, Double>();
+		deadTimesInstant = new HashMap<String, Double>();
 		actionCounts = new ArrayList<Integer>();
 
 
+	}
+
+	public Map<String, Double> getDeadTimesInstant() {
+		return deadTimesInstant;
+	}
+
+	public void setDeadTimesInstant(Map<String, Double> deadTimesInstant) {
+		this.deadTimesInstant = deadTimesInstant;
 	}
 
 }
