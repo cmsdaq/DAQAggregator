@@ -115,6 +115,6 @@ public class PersistenceIdGeneratorIT {
 		SessionRetriever sessionRetriever = new SessionRetriever("cmsrc-daqdev", "31000");
 
 		hardwareConnector.initialize(Application.get().getProp());
-		monitorManager = new MonitorManager(flashlistRetriever, sessionRetriever, hardwareConnector);
+		monitorManager = new MonitorManager(flashlistRetriever, sessionRetriever, hardwareConnector,null);
 	}
 }

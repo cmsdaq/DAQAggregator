@@ -56,7 +56,7 @@ public class MonitorManagerTest {
 
 		Application.initialize("DAQAggregator.properties");
 		hardwareConnector.initialize(Application.get().getProp());
-		monitorManager = new MonitorManager(flashlistRetriever, sessionRetriever, hardwareConnector);
+		monitorManager = new MonitorManager(flashlistRetriever, sessionRetriever, hardwareConnector,null);
 	}
 
 	@Test

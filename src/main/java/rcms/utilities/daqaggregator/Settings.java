@@ -16,6 +16,12 @@ public enum Settings {
 	SESSION_L0FILTER1("session.l0filter1"),
 	SESSION_L0FILTER2("session.l0filter2"),
 
+
+	// F3 urls
+	F3_ENABLED("f3.enabled", true),
+	F3_HLT_URL("f3.htl.url"),
+	F3_DISK_URL("f3.disk.url"),
+
 	// settings for monitoring
 	MONITOR_SETUPNAME("monitor.setupName"),
 
