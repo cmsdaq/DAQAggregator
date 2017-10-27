@@ -178,7 +178,12 @@
 			<version>3.0</version>
 		</dependency>
 
-
+		<!-- https://mvnrepository.com/artifact/de.galan/verjson -->
+		<dependency>
+			<groupId>de.galan</groupId>
+			<artifactId>verjson</artifactId>
+			<version>0.8.1</version>
+		</dependency>
 
 	</dependencies>
 	<distributionManagement>
