@@ -36,6 +36,7 @@ public enum FlashlistType {
 	TCDS_CPM_DEADTIMES("tcds_cpm_deadtimes"),
 	TCDS_CPM_DEADTIMES_1HZ("tcds_cpm_deadtimes_1hz"),
 	TCDS_CPM_RATES("tcds_cpm_rates"),
+	TCDS_CPM_RATES_1HZ("tcds_cpm_rates_1hz"),
 	TCDS_PM_ACTION_COUNTS("tcds_pm_action_counts"),
 	TCDS_PM_TTS_CHANNEL("tcds_pm_tts_channel"),
 	TCDS_PI_TTS_SUMMARY("tcds_pi_tts_summary"),
