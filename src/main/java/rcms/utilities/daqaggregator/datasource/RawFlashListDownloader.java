@@ -74,7 +74,11 @@ public class RawFlashListDownloader {
 		for (FlashlistType flashlistType : FlashlistType.values()) {
 
 			// download the flashlist from the LAS in json format
-			String jsonText = retrieveFlashList(flashlistType.getUrl());
+			String url = flashlistType.getUrl() + "/retrieveCollection?flash=" +
+							"urn:xdaq-flashlist:" + flashlistType.getFlashlistName() +
+							"&fmt=json";
+			
+			String jsonText = retrieveFlashList(url);
 
 			// build the name for the .json file
 			String destFname = persistorManager.getTimeDir(flashlistType.name() + "/", now)
