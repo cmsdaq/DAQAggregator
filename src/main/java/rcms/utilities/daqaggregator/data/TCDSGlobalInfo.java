@@ -71,6 +71,8 @@ public class TCDSGlobalInfo implements FlashlistUpdatable{
 	private List<Double> trg_rate_beamactive_tt_values;
 	private List<Double> trg_rate_tt_values;
 
+	/** instant (1 Hz update rate) cpm rates */
+	private TCDSTriggerRates triggerRatesInstant;
 
 	/*pm action counts*/
 	//action[i]_count, , where i=0,...,m (action0 always at array position 0 etc.)
@@ -96,6 +98,7 @@ public class TCDSGlobalInfo implements FlashlistUpdatable{
 		actionCounts = new ArrayList<Integer>();
 		deadTimes = new HashMap<String, Double>(); //should reset between aggregations in the same DAQAggregator exec.
 		deadTimesInstant = new HashMap<String, Double>(); //should reset between aggregations in the same DAQAggregator exec.
+		triggerRatesInstant = new TCDSTriggerRates();
 	}
 
 	public Map<String, GlobalTTSState> getGlobalTtsStates() {
@@ -521,6 +524,10 @@ public class TCDSGlobalInfo implements FlashlistUpdatable{
 			}
 		}
 
+		if (flashlistType == FlashlistType.TCDS_CPM_RATES_1HZ){
+			triggerRatesInstant.updateFromFlashlist(flashlistType, flashlistRow);
+		}
+
 		if (flashlistType == FlashlistType.TCDS_CPM_DEADTIMES){
 
 			//set fillnumber
@@ -625,6 +632,8 @@ public class TCDSGlobalInfo implements FlashlistUpdatable{
 		deadTimesInstant = new HashMap<String, Double>();
 		actionCounts = new ArrayList<Integer>();
 
+		// TODO: should we use triggerRatesInstant.clean() instead ?
+		triggerRatesInstant = new TCDSTriggerRates();
 
 	}
 
@@ -634,6 +643,14 @@ public class TCDSGlobalInfo implements FlashlistUpdatable{
 
 	public void setDeadTimesInstant(Map<String, Double> deadTimesInstant) {
 		this.deadTimesInstant = deadTimesInstant;
+	}
+
+	public TCDSTriggerRates getTriggerRatesInstant() {
+		return triggerRatesInstant;
+	}
+
+	public void setTriggerRatesInstant(TCDSTriggerRates triggerRatesInstant) {
+		this.triggerRatesInstant = triggerRatesInstant;
 	}
 
 }
