@@ -24,6 +24,8 @@ import rcms.utilities.daqaggregator.data.FED;
 import rcms.utilities.daqaggregator.data.FRL;
 import rcms.utilities.daqaggregator.data.FRLType;
 import rcms.utilities.daqaggregator.data.SubSystem;
+import rcms.utilities.daqaggregator.data.TCDSGlobalInfo;
+import rcms.utilities.daqaggregator.data.TCDSTriggerRates;
 import rcms.utilities.daqaggregator.mappers.MappingManager;
 import rcms.utilities.daqaggregator.mappers.MappingReporter;
 import rcms.utilities.daqaggregator.persistence.PersistenceFormat;
@@ -446,4 +448,45 @@ public class FlashlistDispatcherIT {
 
 	}
 
+	
+	/** tests dispatching of new (2017-10) TCDS_CPM_RATES_1HZ flashlists */
+	@Test
+	public void testCPMInstantaneousRates() throws IOException, DBConnectorException,
+			HardwareConfigurationException, PathNotFoundException, InvalidNodeTypeException {
+
+		// hardwire session id and hardware configuration path
+		// to be independent of SessionRetriever
+		forcedSessionId = 297583;
+		forcedPath = "/daq2/eq_170622/fb_all_DTup/dp_bl579_75BU";
+		
+		DAQ daq = runDispatch("src/test/resources/tcds-instantaneous-trigger-rates/flashlists/", true);
+
+		// check the new instantaneous trigger rates
+		TCDSGlobalInfo tcdsGlobalInfo = daq.getTcdsGlobalInfo();
+		
+		TCDSTriggerRates instantRates = tcdsGlobalInfo.getTriggerRatesInstant();
+		
+		// required precision for floating point comparisons
+		double precision = 0.01;
+		
+		// trigger rates updated per lumi section
+		Assert.assertEquals(0.,      tcdsGlobalInfo.getSup_trg_rate_beamactive_total(), precision);
+		Assert.assertEquals(137.15,  tcdsGlobalInfo.getSup_trg_rate_total(), precision);
+		Assert.assertEquals(0.,      tcdsGlobalInfo.getTrg_rate_beamactive_total(), precision);
+		Assert.assertEquals(6739.17, tcdsGlobalInfo.getTrg_rate_total(), precision);
+
+		Assert.assertEquals(161,     tcdsGlobalInfo.getSectionNumber_rates());
+		
+		// trigger rates updated with 1 Hz rate
+		Assert.assertEquals(0.,      instantRates.getSup_trg_rate_beamactive_total(), precision);
+		Assert.assertEquals(0.,      instantRates.getSup_trg_rate_total(), precision);
+		Assert.assertEquals(0.,      instantRates.getTrg_rate_beamactive_total(), precision);
+		Assert.assertEquals(6709.34, instantRates.getTrg_rate_total(), precision);
+
+		Assert.assertEquals(162,     instantRates.getSectionNumber_rates());
+
+		
+	}
+
+	
 }
