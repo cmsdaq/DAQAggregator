@@ -524,10 +524,6 @@ public class TCDSGlobalInfo implements FlashlistUpdatable{
 			}
 		}
 
-		if (flashlistType == FlashlistType.TCDS_CPM_RATES_1HZ){
-			triggerRatesInstant.updateFromFlashlist(flashlistType, flashlistRow);
-		}
-
 		if (flashlistType == FlashlistType.TCDS_CPM_DEADTIMES){
 
 			//set fillnumber
