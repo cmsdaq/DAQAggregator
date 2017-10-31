@@ -48,7 +48,13 @@ public class TCDSFMInfoRetriever {
 
 	}
 
-	private void setTcdsFmFlashlistValues(Flashlist flashlist) {
+	/** Obtains TCDS function manager related quantities from the given
+	 *  flashlist.
+	 *
+	 * This method is package private so we can use it in tests (but subclasses
+	 * can not access it).
+	 */
+	void setTcdsFmFlashlistValues(Flashlist flashlist) {
 
 		try {
 			if (flashlist == null)
