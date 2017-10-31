@@ -101,6 +101,10 @@ public class FlashlistDispatcherIT {
 		// TODO: we could mock this object
 		TCDSFMInfoRetriever tcdsFmInfoRetriever = new TCDSFMInfoRetriever(flashlistRetriever);
 
+		// in some tests we need the tcds_serviceField and tcds_url fields
+		// to be non-null for the dispatcher to work properly with the TCDS objects
+		tcdsFmInfoRetriever.setTcdsFmFlashlistValues(flashlists.get(FlashlistType.TCDSFM));
+		
 		FlashlistDispatcher dispatcher = new FlashlistDispatcher();
 
 		MappingManager mappingManager = new MappingManager(daqPartition, tcdsFmInfoRetriever);
