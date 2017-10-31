@@ -1,0 +1,130 @@
+{
+  "flashlistType" : "EVM",
+  "rowsNode" : [ {
+    "activeRequests" : 3597,
+    "allocateRate" : 3817,
+    "allocateRetryRate" : 0.0,
+    "buTids" : [ 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173 ],
+    "context" : "http://ru-c2e14-11-01.cms:11100",
+    "errorMsg" : "",
+    "eventCount" : 25345145,
+    "eventRate" : 6711,
+    "eventsInRU" : 2,
+    "fedBXerrors" : [ ],
+    "fedCRCerrors" : [ ],
+    "fedDataCorruption" : [ ],
+    "fedIdsWithErrors" : [ ],
+    "fedIdsWithoutFragments" : [ ],
+    "fedOutOfSync" : [ ],
+    "fragmentRate" : 838,
+    "fragmentRatePerBU" : [ 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11 ],
+    "incompleteSuperFragmentCount" : 0,
+    "instance" : "0",
+    "lastEventNumber" : 217820,
+    "lid" : "52",
+    "requestRate" : 832,
+    "retryRatePerBU" : [ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 ],
+    "runNumber" : 305903,
+    "sessionid" : "297583",
+    "stateName" : "Enabled",
+    "superFragmentSize" : 952,
+    "superFragmentSizeStdDev" : 0,
+    "throughputPerBU" : [ 99253, 99253, 99253, 99253, 99253, 99253, 99253, 99253, 99253, 99253, 99253, 99253, 99253, 99253, 99253, 99253, 99253, 99253, 99253, 99253, 99253, 99253, 99253, 90982, 90982, 90982, 90982, 90982, 90982, 90982, 90982, 90982, 90982, 90982, 90982, 90982, 90982, 90982, 90982, 90982, 90982, 90982, 90982, 90982, 90982, 90982, 90982, 90982, 90982, 90982, 90982, 90982, 90982, 90982, 90982, 90982, 90982, 90982, 90982, 90982, 99253, 99253, 99253, 99253, 99253, 99253, 99253, 99253, 99253, 99253, 99253, 99253, 99253 ],
+    "timestamp" : "2017-10-31T08:42:01.317008Z"
+  } ],
+  "definitionNode" : [ {
+    "key" : "activeRequests",
+    "type" : "unsigned int 32"
+  }, {
+    "key" : "allocateRate",
+    "type" : "unsigned int 32"
+  }, {
+    "key" : "allocateRetryRate",
+    "type" : "double"
+  }, {
+    "key" : "buTids",
+    "type" : "vector unsigned int 32"
+  }, {
+    "key" : "context",
+    "type" : "string"
+  }, {
+    "key" : "errorMsg",
+    "type" : "string"
+  }, {
+    "key" : "eventCount",
+    "type" : "unsigned int 64"
+  }, {
+    "key" : "eventRate",
+    "type" : "unsigned int 32"
+  }, {
+    "key" : "eventsInRU",
+    "type" : "unsigned int 32"
+  }, {
+    "key" : "fedBXerrors",
+    "type" : "vector unsigned int 32"
+  }, {
+    "key" : "fedCRCerrors",
+    "type" : "vector unsigned int 32"
+  }, {
+    "key" : "fedDataCorruption",
+    "type" : "vector unsigned int 32"
+  }, {
+    "key" : "fedIdsWithErrors",
+    "type" : "vector unsigned int 32"
+  }, {
+    "key" : "fedIdsWithoutFragments",
+    "type" : "vector unsigned int 32"
+  }, {
+    "key" : "fedOutOfSync",
+    "type" : "vector unsigned int 32"
+  }, {
+    "key" : "fragmentRate",
+    "type" : "unsigned int 32"
+  }, {
+    "key" : "fragmentRatePerBU",
+    "type" : "vector unsigned int 32"
+  }, {
+    "key" : "incompleteSuperFragmentCount",
+    "type" : "unsigned int 32"
+  }, {
+    "key" : "instance",
+    "type" : "string"
+  }, {
+    "key" : "lastEventNumber",
+    "type" : "unsigned int 32"
+  }, {
+    "key" : "lid",
+    "type" : "string"
+  }, {
+    "key" : "requestRate",
+    "type" : "unsigned int 32"
+  }, {
+    "key" : "retryRatePerBU",
+    "type" : "vector double"
+  }, {
+    "key" : "runNumber",
+    "type" : "unsigned int 32"
+  }, {
+    "key" : "sessionid",
+    "type" : "string"
+  }, {
+    "key" : "stateName",
+    "type" : "string"
+  }, {
+    "key" : "superFragmentSize",
+    "type" : "unsigned int 32"
+  }, {
+    "key" : "superFragmentSizeStdDev",
+    "type" : "unsigned int 32"
+  }, {
+    "key" : "throughputPerBU",
+    "type" : "vector unsigned int 64"
+  }, {
+    "key" : "timestamp",
+    "type" : "time"
+  } ],
+  "retrievalDate" : 1509439332060,
+  "address" : "http://ucsrv-c2e41-13-01.cms:9941/urn:xdaq-application:service=xmaslas2g/retrieveCollection?flash=urn:xdaq-flashlist:EVM&fmt=json&sessionid=297583",
+  "name" : "urn:xdaq-flashlist:EVM",
+  "unknownAtLAS" : false
+}
