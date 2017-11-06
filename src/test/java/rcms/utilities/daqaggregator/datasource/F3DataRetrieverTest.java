@@ -54,11 +54,17 @@ public class F3DataRetrieverTest {
 	@Test
 	public void testHltCrashes() throws IOException {
 		String fakeResponse = "{\"last_run\":306155,\"num_BUs_with_last_run\":73,\"quarantinedRes\":0,\"crashedRes\":0,\"crashedOrQuarantinedRes\":0,\"crashes\":123,\"activeRes\":50728,\"activeResOldRuns\":0}";
-		F3DataRetriever f3dataRetriever = new F3DataRetriever(new ConnectorFake(fakeResponse),null,null,null);
+		F3DataRetriever f3dataRetriever = new F3DataRetriever(new ConnectorFake(fakeResponse),null,null,null, null, CpuLoadType.HTCORR_QUADRATIC);
 		Assert.assertEquals(new Integer(123), f3dataRetriever.getCrashes());
 	}
 
-
+	@Test
+	public void testCpuLoad() throws IOException {
+		String fakeResponse = "{\"fusyscpu2\":[{\"name\":\"avg uncorr\",\"data\":[[1509988950000,0.16751412425305,954],[1509988980000,0.17668018867293,955]]},{\"name\":\"20% htcor\",\"data\":[[1509988950000,0.27917500538583,954],[1509988980000,0.29433205054159,955]]},{\"name\":\"20% htcor(2x-x*x)\",\"data\":[[1509988950000,0.300280062237,954],[1509988980000,0.31591453234005,955]]}]}";
+		F3DataRetriever f3dataRetriever = new F3DataRetriever(new ConnectorFake(fakeResponse),null,null,null,null, CpuLoadType.HTCORR_QUADRATIC);
+		Assert.assertEquals(new Float(0.31591453234005), f3dataRetriever.getCpuLoad(), 1e-4);
+	}
+	
 	public class ConnectorFake extends Connector {
 
 		private final String response;
