@@ -95,6 +95,9 @@ public class F3DataRetriever {
             logger.info("Disk info: " + d);
             logger.info("Hlt output: " + h);
             logger.info("Crashes: " + c);
+
+            Float cpuLoad = f3dr.getCpuLoad();
+            logger.info("cpu load: " + cpuLoad);
         } catch (JsonMappingException e) {
             e.printStackTrace();
         } catch (IOException e) {
