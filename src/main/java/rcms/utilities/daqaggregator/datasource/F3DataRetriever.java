@@ -64,14 +64,18 @@ public class F3DataRetriever {
         }
     }
 
+    /** type of cpu load to retrieve from F3mon */
+    private final CpuLoadType cpuLoadType;
+
     public F3DataRetriever(Connector connector, String hltUrl, String diskUrl, String crashUrl,
-            String cpuLoadUrl) {
+            String cpuLoadUrl, CpuLoadType cpuLoadType) {
         this.mapper = new ObjectMapper();
         this.connector = connector;
         this.hltUrl = hltUrl;
         this.diskUrl = diskUrl;
         this.crashUrl = crashUrl;
         this.cpuLoadUrl = cpuLoadUrl;				
+        this.cpuLoadType = cpuLoadType;
     }
 
     /**
@@ -80,7 +84,7 @@ public class F3DataRetriever {
      * @param args
      */
     public static void main(String[] args) {
-        F3DataRetriever f3dr = new F3DataRetriever(new Connector(false), "http://es-cdaq.cms/sc/php/stream_summary_last.php", "http://es-cdaq.cms/sc/php/summarydisks.php", "http://es-cdaq.cms/sc/php/resource_status.php", "http://cmsdaqfff/prod/sc/php/cpuusage.php");
+        F3DataRetriever f3dr = new F3DataRetriever(new Connector(false), "http://es-cdaq.cms/sc/php/stream_summary_last.php", "http://es-cdaq.cms/sc/php/summarydisks.php", "http://es-cdaq.cms/sc/php/resource_status.php", "http://cmsdaqfff/prod/sc/php/cpuusage.php", CpuLoadType.HTCORR_QUADRATIC);
         try {
             Application.initialize("DAQAggregator.properties");
             ProxyManager.get().startProxy();

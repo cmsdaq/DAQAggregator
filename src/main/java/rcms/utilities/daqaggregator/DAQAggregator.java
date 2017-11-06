@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import rcms.common.db.DBConnectorException;
 import rcms.utilities.daqaggregator.data.DAQ;
 import rcms.utilities.daqaggregator.datasource.*;
+import rcms.utilities.daqaggregator.datasource.F3DataRetriever.CpuLoadType;
 import rcms.utilities.daqaggregator.persistence.PersistenceFormat;
 import rcms.utilities.daqaggregator.persistence.PersistorManager;
 import rcms.utilities.hwcfg.HardwareConfigurationException;
@@ -284,11 +285,12 @@ public class DAQAggregator {
         String diskUrl = Application.get().getProp(Settings.F3_DISK_URL);
         String crashesUrl = Application.get().getProp(Settings.F3_CRASHES_URL);
         String cpuLoadUrl = Application.get().getProp(Settings.F3_CPU_LOAD_URL);
+        CpuLoadType cpuLoadType = CpuLoadType.getByKey(Application.get().getProp(Settings.F3_CPU_LOAD_TYPE));
         F3DataRetriever f3DataRetriever = null;
         if (f3Enabled && (hltUrl == null || "".equals(hltUrl) || diskUrl == null || "".equals(diskUrl))) {
             throw new DAQException(DAQExceptionCode.MissingProperty, "Specify url for F3 data retrieval. Required: " + Settings.F3_DISK_URL.getKey() + ", " + Settings.F3_HLT_URL.getKey());
         }else {
-            f3DataRetriever = new F3DataRetriever(new Connector(false), hltUrl, diskUrl,crashesUrl, cpuLoadUrl);
+            f3DataRetriever = new F3DataRetriever(new Connector(false), hltUrl, diskUrl,crashesUrl, cpuLoadUrl, cpuLoadType);
         }
         MonitorManager monitorManager = new MonitorManager(flashlistRetriever, sessionRetriever, hardwareConnector, f3DataRetriever);
 
