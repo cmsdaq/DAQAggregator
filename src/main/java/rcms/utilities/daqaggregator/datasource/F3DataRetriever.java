@@ -34,7 +34,37 @@ public class F3DataRetriever {
     private final String crashUrl;
     private final String cpuLoadUrl;
 
-    public F3DataRetriever(Connector connector, String hltUrl, String diskUrl, String crashUrl)
+    /** currently known CPU load types returned by F3mon (the strings
+        corresponds to what F3mon uses in the returned results) */
+    public static enum CpuLoadType {
+
+        AVG_UNCORR("avg uncorr"),
+        HTCORR_20PERCENT("20% htcor"),
+        HTCORR_QUADRATIC("20% htcor(2x-x*x)");
+
+        private CpuLoadType(String key) {
+            this.key = key;
+        }
+
+        private final String key;
+
+        public String getKey() {
+            return key;
+        }
+
+        public static CpuLoadType getByKey(String key) {
+            for (CpuLoadType result : CpuLoadType.values()) {
+                if (result.getKey().equals(key)) {
+                    return result;
+                }
+            }
+            
+            // not found
+            throw new IllegalArgumentException("could not find CpuLoadType with key \"" + key + "\"");
+        }
+    }
+
+    public F3DataRetriever(Connector connector, String hltUrl, String diskUrl, String crashUrl,
             String cpuLoadUrl) {
         this.mapper = new ObjectMapper();
         this.connector = connector;
