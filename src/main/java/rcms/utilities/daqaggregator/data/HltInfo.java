@@ -2,13 +2,13 @@ package rcms.utilities.daqaggregator.data;
 
 public class HltInfo  {
 
-    private int crashes;
+    private Integer crashes;
 
-    public int getCrashes() {
+    public Integer getCrashes() {
         return crashes;
     }
 
-    public void setCrashes(int crashes) {
+    public void setCrashes(Integer crashes) {
         this.crashes = crashes;
     }
 }
