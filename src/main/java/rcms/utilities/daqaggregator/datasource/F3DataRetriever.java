@@ -32,13 +32,16 @@ public class F3DataRetriever {
     private final String hltUrl;
     private final String diskUrl;
     private final String crashUrl;
+    private final String cpuLoadUrl;
 
-    public F3DataRetriever(Connector connector, String hltUrl, String diskUrl, String crashUrl) {
+    public F3DataRetriever(Connector connector, String hltUrl, String diskUrl, String crashUrl)
+            String cpuLoadUrl) {
         this.mapper = new ObjectMapper();
         this.connector = connector;
         this.hltUrl = hltUrl;
         this.diskUrl = diskUrl;
         this.crashUrl = crashUrl;
+        this.cpuLoadUrl = cpuLoadUrl;				
     }
 
     /**
@@ -47,7 +50,7 @@ public class F3DataRetriever {
      * @param args
      */
     public static void main(String[] args) {
-        F3DataRetriever f3dr = new F3DataRetriever(new Connector(false), "http://es-cdaq.cms/sc/php/stream_summary_last.php", "http://es-cdaq.cms/sc/php/summarydisks.php", "http://es-cdaq.cms/sc/php/resource_status.php");
+        F3DataRetriever f3dr = new F3DataRetriever(new Connector(false), "http://es-cdaq.cms/sc/php/stream_summary_last.php", "http://es-cdaq.cms/sc/php/summarydisks.php", "http://es-cdaq.cms/sc/php/resource_status.php", "http://cmsdaqfff/prod/sc/php/cpuusage.php");
         try {
             Application.initialize("DAQAggregator.properties");
             ProxyManager.get().startProxy();

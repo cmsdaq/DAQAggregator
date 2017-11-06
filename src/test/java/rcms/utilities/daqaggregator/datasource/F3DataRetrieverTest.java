@@ -39,7 +39,7 @@ public class F3DataRetrieverTest {
 	@Test
 	public void testHlt() throws IOException {
 		String fakeResponse = "{\"219\":{\"ALCALUMIPIXELS\":47.190047190047,\"ALCAPHISYM\":0,\"Calibration\":79.365079365079,\"DQM\":6.8640068640069,\"DQMCalibration\":7.9365079365079,\"DQMEventDisplay\":18.618618618619,\"DQMHistograms\":612.44101244101,\"EcalCalibration\":79.365079365079,\"Error\":0,\"ExpressCosmics\":19.004719004719,\"HLTRates\":612.44101244101,\"L1Rates\":612.44101244101,\"NanoDST\":5.7915057915058,\"Physics\":71.600171600172,\"RPCMON\":27.627627627628}}";
-		F3DataRetriever f3dataRetriever = new F3DataRetriever(new ConnectorFake(fakeResponse),"","",null);
+		F3DataRetriever f3dataRetriever = new F3DataRetriever(new ConnectorFake(fakeResponse),"","","", null);
 		Assert.assertEquals(new Double(71.600171600172d), f3dataRetriever.getHLToutputInfo(0).getEventRate(F3DataRetriever.PHYSICS_STREAM_NAME));
 	}
 

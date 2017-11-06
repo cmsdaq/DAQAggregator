@@ -283,11 +283,12 @@ public class DAQAggregator {
         String hltUrl = Application.get().getProp(Settings.F3_HLT_URL);
         String diskUrl = Application.get().getProp(Settings.F3_DISK_URL);
         String crashesUrl = Application.get().getProp(Settings.F3_CRASHES_URL);
+        String cpuLoadUrl = Application.get().getProp(Settings.F3_CPU_LOAD_URL);
         F3DataRetriever f3DataRetriever = null;
         if (f3Enabled && (hltUrl == null || "".equals(hltUrl) || diskUrl == null || "".equals(diskUrl))) {
             throw new DAQException(DAQExceptionCode.MissingProperty, "Specify url for F3 data retrieval. Required: " + Settings.F3_DISK_URL.getKey() + ", " + Settings.F3_HLT_URL.getKey());
         }else {
-            f3DataRetriever = new F3DataRetriever(new Connector(false), hltUrl, diskUrl,crashesUrl);
+            f3DataRetriever = new F3DataRetriever(new Connector(false), hltUrl, diskUrl,crashesUrl, cpuLoadUrl);
         }
         MonitorManager monitorManager = new MonitorManager(flashlistRetriever, sessionRetriever, hardwareConnector, f3DataRetriever);
 
