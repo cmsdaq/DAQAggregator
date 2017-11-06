@@ -14,25 +14,8 @@ import java.util.TreeSet;
 import org.apache.log4j.Logger;
 
 
+import rcms.utilities.daqaggregator.data.*;
 import rcms.utilities.hwcfg.HardwareConfigurationException;
-import rcms.utilities.daqaggregator.data.BU;
-import rcms.utilities.daqaggregator.data.BUSummary;
-import rcms.utilities.daqaggregator.data.DAQ;
-import rcms.utilities.daqaggregator.data.FED;
-import rcms.utilities.daqaggregator.data.FEDBuilder;
-import rcms.utilities.daqaggregator.data.FEDBuilderSummary;
-import rcms.utilities.daqaggregator.data.FMM;
-import rcms.utilities.daqaggregator.data.FMMApplication;
-import rcms.utilities.daqaggregator.data.FRL;
-import rcms.utilities.daqaggregator.data.FRLPc;
-import rcms.utilities.daqaggregator.data.FRLType;
-import rcms.utilities.daqaggregator.data.GlobalTTSState;
-import rcms.utilities.daqaggregator.data.FMMType;
-import rcms.utilities.daqaggregator.data.RU;
-import rcms.utilities.daqaggregator.data.SubFEDBuilder;
-import rcms.utilities.daqaggregator.data.SubSystem;
-import rcms.utilities.daqaggregator.data.TCDSGlobalInfo;
-import rcms.utilities.daqaggregator.data.TTCPartition;
 import rcms.utilities.daqaggregator.datasource.TCDSFMInfoRetriever;
 import rcms.utilities.hwcfg.HardwareConfigurationException;
 import rcms.utilities.hwcfg.dp.DAQPartition;
@@ -217,6 +200,7 @@ public class ObjectMapper {
 		daq.setFrls(new ArrayList<>(frls.values()));
 		daq.setFeds(new ArrayList<>(feds.values()));
 		daq.setSubFEDBuilders(new ArrayList<>(subFedBuilders.values()));
+		daq.setHltInfo(new HltInfo());
 
 		logger.info("Retrieval summary " + this.toString());
 		logger.info("Subsystem summary " + subSystems.values());
