@@ -285,12 +285,18 @@ public class DAQAggregator {
         String diskUrl = Application.get().getProp(Settings.F3_DISK_URL);
         String crashesUrl = Application.get().getProp(Settings.F3_CRASHES_URL);
         String cpuLoadUrl = Application.get().getProp(Settings.F3_CPU_LOAD_URL);
-        CpuLoadType cpuLoadType = CpuLoadType.getByKey(Application.get().getProp(Settings.F3_CPU_LOAD_TYPE));
+        String cpuLoadType = Application.get().getProp(Settings.F3_CPU_LOAD_TYPE);
         F3DataRetriever f3DataRetriever = null;
-        if (f3Enabled && (hltUrl == null || "".equals(hltUrl) || diskUrl == null || "".equals(diskUrl))) {
-            throw new DAQException(DAQExceptionCode.MissingProperty, "Specify url for F3 data retrieval. Required: " + Settings.F3_DISK_URL.getKey() + ", " + Settings.F3_HLT_URL.getKey());
+        if (f3Enabled && (hltUrl == null || "".equals(hltUrl) || diskUrl == null || "".equals(diskUrl))
+            || "".equals(cpuLoadUrl) || "".equals(cpuLoadType)) {
+            throw new DAQException(DAQExceptionCode.MissingProperty, "Specify url for F3 data retrieval. Required: " +
+                                   Settings.F3_DISK_URL.getKey() + ", " +
+                                   Settings.F3_HLT_URL.getKey() + ", " +
+                                   Settings.F3_CPU_LOAD_URL.getKey() + ", " +
+                                   Settings.F3_CPU_LOAD_TYPE.getKey()
+                                   );
         }else {
-            f3DataRetriever = new F3DataRetriever(new Connector(false), hltUrl, diskUrl,crashesUrl, cpuLoadUrl, cpuLoadType);
+            f3DataRetriever = new F3DataRetriever(new Connector(false), hltUrl, diskUrl,crashesUrl, cpuLoadUrl, CpuLoadType.getByKey(cpuLoadType));
         }
         MonitorManager monitorManager = new MonitorManager(flashlistRetriever, sessionRetriever, hardwareConnector, f3DataRetriever);
 
