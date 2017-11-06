@@ -307,6 +307,58 @@ public class F3DataRetriever {
 
     }
 
+    /** retrieves the CPU load from an F3mon web application */
+    public Float getCpuLoad() throws IOException {
+
+        Pair<Integer, List<String>> a = connector.retrieveLines(cpuLoadUrl);
+        List<String> result = a.getRight();
+
+        long count = result.size();
+        if (count == 1) {
+            JsonNode resultJson = mapper.readValue(result.get(0), JsonNode.class);
+
+            try {
+                for (JsonNode line : resultJson.get("fusyscpu2")) {
+                    String name = line.get("name").asText();
+
+                    if (! cpuLoadType.getKey().equals(name)) {
+                        continue;
+                    }
+
+                    Float cpuLoad = null;
+                    long maxTimestamp = -1;
+                    
+                    // check items in data, take the one with the
+                    // highest timestamp
+                    for (JsonNode line2 : line.get("data")) {
+
+                        long timestamp = line2.get(0).asLong();
+                        
+                        if (timestamp > maxTimestamp) {
+                            maxTimestamp = timestamp;
+                            cpuLoad = (float)line2.get(1).asDouble();
+                        }
+                    } // loop over items in line
+
+                    return cpuLoad;
+
+                } // loop over returned lines
+                
+                // not found
+                return null;
+
+            } catch (NoSuchElementException e) {
+                logger.warn("Cannot retrieve CPU load (no such element) from response: " + result.get(0));
+                return null;
+            } catch (NullPointerException e) {
+                logger.warn("Cannot retrieve CPU load from response: " + result.get(0));
+                return null;
+            }
+        } else {
+            logger.warn("Expected 1 node as a response but was " + count);
+            return null;
+        }
+    }
 
     public class DiskInfo {
         private Double ramdiskOccupancyFraction;
