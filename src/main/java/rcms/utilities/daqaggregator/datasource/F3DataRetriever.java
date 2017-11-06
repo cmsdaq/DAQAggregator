@@ -74,7 +74,7 @@ public class F3DataRetriever {
         this.hltUrl = hltUrl;
         this.diskUrl = diskUrl;
         this.crashUrl = crashUrl;
-        this.cpuLoadUrl = cpuLoadUrl;				
+        this.cpuLoadUrl = cpuLoadUrl + "?setup=cdaq&intlen=30&int=1";
         this.cpuLoadType = cpuLoadType;
     }
 
