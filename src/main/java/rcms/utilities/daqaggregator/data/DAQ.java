@@ -64,6 +64,8 @@ public class DAQ implements FlashlistUpdatable {
 
 	private TCDSGlobalInfo tcdsGlobalInfo;
 
+	private HltInfo hltInfo;
+
 	/**
 	 * HLT stream physics output rate in Hz (events per second)
 	 */
@@ -547,6 +549,15 @@ public class DAQ implements FlashlistUpdatable {
 	public void setDaqAggregatorProducer(String daqAggregatorProducer) {
 		this.daqAggregatorProducer = daqAggregatorProducer;
 	}
+
+	public HltInfo getHltInfo() {
+		return hltInfo;
+	}
+
+	public void setHltInfo(HltInfo hltInfo) {
+		this.hltInfo = hltInfo;
+	}
+
 
 	@Override
 	public String toString() {
