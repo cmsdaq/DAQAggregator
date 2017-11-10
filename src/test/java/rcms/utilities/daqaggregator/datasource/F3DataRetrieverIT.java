@@ -24,7 +24,7 @@ import rcms.utilities.daqaggregator.data.HltInfo;
  *
  */
 public class F3DataRetrieverIT {
-	private static final Logger logger = Logger.getLogger(F3DataRetriever.class);
+	private static final Logger logger = Logger.getLogger(F3DataRetrieverIT.class);
 	
 	private static F3DataRetriever f3dataRetriever;
 	private static DAQ daq;
