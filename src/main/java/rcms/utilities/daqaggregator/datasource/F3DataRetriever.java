@@ -119,8 +119,8 @@ public class F3DataRetriever {
         if (diskSuccessful && hltSuccessful && crashSuccessful)
             logger.info("F3 data successfully retrieved and mapped in: " + (end - start) + "ms");
         else {
-            logger.warn("Problem retrieving F3 data [disk successful,hlt successful]=[" + diskSuccessful + ","
-                    + hltSuccessful + "," +crashSuccessful+ "]");
+            logger.warn("Problem retrieving F3 data [disk successful,hlt successful,crash successful,cpu usage successful]=[" + diskSuccessful + ","
+                    + hltSuccessful + "," +crashSuccessful+ "," + cpuUsageSuccessful + "]");
         }
     }
 
