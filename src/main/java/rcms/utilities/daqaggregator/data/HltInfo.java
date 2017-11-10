@@ -5,7 +5,7 @@ public class HltInfo  {
     private Integer crashes;
 
     /** average CPU load on FU nodes */
-    private float cpuLoad;
+    private Float cpuLoad;
 
     public Integer getCrashes() {
         return crashes;
@@ -15,11 +15,11 @@ public class HltInfo  {
         this.crashes = crashes;
     }
 
-    public float getCpuLoad() {
+    public Float getCpuLoad() {
         return cpuLoad;
     }
 
-    public void setCpuLoad(float cpuLoad) {
+    public void setCpuLoad(Float cpuLoad) {
         this.cpuLoad = cpuLoad;
     }
 		
