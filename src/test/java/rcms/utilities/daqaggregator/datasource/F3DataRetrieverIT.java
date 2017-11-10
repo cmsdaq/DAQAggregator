@@ -21,17 +21,17 @@ import rcms.utilities.daqaggregator.data.HltInfo;
 /**
  * Integration test for F3 retrieval: contacts the actual F3 server
  * and checks that the values can be retrieved
- *
  */
 public class F3DataRetrieverIT {
 	private static final Logger logger = Logger.getLogger(F3DataRetrieverIT.class);
 	
 	private static F3DataRetriever f3dataRetriever;
 	private static DAQ daq;
+	private static Integer runNumber;
 
 	/** retrieve the information only once and check it in the individual test cases */
 	@BeforeClass
-	public static void makeRetriever() {
+	public static void makeRetriever() throws IOException {
 
 		Application.initialize("DAQAggregator.properties");
 		
@@ -46,6 +46,15 @@ public class F3DataRetrieverIT {
 		daq.setBuSummary(new BUSummary());
 		daq.setHltInfo(new HltInfo());
 		
+		// find a recent/current run number first
+		// (the web applications for the hlt info will not return anything
+		// if the run url parameter is not specified)
+		runNumber = getLatestRun();
+		logger.info("found latest run number " + runNumber);
+
+		// needed for F3DataRetriever.dispatch()
+		daq.setRunNumber(runNumber);
+
 		f3dataRetriever.dispatch(daq);
 	}
 	
