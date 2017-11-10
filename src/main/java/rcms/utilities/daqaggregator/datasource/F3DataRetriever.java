@@ -310,6 +310,15 @@ public class F3DataRetriever {
 
     }
 
+    protected boolean dispatchCpuLoad(DAQ daq) {
+        Float cpuLoad = getCpuLoad();
+        daq.getHltInfo().setCpuLoad(cpuLoad);
+        if (cpuLoad != null)
+            return true;
+        else
+            return false;
+		}
+
     /** retrieves the CPU load from an F3mon web application */
     public Float getCpuLoad() {
 
