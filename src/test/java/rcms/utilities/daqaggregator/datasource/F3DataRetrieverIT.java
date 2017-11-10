@@ -159,5 +159,28 @@ public class F3DataRetrieverIT {
 		logger.info("HLT bandwidth for stream " + streamName + " is " + bandwidth);
 		assertNotNull(bandwidth);
 	}
+
+	/**
+	 * Test for number of HLT crashes
+	 */
+	@Test
+	public void crashesDirectTest() throws IOException {
+
+		Integer crashes = f3dataRetriever.getCrashes();
+
+		logger.info("HLT number of crashes is " + crashes);
+		assertNotNull(crashes);
+	}
+	
+	/**
+	 * test of dispatching of number of HLT crashes
+	 */
+	@Test
+	public void crashesDispatchTest() {
+		
+		Integer crashes = daq.getHltInfo().getCrashes();
+		assertNotNull(crashes);
+
+	}
 	
 }
