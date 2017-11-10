@@ -66,7 +66,7 @@ public class Compatibility {
 		SessionRetriever sessionRetriever = new SessionRetriever("toppro", "toppro");
 
 		hardwareConnector.initialize(Application.get().getProp());
-		monitorManager = new MonitorManager(flashlistRetriever, sessionRetriever, hardwareConnector);
+		monitorManager = new MonitorManager(flashlistRetriever, sessionRetriever, hardwareConnector,null);
 	}
 
 	/**

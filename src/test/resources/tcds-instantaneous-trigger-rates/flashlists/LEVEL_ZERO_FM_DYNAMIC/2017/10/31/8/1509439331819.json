@@ -1,0 +1,210 @@
+{
+  "flashlistType" : "LEVEL_ZERO_FM_DYNAMIC",
+  "rowsNode" : [ {
+    "CLOCK_SOURCE" : "LOCAL",
+    "DCS_FLAG_ES_HV_ON" : "true",
+    "DCS_FLAG_LHC_RAMPING" : "false",
+    "DCS_FLAG_PHYSICS_DECLARED" : "true",
+    "DCS_FLAG_PIX_HV_ON" : "true",
+    "DCS_FLAG_TK_HV_ON" : "true",
+    "DCS_PARTITION_STATUS_BPIX" : "N/A",
+    "DCS_PARTITION_STATUS_CSC+" : "ON",
+    "DCS_PARTITION_STATUS_CSC-" : "ON",
+    "DCS_PARTITION_STATUS_DT+" : "N/A",
+    "DCS_PARTITION_STATUS_DT-" : "N/A",
+    "DCS_PARTITION_STATUS_DT0" : "ON",
+    "DCS_PARTITION_STATUS_EB+" : "ON",
+    "DCS_PARTITION_STATUS_EB-" : "ON",
+    "DCS_PARTITION_STATUS_EE+" : "ON",
+    "DCS_PARTITION_STATUS_EE-" : "ON",
+    "DCS_PARTITION_STATUS_ES+" : "ON",
+    "DCS_PARTITION_STATUS_ES-" : "ON",
+    "DCS_PARTITION_STATUS_FPIX" : "N/A",
+    "DCS_PARTITION_STATUS_HEHBa" : "ON",
+    "DCS_PARTITION_STATUS_HEHBb" : "ON",
+    "DCS_PARTITION_STATUS_HEHBc" : "ON",
+    "DCS_PARTITION_STATUS_HF" : "ON",
+    "DCS_PARTITION_STATUS_HO" : "ON",
+    "DCS_PARTITION_STATUS_RPC" : "ON",
+    "DCS_PARTITION_STATUS_TEC+" : "ON",
+    "DCS_PARTITION_STATUS_TEC-" : "ON",
+    "DCS_PARTITION_STATUS_TIBTID" : "ON",
+    "DCS_PARTITION_STATUS_TOB" : "ON",
+    "FMURL" : "http://cmsrc-top.cms:10000/urn:rcms-fm:fullpath=/toppro/PublicGlobal/levelZeroFMwithAutomator,group=levelZeroFM,owner=toppro",
+    "HLT_KEY" : "0",
+    "HLT_KEY_DESCRIPTION" : "/cdaq/cosmic/commissioning2017/CRAFT/v3.0/HLT/V2",
+    "HWCFG_KEY" : "/daq2/eq_170622/fb_all_DTup/dp_bl579_75BU:0",
+    "L1_HLT_TRIGGER_MODE" : "cosmics2017",
+    "L1_HLT_TRIGGER_MODE_ID" : "l1_hlt_cosmics2017/v292",
+    "L1_KEY" : "l1_trg_cosmics2017/v180",
+    "LHC_BEAM_MODE" : "NO BEAM",
+    "LHC_CLOCK_STABLE" : "false",
+    "LHC_MACHINE_MODE" : "PROTON PHYSICS",
+    "POSTFORCE_DCS_FLAG_ES_HV_ON" : "true",
+    "POSTFORCE_DCS_FLAG_LHC_RAMPING" : "false",
+    "POSTFORCE_DCS_FLAG_PHYSICS_DECLARED" : "true",
+    "POSTFORCE_DCS_FLAG_PIX_HV_ON" : "true",
+    "POSTFORCE_DCS_FLAG_TK_HV_ON" : "true",
+    "RUN_NUMBER" : "305903",
+    "RUN_START_TIME" : "2017-10-31T07:38:46.000364Z",
+    "SID" : "297583",
+    "STATE" : "Running",
+    "STATE_ENTRY_TIME" : "2017-10-31T08:12:53.000142Z",
+    "timestamp" : "2017-10-31T08:42:01.000706Z"
+  } ],
+  "definitionNode" : [ {
+    "key" : "CLOCK_SOURCE",
+    "type" : "string"
+  }, {
+    "key" : "DCS_FLAG_ES_HV_ON",
+    "type" : "string"
+  }, {
+    "key" : "DCS_FLAG_LHC_RAMPING",
+    "type" : "string"
+  }, {
+    "key" : "DCS_FLAG_PHYSICS_DECLARED",
+    "type" : "string"
+  }, {
+    "key" : "DCS_FLAG_PIX_HV_ON",
+    "type" : "string"
+  }, {
+    "key" : "DCS_FLAG_TK_HV_ON",
+    "type" : "string"
+  }, {
+    "key" : "DCS_PARTITION_STATUS_BPIX",
+    "type" : "string"
+  }, {
+    "key" : "DCS_PARTITION_STATUS_CSC+",
+    "type" : "string"
+  }, {
+    "key" : "DCS_PARTITION_STATUS_CSC-",
+    "type" : "string"
+  }, {
+    "key" : "DCS_PARTITION_STATUS_DT+",
+    "type" : "string"
+  }, {
+    "key" : "DCS_PARTITION_STATUS_DT-",
+    "type" : "string"
+  }, {
+    "key" : "DCS_PARTITION_STATUS_DT0",
+    "type" : "string"
+  }, {
+    "key" : "DCS_PARTITION_STATUS_EB+",
+    "type" : "string"
+  }, {
+    "key" : "DCS_PARTITION_STATUS_EB-",
+    "type" : "string"
+  }, {
+    "key" : "DCS_PARTITION_STATUS_EE+",
+    "type" : "string"
+  }, {
+    "key" : "DCS_PARTITION_STATUS_EE-",
+    "type" : "string"
+  }, {
+    "key" : "DCS_PARTITION_STATUS_ES+",
+    "type" : "string"
+  }, {
+    "key" : "DCS_PARTITION_STATUS_ES-",
+    "type" : "string"
+  }, {
+    "key" : "DCS_PARTITION_STATUS_FPIX",
+    "type" : "string"
+  }, {
+    "key" : "DCS_PARTITION_STATUS_HEHBa",
+    "type" : "string"
+  }, {
+    "key" : "DCS_PARTITION_STATUS_HEHBb",
+    "type" : "string"
+  }, {
+    "key" : "DCS_PARTITION_STATUS_HEHBc",
+    "type" : "string"
+  }, {
+    "key" : "DCS_PARTITION_STATUS_HF",
+    "type" : "string"
+  }, {
+    "key" : "DCS_PARTITION_STATUS_HO",
+    "type" : "string"
+  }, {
+    "key" : "DCS_PARTITION_STATUS_RPC",
+    "type" : "string"
+  }, {
+    "key" : "DCS_PARTITION_STATUS_TEC+",
+    "type" : "string"
+  }, {
+    "key" : "DCS_PARTITION_STATUS_TEC-",
+    "type" : "string"
+  }, {
+    "key" : "DCS_PARTITION_STATUS_TIBTID",
+    "type" : "string"
+  }, {
+    "key" : "DCS_PARTITION_STATUS_TOB",
+    "type" : "string"
+  }, {
+    "key" : "FMURL",
+    "type" : "string"
+  }, {
+    "key" : "HLT_KEY",
+    "type" : "string"
+  }, {
+    "key" : "HLT_KEY_DESCRIPTION",
+    "type" : "string"
+  }, {
+    "key" : "HWCFG_KEY",
+    "type" : "string"
+  }, {
+    "key" : "L1_HLT_TRIGGER_MODE",
+    "type" : "string"
+  }, {
+    "key" : "L1_HLT_TRIGGER_MODE_ID",
+    "type" : "string"
+  }, {
+    "key" : "L1_KEY",
+    "type" : "string"
+  }, {
+    "key" : "LHC_BEAM_MODE",
+    "type" : "string"
+  }, {
+    "key" : "LHC_CLOCK_STABLE",
+    "type" : "string"
+  }, {
+    "key" : "LHC_MACHINE_MODE",
+    "type" : "string"
+  }, {
+    "key" : "POSTFORCE_DCS_FLAG_ES_HV_ON",
+    "type" : "string"
+  }, {
+    "key" : "POSTFORCE_DCS_FLAG_LHC_RAMPING",
+    "type" : "string"
+  }, {
+    "key" : "POSTFORCE_DCS_FLAG_PHYSICS_DECLARED",
+    "type" : "string"
+  }, {
+    "key" : "POSTFORCE_DCS_FLAG_PIX_HV_ON",
+    "type" : "string"
+  }, {
+    "key" : "POSTFORCE_DCS_FLAG_TK_HV_ON",
+    "type" : "string"
+  }, {
+    "key" : "RUN_NUMBER",
+    "type" : "string"
+  }, {
+    "key" : "RUN_START_TIME",
+    "type" : "time"
+  }, {
+    "key" : "SID",
+    "type" : "string"
+  }, {
+    "key" : "STATE",
+    "type" : "string"
+  }, {
+    "key" : "STATE_ENTRY_TIME",
+    "type" : "time"
+  }, {
+    "key" : "timestamp",
+    "type" : "time"
+  } ],
+  "retrievalDate" : 1509439332060,
+  "address" : "http://ucsrv-c2e41-10-01.cms:9946/urn:xdaq-application:service=xmaslas2g/retrieveCollection?flash=urn:xdaq-flashlist:levelZeroFM_dynamic&fmt=json&SID=297583",
+  "name" : "urn:xdaq-flashlist:levelZeroFM_dynamic",
+  "unknownAtLAS" : false
+}

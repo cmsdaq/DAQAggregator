@@ -35,13 +35,13 @@ public class MonitorManager {
 	private FlashlistManager flashlistManager;
 
 	public MonitorManager(FlashlistRetriever flashlistRetriever, SessionRetriever sessionRetriever,
-			HardwareConnector hardwareConnector) {
+			HardwareConnector hardwareConnector,F3DataRetriever f3DataRetriever) {
 
 		this.flashlistRetriever = flashlistRetriever;
 		this.hardwareConnector = hardwareConnector;
 		this.sessionDetector = new SessionDetector(sessionRetriever, flashlistRetriever);
 		this.tcdsFmInfoRetriever = new TCDSFMInfoRetriever(flashlistRetriever);
-		this.f3dataRetriever = new F3DataRetriever(new Connector(false));
+		this.f3dataRetriever = f3DataRetriever;
 	}
 
 	public void skipToNextSnapshot() {
@@ -69,7 +69,7 @@ public class MonitorManager {
 			long start = System.currentTimeMillis();
 			daq = rebuildDaqModel(sessionDetector.getResult());
 			int timeToRebuild = (int) (System.currentTimeMillis() - start);
-			logger.info("Structure rebuilded in " + timeToRebuild + "ms");
+			logger.info("Structure rebuilt in " + timeToRebuild + "ms");
 			logger.info("--------------------------------------");
 
 		}
@@ -106,7 +106,9 @@ public class MonitorManager {
 		postProcessor.postProcess();
 		
 
-		f3dataRetriever.dispatch(daq);
+		if(f3dataRetriever != null) {
+			f3dataRetriever.dispatch(daq);
+		}
 		return Triple.of(daq, flashlists.values(), newSession);
 
 	}
