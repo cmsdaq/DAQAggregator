@@ -31,12 +31,14 @@ public class F3DataRetriever {
     private final ObjectMapper mapper;
     private final String hltUrl;
     private final String diskUrl;
+    private final String crashUrl;
 
-    public F3DataRetriever(Connector connector, String hltUrl, String diskUrl) {
+    public F3DataRetriever(Connector connector, String hltUrl, String diskUrl, String crashUrl) {
         this.mapper = new ObjectMapper();
         this.connector = connector;
         this.hltUrl = hltUrl;
         this.diskUrl = diskUrl;
+        this.crashUrl = crashUrl;
     }
 
     /**
@@ -45,20 +47,126 @@ public class F3DataRetriever {
      * @param args
      */
     public static void main(String[] args) {
-        F3DataRetriever f3dr = new F3DataRetriever(new Connector(false), "http://es-cdaq.cms/sc/php/stream_summary_last.php", "http://es-cdaq.cms/sc/php/summarydisks.php");
+        F3DataRetriever f3dr = new F3DataRetriever(new Connector(false), "http://es-cdaq.cms/sc/php/stream_summary_last.php", "http://es-cdaq.cms/sc/php/summarydisks.php", "http://es-cdaq.cms/sc/php/resource_status.php");
         try {
             Application.initialize("DAQAggregator.properties");
             ProxyManager.get().startProxy();
             DiskInfo d = f3dr.getDiskInfo();
             Double h = f3dr.getHLToutputInfo(288498).getEventRate(PHYSICS_STREAM_NAME);
+            Integer c = f3dr.getCrashes();
 
-            logger.info(d);
-            logger.info(h);
+            logger.info("Disk info: " + d);
+            logger.info("Hlt output: " + h);
+            logger.info("Crashes: " + c);
         } catch (JsonMappingException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void dispatch(DAQ daq) {
+
+        long start = System.currentTimeMillis();
+
+        boolean diskSuccessful = dispatchDisk(daq);
+        boolean hltSuccessful = dispatchHLT(daq);
+        boolean crashSuccessful = dispatchCrashes(daq);
+
+        long end = System.currentTimeMillis();
+
+        if (diskSuccessful && hltSuccessful && crashSuccessful)
+            logger.info("F3 data successfully retrieved and mapped in: " + (end - start) + "ms");
+        else {
+            logger.warn("Problem retrieving F3 data [disk successful,hlt successful]=[" + diskSuccessful + ","
+                    + hltSuccessful + "," +crashSuccessful+ "]");
+        }
+    }
+
+    /**
+     * @return true if retrieving HLT output information from F3mon
+     * was successful, false otherwise
+     */
+    protected boolean dispatchHLT(DAQ daq) {
+
+        try {
+            HLToutputInfo hltInfo = getHLToutputInfo(daq.getRunNumber());
+
+            Double hltOutputRate = hltInfo.getEventRate(PHYSICS_STREAM_NAME);
+            Double hltOutputBW = hltInfo.getBandwidth(PHYSICS_STREAM_NAME);
+
+            daq.setHltRate(hltOutputRate);
+            daq.setHltBandwidth(hltOutputBW);
+
+            return hltOutputRate != null;
+
+        } catch (JsonMappingException e) {
+            logger.warn("Could not retrieve F3 HLT rate,  json mapping exception: ", e);
+        } catch (IOException e) {
+            logger.warn("Could not retrieve F3 HLT rate, IO exception: ", e);
+        }
+        return false;
+
+    }
+
+    protected boolean dispatchCrashes(DAQ daq) {
+        Integer crashes = getCrashes();
+        daq.getHltInfo().setCrashes(crashes);
+        if (crashes != null)
+            return true;
+        else
+            return false;
+    }
+
+    protected Integer getCrashes() {
+        Pair<Integer, List<String>> a = null;
+        try {
+            a = connector.retrieveLines(crashUrl + "?setup=cdaq");
+
+            List<String> result = a.getRight();
+
+            long count = result.size();
+            if (count == 1) {
+                JsonNode resultJson = mapper.readValue(result.get(0), JsonNode.class);
+
+                try {
+                    Integer crashes = resultJson.get("crashes").asInt();
+                    return crashes;
+
+                } catch (NoSuchElementException e) {
+                    logger.warn("Cannot retrieve HLT crashes (no such element) from response: " + result.get(0));
+                } catch (NullPointerException e) {
+                    logger.warn("Cannot retrieve HLT crashes from response: " + result.get(0));
+                }
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+    protected boolean dispatchDisk(DAQ daq) {
+
+        try {
+            DiskInfo d = getDiskInfo();
+            if (d != null) {
+                daq.getBuSummary().setOutputDiskTotal(d.getOutputTotal());
+                daq.getBuSummary().setOutputDiskUsage(d.getOutputOccupancyFraction());
+                return true;
+            } else {
+                daq.getBuSummary().setOutputDiskTotal(null);
+                daq.getBuSummary().setOutputDiskUsage(null);
+            }
+
+        } catch (JsonMappingException e) {
+            logger.warn("Could not retrieve F3 disk info,  json mapping exception: ", e);
+        } catch (IOException e) {
+            logger.warn("Could not retrieve F3 disk info, IO exception: ", e);
+        }
+        return false;
+
     }
 
     /**
@@ -112,7 +220,7 @@ public class F3DataRetriever {
         }
     }
 
-    public HLToutputInfo getHLToutputInfo(int runNumber) throws IOException {
+    protected HLToutputInfo getHLToutputInfo(int runNumber) throws IOException {
         HLToutputInfo info = new HLToutputInfo();
 
         // fill event rates
@@ -132,7 +240,7 @@ public class F3DataRetriever {
      * @throws IOException
      * @throws JsonMappingException
      */
-    public DiskInfo getDiskInfo() throws IOException, JsonMappingException {
+    protected DiskInfo getDiskInfo() throws IOException, JsonMappingException {
 
         Pair<Integer, List<String>> a = connector.retrieveLines(diskUrl);
         List<String> result = a.getRight();
@@ -162,70 +270,6 @@ public class F3DataRetriever {
 
     }
 
-    public void dispatch(DAQ daq) {
-
-        long start = System.currentTimeMillis();
-
-        boolean diskSuccessful = dispatchDisk(daq);
-        boolean hltSuccessful = dispatchHLT(daq);
-
-        long end = System.currentTimeMillis();
-
-        if (diskSuccessful && hltSuccessful)
-            logger.info("F3 data successfully retrieved and mapped in: " + (end - start) + "ms");
-        else {
-            logger.warn("Problem retrieving F3 data [disk successful,hlt successful]=[" + diskSuccessful + ","
-                    + hltSuccessful + "]");
-        }
-    }
-
-    /**
-     * @return true if retrieving HLT output information from F3mon
-     * was successful, false otherwise
-     */
-    public boolean dispatchHLT(DAQ daq) {
-
-        try {
-            HLToutputInfo hltInfo = getHLToutputInfo(daq.getRunNumber());
-
-            Double hltOutputRate = hltInfo.getEventRate(PHYSICS_STREAM_NAME);
-            Double hltOutputBW = hltInfo.getBandwidth(PHYSICS_STREAM_NAME);
-
-            daq.setHltRate(hltOutputRate);
-            daq.setHltBandwidth(hltOutputBW);
-
-            return hltOutputRate != null;
-
-        } catch (JsonMappingException e) {
-            logger.warn("Could not retrieve F3 HLT rate,  json mapping exception: ", e);
-        } catch (IOException e) {
-            logger.warn("Could not retrieve F3 HLT rate, IO exception: ", e);
-        }
-        return false;
-
-    }
-
-    public boolean dispatchDisk(DAQ daq) {
-
-        try {
-            DiskInfo d = getDiskInfo();
-            if (d != null) {
-                daq.getBuSummary().setOutputDiskTotal(d.getOutputTotal());
-                daq.getBuSummary().setOutputDiskUsage(d.getOutputOccupancyFraction());
-                return true;
-            } else {
-                daq.getBuSummary().setOutputDiskTotal(null);
-                daq.getBuSummary().setOutputDiskUsage(null);
-            }
-
-        } catch (JsonMappingException e) {
-            logger.warn("Could not retrieve F3 disk info,  json mapping exception: ", e);
-        } catch (IOException e) {
-            logger.warn("Could not retrieve F3 disk info, IO exception: ", e);
-        }
-        return false;
-
-    }
 
     public class DiskInfo {
         private Double ramdiskOccupancyFraction;

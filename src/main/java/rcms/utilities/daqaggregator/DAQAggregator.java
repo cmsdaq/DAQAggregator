@@ -69,7 +69,7 @@ public class DAQAggregator {
             }
 
 			/*
-             * Persist mode from properties file
+			 * Persist mode from properties file
 			 */
             PersistMode persistMode = PersistMode.decode(Application.get().getProp(Settings.PERSISTENCE_MODE));
             logger.info("Persist mode:" + persistMode);
@@ -282,12 +282,13 @@ public class DAQAggregator {
         boolean f3Enabled = Boolean.parseBoolean(Application.get().getProp(Settings.F3_ENABLED));
         String hltUrl = Application.get().getProp(Settings.F3_HLT_URL);
         String diskUrl = Application.get().getProp(Settings.F3_DISK_URL);
+        String crashesUrl = Application.get().getProp(Settings.F3_CRASHES_URL);
         F3DataRetriever f3DataRetriever = null;
 
 
-        if (f3Enabled && !"".equals(hltUrl) && !"".equals(diskUrl)) {
+        if (f3Enabled && !"".equals(hltUrl) && !"".equals(diskUrl) && !"".equals(crashesUrl)) {
             logger.info("F3 monitoring is enabled and set to following urls: " + hltUrl + ", " + diskUrl);
-            f3DataRetriever = new F3DataRetriever(new Connector(false), hltUrl, diskUrl);
+            f3DataRetriever = new F3DataRetriever(new Connector(false), hltUrl, diskUrl,crashesUrl);
         } else if (f3Enabled) {
             throw new DAQException(DAQExceptionCode.MissingProperty, "Specify url for F3 data retrieval. Required: " + Settings.F3_DISK_URL.getKey() + ", " + Settings.F3_HLT_URL.getKey());
         } else {
