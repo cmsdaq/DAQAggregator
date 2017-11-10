@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>ch.cern</groupId>
 	<artifactId>DAQAggregator</artifactId>
-	<version>1.17.4</version>
+	<version>1.17.6</version>
 	<repositories>
 		<repository>
 			<id>libs-release-local</id>
