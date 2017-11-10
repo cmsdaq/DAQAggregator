@@ -1,11 +1,18 @@
 package rcms.utilities.daqaggregator.datasource;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
+import java.util.List;
+import java.util.NoSuchElementException;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
 import static org.junit.Assert.assertNotNull;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import rcms.utilities.daqaggregator.Application;
+import rcms.utilities.daqaggregator.DAQException;
+import rcms.utilities.daqaggregator.DAQExceptionCode;
 import rcms.utilities.daqaggregator.Settings;
 import rcms.utilities.daqaggregator.data.BUSummary;
 import rcms.utilities.daqaggregator.data.DAQ;
@@ -77,6 +84,43 @@ public class F3DataRetrieverIT {
 		// F3DataRetriever.DiskInfo.ramdiskTotal are not mapped into the DAQ
 		// object
 		
+	}
+
+	/** fetches the latest run number from F3mon */
+	private static Integer getLatestRun() throws IOException {
+		
+		// get the base URL
+		String lastRunUrl = Application.get().getProp(Settings.F3_LAST_RUN_URL);
+		
+		if (lastRunUrl == null) {
+			throw new DAQException(DAQExceptionCode.MissingProperty, "property " + Settings.F3_LAST_RUN_URL.getKey() + " is not set");
+		}
+		
+		Connector connector = new Connector(false);
+		
+		Pair<Integer, List<String>> a = connector.retrieveLines(lastRunUrl + "?setup=cdaq");
+		
+		List<String> result = a.getRight();
+
+		long count = result.size();
+		if (count == 1) {
+			JsonNode resultJson = new ObjectMapper().readValue(result.get(0), JsonNode.class);
+
+			try {
+
+				return resultJson.get("number").asInt();
+
+			} catch (NoSuchElementException e) {
+				logger.warn("Cannot retrieve latest run number (no such element) from response: " + result.get(0));
+				return null;
+			} catch (NullPointerException e) {
+				logger.warn("Cannot retrieve latest run number from response: " + result.get(0));
+				return null;
+			}
+		} else {
+			logger.warn("Expected 1 node as a response but was " + count);
+			return null;
+		}
 	}
 	
 }
