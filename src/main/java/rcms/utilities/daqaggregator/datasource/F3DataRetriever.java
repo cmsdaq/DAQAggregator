@@ -112,7 +112,8 @@ public class F3DataRetriever {
         boolean diskSuccessful = dispatchDisk(daq);
         boolean hltSuccessful = dispatchHLT(daq);
         boolean crashSuccessful = dispatchCrashes(daq);
-
+        boolean cpuUsageSuccessful = dispatchCpuLoad(daq);
+				
         long end = System.currentTimeMillis();
 
         if (diskSuccessful && hltSuccessful && crashSuccessful)
