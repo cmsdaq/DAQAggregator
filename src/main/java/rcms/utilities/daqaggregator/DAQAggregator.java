@@ -289,7 +289,7 @@ public class DAQAggregator {
         F3DataRetriever f3DataRetriever = null;
 
 
-        if (f3Enabled && !"".equals(hltUrl) && !"".equals(diskUrl) && !"".equals(crashesUrl)) {
+        if (f3Enabled && !"".equals(hltUrl) && !"".equals(diskUrl) && !"".equals(crashesUrl) && !"".equals(cpuLoadUrl) && !"".equals(cpuLoadType)) {
             logger.info("F3 monitoring is enabled and set to following urls: " + hltUrl + ", " + diskUrl);
             f3DataRetriever = new F3DataRetriever(new Connector(false), hltUrl, diskUrl,crashesUrl, cpuLoadUrl, CpuLoadType.getByKey(cpuLoadType));
         } else if (f3Enabled) {
