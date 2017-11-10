@@ -131,5 +131,33 @@ public class F3DataRetrieverIT {
 			return null;
 		}
 	}
+
+	
+	/**
+	 * Test for HLT rates and bandwidths.
+	 *
+	 * Note that dispatching the HLT rates will only dispatch the physics stream
+	 * rate/bandwidth to the daq object which does not not exist during
+	 * interfills. We therefore do not implement test of the dispatching mechanism
+	 * for the HLT rate and bandwidth quantities.
+	 */
+	@Test
+	public void hltInfoDirectTest() throws IOException {
+
+		F3DataRetriever.HLToutputInfo hltInfo = f3dataRetriever.getHLToutputInfo(runNumber);
+
+		// "PhysicsMuons" is there both for LHC fills and interfill runs
+		// but we have seen cases of zero rates during interfill
+		// use "HLTRates" instead
+		String streamName = "HLTRates";
+
+		Double eventRate = hltInfo.getEventRate(streamName);
+		logger.info("HLT event rate for stream " + streamName + " is " + eventRate);
+		assertNotNull(eventRate);
+
+		Double bandwidth = hltInfo.getBandwidth(streamName);
+		logger.info("HLT bandwidth for stream " + streamName + " is " + bandwidth);
+		assertNotNull(bandwidth);
+	}
 	
 }
