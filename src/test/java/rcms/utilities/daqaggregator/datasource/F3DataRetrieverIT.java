@@ -17,6 +17,7 @@ import rcms.utilities.daqaggregator.Settings;
 import rcms.utilities.daqaggregator.data.BUSummary;
 import rcms.utilities.daqaggregator.data.DAQ;
 import rcms.utilities.daqaggregator.data.HltInfo;
+import rcms.utilities.daqaggregator.datasource.F3DataRetriever.CpuLoadType;
 
 /**
  * Integration test for F3 retrieval: contacts the actual F3 server
@@ -38,7 +39,11 @@ public class F3DataRetrieverIT {
 		String hltUrl = Application.get().getProp(Settings.F3_HLT_URL);
 		String diskUrl = Application.get().getProp(Settings.F3_DISK_URL);
 		String crashesUrl = Application.get().getProp(Settings.F3_CRASHES_URL);
-		f3dataRetriever = new F3DataRetriever(new Connector(false), hltUrl, diskUrl,crashesUrl);
+		String cpuLoadUrl = Application.get().getProp(Settings.F3_CPU_LOAD_URL);
+		String cpuLoadType = Application.get().getProp(Settings.F3_CPU_LOAD_TYPE);
+
+		f3dataRetriever = new F3DataRetriever(new Connector(false), hltUrl, diskUrl,crashesUrl,
+		  cpuLoadUrl, CpuLoadType.getByKey(cpuLoadType));
 
 		daq = new DAQ();
 		
