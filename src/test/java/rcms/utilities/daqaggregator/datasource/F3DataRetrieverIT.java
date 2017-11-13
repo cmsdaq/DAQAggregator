@@ -188,4 +188,14 @@ public class F3DataRetrieverIT {
 
 	}
 	
+	@Test
+	public void cpuLoadDirectTest() {
+
+		Float cpuLoad = f3dataRetriever.getCpuLoad();
+		
+		logger.info("HLT CPU load is " + cpuLoad);
+		assertNotNull(cpuLoad);
+
+	}
+	
 }
