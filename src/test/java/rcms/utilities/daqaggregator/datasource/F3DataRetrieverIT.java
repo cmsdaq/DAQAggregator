@@ -197,5 +197,13 @@ public class F3DataRetrieverIT {
 		assertNotNull(cpuLoad);
 
 	}
-	
+
+	/** checks that a cpu load was dispatched to the DAQ object */
+	@Test
+	public void cpuLoadDispatchTest() {
+		
+		Float cpuLoad = daq.getHltInfo().getCpuLoad();
+		assertNotNull(cpuLoad);
+		
+	}
 }
