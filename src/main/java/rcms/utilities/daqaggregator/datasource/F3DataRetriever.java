@@ -32,13 +32,50 @@ public class F3DataRetriever {
     private final String hltUrl;
     private final String diskUrl;
     private final String crashUrl;
+    private final String cpuLoadUrl;
 
-    public F3DataRetriever(Connector connector, String hltUrl, String diskUrl, String crashUrl) {
+    /** currently known CPU load types returned by F3mon (the strings
+        corresponds to what F3mon uses in the returned results) */
+    public static enum CpuLoadType {
+
+        AVG_UNCORR("avg uncorr"),
+        HTCORR_20PERCENT("20% htcor"),
+        HTCORR_QUADRATIC("20% htcor(2x-x*x)");
+
+        private CpuLoadType(String key) {
+            this.key = key;
+        }
+
+        private final String key;
+
+        public String getKey() {
+            return key;
+        }
+
+        public static CpuLoadType getByKey(String key) {
+            for (CpuLoadType result : CpuLoadType.values()) {
+                if (result.getKey().equals(key)) {
+                    return result;
+                }
+            }
+            
+            // not found
+            throw new IllegalArgumentException("could not find CpuLoadType with key \"" + key + "\"");
+        }
+    }
+
+    /** type of cpu load to retrieve from F3mon */
+    private final CpuLoadType cpuLoadType;
+
+    public F3DataRetriever(Connector connector, String hltUrl, String diskUrl, String crashUrl,
+            String cpuLoadUrl, CpuLoadType cpuLoadType) {
         this.mapper = new ObjectMapper();
         this.connector = connector;
         this.hltUrl = hltUrl;
         this.diskUrl = diskUrl;
         this.crashUrl = crashUrl;
+        this.cpuLoadUrl = cpuLoadUrl + "?setup=cdaq&intlen=30&int=1";
+        this.cpuLoadType = cpuLoadType;
     }
 
     /**
@@ -47,7 +84,7 @@ public class F3DataRetriever {
      * @param args
      */
     public static void main(String[] args) {
-        F3DataRetriever f3dr = new F3DataRetriever(new Connector(false), "http://es-cdaq.cms/sc/php/stream_summary_last.php", "http://es-cdaq.cms/sc/php/summarydisks.php", "http://es-cdaq.cms/sc/php/resource_status.php");
+        F3DataRetriever f3dr = new F3DataRetriever(new Connector(false), "http://es-cdaq.cms/sc/php/stream_summary_last.php", "http://es-cdaq.cms/sc/php/summarydisks.php", "http://es-cdaq.cms/sc/php/resource_status.php", "http://cmsdaqfff/prod/sc/php/cpuusage.php", CpuLoadType.HTCORR_QUADRATIC);
         try {
             Application.initialize("DAQAggregator.properties");
             ProxyManager.get().startProxy();
@@ -58,6 +95,9 @@ public class F3DataRetriever {
             logger.info("Disk info: " + d);
             logger.info("Hlt output: " + h);
             logger.info("Crashes: " + c);
+
+            Float cpuLoad = f3dr.getCpuLoad();
+            logger.info("cpu load: " + cpuLoad);
         } catch (JsonMappingException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -72,14 +112,15 @@ public class F3DataRetriever {
         boolean diskSuccessful = dispatchDisk(daq);
         boolean hltSuccessful = dispatchHLT(daq);
         boolean crashSuccessful = dispatchCrashes(daq);
-
+        boolean cpuUsageSuccessful = dispatchCpuLoad(daq);
+				
         long end = System.currentTimeMillis();
 
         if (diskSuccessful && hltSuccessful && crashSuccessful)
             logger.info("F3 data successfully retrieved and mapped in: " + (end - start) + "ms");
         else {
-            logger.warn("Problem retrieving F3 data [disk successful,hlt successful]=[" + diskSuccessful + ","
-                    + hltSuccessful + "," +crashSuccessful+ "]");
+            logger.warn("Problem retrieving F3 data [disk successful,hlt successful,crash successful,cpu usage successful]=[" + diskSuccessful + ","
+                    + hltSuccessful + "," +crashSuccessful+ "," + cpuUsageSuccessful + "]");
         }
     }
 
@@ -270,6 +311,73 @@ public class F3DataRetriever {
 
     }
 
+    protected boolean dispatchCpuLoad(DAQ daq) {
+        Float cpuLoad = getCpuLoad();
+        daq.getHltInfo().setCpuLoad(cpuLoad);
+        if (cpuLoad != null)
+            return true;
+        else
+            return false;
+		}
+
+    /** retrieves the CPU load from an F3mon web application */
+    public Float getCpuLoad() {
+
+        try {
+            Pair<Integer, List<String>> a = connector.retrieveLines(cpuLoadUrl);
+            List<String> result = a.getRight();
+
+            long count = result.size();
+            if (count == 1) {
+                JsonNode resultJson = mapper.readValue(result.get(0), JsonNode.class);
+
+                try {
+                    for (JsonNode line : resultJson.get("fusyscpu2")) {
+                        String name = line.get("name").asText();
+
+                        if (! cpuLoadType.getKey().equals(name)) {
+                            continue;
+                        }
+
+                        Float cpuLoad = null;
+                        long maxTimestamp = -1;
+
+                        // check items in data, take the one with the
+                        // highest timestamp
+                        for (JsonNode line2 : line.get("data")) {
+
+                            long timestamp = line2.get(0).asLong();
+
+                            if (timestamp > maxTimestamp) {
+                                maxTimestamp = timestamp;
+                                cpuLoad = (float)line2.get(1).asDouble();
+                            }
+                        } // loop over items in line
+
+                        return cpuLoad;
+
+                    } // loop over returned lines
+
+                    // not found
+                    return null;
+
+                } catch (NoSuchElementException e) {
+                    logger.warn("Cannot retrieve CPU load (no such element) from response: " + result.get(0));
+                    return null;
+                } catch (NullPointerException e) {
+                    logger.warn("Cannot retrieve CPU load from response: " + result.get(0));
+                    return null;
+                }
+            } else {
+                logger.warn("Expected 1 node as a response but was " + count);
+                return null;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+        return null;
+    }
 
     public class DiskInfo {
         private Double ramdiskOccupancyFraction;

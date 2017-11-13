@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import rcms.common.db.DBConnectorException;
 import rcms.utilities.daqaggregator.data.DAQ;
 import rcms.utilities.daqaggregator.datasource.*;
+import rcms.utilities.daqaggregator.datasource.F3DataRetriever.CpuLoadType;
 import rcms.utilities.daqaggregator.persistence.PersistenceFormat;
 import rcms.utilities.daqaggregator.persistence.PersistorManager;
 import rcms.utilities.hwcfg.HardwareConfigurationException;
@@ -283,14 +284,16 @@ public class DAQAggregator {
         String hltUrl = Application.get().getProp(Settings.F3_HLT_URL);
         String diskUrl = Application.get().getProp(Settings.F3_DISK_URL);
         String crashesUrl = Application.get().getProp(Settings.F3_CRASHES_URL);
+        String cpuLoadUrl = Application.get().getProp(Settings.F3_CPU_LOAD_URL);
+        String cpuLoadType = Application.get().getProp(Settings.F3_CPU_LOAD_TYPE);
         F3DataRetriever f3DataRetriever = null;
 
 
-        if (f3Enabled && !"".equals(hltUrl) && !"".equals(diskUrl) && !"".equals(crashesUrl)) {
+        if (f3Enabled && !"".equals(hltUrl) && !"".equals(diskUrl) && !"".equals(crashesUrl) && !"".equals(cpuLoadUrl) && !"".equals(cpuLoadType)) {
             logger.info("F3 monitoring is enabled and set to following urls: " + hltUrl + ", " + diskUrl);
-            f3DataRetriever = new F3DataRetriever(new Connector(false), hltUrl, diskUrl,crashesUrl);
+            f3DataRetriever = new F3DataRetriever(new Connector(false), hltUrl, diskUrl,crashesUrl, cpuLoadUrl, CpuLoadType.getByKey(cpuLoadType));
         } else if (f3Enabled) {
-            throw new DAQException(DAQExceptionCode.MissingProperty, "Specify url for F3 data retrieval. Required: " + Settings.F3_DISK_URL.getKey() + ", " + Settings.F3_HLT_URL.getKey());
+            throw new DAQException(DAQExceptionCode.MissingProperty, "Specify url for F3 data retrieval. Required: " + Settings.F3_DISK_URL.getKey() + ", " + Settings.F3_HLT_URL.getKey() + ", " + Settings.F3_CPU_LOAD_URL.getKey() + ", " + Settings.F3_CPU_LOAD_TYPE.getKey());
         } else {
             logger.info("F3 monitoring is disabled");
         }
