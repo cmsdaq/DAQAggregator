@@ -202,6 +202,8 @@ public class ObjectMapper {
 		daq.setSubFEDBuilders(new ArrayList<>(subFedBuilders.values()));
 		daq.setHltInfo(new HltInfo());
 
+		daq.setStorageManager(new StorageManager());
+		
 		logger.info("Retrieval summary " + this.toString());
 		logger.info("Subsystem summary " + subSystems.values());
 
