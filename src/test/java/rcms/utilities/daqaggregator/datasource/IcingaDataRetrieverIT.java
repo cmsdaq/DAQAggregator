@@ -7,6 +7,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import org.junit.Ignore;
 import org.junit.Test;
 import rcms.utilities.daqaggregator.Application;
 import rcms.utilities.daqaggregator.Settings;
@@ -24,6 +25,7 @@ public class IcingaDataRetrieverIT {
 	/** checks that we can open a connection to the Icinga 
 	 *  server (which is normally via HTTPS)
 	 */
+	@Ignore
 	@Test
 	public void testIcingaConnection() throws IOException {
 
@@ -46,6 +48,7 @@ public class IcingaDataRetrieverIT {
 	 *  on any particular value but checks that there is no 
 	 *  exception throw and that the values are non-null
 	 */
+	@Ignore
 	@Test
 	public void testGetStorageManagerInfo() throws IOException {
 
