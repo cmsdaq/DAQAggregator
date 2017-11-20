@@ -7,6 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLSession;
 
 import org.apache.log4j.Logger;
 
@@ -35,6 +38,11 @@ public class Application {
 
 	public static void initialize(String propertiesFile) {
 		instance = new Application(propertiesFile);
+
+		// ignore mismatches of hostnames and SSL/TLS certificates
+		// we rely on seeing known certificates instead
+		setTrustAllSslHostnames();
+
 		checkRequiredSettings();
 		configureFlashlists();
 
@@ -130,6 +138,18 @@ public class Application {
 		}
 	}
 
+	/** enable ignoring mismatches of SSL/TLS certificate names with the actual
+	 *  hostname.
+	 */
+	private static void setTrustAllSslHostnames() {
+		
+		HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
+			public boolean verify(String hostname, SSLSession sslSession) {
+				return true;
+			}
+		});
+	}
+	
 	public String getProp(Settings setting) {
 		Object property = prop.get(setting.getKey());
 		if (property != null) {
