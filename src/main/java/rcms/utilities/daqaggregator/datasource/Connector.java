@@ -18,8 +18,18 @@ public class Connector {
 
 	private final boolean suppressFailedRequests;
 
+	/** username and password if set */
+	private final String userPass;
+
 	public Connector(boolean suppressFailedRequests) {
 		this.suppressFailedRequests = suppressFailedRequests;
+		userPass = null;
+	}
+
+	/** connector pages which need basic authentication */
+	public Connector(boolean suppressFailedRequests, String username, String password) {
+		this.suppressFailedRequests = suppressFailedRequests;
+		userPass = username + ":" + password;
 	}
 
 	/**
@@ -38,6 +48,13 @@ public class Connector {
 
 		try {
 			conn = (HttpURLConnection) url.openConnection();
+
+			if (userPass != null) {
+				// see https://stackoverflow.com/a/12603622/288875
+				String basicAuth = "Basic " + javax.xml.bind.DatatypeConverter.printBase64Binary(userPass.getBytes());
+				conn.setRequestProperty ("Authorization", basicAuth);
+			}
+
 			httpCode = conn.getResponseCode();
 
 			if (conn.getResponseCode() == 200) {

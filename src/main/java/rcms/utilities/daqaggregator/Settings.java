@@ -25,6 +25,14 @@ public enum Settings {
 	F3_CPU_LOAD_URL("f3.cpuload.url"),
 	F3_CPU_LOAD_TYPE("f3.cpuload.type"),
 
+	// Icinga monitoring
+	ICINGA_SM_OCCUPANCY_URL("icinga.sm.occupancy.url"),
+	ICINGA_USER("icinga.user"),
+	ICINGA_PASSWORD("icinga.password"),
+	
+	// custom SSL/TLS keystore file
+	SSL_TRUSTSTORE("ssl.trustStore"),
+	
 	// settings for monitoring
 	MONITOR_SETUPNAME("monitor.setupName"),
 

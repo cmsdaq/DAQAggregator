@@ -79,6 +79,8 @@ public class DAQ implements FlashlistUpdatable {
 	private String hltKey;
 	private String hltKeyDescription;
 
+	private StorageManager storageManager;
+
 	public BUSummary getBuSummary() {
 		return buSummary;
 	}
@@ -286,6 +288,14 @@ public class DAQ implements FlashlistUpdatable {
 
 	public void setTcdsGlobalInfo(TCDSGlobalInfo tcdsGlobalInfo) {
 		this.tcdsGlobalInfo = tcdsGlobalInfo;
+	}
+
+	public StorageManager getStorageManager() {
+		return storageManager;
+	}
+
+	public void setStorageManager(StorageManager storageManager) {
+		this.storageManager = storageManager;
 	}
 
 	/**

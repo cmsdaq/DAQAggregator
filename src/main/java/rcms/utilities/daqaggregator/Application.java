@@ -7,6 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLSession;
 
 import org.apache.log4j.Logger;
 
@@ -22,6 +25,9 @@ public class Application {
 
 	private static final Logger logger = Logger.getLogger(Application.class);
 
+	/** name of property to set a custom SSL/TLS certificate file */
+	private static final String SSL_KEYSTORE_PROPERTY = "javax.net.ssl.trustStore";
+
 	private Application(String propertiesFile) {
 		prop = load(propertiesFile);
 	}
@@ -35,6 +41,14 @@ public class Application {
 
 	public static void initialize(String propertiesFile) {
 		instance = new Application(propertiesFile);
+
+		// ignore mismatches of hostnames and SSL/TLS certificates
+		// we rely on seeing known certificates instead
+		setTrustAllSslHostnames();
+
+		// initialize custom certificate keystore location
+		instance.setCustomKeystore();
+
 		checkRequiredSettings();
 		configureFlashlists();
 
@@ -127,6 +141,31 @@ public class Application {
 		logger.info("All required flash-lists successfully discovered:");
 		for (FlashlistType flashlistType : FlashlistType.values()) {
 			logger.info(String.format("%1$-26s", flashlistType.getFlashlistName()) + " " + flashlistType.getUrl());
+		}
+	}
+
+	/** enable ignoring mismatches of SSL/TLS certificate names with the actual
+	 *  hostname.
+	 */
+	private static void setTrustAllSslHostnames() {
+		
+		HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
+			public boolean verify(String hostname, SSLSession sslSession) {
+				return true;
+			}
+		});
+	}
+	
+	/** checks the configuration file for a custom keystore file
+	 *  specified in the configuration file
+	 */
+	private void setCustomKeystore() {
+
+		String key = Settings.SSL_TRUSTSTORE.getKey();
+		if (prop.containsKey(key)) {
+
+			// set the system wide property based on the item in the configuration file
+			System.setProperty(SSL_KEYSTORE_PROPERTY, prop.getProperty(key));
 		}
 	}
 

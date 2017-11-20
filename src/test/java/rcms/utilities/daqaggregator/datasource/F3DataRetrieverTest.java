@@ -65,7 +65,7 @@ public class F3DataRetrieverTest {
 		Assert.assertEquals(new Float(0.31591453234005), f3dataRetriever.getCpuLoad(), 1e-4);
 	}
 	
-	public class ConnectorFake extends Connector {
+	public static class ConnectorFake extends Connector {
 
 		private final String response;
 
