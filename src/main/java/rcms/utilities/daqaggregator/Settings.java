@@ -30,6 +30,9 @@ public enum Settings {
 	ICINGA_USER("icinga.user"),
 	ICINGA_PASSWORD("icinga.password"),
 	
+	// custom SSL/TLS keystore file
+	SSL_TRUSTSTORE("ssl.trustStore"),
+	
 	// settings for monitoring
 	MONITOR_SETUPNAME("monitor.setupName"),
 
