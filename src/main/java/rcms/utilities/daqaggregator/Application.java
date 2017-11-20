@@ -25,6 +25,9 @@ public class Application {
 
 	private static final Logger logger = Logger.getLogger(Application.class);
 
+	/** name of property to set a custom SSL/TLS certificate file */
+	private static final String SSL_KEYSTORE_PROPERTY = "javax.net.ssl.trustStore";
+
 	private Application(String propertiesFile) {
 		prop = load(propertiesFile);
 	}
@@ -42,6 +45,9 @@ public class Application {
 		// ignore mismatches of hostnames and SSL/TLS certificates
 		// we rely on seeing known certificates instead
 		setTrustAllSslHostnames();
+
+		// initialize custom certificate keystore location
+		instance.setCustomKeystore();
 
 		checkRequiredSettings();
 		configureFlashlists();
@@ -150,6 +156,19 @@ public class Application {
 		});
 	}
 	
+	/** checks the configuration file for a custom keystore file
+	 *  specified in the configuration file
+	 */
+	private void setCustomKeystore() {
+
+		String key = Settings.SSL_TRUSTSTORE.getKey();
+		if (prop.containsKey(key)) {
+
+			// set the system wide property based on the item in the configuration file
+			System.setProperty(SSL_KEYSTORE_PROPERTY, prop.getProperty(key));
+		}
+	}
+
 	public String getProp(Settings setting) {
 		Object property = prop.get(setting.getKey());
 		if (property != null) {
