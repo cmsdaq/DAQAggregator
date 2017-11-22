@@ -13,7 +13,7 @@ public class ContextHelper {
 	private static final Logger logger = Logger.getLogger(ContextHelper.class);
 
 	/** network suffix including dot at the beginning */
-	private static String networkSuffix = ".cms";
+	private static String networkSuffix = null;
 	
 	public static Integer getPortFromContext(String context) {
 		String hostname = new String(context);
