@@ -12,6 +12,7 @@ public class ContextHelper {
 
 	private static final Logger logger = Logger.getLogger(ContextHelper.class);
 
+	/** network suffix including dot at the beginning */
 	private static String networkSuffix = ".cms";
 	
 	public static Integer getPortFromContext(String context) {
@@ -46,8 +47,8 @@ public class ContextHelper {
 		if (hostname.contains(":")) {
 			hostname = hostname.substring(0, hostname.indexOf(":"));
 		}
-		if (!hostname.endsWith(".cms")) {
-			hostname = hostname + ".cms";
+		if (!hostname.endsWith(networkSuffix)) {
+			hostname = hostname + networkSuffix;
 		}
 		return hostname;
 	}
