@@ -12,6 +12,8 @@ public class ContextHelper {
 
 	private static final Logger logger = Logger.getLogger(ContextHelper.class);
 
+	private static String networkSuffix = ".cms";
+	
 	public static Integer getPortFromContext(String context) {
 		String hostname = new String(context);
 		String portString;
@@ -73,5 +75,13 @@ public class ContextHelper {
 			return hostname;
 		}
 
+	}
+	
+	/** checks if the given host name ends with the network domain
+	 *  (which is configured application wide) and if yes, removes
+	 *  it. Otherwise returns the hostname unchanged.
+	 */
+	public static String removeNetworkSuffix(String hostname) {
+		return removeSuffixFromHostname(hostname, networkSuffix);
 	}
 }
