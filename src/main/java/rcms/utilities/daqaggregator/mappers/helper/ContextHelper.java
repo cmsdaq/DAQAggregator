@@ -91,4 +91,16 @@ public class ContextHelper {
 		return networkSuffix;
 	}
 
+	public static void setNetworkSuffix(String networkSuffix) {
+
+		// ensure lower case
+		networkSuffix = networkSuffix.toLowerCase();
+
+		if (! networkSuffix.startsWith(".")) {
+			networkSuffix = "." + networkSuffix;
+		}
+
+		ContextHelper.networkSuffix = networkSuffix;
+	}
+
 }
