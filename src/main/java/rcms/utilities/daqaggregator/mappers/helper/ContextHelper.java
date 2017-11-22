@@ -85,4 +85,10 @@ public class ContextHelper {
 	public static String removeNetworkSuffix(String hostname) {
 		return removeSuffixFromHostname(hostname, networkSuffix);
 	}
+
+	/** @return the network suffix including the leading dot. */
+	public static String getNetworkSuffix() {
+		return networkSuffix;
+	}
+
 }
