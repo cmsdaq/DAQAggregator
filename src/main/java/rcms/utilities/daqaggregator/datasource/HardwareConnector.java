@@ -54,4 +54,9 @@ public class HardwareConnector {
 
 		initialize(type, url, host, port, sid, user, passwd);
 	}
+
+	static DBConnectorIF getDbconn() {
+		return _dbconn;
+	}
+
 }
