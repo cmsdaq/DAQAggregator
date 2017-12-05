@@ -29,6 +29,7 @@ public enum Settings {
 	MONITOR_SETUPNAME("monitor.setupName"),
 
 	// settings concerning HWCFG DB
+	HWCFGDB_TYPE("hwcfgdb.type"),
 	HWCFGDB_DBURL("hwcfgdb.dburl"),
 	HWCFGDB_HOST("hwcfgdb.host"),
 	HWCFGDB_PORT("hwcfgdb.port"),
