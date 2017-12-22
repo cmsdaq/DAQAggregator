@@ -35,6 +35,8 @@ public class HardwareConnector {
 
 		if (dbType.equals("ORACLE"))
 			_dbconn = new DBConnectorOracle(url, user, passwd);
+		else if (dbType.equals("SQLITE"))
+			_dbconn = new DBConnectorSqlite(url);
 		else
 			_dbconn = new DBConnectorMySQL(url, user, passwd);
 
