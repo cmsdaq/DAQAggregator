@@ -7,7 +7,6 @@ import java.util.List;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import rcms.utilities.daqaggregator.Application;
@@ -64,7 +63,7 @@ public class F3DataRetrieverTest {
 		F3DataRetriever f3dataRetriever = new F3DataRetriever(new ConnectorFake(fakeResponse),null,null,null,null, CpuLoadType.HTCORR_QUADRATIC);
 		Assert.assertEquals(new Float(0.31591453234005), f3dataRetriever.getCpuLoad(), 1e-4);
 	}
-	
+
 	public class ConnectorFake extends Connector {
 
 		private final String response;
