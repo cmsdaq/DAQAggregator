@@ -354,39 +354,44 @@ public class FlashlistDispatcher {
 			// .detect types other than tts_ici, tts_apve
 			Set<String> types = new HashSet<String>();
 
-			types.addAll(stpiDataFromFlashlist.get(tcds_serviceField).keySet());
-			types.remove("tts_ici");
-			types.remove("tts_apve");
+			if(stpiDataFromFlashlist.containsKey(tcds_serviceField)){
 
-			// .foreach type, decode state value and %B/%W value (if existing)
-			// and set corresponding value in model's daq
-			GlobalTTSState globalTtsState;
-			for (String typeName : types) {
-				logger.debug("Global TTS state detected for this service:" + typeName);
+				types.addAll(stpiDataFromFlashlist.get(tcds_serviceField).keySet());
+				types.remove("tts_ici");
+				types.remove("tts_apve");
 
-				globalTtsState = new GlobalTTSState();
+				// .foreach type, decode state value and %B/%W value (if existing)
+				// and set corresponding value in model's daq
+				GlobalTTSState globalTtsState;
+				for (String typeName : types) {
+					logger.debug("Global TTS state detected for this service:" + typeName);
 
-				int stateCode = Integer.parseInt(
-						stpiDataFromFlashlist.get(tcds_serviceField).get(typeName).get(0).get(0).get("value"));
-				globalTtsState.setState(TCDSFlashlistHelpers.decodeTCDSTTSState(stateCode));
+					globalTtsState = new GlobalTTSState();
 
-				// percentage keys should be reviewed when the flashlist column
-				// name for these attributes is defined
-				String busyKey = "outputFractionBusy";
-				String warningKey = "outputFractionWarning";
+					int stateCode = Integer.parseInt(
+							stpiDataFromFlashlist.get(tcds_serviceField).get(typeName).get(0).get(0).get("value"));
+					globalTtsState.setState(TCDSFlashlistHelpers.decodeTCDSTTSState(stateCode));
 
-				if (stpiDataFromFlashlist.get(tcds_serviceField).get(typeName).get(0).get(0).containsKey(busyKey)) {
-					globalTtsState.setPercentBusy(Float.parseFloat(
-							stpiDataFromFlashlist.get(tcds_serviceField).get(typeName).get(0).get(0).get(busyKey)));
+					// percentage keys should be reviewed when the flashlist column
+					// name for these attributes is defined
+					String busyKey = "outputFractionBusy";
+					String warningKey = "outputFractionWarning";
+
+					if (stpiDataFromFlashlist.get(tcds_serviceField).get(typeName).get(0).get(0).containsKey(busyKey)) {
+						globalTtsState.setPercentBusy(Float.parseFloat(
+								stpiDataFromFlashlist.get(tcds_serviceField).get(typeName).get(0).get(0).get(busyKey)));
+					}
+
+					if (stpiDataFromFlashlist.get(tcds_serviceField).get(typeName).get(0).get(0).containsKey(warningKey)) {
+						globalTtsState.setPercentWarning(Float.parseFloat(
+								stpiDataFromFlashlist.get(tcds_serviceField).get(typeName).get(0).get(0).get(warningKey)));
+					}
+
+					mappingManager.getObjectMapper().daq.getTcdsGlobalInfo().getGlobalTtsStates().put(typeName,
+							globalTtsState);
 				}
-
-				if (stpiDataFromFlashlist.get(tcds_serviceField).get(typeName).get(0).get(0).containsKey(warningKey)) {
-					globalTtsState.setPercentWarning(Float.parseFloat(
-							stpiDataFromFlashlist.get(tcds_serviceField).get(typeName).get(0).get(0).get(warningKey)));
-				}
-
-				mappingManager.getObjectMapper().daq.getTcdsGlobalInfo().getGlobalTtsStates().put(typeName,
-						globalTtsState);
+			} else {
+				logger.warn("Could not find service field: " + tcds_serviceField + " in flaslhist" + type.getFlashlistName());
 			}
 
 			mappingManager.getObjectMapper().daq.getTcdsGlobalInfo().setTcdsControllerServiceName(tcds_serviceField);
