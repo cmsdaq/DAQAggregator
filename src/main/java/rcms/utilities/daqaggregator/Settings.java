@@ -21,6 +21,9 @@ public enum Settings {
 	F3_ENABLED("f3.enabled", true),
 	F3_HLT_URL("f3.htl.url"),
 	F3_DISK_URL("f3.disk.url"),
+	F3_CRASHES_URL("f3.crashes.url"),
+	F3_CPU_LOAD_URL("f3.cpuload.url"),
+	F3_CPU_LOAD_TYPE("f3.cpuload.type"),
 
 	// settings for monitoring
 	MONITOR_SETUPNAME("monitor.setupName"),
