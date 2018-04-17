@@ -24,6 +24,7 @@ public enum Settings {
 	F3_CRASHES_URL("f3.crashes.url"),
 	F3_CPU_LOAD_URL("f3.cpuload.url"),
 	F3_CPU_LOAD_TYPE("f3.cpuload.type"),
+	F3_LAST_RUN_URL("f3.lastrun.url"),
 
 	// settings for monitoring
 	MONITOR_SETUPNAME("monitor.setupName"),
