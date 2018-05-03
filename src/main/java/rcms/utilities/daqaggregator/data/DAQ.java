@@ -79,6 +79,10 @@ public class DAQ implements FlashlistUpdatable {
 	private String hltKey;
 	private String hltKeyDescription;
 
+	private String clockSource;
+
+	private Boolean isLhcClockStable;
+
 	public BUSummary getBuSummary() {
 		return buSummary;
 	}
@@ -558,6 +562,21 @@ public class DAQ implements FlashlistUpdatable {
 		this.hltInfo = hltInfo;
 	}
 
+	public String getClockSource() {
+		return clockSource;
+	}
+
+	public void setClockSource(String clockSource) {
+		this.clockSource = clockSource;
+	}
+
+	public Boolean getLhcClockStable() {
+		return isLhcClockStable;
+	}
+
+	public void setLhcClockStable(Boolean lhcClockStable) {
+		isLhcClockStable = lhcClockStable;
+	}
 
 	@Override
 	public String toString() {
