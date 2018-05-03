@@ -236,6 +236,12 @@ public class DAQ implements FlashlistUpdatable {
 			this.daqState = flashlistRow.get("STATE").asText();
 		} else if (flashlistType == FlashlistType.LEVEL_ZERO_FM_DYNAMIC) {
 			this.levelZeroState = flashlistRow.get("STATE").asText();
+
+			this.clockSource = flashlistRow.get("CLOCK_SOURCE").asText();
+			if(flashlistRow.get("LHC_CLOCK_STABLE").isBoolean()){
+				this.isLhcClockStable = flashlistRow.get("LHC_CLOCK_STABLE").asBoolean();
+			}
+
 			this.lhcBeamMode = flashlistRow.get("LHC_BEAM_MODE").asText();
 			this.lhcMachineMode = flashlistRow.get("LHC_MACHINE_MODE").asText();
 			try {this.hltKey = flashlistRow.get("HLT_KEY").asText();} catch (NullPointerException e) {}
@@ -381,6 +387,7 @@ public class DAQ implements FlashlistUpdatable {
 	@Override
 	public void clean() {
 		this.daqState = "Unknown";
+		this.isLhcClockStable = null;
 	}
 
 	@Override
