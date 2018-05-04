@@ -238,9 +238,7 @@ public class DAQ implements FlashlistUpdatable {
 			this.levelZeroState = flashlistRow.get("STATE").asText();
 
 			this.clockSource = flashlistRow.get("CLOCK_SOURCE").asText();
-			if(flashlistRow.get("LHC_CLOCK_STABLE").isBoolean()){
-				this.isLhcClockStable = flashlistRow.get("LHC_CLOCK_STABLE").asBoolean();
-			}
+			this.isLhcClockStable = Boolean.valueOf(flashlistRow.get("LHC_CLOCK_STABLE").asText());
 
 			this.lhcBeamMode = flashlistRow.get("LHC_BEAM_MODE").asText();
 			this.lhcMachineMode = flashlistRow.get("LHC_MACHINE_MODE").asText();
