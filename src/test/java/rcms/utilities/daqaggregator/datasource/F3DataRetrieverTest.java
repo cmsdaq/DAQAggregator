@@ -69,6 +69,14 @@ public class F3DataRetrieverTest {
 		Assert.assertEquals(new Float(0.31591453234005), f3dataRetriever.getCpuLoad(), 1e-4);
 	}
 
+	@Test
+	public void testStorageManagerOccupancy() throws IOException {
+		String fakeResponse = "{\"occupancy_perc\":13}";
+		F3DataRetriever f3dataRetriever = new F3DataRetriever(new ConnectorFake(fakeResponse),null,null,null,null,
+						CpuLoadType.HTCORR_QUADRATIC, null);
+		Assert.assertEquals(new Float(0.13), f3dataRetriever.getStorageManager().getOccupancyFraction(), 1e-4);
+	}
+
 	public class ConnectorFake extends Connector {
 
 		private final String response;
