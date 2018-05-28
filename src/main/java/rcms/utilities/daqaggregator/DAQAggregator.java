@@ -286,12 +286,15 @@ public class DAQAggregator {
         String crashesUrl = Application.get().getProp(Settings.F3_CRASHES_URL);
         String cpuLoadUrl = Application.get().getProp(Settings.F3_CPU_LOAD_URL);
         String cpuLoadType = Application.get().getProp(Settings.F3_CPU_LOAD_TYPE);
+        String storageManagerUrl = Application.get().getProp(Settings.F3_STORAGE_MANAGER_URL);
         F3DataRetriever f3DataRetriever = null;
 
 
         if (f3Enabled && !"".equals(hltUrl) && !"".equals(diskUrl) && !"".equals(crashesUrl) && !"".equals(cpuLoadUrl) && !"".equals(cpuLoadType)) {
             logger.info("F3 monitoring is enabled and set to following urls: " + hltUrl + ", " + diskUrl);
-            f3DataRetriever = new F3DataRetriever(new Connector(false), hltUrl, diskUrl,crashesUrl, cpuLoadUrl, CpuLoadType.getByKey(cpuLoadType));
+            f3DataRetriever = new F3DataRetriever(new Connector(false), hltUrl, diskUrl,crashesUrl,
+                    cpuLoadUrl, CpuLoadType.getByKey(cpuLoadType),
+                    storageManagerUrl);
         } else if (f3Enabled) {
             throw new DAQException(DAQExceptionCode.MissingProperty, "Specify url for F3 data retrieval. Required: " + Settings.F3_DISK_URL.getKey() + ", " + Settings.F3_HLT_URL.getKey() + ", " + Settings.F3_CPU_LOAD_URL.getKey() + ", " + Settings.F3_CPU_LOAD_TYPE.getKey());
         } else {
