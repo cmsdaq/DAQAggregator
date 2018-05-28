@@ -83,6 +83,9 @@ public class DAQ implements FlashlistUpdatable {
 
 	private Boolean isLhcClockStable;
 
+	/** information about storage manager (e.g. disk occupancy) */
+	private StorageManager storageManager;
+
 	public BUSummary getBuSummary() {
 		return buSummary;
 	}
@@ -407,6 +410,7 @@ public class DAQ implements FlashlistUpdatable {
 		result = prime * result + runNumber;
 		result = prime * result + sessionId;
 		result = prime * result + ((subSystems == null) ? 0 : subSystems.hashCode());
+		result = prime * result + ((storageManager == null) ? 0 : storageManager.hashCode());
 		return result;
 	}
 
@@ -485,6 +489,13 @@ public class DAQ implements FlashlistUpdatable {
 				return false;
 		} else if (!subSystems.equals(other.subSystems))
 			return false;
+
+		if (storageManager == null) {
+			if (other.storageManager != null)
+				return false;
+		} else if (!storageManager.equals(other.storageManager))
+			return false;
+
 		return true;
 	}
 
@@ -582,6 +593,10 @@ public class DAQ implements FlashlistUpdatable {
 	public void setLhcClockStable(Boolean lhcClockStable) {
 		isLhcClockStable = lhcClockStable;
 	}
+
+	public StorageManager getStorageManager() { return storageManager; }
+
+	public void setStorageManager(StorageManager storageManager) { this.storageManager = storageManager; }
 
 	@Override
 	public String toString() {
