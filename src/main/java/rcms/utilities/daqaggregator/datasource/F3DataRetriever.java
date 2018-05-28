@@ -18,6 +18,7 @@ import java.util.Map;
 import rcms.utilities.daqaggregator.Application;
 import rcms.utilities.daqaggregator.ProxyManager;
 import rcms.utilities.daqaggregator.data.DAQ;
+import rcms.utilities.daqaggregator.data.StorageManager;
 
 /**
  * Retrieves date from F3
@@ -33,6 +34,9 @@ public class F3DataRetriever {
     private final String diskUrl;
     private final String crashUrl;
     private final String cpuLoadUrl;
+
+    /** URL for retrieving storage manager occupancy from F3mon */
+    private final String storageManagerUrl;
 
     /** currently known CPU load types returned by F3mon (the strings
         corresponds to what F3mon uses in the returned results) */
@@ -68,7 +72,8 @@ public class F3DataRetriever {
     private final CpuLoadType cpuLoadType;
 
     public F3DataRetriever(Connector connector, String hltUrl, String diskUrl, String crashUrl,
-            String cpuLoadUrl, CpuLoadType cpuLoadType) {
+            String cpuLoadUrl, CpuLoadType cpuLoadType,
+                           String storageManagerUrl) {
         this.mapper = new ObjectMapper();
         this.connector = connector;
         this.hltUrl = hltUrl;
@@ -76,6 +81,7 @@ public class F3DataRetriever {
         this.crashUrl = crashUrl;
         this.cpuLoadUrl = cpuLoadUrl + "?setup=cdaq&intlen=30&int=1";
         this.cpuLoadType = cpuLoadType;
+        this.storageManagerUrl = storageManagerUrl;
     }
 
     /**
@@ -84,7 +90,13 @@ public class F3DataRetriever {
      * @param args
      */
     public static void main(String[] args) {
-        F3DataRetriever f3dr = new F3DataRetriever(new Connector(false), "http://es-cdaq.cms/sc/php/stream_summary_last.php", "http://es-cdaq.cms/sc/php/summarydisks.php", "http://es-cdaq.cms/sc/php/resource_status.php", "http://cmsdaqfff/prod/sc/php/cpuusage.php", CpuLoadType.HTCORR_QUADRATIC);
+        F3DataRetriever f3dr = new F3DataRetriever(new Connector(false),
+                "http://es-cdaq.cms/sc/php/stream_summary_last.php",
+                "http://es-cdaq.cms/sc/php/summarydisks.php",
+                "http://es-cdaq.cms/sc/php/resource_status.php",
+                "http://cmsdaqfff/prod/sc/php/cpuusage.php",
+                CpuLoadType.HTCORR_QUADRATIC,
+                "http://es-cdaq.cms/sc/php/lustre.php");
         try {
             Application.initialize("DAQAggregator.properties");
             ProxyManager.get().startProxy();
@@ -98,6 +110,8 @@ public class F3DataRetriever {
 
             Float cpuLoad = f3dr.getCpuLoad();
             logger.info("cpu load: " + cpuLoad);
+
+            logger.info(String.format("storage manager occupancy: %.1f%%", f3dr.getStorageManager().getOccupancyFraction() * 100));
         } catch (JsonMappingException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -113,14 +127,16 @@ public class F3DataRetriever {
         boolean hltSuccessful = dispatchHLT(daq);
         boolean crashSuccessful = dispatchCrashes(daq);
         boolean cpuUsageSuccessful = dispatchCpuLoad(daq);
-				
+				boolean storageManagerSuccesful = dispatchStorageManager(daq);
+
         long end = System.currentTimeMillis();
 
-        if (diskSuccessful && hltSuccessful && crashSuccessful)
+        if (diskSuccessful && hltSuccessful && crashSuccessful && storageManagerSuccesful)
             logger.info("F3 data successfully retrieved and mapped in: " + (end - start) + "ms");
         else {
-            logger.warn("Problem retrieving F3 data [disk successful,hlt successful,crash successful,cpu usage successful]=[" + diskSuccessful + ","
-                    + hltSuccessful + "," +crashSuccessful+ "," + cpuUsageSuccessful + "]");
+            logger.warn("Problem retrieving F3 data [disk successful,hlt successful,crash successful,cpu usage successful, storage manager successful]=[" + diskSuccessful + ","
+                    + hltSuccessful + "," +crashSuccessful+ "," + cpuUsageSuccessful +
+                    "," + storageManagerSuccesful + "]");
         }
     }
 
@@ -157,6 +173,18 @@ public class F3DataRetriever {
             return true;
         else
             return false;
+    }
+
+    protected boolean dispatchStorageManager(DAQ daq) {
+        StorageManager sm = null;
+        try {
+            sm = getStorageManager();
+        } catch (IOException e) {
+            logger.warn("Could not retrieve Storage Manager occupancy from F3, IO exception: ", e);
+        }
+        daq.setStorageManager(sm);
+
+        return sm != null;
     }
 
     protected Integer getCrashes() {
@@ -376,6 +404,41 @@ public class F3DataRetriever {
             e.printStackTrace();
         }
         
+        return null;
+    }
+
+    public StorageManager getStorageManager() throws IOException {
+
+        Pair<Integer, List<String>> a = connector.retrieveLines(storageManagerUrl);
+
+        List<String> result = a.getRight();
+
+        long count = result.size();
+        if (count == 1) {
+            JsonNode resultJson = mapper.readValue(result.get(0), JsonNode.class);
+
+            logger.debug(resultJson);
+            try {
+
+                // the php script returns the occupancy in percent, we convert it to a fraction
+                double occupancy = resultJson.get("occupancy_perc").asDouble() / 100.;
+
+                StorageManager sm = new StorageManager();
+                sm.setOccupancyFraction((float) occupancy);
+
+                return sm;
+
+            } catch (NoSuchElementException e) {
+
+                logger.warn("Cannot retrieve storage manager occupancy (no such element) from response: " + result.get(0));
+            } catch (NullPointerException e) {
+                logger.warn("Cannot retrieve storage manager occupancy from response: " + result.get(0));
+            }
+        } else {
+            logger.warn("Expected 1 node as a response but was " + count);
+        }
+
+        // problems getting the information
         return null;
     }
 
