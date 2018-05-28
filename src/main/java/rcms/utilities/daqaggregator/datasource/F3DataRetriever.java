@@ -90,7 +90,13 @@ public class F3DataRetriever {
      * @param args
      */
     public static void main(String[] args) {
-        F3DataRetriever f3dr = new F3DataRetriever(new Connector(false), "http://es-cdaq.cms/sc/php/stream_summary_last.php", "http://es-cdaq.cms/sc/php/summarydisks.php", "http://es-cdaq.cms/sc/php/resource_status.php", "http://cmsdaqfff/prod/sc/php/cpuusage.php", CpuLoadType.HTCORR_QUADRATIC);
+        F3DataRetriever f3dr = new F3DataRetriever(new Connector(false),
+                "http://es-cdaq.cms/sc/php/stream_summary_last.php",
+                "http://es-cdaq.cms/sc/php/summarydisks.php",
+                "http://es-cdaq.cms/sc/php/resource_status.php",
+                "http://cmsdaqfff/prod/sc/php/cpuusage.php",
+                CpuLoadType.HTCORR_QUADRATIC,
+                "http://es-cdaq.cms/sc/php/lustre.php");
         try {
             Application.initialize("DAQAggregator.properties");
             ProxyManager.get().startProxy();
@@ -104,6 +110,8 @@ public class F3DataRetriever {
 
             Float cpuLoad = f3dr.getCpuLoad();
             logger.info("cpu load: " + cpuLoad);
+
+            logger.info(String.format("storage manager occupancy: %.1f%%", f3dr.getStorageManager().getOccupancyFraction() * 100));
         } catch (JsonMappingException e) {
             e.printStackTrace();
         } catch (IOException e) {
