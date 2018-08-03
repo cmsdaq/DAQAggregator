@@ -130,6 +130,7 @@ public class ObjectMapper {
 			fedsByExpectedId.put(fed.getSrcIdExpected(), fed);
 			fed.setHasSLINK(hwfed.hasSLINK());
 			fed.setHasTTS(hwfed.hasTTS());
+			fed.setFedGroup(hwfed.getFEDGroup());
 			feds.put(hwfed.hashCode(), fed);
 		}
 
