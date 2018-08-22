@@ -44,6 +44,8 @@ public class FED implements FlashlistUpdatable {
 	/** pseudofeds */
 	private List<FED> dependentFeds = new ArrayList<FED>();
 
+    private String fedGroup;
+
 	// ----------------------------------------
 	// fields updated periodically
 	// ----------------------------------------
@@ -527,6 +529,14 @@ public class FED implements FlashlistUpdatable {
 		this.ttcp = ttcp;
 	}
 
+	public String getFedGroup() {
+		return fedGroup;
+	}
+
+	public void setFedGroup(String fedGroup) {
+		this.fedGroup = fedGroup;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -557,6 +567,7 @@ public class FED implements FlashlistUpdatable {
 		result = prime * result + srcIdExpected;
 		result = prime * result + srcIdReceived;
 		result = prime * result + ((ttsState == null) ? 0 : ttsState.hashCode());
+		result = prime * result + ((fedGroup == null) ? 0 : fedGroup.hashCode());
 		return result;
 	}
 
@@ -619,6 +630,11 @@ public class FED implements FlashlistUpdatable {
 			if (other.ttsState != null)
 				return false;
 		} else if (!ttsState.equals(other.ttsState))
+			return false;
+		if (fedGroup == null) {
+			if (other.fedGroup != null)
+				return false;
+		} else if (!fedGroup.equals(other.fedGroup))
 			return false;
 		return true;
 	}
