@@ -6,10 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -157,9 +154,7 @@ public class PersistorManager {
 		// mapper.addMixIn(Flashlist.class,
 		// rcms.utilities.daqaggregator.FlashlistMixin.class);
 
-		long startTime = System.currentTimeMillis();
 		mapper.writerWithDefaultPrettyPrinter().writeValue(finalOutputStream, flashlist);
-		logger.info(String.format("Persisted flashlist to file in %d ms.", System.currentTimeMillis() - startTime));
 		return file.getAbsolutePath();
 	}
 
@@ -171,10 +166,15 @@ public class PersistorManager {
 
 		int success = 0, fail = 0;
 
+		Map<String, Long> flashlistPersistTimes = new HashMap<>(flashlists.size(), 1);
+
+		long persistFlashlistsStartTime = System.currentTimeMillis();
 		for (Flashlist flashlist : flashlists) {
 
 			try {
+				long startTime = System.currentTimeMillis();
 				persistFlashlist(flashlist, getFlashlistPersistenceDir());
+				flashlistPersistTimes.put(flashlist.getName(), System.currentTimeMillis() - startTime);
 				success++;
 			} catch (IOException e) {
 				fail++;
@@ -182,6 +182,10 @@ public class PersistorManager {
 			}
 
 		}
+
+		logger.info(String.format("Persisted flashlists in %d ms. Detailed times: %s",
+				System.currentTimeMillis() - persistFlashlistsStartTime, flashlistPersistTimes.toString()));
+
 		logger.info("Persisted " + success + " flashlists sucessfully, " + fail + " failures");
 	}
 
