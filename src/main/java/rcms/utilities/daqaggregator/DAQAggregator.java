@@ -127,7 +127,7 @@ public class DAQAggregator {
                             long end = System.currentTimeMillis();
                             int resultTime = (int) (end - start);
 
-                            logger.debug("Monitor & persist in " + resultTime);
+                            logger.info("Monitor & persist in " + resultTime);
 
                             if (resultTime < minimumSnapshotPeriod) {
                                 int diff = minimumSnapshotPeriod - resultTime;

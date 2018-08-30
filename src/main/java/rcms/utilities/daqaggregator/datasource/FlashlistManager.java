@@ -43,11 +43,13 @@ public class FlashlistManager {
 
 			FlashlistDispatcher dispatcher = new FlashlistDispatcher();
 
+			long dispatchStartTime = System.currentTimeMillis();
 			dispatcher.dispatch(flashlist, mappingManager);
+			logger.info(String.format("Mapped flashlist %s in %d ms.", flashlist.getName(), System.currentTimeMillis() - dispatchStartTime));
 		}
 		long stopTime = System.currentTimeMillis();
 		int time = (int) (stopTime - startTime);
-		logger.debug("Mapping all flashlists finished in " + time + "ms");
+		logger.info("Mapping all flashlists finished in " + time + "ms");
 	}
 
 	private void cleanStructure() {

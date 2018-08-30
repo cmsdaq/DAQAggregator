@@ -103,7 +103,9 @@ public class MonitorManager {
 		daq.setLastUpdate(lastUpdate);
 		// postprocess daq (derived values, summary classes)
 		PostProcessor postProcessor = new PostProcessor(daq);
+		long postProcessStartTime = System.currentTimeMillis();
 		postProcessor.postProcess();
+		logger.info(String.format("Post Processing took %d ms.", System.currentTimeMillis() - postProcessStartTime));
 		
 
 		if(f3dataRetriever != null) {
