@@ -1,6 +1,8 @@
 package rcms.utilities.daqaggregator.datasource;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
@@ -39,15 +41,19 @@ public class FlashlistManager {
 
 		cleanStructure(); // first clean structure and set default values
 
+		Map<String, Long> mappingTimes = new HashMap<>(flashlists.size(), 1);
+
 		for (Flashlist flashlist : flashlists) {
 
 			FlashlistDispatcher dispatcher = new FlashlistDispatcher();
 
+			long dispatchStartTime = System.currentTimeMillis();
 			dispatcher.dispatch(flashlist, mappingManager);
+			mappingTimes.put(flashlist.getName(), System.currentTimeMillis() - dispatchStartTime);
 		}
 		long stopTime = System.currentTimeMillis();
 		int time = (int) (stopTime - startTime);
-		logger.debug("Mapping all flashlists finished in " + time + "ms");
+		logger.info("Mapping all flashlists finished in " + time + "ms. Detailed times: " + mappingTimes);
 	}
 
 	private void cleanStructure() {

@@ -110,10 +110,12 @@ public class StructureSerializer {
 			logger.warn("Format of snapshot not available");
 		}
 
+		long startTime = System.currentTimeMillis();
 		if (prettyPrint)
 			mapper.writerWithDefaultPrettyPrinter().writeValue(finalOutputStream, daqSnapshot);
 		else
 			mapper.writeValue(finalOutputStream, daqSnapshot);
+		logger.info(String.format("Persisted snapshot to file in %d ms.", System.currentTimeMillis() - startTime));
 
 	}
 
