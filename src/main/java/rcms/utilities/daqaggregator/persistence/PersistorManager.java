@@ -157,7 +157,9 @@ public class PersistorManager {
 		// mapper.addMixIn(Flashlist.class,
 		// rcms.utilities.daqaggregator.FlashlistMixin.class);
 
+		long startTime = System.currentTimeMillis();
 		mapper.writerWithDefaultPrettyPrinter().writeValue(finalOutputStream, flashlist);
+		logger.info(String.format("Persisted flashlist to file in %d ms.", System.currentTimeMillis() - startTime));
 		return file.getAbsolutePath();
 	}
 
