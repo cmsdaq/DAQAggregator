@@ -68,17 +68,24 @@ public class MappingManager implements Serializable {
 		relationMapper.subFedBuilderToFrlPc = new HashMap<>();
 		relationMapper.subFedBuilderToTTCP = new HashMap<>();
 
+		long objectMapperStartTime = System.currentTimeMillis();
 		// Michail's hack - FIXME
 		objectMapper.subFedBuilders = mapSubFEDBuilders(daqPartition, relationMapper.fedBuilderToSubFedBuilder,
 				relationMapper.subFedBuilderToFrl, relationMapper.subFedBuilderToFrlPc,
 				relationMapper.subFedBuilderToTTCP);
 
 		objectMapper.mapAllObjects(daqPartition);
+		long relationMapperStartTime = System.currentTimeMillis();
 		relationMapper.mapAllRelations(daqPartition);
+		long relationMapperDuration = System.currentTimeMillis() - relationMapperStartTime;
 		
 
 		// quick fix to Michail's hack - avoids missing subfedbuilder in daqval setup - FIXME
 		objectMapper.daq.setSubFEDBuilders(new ArrayList<>(objectMapper.subFedBuilders.values()));
+		long objectMapperDuration = System.currentTimeMillis() - objectMapperStartTime;
+
+		logger.info(String.format("ObjectMapper took %d ms.", objectMapperDuration - relationMapperDuration));
+		logger.info(String.format("RelationMapper took %d ms.", relationMapperDuration));
 
 		return objectMapper.daq;
 	}
