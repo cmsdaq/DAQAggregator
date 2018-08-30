@@ -4,7 +4,6 @@
 	<groupId>ch.cern</groupId>
 	<artifactId>DAQAggregator</artifactId>
 	<version>1.18.1</version>
-	<!--
 	<repositories>
 		<repository>
 			<id>libs-release-local</id>
@@ -19,14 +18,6 @@
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
-		</repository>
-	</repositories>
-	-->
-	<repositories>
-		<repository>
-			<id>project.local</id>
-			<name>project</name>
-			<url>file:///home/pbrummer/.m2/repository</url>
 		</repository>
 	</repositories>
 	<build>
