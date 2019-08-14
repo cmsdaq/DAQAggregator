@@ -26,15 +26,17 @@ public class HardwareConnector {
 		return dpset.getDPs().values().iterator().next();
 	}
 
-	public void initialize(String url, String host, String port, String sid, String user, String passwd)
+	public void initialize(String dbType, String url, String host, String port, String sid, String user, String passwd)
 			throws DBConnectorException, HardwareConfigurationException {
-		String _dbType = "ORACLE";
+
 		if (url == null || url.isEmpty()) {
 			url = "jdbc:oracle:thin:@" + host + ":" + port + "/" + sid;
 		}
 
-		if (_dbType.equals("ORACLE"))
+		if (dbType.equals("ORACLE"))
 			_dbconn = new DBConnectorOracle(url, user, passwd);
+		else if (dbType.equals("SQLITE"))
+			_dbconn = new DBConnectorSqlite(url);
 		else
 			_dbconn = new DBConnectorMySQL(url, user, passwd);
 
@@ -44,6 +46,7 @@ public class HardwareConnector {
 	public void initialize(Properties prop) throws DBConnectorException,
 					HardwareConfigurationException {
 
+		String type    = prop.getProperty(Settings.HWCFGDB_TYPE.getKey());
 		String url     = prop.getProperty(Settings.HWCFGDB_DBURL.getKey());
 		String host    = prop.getProperty(Settings.HWCFGDB_HOST.getKey());
 		String port    = prop.getProperty(Settings.HWCFGDB_PORT.getKey());
@@ -51,6 +54,11 @@ public class HardwareConnector {
 		String user    = prop.getProperty(Settings.HWCFGDB_LOGIN.getKey());
 		String passwd  = prop.getProperty(Settings.HWCFGDB_PWD.getKey());
 
-		initialize(url, host, port, sid, user, passwd);
+		initialize(type, url, host, port, sid, user, passwd);
 	}
+
+	static DBConnectorIF getDbconn() {
+		return _dbconn;
+	}
+
 }
