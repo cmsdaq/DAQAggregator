@@ -28,6 +28,7 @@ import rcms.utilities.daqaggregator.data.TCDSGlobalInfo;
 import rcms.utilities.daqaggregator.data.TCDSTriggerRates;
 import rcms.utilities.daqaggregator.mappers.MappingManager;
 import rcms.utilities.daqaggregator.mappers.MappingReporter;
+import rcms.utilities.daqaggregator.mappers.helper.ContextHelper;
 import rcms.utilities.daqaggregator.persistence.PersistenceFormat;
 import rcms.utilities.hwcfg.HardwareConfigurationException;
 import rcms.utilities.hwcfg.InvalidNodeTypeException;
@@ -83,6 +84,8 @@ public class FlashlistDispatcherIT {
 		String filter1 = prop.getProperty(Settings.SESSION_L0FILTER1.getKey());
 		String filter2 = prop.getProperty(Settings.SESSION_L0FILTER2.getKey());
 
+		ContextHelper.setNetworkSuffix(prop.getProperty(Settings.NETWORK_DOMAIN.getKey()));
+				
 		// connect to the hardware database
 		hardwareConnector.initialize(prop);
 

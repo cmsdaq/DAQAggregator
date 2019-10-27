@@ -11,17 +11,24 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.junit.BeforeClass;
 
 import rcms.utilities.daqaggregator.data.FED;
 import rcms.utilities.daqaggregator.data.FMM;
 import rcms.utilities.daqaggregator.data.FMMApplication;
 import rcms.utilities.daqaggregator.datasource.Flashlist;
 import rcms.utilities.daqaggregator.datasource.FlashlistType;
+import rcms.utilities.daqaggregator.mappers.helper.ContextHelper;
 
 public class TcdsTtsPiMatcherTest {
 
 	final JsonNodeFactory factory = JsonNodeFactory.instance;
 
+	@BeforeClass
+	public static void setup() {
+		ContextHelper.setNetworkSuffix(".tld");
+	}
+	
 	@Test
 	public void testNonSessionContextFlaslhist() {
 
@@ -31,8 +38,8 @@ public class TcdsTtsPiMatcherTest {
 		ArrayNode rowsNode = factory.arrayNode();
 		Collection<FED> objects = new ArrayList<>();
 
-		appendTestDataToFlashlist(1, rowsNode, "http://a.cms:1000", "service1", 1);
-		objects.add(generateTestFed(1, "a.cms", 1000, "service1", 1));
+		appendTestDataToFlashlist(1, rowsNode, "http://a.tld:1000", "service1", 1);
+		objects.add(generateTestFed(1, "a.tld", 1000, "service1", 1));
 
 		testFlashlist.setRowsNode(rowsNode);
 		Map<FED, JsonNode> a = sut.match(testFlashlist, objects);

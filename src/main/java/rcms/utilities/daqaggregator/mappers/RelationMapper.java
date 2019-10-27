@@ -27,6 +27,7 @@ import rcms.utilities.daqaggregator.data.SubSystem;
 import rcms.utilities.daqaggregator.data.TCDSPartitionInfo;
 import rcms.utilities.daqaggregator.data.TTCPartition;
 import rcms.utilities.daqaggregator.datasource.TCDSFMInfoRetriever;
+import rcms.utilities.daqaggregator.mappers.helper.ContextHelper;
 import rcms.utilities.hwcfg.HardwareConfigurationException;
 import rcms.utilities.hwcfg.dp.DAQPartition;
 import rcms.utilities.hwcfg.dp.DAQPartitionStructureExtractor.HalfFMM;
@@ -385,6 +386,8 @@ public class RelationMapper implements Serializable {
 
 		TCDSPartitionInfo tcdsPartitionInfo = new TCDSPartitionInfo();
 		
+		final String networkSuffix = ContextHelper.getNetworkSuffix();
+		
 		if (ttcpName.toLowerCase().startsWith("cpm")||
 				ttcpName.toLowerCase().startsWith("lpm")
 				||ttcpName.toLowerCase().startsWith("dvcpm")||
@@ -398,7 +401,7 @@ public class RelationMapper implements Serializable {
 
 		if(tcdsFmInfoRetriever.isInfoAvailable()){
 			String pmUrl = tcdsFmInfoRetriever.getTcdsfm_pmContext().toLowerCase();
-			pmUrl = pmUrl.split("//|.cms")[1];
+			pmUrl = pmUrl.split("//|" + networkSuffix)[1];
 
 			int pmLid = tcdsFmInfoRetriever.getTcdsfm_pmLid();
 			String pmService = tcdsFmInfoRetriever.getTcdsfm_pmService().toLowerCase();
@@ -409,7 +412,7 @@ public class RelationMapper implements Serializable {
 				for (Entry<Integer, TCDSPartitionManager> ePm: eTrig.getValue().getPMs().entrySet()){
 
 					String hwcfg_PmHostname = ePm.getValue().getHostName().toLowerCase();
-					hwcfg_PmHostname = hwcfg_PmHostname.split(".cms")[0];
+					hwcfg_PmHostname = hwcfg_PmHostname.split(networkSuffix)[0];
 					String hwcfg_pmService = ePm.getValue().getServiceName().toLowerCase();
 
 					if (pmUrl.equalsIgnoreCase(hwcfg_PmHostname)&&pmService.equalsIgnoreCase(hwcfg_pmService)){

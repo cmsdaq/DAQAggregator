@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 import rcms.utilities.daqaggregator.datasource.FlashlistConfigurationReader;
 import rcms.utilities.daqaggregator.datasource.FlashlistType;
 import rcms.utilities.daqaggregator.datasource.LiveAccessServiceExplorer;
+import rcms.utilities.daqaggregator.mappers.helper.ContextHelper;
 
 public class Application {
 
@@ -36,6 +37,9 @@ public class Application {
 	public static void initialize(String propertiesFile) {
 		instance = new Application(propertiesFile);
 		checkRequiredSettings();
+
+		ContextHelper.setNetworkSuffix(instance.getProp(Settings.NETWORK_DOMAIN));
+
 		configureFlashlists();
 
 		/*

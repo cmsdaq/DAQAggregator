@@ -48,7 +48,11 @@ public enum Settings {
 	PERSISTENCE_SNAPSHOT_DIR("persistence.snapshot.dir"),
 	PERSISTENCE_FLASHLIST_FORMAT("persistence.flashlist.format"),
 	PERSISTENCE_SNAPSHOT_FORMAT("persistence.snapshot.format"),
-	PERSISTENCE_LIMIT("persistence.flashlist.explore.start"), ;
+	PERSISTENCE_LIMIT("persistence.flashlist.explore.start"),
+	
+	// network domain
+	NETWORK_DOMAIN("network.domain", true),
+	;
 
 	private Settings(String key, boolean required) {
 		this.key = key;

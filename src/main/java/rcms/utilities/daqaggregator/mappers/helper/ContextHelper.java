@@ -12,6 +12,9 @@ public class ContextHelper {
 
 	private static final Logger logger = Logger.getLogger(ContextHelper.class);
 
+	/** network suffix including dot at the beginning */
+	private static String networkSuffix = null;
+	
 	public static Integer getPortFromContext(String context) {
 		String hostname = new String(context);
 		String portString;
@@ -44,8 +47,8 @@ public class ContextHelper {
 		if (hostname.contains(":")) {
 			hostname = hostname.substring(0, hostname.indexOf(":"));
 		}
-		if (!hostname.endsWith(".cms")) {
-			hostname = hostname + ".cms";
+		if (!hostname.endsWith(networkSuffix)) {
+			hostname = hostname + networkSuffix;
 		}
 		return hostname;
 	}
@@ -74,4 +77,30 @@ public class ContextHelper {
 		}
 
 	}
+	
+	/** checks if the given host name ends with the network domain
+	 *  (which is configured application wide) and if yes, removes
+	 *  it. Otherwise returns the hostname unchanged.
+	 */
+	public static String removeNetworkSuffix(String hostname) {
+		return removeSuffixFromHostname(hostname, networkSuffix);
+	}
+
+	/** @return the network suffix including the leading dot. */
+	public static String getNetworkSuffix() {
+		return networkSuffix;
+	}
+
+	public static void setNetworkSuffix(String networkSuffix) {
+
+		// ensure lower case
+		networkSuffix = networkSuffix.toLowerCase();
+
+		if (! networkSuffix.startsWith(".")) {
+			networkSuffix = "." + networkSuffix;
+		}
+
+		ContextHelper.networkSuffix = networkSuffix;
+	}
+
 }

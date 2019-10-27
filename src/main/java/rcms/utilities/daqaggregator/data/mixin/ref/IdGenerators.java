@@ -166,7 +166,7 @@ public class IdGenerators {
 	            BU bu = (BU) forPojo;
 
 	            String buHostname = bu.getHostname();
-	            buHostname = ContextHelper.removeSuffixFromHostname(buHostname, ".cms");
+	            buHostname = ContextHelper.removeNetworkSuffix(buHostname);
 	           
 	            StringBuilder sb = new StringBuilder(prefix.length() + buHostname.length());
 	           
@@ -219,7 +219,7 @@ public class IdGenerators {
 	            RU ru = (RU) forPojo;
 
 	            String ruHostname = ru.getHostname();
-	            ruHostname = ContextHelper.removeSuffixFromHostname(ruHostname, ".cms");
+	            ruHostname = ContextHelper.removeNetworkSuffix(ruHostname);
 	           
 	            StringBuilder sb = new StringBuilder(prefix.length() + ruHostname.length());
 	           
@@ -272,7 +272,7 @@ public class IdGenerators {
 	            FRLPc frlpc = (FRLPc) forPojo;
 
 	            String frlpcHostname = frlpc.getHostname();
-	            frlpcHostname = ContextHelper.removeSuffixFromHostname(frlpcHostname, ".cms");
+	            frlpcHostname = ContextHelper.removeNetworkSuffix(frlpcHostname);
 	           
 	            StringBuilder sb = new StringBuilder(prefix.length() + frlpcHostname.length());
 	           
@@ -533,7 +533,7 @@ public class IdGenerators {
 	            FMMApplication fmmapp = (FMMApplication) forPojo;
 
 	            String fmmappHostname = fmmapp.getHostname();
-	            fmmappHostname = ContextHelper.removeSuffixFromHostname(fmmappHostname, ".cms");
+	            fmmappHostname = ContextHelper.removeNetworkSuffix(fmmappHostname);
 	           
 	            StringBuilder sb = new StringBuilder(prefix.length() + fmmappHostname.length());
 	           
@@ -643,7 +643,7 @@ public class IdGenerators {
 	            String fedBuilderName = sfb.getFedBuilder().getName();
 	            String ttcpName = sfb.getTtcPartition().getName();
 				String frlpcHostname = sfb.getFrlPc() != null ? sfb.getFrlPc().getHostname() : "-";
-	            frlpcHostname = ContextHelper.removeSuffixFromHostname(frlpcHostname, ".cms");
+	            frlpcHostname = ContextHelper.removeNetworkSuffix(frlpcHostname);
 
 	            StringBuilder sb = new StringBuilder(prefix.length() + fedBuilderName.length() + delimiter.length() + ttcpName.length() + delimiter.length() + frlpcHostname.length());
 	           
@@ -703,7 +703,7 @@ public class IdGenerators {
 	            String frlGeoslot = String.valueOf(frl.getGeoSlot());
 	            
 	            String frlpcHostname = frl.getFrlPc().getHostname();
-	            frlpcHostname = ContextHelper.removeSuffixFromHostname(frlpcHostname, ".cms");
+	            frlpcHostname = ContextHelper.removeNetworkSuffix(frlpcHostname);
 	            
 	            StringBuilder sb = new StringBuilder(prefix.length() + frlGeoslot.length() + delimiter.length() + frlpcHostname.length());
 	           
