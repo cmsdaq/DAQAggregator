@@ -44,9 +44,6 @@ public class ContextHelper {
 		if (hostname.contains(":")) {
 			hostname = hostname.substring(0, hostname.indexOf(":"));
 		}
-		if (!hostname.endsWith(".cms")) {
-			hostname = hostname + ".cms";
-		}
 		return hostname;
 	}
 
