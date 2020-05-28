@@ -3,18 +3,18 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>ch.cern</groupId>
 	<artifactId>DAQAggregator</artifactId>
-	<version>1.18.2</version>
+	<version>1.19.1</version>
 	<repositories>
 		<repository>
 			<id>libs-release-local</id>
-			<url>http://dev-daq-expert.cern.ch/artifactory/libs-release-local</url>
+			<url>https://gitlab.cern.ch/cms-rcms-artifacts/maven/raw/master/</url>
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
 		</repository>
 		<repository>
 			<id>ext-release-local</id>
-			<url>http://dev-daq-expert.cern.ch/artifactory/ext-release-local</url>
+			<url>https://gitlab.cern.ch/cms-rcms-artifacts/maven/raw/master/</url>
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
@@ -159,9 +159,21 @@
 
 		<!-- Hardware database is downloaded from internal repository -->
 		<dependency>
-			<groupId>ch.cern</groupId>
-			<artifactId>rcms</artifactId>
-			<version>4.6.2</version>
+			<groupId>cern.cms</groupId>
+			<artifactId>rcms-common</artifactId>
+			<version>4.7.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>cern.cms</groupId>
+			<artifactId>rcms-rc</artifactId>
+			<version>4.7.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>cern.cms</groupId>
+			<artifactId>rcms-hwcfg</artifactId>
+			<version>4.7.1</version>
 		</dependency>
 
 		<!-- Oracle driver is downloaded from internal repository -->
@@ -176,6 +188,11 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-math3</artifactId>
 			<version>3.0</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.xml.ws</groupId>
+			<artifactId>jaxws-api</artifactId>
+			<version>2.3.1</version>
 		</dependency>
 
 

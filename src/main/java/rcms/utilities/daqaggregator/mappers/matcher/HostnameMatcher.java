@@ -28,6 +28,22 @@ public abstract class HostnameMatcher<E> extends SessionFilteringMatcher<E> {
 		this.flashlistKey = flashlistKey;
 	}
 
+	private static final String CMS_DOMAIN = ".cms";
+	private static final String CMS904_DOMAIN = ".cms904";
+
+	private String hostStrip(String fullHostname){
+
+		if(fullHostname.toLowerCase().endsWith(CMS_DOMAIN)){
+			fullHostname = fullHostname.substring(0, fullHostname.length() - CMS_DOMAIN.length());
+		}
+
+		if(fullHostname.toLowerCase().endsWith(CMS904_DOMAIN)){
+			fullHostname = fullHostname.substring(0, fullHostname.length() - CMS904_DOMAIN.length());
+		}
+
+		return fullHostname;
+	}
+
 	@Override
 	public Map<E, JsonNode> match(Flashlist flashlist, Collection<E> collection) {
 
@@ -36,6 +52,7 @@ public abstract class HostnameMatcher<E> extends SessionFilteringMatcher<E> {
 		Map<String, E> objectsByHostname = new HashMap<>();
 		for (E object : collection) {
 			String hostname = getHostname(object);
+			hostname = hostStrip(hostname);
 			objectsByHostname.put(hostname, object);
 		}
 
@@ -43,6 +60,7 @@ public abstract class HostnameMatcher<E> extends SessionFilteringMatcher<E> {
 
 			String hostname = row.get(flashlistKey).asText();
 			hostname = ContextHelper.getHostnameFromContext(hostname);
+			hostname = hostStrip(hostname);
 			if (objectsByHostname.containsKey(hostname)) {
 				dispatchMap.put(objectsByHostname.get(hostname), row);
 				successful++;
