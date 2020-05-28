@@ -46,11 +46,11 @@ public enum FlashlistType {
 	LEVEL_ZERO_FM_STATIC("levelZeroFM_static", "SID"),
 	LEVEL_ZERO_FM_SUBSYS("levelZeroFM_subsys", "SID"),
 
-	FEROL40_STREAM_CONFIGURATION("ferol40StreamConfiguration"),
-	FEROL40_CONFIGURATION("ferol40Configuration"),
-	FEROL40_INPUT_STREAM("ferol40InputStream"),
-	FEROL40_STATUS("ferol40Status"),
-	FEROL40_TCP_STREAM("ferol40TcpStream"),
+	FEROL40_STREAM_CONFIGURATION("ferol40StreamConfiguration", "sessionid"),
+	FEROL40_CONFIGURATION("ferol40Configuration", "sessionid"),
+	FEROL40_INPUT_STREAM("ferol40InputStream", "sessionid"),
+	FEROL40_STATUS("ferol40Status", "sessionid"),
+	FEROL40_TCP_STREAM("ferol40TcpStream", "sessionid"),
 	
 
 	TCDSFM("tcdsFM");
