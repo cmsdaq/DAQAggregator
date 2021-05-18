@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>ch.cern</groupId>
 	<artifactId>DAQAggregator</artifactId>
-	<version>1.19.1</version>
+	<version>1.19.2</version>
 	<repositories>
 		<repository>
 			<id>libs-release-local</id>
@@ -146,7 +146,7 @@
 		<dependency>
 			<groupId>cern.cms</groupId>
 			<artifactId>rcms-hwcfg</artifactId>
-			<version>4.7.1</version>
+			<version>4.9.1</version>
 		</dependency>
 
 		<!-- Oracle driver is downloaded from internal repository -->
