@@ -143,4 +143,11 @@ public class LASFlashlistRetriever implements FlashlistRetriever {
 
 	}
 
+	public void stopExecutors() {
+
+		// needed e.g. in command line programs to wait until the executor
+		// terminates
+		this.executor.shutdownNow();
+	}
+
 }
